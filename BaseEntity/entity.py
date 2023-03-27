@@ -23,11 +23,15 @@ class Entity(ABC):
         pass
 
     @abstractmethod
+    def distanceTo(self, position: PointRef) -> float:
+        pass
+
+    @abstractmethod
     def getPosition(self) -> PointRef:
         self
 
     @abstractmethod
-    def draw(self, screen: pygame.Surface, isActive: bool) -> bool:
+    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         pass
 
     @abstractmethod

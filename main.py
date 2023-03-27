@@ -4,7 +4,7 @@ from EntityHandler.interactor import Interactor
 from reference_frame import PointRef, Ref, initReferenceframe
 from field_transform import FieldTransform
 from dimensions import Dimensions
-import pygame
+import pygame, random
 import sys
 
 pygame.init()
@@ -25,8 +25,14 @@ def main():
     interactor = Interactor()
     entities = EntityManager()
 
-    entities.addEntity(CircleEntity(PointRef(Ref.SCREEN, (100,100)), 50, RED))
-    #entities.addEntity(CircleEntity(PointRef(Ref.SCREEN, (500,500)), 5, GREEN))
+    for i in range(5):
+        x = random.randint(100, 600)
+        y = random.randint(100, 600)
+        entities.addEntity(CircleEntity(PointRef(Ref.SCREEN, (x,y)), 20, RED, "red"))
+    for i in range(5):
+        x = random.randint(100, 600)
+        y = random.randint(100, 600)
+        entities.addEntity(CircleEntity(PointRef(Ref.SCREEN, (x,y)), 20, GREEN, "green"))
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0")
@@ -36,6 +42,7 @@ def main():
     while True:
 
         mouse.screenRef = pygame.mouse.get_pos()
+        interactor.hoveredEntity = entities.getEntityAtPosition(mouse)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -43,17 +50,23 @@ def main():
                 sys.exit()
             elif event.type == pygame.VIDEORESIZE:
                 screen = dimensions.resizeScreen(*event.size)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                interactor.onMouseDown(entities)
-            elif event.type == pygame.MOUSEBUTTONUP:
-                interactor.onMouseUp(entities)
 
-        interactor.hoveredEntity = entities.getEntityAtPosition(mouse)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                ctrlKey = pygame.key.get_pressed()[pygame.K_LCTRL]
+                right = (event.button == 1 and ctrlKey) or event.button == 3
+                interactor.onMouseDown(entities, mouse, right)
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                interactor.onMouseUp(entities, mouse)
+
+            elif event.type == pygame.MOUSEMOTION:
+                interactor.onMouseMove(entities, mouse)
 
         # Clear screen
         screen.fill((255,255,255))
 
         entities.drawEntities(interactor, screen)
+        interactor.draw(screen)
 
         # Update display and maintain frame rate
         pygame.display.flip()

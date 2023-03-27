@@ -16,10 +16,16 @@ class SelectHandler:
         self.selected: list[Entity] = []
         for entity in entities:
             if isInsideBox(*entity.getPosition().screenRef, self.x1, self.y1, x2, y2):
+
+                # not a multi-selectable entitity
+                if entity.select is None:
+                    continue
                 
+                # Define what other entities are selectable after the first entity is selected
                 if self.selectionID is None:
                     self.selectionID = entity.select.id
 
+                # assert this entity is the same type as the other selected ones
                 if self.selectionID == entity.select.id:
                     self.selected.append(entity)
 

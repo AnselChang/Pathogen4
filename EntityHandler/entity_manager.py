@@ -1,6 +1,5 @@
 from BaseEntity.entity import Entity
 from reference_frame import PointRef
-from EntityHandler.interactor import Interactor
 import pygame
 
 class EntityManager:
@@ -16,21 +15,31 @@ class EntityManager:
         self.entities.remove(entity)
 
     def getEntityAtPosition(self, position: PointRef) -> Entity:
+
+        self.touching: list[Entity] = []
         for entity in self.entities:
             if entity.isVisible() and entity.isTouching(position):
-                return entity
-        return None
-    
-    def drawEntities(self, interactor: Interactor, screen: pygame.Surface):
+                self.touching.append(entity)
 
-        # active is the list of active entities.
-        if len(interactor.selectedEntities) > 0:
-            active = interactor.selectedEntities
-        elif interactor.hoveredEntity is not None:
-            active = [interactor.hoveredEntity]
+        if len(self.touching) == 0:
+            return None
+        elif len(self.touching) == 1:
+            return self.touching[0]
         else:
-            active = []
+            # Find the closest one touching
+            closestDistance = self.touching[0].distanceTo(position)
+            closest = self.touching[0]
+            for entity in self.touching[1:]:
+                distance = entity.distanceTo(position)
+                if distance < closestDistance:
+                    closestDistance = distance
+                    closest = entity
+            return closest
+    
+    def drawEntities(self, interactor, screen: pygame.Surface):
+
+
 
         for entity in self.entities:
             if entity.isVisible():
-                entity.draw(screen, entity in active)
+                entity.draw(screen, entity in interactor.selectedEntities, entity is interactor.hoveredEntity)
