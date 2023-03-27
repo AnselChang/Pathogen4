@@ -1,5 +1,7 @@
 from Entities.independent_circle_entity import IndependentCircleEntity
 from Entities.dependent_circle_entity import DependentCircleEntity
+from Entities.test_edge_entity import TestEdgeEntity
+
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
@@ -32,12 +34,17 @@ def main():
         y = random.randint(100, 600)
 
         a = IndependentCircleEntity(PointRef(Ref.SCREEN, (x,y)), 50, RED, "red")
-        entities.addEntity(a)
-        
+             
         b = DependentCircleEntity(a, VectorRef(Ref.SCREEN, (50,50)), 20, GREEN, "green")
-        entities.addEntity(b)
-
+        
         c = DependentCircleEntity(b, VectorRef(Ref.SCREEN, (50,50)), 20, BLUE, "blue")
+        
+
+        entities.addEntity(TestEdgeEntity(a, b))
+        entities.addEntity(TestEdgeEntity(b, c))
+
+        entities.addEntity(a)
+        entities.addEntity(b)
         entities.addEntity(c)
 
     # initialize pygame artifacts

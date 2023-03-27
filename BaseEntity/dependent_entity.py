@@ -13,7 +13,4 @@ class DependentEntity(Entity):
         self.parent = parent
 
     def getPosition(self) -> PointRef:
-        print(self.parent.getPosition().screenRef, self.vector.screenRef, (self.parent.getPosition() + self.vector).screenRef)
-        print(self.parent.getPosition().fieldRef, self.vector.fieldRef, (self.parent.getPosition() + self.vector).fieldRef)
-        print()
         return self.parent.getPosition() + self.vector

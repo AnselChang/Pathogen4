@@ -186,6 +186,10 @@ class VectorRef:
     # Scales vector by some scalar. Does not modify but returns new VectorRef
     def __mul__(self, scalar: float) -> 'VectorRef':
         return VectorRef(Ref.FIELD, math_functions.scaleTuple(self.fieldRef, scalar))
+    
+    # Divides vector by some scalar. Does not modify but returns new VectorRef
+    def __truediv__(self, scalar: float) -> 'VectorRef':
+        return VectorRef(Ref.FIELD, math_functions.divideTuple(self.fieldRef, scalar))
 
 class ScalarRef:
 

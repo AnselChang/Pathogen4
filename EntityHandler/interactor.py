@@ -128,7 +128,7 @@ class Interactor:
 
     # It is guaranteed that onMouseMove() was not called if this function is called
     def onMouseClick(self, entities: EntityManager, mouse: PointRef, isRight: bool):
-        if self.hoveredEntity is not None:
+        if self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:
                 self.hoveredEntity.click.onRightClick()
             else:

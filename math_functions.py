@@ -29,3 +29,23 @@ def hypo(s1, s2):
 
 def distance(x1,y1,x2,y2):
     return hypo(y2-y1, x2-x1)
+
+# Distance between point (x, y) and line (x1, y1,),(x2,y2)
+def distancePointToLine(x, y, x1, y1, x2, y2, signed: bool = False):
+    ans = ((x2-x1)*(y1-y) - (x1-x)*(y2-y1)) / distance(x1, y1, x2, y2)
+    if signed:
+        return ans
+    else:
+        return abs(ans)
+
+# Whether point is touching the line with some margin given by lineHitboxThickness
+def pointTouchingLine(mouseX: int, mouseY: int, x1: int, y1: int, x2: int, y2: int, lineHitboxThickness: int) -> bool:
+
+    if x1 == x2 and y1 == y2:
+        return False
+    
+    if distancePointToLine(mouseX,mouseY, x1, y1, x2, y2) <= lineHitboxThickness:
+        dist = distance(x1, y1, x2, y2)
+        if distance(mouseX, mouseY, x1, y1) < dist and distance(mouseX, mouseY, x2, y2) < dist:
+            return True
+    return False
