@@ -3,13 +3,21 @@ from abc import ABC, abstractmethod
 class Click(ABC):
 
     @abstractmethod
-    def onClick(self):
+    def onLeftClick(self):
+        pass
+
+    @abstractmethod
+    def onRightClick(self):
         pass
 
 class ClickLambda(Click):
 
-    def __init__(self, FonClick = lambda: None):
-        self.FonClick = FonClick
+    def __init__(self, FonLeftClick = lambda: None, FonRightClick = lambda: None):
+        self.FonLeftClick = FonLeftClick
+        self.FonRightClick = FonRightClick
 
-    def onClick(self):
-        self.FonClick()
+    def onLeftClick(self):
+        self.FonLeftClick()
+
+    def onRightClick(self):
+        self.FonRightClick()

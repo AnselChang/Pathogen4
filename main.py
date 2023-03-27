@@ -1,7 +1,8 @@
-from BaseEntity.circle_entity import CircleEntity
+from Entities.independent_circle_entity import IndependentCircleEntity
+from Entities.dependent_circle_entity import DependentCircleEntity
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
-from reference_frame import PointRef, Ref, initReferenceframe
+from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
 from dimensions import Dimensions
 import pygame, random
@@ -11,6 +12,7 @@ pygame.init()
 
 RED = [255,0,0]
 GREEN = [0,255,0]
+BLUE = [0,0,255]
 
 def main():
     
@@ -25,14 +27,18 @@ def main():
     interactor = Interactor()
     entities = EntityManager()
 
-    for i in range(5):
+    for i in range(2):
         x = random.randint(100, 600)
         y = random.randint(100, 600)
-        entities.addEntity(CircleEntity(PointRef(Ref.SCREEN, (x,y)), 20, RED, "red"))
-    for i in range(5):
-        x = random.randint(100, 600)
-        y = random.randint(100, 600)
-        entities.addEntity(CircleEntity(PointRef(Ref.SCREEN, (x,y)), 20, GREEN, "green"))
+
+        a = IndependentCircleEntity(PointRef(Ref.SCREEN, (x,y)), 50, RED, "red")
+        entities.addEntity(a)
+        
+        b = DependentCircleEntity(a, VectorRef(Ref.SCREEN, (50,50)), 20, GREEN, "green")
+        entities.addEntity(b)
+
+        c = DependentCircleEntity(b, VectorRef(Ref.SCREEN, (50,50)), 20, BLUE, "blue")
+        entities.addEntity(c)
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0")

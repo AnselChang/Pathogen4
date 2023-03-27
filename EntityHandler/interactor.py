@@ -66,6 +66,10 @@ class Interactor:
 
     def onMouseDown(self, entities: EntityManager, mouse: PointRef, isRight: bool):
 
+        # prevent double clicks
+        if self.leftDragging or self.rightDragging:
+            return
+
         self.didMove = False
         self.mouseStartDrag = mouse.copy()
         self.mousePrevious = mouse.copy()
@@ -76,6 +80,7 @@ class Interactor:
             self.onLeftMouseDown(entities, mouse)
 
     def onLeftMouseDown(self, entities: EntityManager, mouse: PointRef):
+
         self.leftDragging = True
         
         self.box.disable()
@@ -96,10 +101,11 @@ class Interactor:
 
 
     def onMouseUp(self, entities: EntityManager, mouse: PointRef):
+        isRight = self.rightDragging
         self.leftDragging = False
         self.rightDragging = False
         if not self.didMove:
-            self.onMouseClick(entities, mouse)
+            self.onMouseClick(entities, mouse, isRight)
 
         self.box.disable()
 
@@ -121,8 +127,12 @@ class Interactor:
                     selected.drag.dragOffset(mouseDelta)
 
     # It is guaranteed that onMouseMove() was not called if this function is called
-    def onMouseClick(self, entities: EntityManager, mouse: PointRef):
-        pass
+    def onMouseClick(self, entities: EntityManager, mouse: PointRef, isRight: bool):
+        if self.hoveredEntity is not None:
+            if isRight:
+                self.hoveredEntity.click.onRightClick()
+            else:
+                self.hoveredEntity.click.onLeftClick()
 
     def draw(self, screen: pygame.Surface):
 
