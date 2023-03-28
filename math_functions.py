@@ -6,6 +6,10 @@ def isInsideBox(x, y, x1, y1, x2, y2):
     y_min, y_max = min(y1, y2), max(y1, y2)
     return x_min <= x <= x_max and y_min <= y <= y_max
 
+# Whether (x,y) is inside rectangle defined by x, y, width height
+def isInsideBox2(x, y, topLeftX, topLeftY, width, height):
+    return isInsideBox(x, y, topLeftX, topLeftY, topLeftX + width, topLeftY + height)
+
 # Clamp a value between a minimum and a maximum value.
 def clamp(value, minValue, maxValue):
     return max(min(value, maxValue), minValue)

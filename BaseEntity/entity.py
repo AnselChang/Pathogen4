@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from reference_frame import PointRef, VectorRef
+from reference_frame import PointRef, Ref
 
 from BaseEntity.EntityFunctions.click_function import Click
 from BaseEntity.EntityFunctions.drag_function import Drag
@@ -22,13 +22,12 @@ class Entity(ABC):
     def isTouching(self, position: PointRef) -> bool:
         pass
 
-    @abstractmethod
     def distanceTo(self, position: PointRef) -> float:
-        pass
+        return (position - self.getPosition()).magnitude(Ref.SCREEN)
 
     @abstractmethod
     def getPosition(self) -> PointRef:
-        self
+        pass
 
     @abstractmethod
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

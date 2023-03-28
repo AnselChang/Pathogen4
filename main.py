@@ -1,6 +1,9 @@
-from Entities.independent_circle_entity import IndependentCircleEntity
-from Entities.dependent_circle_entity import DependentCircleEntity
-from Entities.test_edge_entity import TestEdgeEntity
+from PathEntities.independent_circle_entity import IndependentCircleEntity
+from PathEntities.dependent_circle_entity import DependentCircleEntity
+from PathEntities.test_edge_entity import TestEdgeEntity
+
+from UIEntities.radio_group import RadioGroup
+from UIEntities.tab_entity import TabEntity
 
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
@@ -16,6 +19,15 @@ RED = [255,0,0]
 GREEN = [0,255,0]
 BLUE = [0,0,255]
 
+def initTabs(dimensions, entities) -> RadioGroup:
+    tabs = RadioGroup(entities)
+    tabNames = ["A", "B", "C"]
+
+    N = len(tabNames)
+    for i, text in enumerate(tabNames):
+        tabs.add(TabEntity(dimensions, text, i, N))
+    return tabs
+
 def main():
     
     # Initialize field
@@ -28,6 +40,9 @@ def main():
     # Initialize entities
     interactor = Interactor()
     entities = EntityManager()
+
+    # Create tabs
+    tabs = initTabs(dimensions, entities)
 
     for i in range(2):
         x = random.randint(100, 600)
@@ -50,7 +65,6 @@ def main():
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0")
     clock = pygame.time.Clock()
-
     # Main game loop
     while True:
 
@@ -78,8 +92,15 @@ def main():
         # Clear screen
         screen.fill((255,255,255))
 
+         # draw panel
+        x, y = dimensions.FIELD_WIDTH, 0
+        width, height = dimensions.PANEL_WIDTH, dimensions.SCREEN_HEIGHT
+        pygame.draw.rect(screen, (100,100,100), (x, y, width, height))
+
         entities.drawEntities(interactor, screen)
         interactor.draw(screen)
+
+       
 
         # Update display and maintain frame rate
         pygame.display.flip()

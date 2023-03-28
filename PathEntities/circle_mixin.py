@@ -20,9 +20,6 @@ class CircleMixin(Entity):
 
     def isTouching(self, position: PointRef) -> bool:
         return self.distanceTo(position) <= self.radius
-    
-    def distanceTo(self, position: PointRef) -> float:
-        return (position - self.getPosition()).magnitude(Ref.SCREEN)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         alpha = 170 if isHovered else 255

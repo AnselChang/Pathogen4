@@ -6,7 +6,7 @@ from BaseEntity.EntityFunctions.click_function import Click
 from BaseEntity.EntityFunctions.drag_function import Drag
 from BaseEntity.EntityFunctions.select_function import Select
 from BaseEntity.entity import Entity
-from Entities.straight_edge_entity import StraightEdgeEntity
+from PathEntities.straight_edge_entity import StraightEdgeEntity
 
 
 import pygame

@@ -42,4 +42,6 @@ class EntityManager:
 
         for entity in self.entities:
             if entity.isVisible():
-                entity.draw(screen, entity in interactor.selectedEntities, entity is interactor.hoveredEntity)
+                selected = entity in interactor.selectedEntities
+                hovering = entity is interactor.hoveredEntity and (selected or not (interactor.leftDragging or interactor.rightDragging))
+                entity.draw(screen, selected, hovering)

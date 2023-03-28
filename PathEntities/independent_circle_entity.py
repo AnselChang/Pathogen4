@@ -1,4 +1,4 @@
-from Entities.circle_mixin import CircleMixin
+from PathEntities.circle_mixin import CircleMixin
 from BaseEntity.independent_entity import IndependentEntity
 from reference_frame import PointRef, VectorRef
 from BaseEntity.EntityFunctions.drag_function import DragLambda

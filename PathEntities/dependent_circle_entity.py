@@ -1,4 +1,4 @@
-from Entities.circle_mixin import CircleMixin
+from PathEntities.circle_mixin import CircleMixin
 from BaseEntity.entity import Entity
 from BaseEntity.dependent_entity import DependentEntity
 from reference_frame import PointRef, VectorRef
