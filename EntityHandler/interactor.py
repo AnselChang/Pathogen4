@@ -3,6 +3,8 @@ from EntityHandler.entity_manager import EntityManager
 from EntityHandler.select_handler import SelectHandler
 from reference_frame import PointRef, Ref, VectorRef
 from pygame_functions import drawTransparentRect
+from dimensions import Dimensions
+from field_transform import FieldTransform
 import pygame
 
 """
@@ -48,7 +50,10 @@ class SelectorBox:
 
 class Interactor:
 
-    def __init__(self):
+    def __init__(self, dimensions: Dimensions, fieldTransform: FieldTransform):
+
+        self.dimensions = dimensions
+        self.fieldTransform = fieldTransform
 
         self.box = SelectorBox()
 
@@ -60,6 +65,8 @@ class Interactor:
 
         self.mouseStartDrag: PointRef = None
         self.didMove: bool = False
+
+        self.panning = False
 
     def isMultiselect(self) -> bool:
         return self.box.active
@@ -99,6 +106,9 @@ class Interactor:
     def onRightMouseDown(self, entities: EntityManager, mouse: PointRef):
         self.rightDragging = True
 
+        mx, my = mouse.screenRef
+        if self.hoveredEntity is None and mx < self.dimensions.FIELD_WIDTH:
+            self.panning = True
 
     def onMouseUp(self, entities: EntityManager, mouse: PointRef):
         isRight = self.rightDragging
@@ -108,23 +118,33 @@ class Interactor:
             self.onMouseClick(entities, mouse, isRight)
 
         self.box.disable()
+        self.panning = False
 
     def onMouseMove(self, entities: EntityManager, mouse: PointRef):
         self.didMove = True
 
+        # after this point, mouse movement was dragging and not just moving around
         if not self.rightDragging and not self.leftDragging:
             return
         
+        # Update multiselect
         if self.box.isEnabled():
             self.selectedEntities = self.box.update(mouse, entities)
 
+        # Calculate how much the mouse moved this tick
         mouseDelta: VectorRef = mouse - self.mousePrevious
         self.mousePrevious = mouse.copy()
 
+        # Drag selection
         if self.leftDragging and not self.box.isEnabled():
             for selected in self.selectedEntities:
                 if selected.drag is not None:
                     selected.drag.dragOffset(mouseDelta)
+
+        # pan field
+        if self.rightDragging and self.panning:
+            print(mouseDelta.screenRef)
+            self.fieldTransform.changePan(*mouseDelta.screenRef)
 
     # It is guaranteed that onMouseMove() was not called if this function is called
     def onMouseClick(self, entities: EntityManager, mouse: PointRef, isRight: bool):

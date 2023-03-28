@@ -23,8 +23,8 @@ class FieldTransform:
 
     # Restrict the panning range for the field as to keep the field in sight of the screen
     def _boundFieldPan(self):
-        minPanX = (1-self._zoom) * self._dimensions.fieldWidth
-        minPanY = (1-self._zoom) * self._dimensions.screenHeight
+        minPanX = (1-self._zoom) * self._dimensions.FIELD_WIDTH
+        minPanY = (1-self._zoom) * self._dimensions.SCREEN_HEIGHT
         self._panX = clamp(self._panX, minPanX, 0)
         self._panY = clamp(self._panY, minPanY, 0)
 
@@ -39,16 +39,15 @@ class FieldTransform:
     # self.zoom property that is gettable and settable
     zoom = property(_getZoom, _setZoom)
 
-    def _getPan(self):
+    def getPan(self) -> tuple:
         return self._panX, self._panY
 
-    # After updating the field pan, make sure it is in bounds
-    def _setPan(self, xyFieldPanInPixels: tuple):
-        self._panX, self._panY = xyFieldPanInPixels
+    def changePan(self, dx, dy):
+        self._panX += dx
+        self._panY += dy
+
         self._boundFieldPan()
 
-    # self.pan property that is gettable and settable
-    pan = property(_getPan, _setPan)
 
     # Return the zoom multiplied by a scalar. The most common use case is for determining the size of objects, so that
     # objects grow when zooming in, but at a slower rate than the zoom (when 0 < scalar < 1)

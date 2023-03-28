@@ -43,7 +43,7 @@ class PointRef:
     def _setScreenRef(self, point: tuple) -> None:
 
         # undo the panning and zooming
-        panX, panY = self.transform.pan
+        panX, panY = self.transform.getPan()
         normalizedScreenX = (point[0] - panX) / self.transform.zoom
         normalizedScreenY = (point[1] - panY) / self.transform.zoom
 
@@ -58,7 +58,7 @@ class PointRef:
         normalizedScreenY = self._yf / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS + dimensions.PIXELS_TO_FIELD_CORNER
 
         # convert to screen reference frame
-        panX, panY = self.transform.pan
+        panX, panY = self.transform.getPan()
         xs = normalizedScreenX * self.transform.zoom + panX
         ys = normalizedScreenY * self.transform.zoom + panY
 

@@ -9,6 +9,7 @@ from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
+from field_surface import FieldSurface
 from dimensions import Dimensions
 import pygame, random
 import sys
@@ -34,11 +35,12 @@ def main():
     dimensions = Dimensions()
     screen = dimensions.resizeScreen(800, 800)
     fieldTransform: FieldTransform = FieldTransform(dimensions)
+    fieldSurface: FieldSurface = FieldSurface(dimensions, fieldTransform)
     initReferenceframe(dimensions, fieldTransform)
     mouse: PointRef = PointRef()
     
     # Initialize entities
-    interactor = Interactor()
+    interactor = Interactor(dimensions, fieldTransform)
     entities = EntityManager()
 
     # Create tabs
@@ -91,6 +93,7 @@ def main():
 
         # Clear screen
         screen.fill((255,255,255))
+        fieldSurface.draw(screen)
 
          # draw panel
         x, y = dimensions.FIELD_WIDTH, 0
