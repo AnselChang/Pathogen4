@@ -90,10 +90,8 @@ class Interactor:
 
         self.leftDragging = True
         
+        # disable multiselect
         self.box.disable()
-        if self.hoveredEntity is None:
-            self.box.enable(self.mouseStartDrag)
-            self.box.update(mouse.screenRef, entities)
         
         # if there's a group selected but the mouse is not clicking on the group, deselect
         if self.hoveredEntity is None or self.hoveredEntity not in self.selectedEntities:
@@ -103,13 +101,20 @@ class Interactor:
         if len(self.selectedEntities) == 0 and self.hoveredEntity is not None:
             self.selectedEntities = [self.hoveredEntity]
 
-    def onRightMouseDown(self, entities: EntityManager, mouse: PointRef):
-        self.rightDragging = True
-
+        # start panning
         mx, my = mouse.screenRef
         if self.hoveredEntity is None and mx < self.dimensions.FIELD_WIDTH:
             self.panning = True
             self.fieldTransform.startPan()
+
+    def onRightMouseDown(self, entities: EntityManager, mouse: PointRef):
+        self.rightDragging = True
+
+        # start multiselect
+        self.box.disable()
+        if self.hoveredEntity is None:
+            self.box.enable(self.mouseStartDrag)
+            self.box.update(mouse.screenRef, entities)
 
     def onMouseUp(self, entities: EntityManager, mouse: PointRef):
         isRight = self.rightDragging
@@ -143,7 +148,7 @@ class Interactor:
                     selected.drag.dragOffset(mouseDelta)
 
         # pan field
-        if self.rightDragging and self.panning:
+        if self.leftDragging and self.panning:
             mx, my = mouse.screenRef
 
             self.fieldTransform.updatePan(mx - self.mouseStartDrag[0], my - self.mouseStartDrag[1])
