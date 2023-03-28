@@ -4,13 +4,25 @@ from BaseEntity.EntityFunctions.drag_function import Drag
 from BaseEntity.EntityFunctions.click_function import Click
 from BaseEntity.EntityFunctions.select_function import Select
 from pygame_functions import drawTransparentCircle
-import pygame
+import pygame, math
 
 class CircleMixin(Entity):
 
     def __init__(self, radius: int, color: tuple):
         self.radius = radius
         self.color = color
+
+    def getHitboxPoints(self) -> list[PointRef]:
+
+        position = self.getPosition()
+        points: list[PointRef] = [position]
+        PI = 3.14
+        
+        for theta in [0, PI/2, PI, 3*PI/2]:
+            dx, dy = self.radius * math.cos(theta), self.radius * math.sin(theta)
+            points.append(position + VectorRef(Ref.SCREEN, (dx,dy)))
+
+        return points
 
     def getPosition(self) -> PointRef:
         raise Exception("Not implemented by subclass error")

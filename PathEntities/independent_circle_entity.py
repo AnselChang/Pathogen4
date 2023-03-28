@@ -11,7 +11,7 @@ class IndependentCircleEntity(IndependentEntity, CircleMixin):
         super().__init__(
             position = position,
             drag = DragLambda(FdragOffset = lambda offset: self.move(offset)),
-            select = Select(id),
+            select = Select(id, FgetHitboxPoints = self.getHitboxPoints),
             click = ClickLambda(FonLeftClick = lambda : print("left click"), FonRightClick = lambda : print("right click"))
             )
         

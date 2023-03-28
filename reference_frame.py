@@ -141,7 +141,7 @@ class VectorRef:
     def _setScreenRef(self, vector: tuple):
         scalar = dimensions.FIELD_SIZE_IN_INCHES / dimensions.FIELD_SIZE_IN_PIXELS / self.transform.zoom
         self._vxf = vector[0] * scalar
-        self._vyf = vector[0] * scalar
+        self._vyf = vector[1] * scalar
 
     # Given we only store the point in the field reference frame, we need to convert it to return as screen reference frame
     def _getScreenRef(self):
