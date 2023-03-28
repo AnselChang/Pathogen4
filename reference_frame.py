@@ -32,6 +32,7 @@ class Ref(Enum):
 class PointRef:
 
     def __init__(self, referenceMode: Ref = None, point: tuple = (0,0)):
+
         self.transform = transform
         self._xf, self._yf = None, None
         if referenceMode == Ref.SCREEN:
@@ -39,23 +40,26 @@ class PointRef:
         else:
             self.fieldRef = point
 
+
     # Given we only store the point in the field reference frame, convert to field reference frame before storing it
-    def _setScreenRef(self, point: tuple) -> None:
+    def _screenToField(self, pointS: tuple) -> None:
 
         # undo the panning and zooming
         panX, panY = self.transform.getPan()
-        normalizedScreenX = (point[0] - panX) / self.transform.zoom
-        normalizedScreenY = (point[1] - panY) / self.transform.zoom
+        normalizedScreenX = (pointS[0] - panX) / self.transform.zoom
+        normalizedScreenY = (pointS[1] - panY) / self.transform.zoom
 
         # convert to field reference frame
-        self._xf = (normalizedScreenX - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS * dimensions.FIELD_SIZE_IN_INCHES
-        self._yf = (normalizedScreenY - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS * dimensions.FIELD_SIZE_IN_INCHES
+        xf = (normalizedScreenX - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS * dimensions.FIELD_SIZE_IN_INCHES
+        yf = (normalizedScreenY - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS * dimensions.FIELD_SIZE_IN_INCHES
+
+        return xf, yf
 
     # Given we only store the point in the field reference frame, we need to convert it to return as screen reference frame
-    def _getScreenRef(self) -> tuple:
+    def _fieldToScreen(self, pointF: tuple) -> tuple:
         # convert to normalized (pre-zoom and pre-panning) coordinates
-        normalizedScreenX = self._xf / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS + dimensions.PIXELS_TO_FIELD_CORNER
-        normalizedScreenY = self._yf / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS + dimensions.PIXELS_TO_FIELD_CORNER
+        normalizedScreenX = pointF[0] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS + dimensions.PIXELS_TO_FIELD_CORNER
+        normalizedScreenY = pointF[1] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS + dimensions.PIXELS_TO_FIELD_CORNER
 
         # convert to screen reference frame
         panX, panY = self.transform.getPan()
@@ -63,12 +67,18 @@ class PointRef:
         ys = normalizedScreenY * self.transform.zoom + panY
 
         return xs, ys
+    
+    def _getScreenRef(self) -> tuple:
+        return self._fieldToScreen(self.fieldRef)
+
+    def _setScreenRef(self, pointS: tuple) -> None:
+        self._xf, self._yf = self._screenToField(pointS)
 
     # getter and setter for point in screen reference frame
     screenRef = property(_getScreenRef, _setScreenRef)
     
-    def _setFieldRef(self, point: tuple) -> None:
-        self._xf, self._yf = point
+    def _setFieldRef(self, pointF: tuple) -> None:
+        self._xf, self._yf = pointF
         
     def _getFieldRef(self) -> tuple:
         return self._xf, self._yf
@@ -117,6 +127,7 @@ VectorRef - VectorRef = VectorRef
 class VectorRef:
 
     def __init__(self, referenceMode: Ref, vector: tuple = (0,0), magnitude: float = None, heading: float = None):
+
         self.transform: FieldTransform = transform
         self._vxf, self._vyf = None, None
 
@@ -128,6 +139,10 @@ class VectorRef:
             self.screenRef = vector
         else:
             self.fieldRef = vector
+
+    # recalculate screenRef from pointRef
+    def recalculate(self):
+        self._xs, self._ys = self._fieldToScreen(self.fieldRef)
 
     def _setFieldRef(self, vector: tuple):
         self._vxf, self._vyf = vector
@@ -196,6 +211,7 @@ class ScalarRef:
     def __init__(self, referenceMode: Ref, value: float):
         self.transform: FieldTransform = transform
         self.fieldRef = value
+
 
     # Given we only store the point in the field reference frame, convert to field reference frame before storing it
     def _setScreenRef(self, valueScreenRef: tuple):

@@ -1,5 +1,8 @@
 from dimensions import Dimensions
 from math_functions import clamp
+import pygame
+import weakref
+
 
 """This class is used for storing the field transformations (zooming and panning) relative to the screen, as well as
 the image of the field itself.
@@ -8,51 +11,91 @@ change the panning or zooming values through automatic getters and setters.
 
 It is expected only to have a single instance of this class to represent the screen transformation state, and this
 object would be used in cases like for PointRef objects to figure out their field and screen reference frame conversions
-
-To use, simply assign new values to pan and zoom as they have been overloaded:
-    f = FieldTransform
-    f.pan = (15, 25) -> for (panX, panY)
-    f.zoom = 3.5 -> gets clamped back to 3
 """
 class FieldTransform:
 
     def __init__(self, dimensions: Dimensions, fieldZoom: float = 1, xyFieldPanInPixels: tuple = (0,0)):
+
+        self.pointsAndVectors: list = weakref.WeakSet()
+
         self._dimensions = dimensions
-        self._zoom = fieldZoom
+        self.zoom = fieldZoom
         self._panX, self._panY = xyFieldPanInPixels
+
+        self.rawFieldSurface: pygame.Surface = pygame.image.load("Images/squarefield.png")
+        self.rawSize = self.rawFieldSurface.get_width()
+
+        self.resizeScreen()
+
+    def recalculatePointsAndVectors(self):
+        for obj in self.pointsAndVectors:
+            obj.recalculate()
+
+    def resizeScreen(self):
+        self.zoom = self._dimensions.LARGER_FIELD_SIDE / self.rawSize
+        self.size = self.rawSize * self.zoom
+        self.updateScaledSurface()
+        self._boundFieldPan()
+        self.recalculatePointsAndVectors()
+
+    # Whenever the zoom is changed, this function should be called to scale the raw surface into the scaled one
+    def updateScaledSurface(self):
+        self.size = self.rawSize * self.zoom
+
+        self.scaledFieldSurface: pygame.Surface = pygame.transform.smoothscale(
+            self.rawFieldSurface, [self.size, self.size])
 
     # Restrict the panning range for the field as to keep the field in sight of the screen
     def _boundFieldPan(self):
-        minPanX = (1-self._zoom) * self._dimensions.FIELD_WIDTH
-        minPanY = (1-self._zoom) * self._dimensions.SCREEN_HEIGHT
+
+        minPanX = self._dimensions.FIELD_WIDTH - self.size
+        minPanY = self._dimensions.SCREEN_HEIGHT - self.size
         self._panX = clamp(self._panX, minPanX, 0)
         self._panY = clamp(self._panY, minPanY, 0)
 
-    # A setter function for self.zoom, which bounds zoom and pan after zoom is updated to keep the field in sight of hte screen
-    def _getZoom(self):
-        return self._zoom
+    # mouse is a PointRef
+    def changeZoom(self, mouse, deltaZoom: float):
 
-    def _setZoom(self, fieldZoom: float):
-        self._zoom = clamp(fieldZoom, 1, 3) # limits to how much you can zoom in or out
+        oldX, oldY = mouse.screenRef
+
+        self.zoom = clamp(self.zoom + deltaZoom, 0.5, 5) # limits to how much you can zoom in or out
+
+        # can't zoom more than the width of the screen
+        if self._dimensions.LARGER_FIELD_SIDE > self.rawSize * self.zoom:
+            self.zoom = self._dimensions.LARGER_FIELD_SIDE / self.rawSize
+
+        newX, newY = mouse.screenRef
+
+        # compensate pan for zooming to maintain zoom center at mouse pointer
+        self._panX += oldX - newX
+        self._panY += oldY - newY
+
+        self.updateScaledSurface()
         self._boundFieldPan()
-
-    # self.zoom property that is gettable and settable
-    zoom = property(_getZoom, _setZoom)
+        self.recalculatePointsAndVectors()
 
     def getPan(self) -> tuple:
         return self._panX, self._panY
+    
+    def startPan(self):
+        self.startX, self.startY = self.getPan()
 
-    def changePan(self, dx, dy):
-        self._panX += dx
-        self._panY += dy
+    def updatePan(self, offsetX, offsetY): # offset is a vectorRef
+
+        self._panX = self.startX + offsetX
+        self._panY = self.startY + offsetY
 
         self._boundFieldPan()
-
+        self.recalculatePointsAndVectors()
 
     # Return the zoom multiplied by a scalar. The most common use case is for determining the size of objects, so that
     # objects grow when zooming in, but at a slower rate than the zoom (when 0 < scalar < 1)
     def getPartialZoom(self, scalar):
         return (self.zoom - 1) * scalar + 1
+    
+    # Draw the scaled field with the stored pan
+    def draw(self, screen: pygame.Surface):
+        screen.blit(self.scaledFieldSurface, self.getPan())
 
     def __str__(self):
         return "FieldTransform object\nzoom: {}\npan: ({},{})".format(self._zoom, self._panX, self._panY)

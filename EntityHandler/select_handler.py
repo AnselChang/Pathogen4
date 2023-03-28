@@ -5,8 +5,8 @@ from math_functions import isInsideBox
 
 class SelectHandler:
 
-    def startSelection(self, mouseStartPosition: PointRef):
-        self.x1, self.y1 = mouseStartPosition.screenRef
+    def startSelection(self, mouseStartPosition: tuple):
+        self.x1, self.y1 = mouseStartPosition
         self.selectionID = None
 
     # Whether at least one of the hitbox points fall inside the multiselect rectangle
@@ -17,9 +17,9 @@ class SelectHandler:
         return False
 
     # return if adding entity is successful
-    def updateSelection(self, mousePosition: PointRef, entities: list[Entity]) -> list[Entity]:
+    def updateSelection(self, mousePosition: tuple, entities: list[Entity]) -> list[Entity]:
 
-        x2, y2 = mousePosition.screenRef
+        x2, y2 = mousePosition
         self.selected: list[Entity] = []
         for entity in entities:
 

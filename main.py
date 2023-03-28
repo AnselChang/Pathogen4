@@ -9,7 +9,6 @@ from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
-from field_surface import FieldSurface
 from dimensions import Dimensions
 import pygame, random
 import sys
@@ -35,7 +34,6 @@ def main():
     dimensions = Dimensions()
     screen = dimensions.resizeScreen(800, 800)
     fieldTransform: FieldTransform = FieldTransform(dimensions)
-    fieldSurface: FieldSurface = FieldSurface(dimensions, fieldTransform)
     initReferenceframe(dimensions, fieldTransform)
     mouse: PointRef = PointRef()
     
@@ -69,7 +67,6 @@ def main():
     clock = pygame.time.Clock()
     # Main game loop
     while True:
-
         mouse.screenRef = pygame.mouse.get_pos()
         interactor.hoveredEntity = entities.getEntityAtPosition(mouse)
 
@@ -79,7 +76,9 @@ def main():
                 sys.exit()
             elif event.type == pygame.VIDEORESIZE:
                 screen = dimensions.resizeScreen(*event.size)
-
+                fieldTransform.resizeScreen()
+            elif event.type == pygame.MOUSEWHEEL:
+                fieldTransform.changeZoom(mouse, event.y * 0.1)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 ctrlKey = pygame.key.get_pressed()[pygame.K_LCTRL]
                 right = (event.button == 1 and ctrlKey) or event.button == 3
@@ -93,7 +92,7 @@ def main():
 
         # Clear screen
         screen.fill((255,255,255))
-        fieldSurface.draw(screen)
+        fieldTransform.draw(screen)
 
          # draw panel
         x, y = dimensions.FIELD_WIDTH, 0

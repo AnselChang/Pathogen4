@@ -23,9 +23,9 @@ class SelectorBox:
         self.selector = SelectHandler()
         self.disable()
 
-    def enable(self, start: PointRef):
+    def enable(self, start: tuple):
         self.active = True
-        self.start = start.copy()
+        self.start = start
         self.selector.startSelection(start)
 
     def disable(self):
@@ -35,7 +35,7 @@ class SelectorBox:
         return self.active
 
     # return a list of selected entities
-    def update(self, end: PointRef, entities: EntityManager) -> list[Entity]:
+    def update(self, end: tuple, entities: EntityManager) -> list[Entity]:
 
         self.end = end
         return self.selector.updateSelection(end, entities.entities)
@@ -45,7 +45,7 @@ class SelectorBox:
         if not self.active:
             return
         
-        drawTransparentRect(screen, *self.start.screenRef, *self.end.screenRef, (173, 216, 230), 100)
+        drawTransparentRect(screen, *self.start, *self.end, (173, 216, 230), 100)
 
 
 class Interactor:
@@ -63,7 +63,7 @@ class Interactor:
         self.leftDragging: bool = False
         self.rightDragging: bool = False
 
-        self.mouseStartDrag: PointRef = None
+        self.mouseStartDrag: tuple = None
         self.didMove: bool = False
 
         self.panning = False
@@ -78,7 +78,7 @@ class Interactor:
             return
 
         self.didMove = False
-        self.mouseStartDrag = mouse.copy()
+        self.mouseStartDrag = mouse.screenRef
         self.mousePrevious = mouse.copy()
 
         if isRight:
@@ -93,7 +93,7 @@ class Interactor:
         self.box.disable()
         if self.hoveredEntity is None:
             self.box.enable(self.mouseStartDrag)
-            self.box.update(mouse, entities)
+            self.box.update(mouse.screenRef, entities)
         
         # if there's a group selected but the mouse is not clicking on the group, deselect
         if self.hoveredEntity is None or self.hoveredEntity not in self.selectedEntities:
@@ -109,6 +109,7 @@ class Interactor:
         mx, my = mouse.screenRef
         if self.hoveredEntity is None and mx < self.dimensions.FIELD_WIDTH:
             self.panning = True
+            self.fieldTransform.startPan()
 
     def onMouseUp(self, entities: EntityManager, mouse: PointRef):
         isRight = self.rightDragging
@@ -129,7 +130,7 @@ class Interactor:
         
         # Update multiselect
         if self.box.isEnabled():
-            self.selectedEntities = self.box.update(mouse, entities)
+            self.selectedEntities = self.box.update(mouse.screenRef, entities)
 
         # Calculate how much the mouse moved this tick
         mouseDelta: VectorRef = mouse - self.mousePrevious
@@ -143,8 +144,9 @@ class Interactor:
 
         # pan field
         if self.rightDragging and self.panning:
-            print(mouseDelta.screenRef)
-            self.fieldTransform.changePan(*mouseDelta.screenRef)
+            mx, my = mouse.screenRef
+
+            self.fieldTransform.updatePan(mx - self.mouseStartDrag[0], my - self.mouseStartDrag[1])
 
     # It is guaranteed that onMouseMove() was not called if this function is called
     def onMouseClick(self, entities: EntityManager, mouse: PointRef, isRight: bool):
