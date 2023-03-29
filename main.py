@@ -1,5 +1,4 @@
-from PathEntities.independent_circle_entity import IndependentCircleEntity
-from PathEntities.dependent_circle_entity import DependentCircleEntity
+from PathEntities.path_node_entity import PathNodeEntity
 from PathEntities.test_edge_entity import TestEdgeEntity
 
 from UIEntities.radio_group import RadioGroup
@@ -44,23 +43,19 @@ def main():
     # Create tabs
     tabs = initTabs(dimensions, entities)
 
-    for i in range(2):
-        x = random.randint(100, 600)
-        y = random.randint(100, 600)
+    previous = PathNodeEntity(PointRef(Ref.SCREEN, (50,50)))
+    entities.addEntity(previous)
 
-        a = IndependentCircleEntity(PointRef(Ref.SCREEN, (x,y)), 50, RED, "red")
-             
-        b = DependentCircleEntity(a, VectorRef(Ref.SCREEN, (50,50)), 20, GREEN, "green")
-        
-        c = DependentCircleEntity(b, VectorRef(Ref.SCREEN, (50,50)), 20, BLUE, "blue")
-        
+    for i in range(5):
 
-        entities.addEntity(TestEdgeEntity(a, b))
-        entities.addEntity(TestEdgeEntity(b, c))
+        x = random.randint(50, dimensions.FIELD_WIDTH)
+        y = random.randint(50, dimensions.SCREEN_HEIGHT)
+        current = PathNodeEntity(PointRef(Ref.SCREEN, (x,y)))
+        entities.addEntity(current)
+        entities.addEntity(TestEdgeEntity(previous, current))
 
-        entities.addEntity(a)
-        entities.addEntity(b)
-        entities.addEntity(c)
+        previous = current
+
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0")

@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from BaseEntity.entity import Entity
 from reference_frame import PointRef, Ref, VectorRef
 from BaseEntity.EntityFunctions.drag_function import Drag
@@ -8,9 +9,11 @@ import pygame, math
 
 class CircleMixin(Entity):
 
-    def __init__(self, radius: int, color: tuple):
+    def __init__(self, radius: int, hoveredRadius: int, color: tuple):
         self.radius = radius
+        self.radiusH = hoveredRadius
         self.color = color
+
 
     def getHitboxPoints(self) -> list[PointRef]:
 
@@ -31,12 +34,15 @@ class CircleMixin(Entity):
         return self.distanceTo(position) <= self.radius
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        alpha = 170 if isHovered else 255
-        drawTransparentCircle(screen, self.getPosition().screenRef, self.radius, self.color, alpha)
+        r = self.radiusH if isHovered else self.radius
+        pos = self.getPosition().screenRef
+
+        # draw circle
+        pygame.draw.circle(screen, self.color, pos, r)
 
         # draw border if active
         if isActive:
-            pygame.draw.circle(screen, (0,0,0), self.getPosition().screenRef, self.radius, 2)
+            pygame.draw.circle(screen, (0,0,0), pos, r, 2)
 
     def toString(self) -> str:
         return "Circle"
