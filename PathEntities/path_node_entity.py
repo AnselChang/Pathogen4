@@ -3,7 +3,7 @@ from BaseEntity.independent_entity import IndependentEntity
 from reference_frame import PointRef, VectorRef
 from BaseEntity.EntityFunctions.drag_function import DragLambda
 from BaseEntity.EntityFunctions.click_function import ClickLambda
-from BaseEntity.EntityFunctions.select_function import Select
+from BaseEntity.EntityFunctions.select_function import Select, SelectLambda
 from draw_order import DrawOrder
 
 from math_functions import isInsideBox
@@ -24,7 +24,7 @@ class PathNodeEntity(IndependentEntity, CircleMixin):
                 FcanDragOffset = lambda offset: isInsideBox(*(self.getPosition()+offset).fieldRef, 0, 0, 144, 144),
                 FdragOffset = lambda offset: self.move(offset)
             ),
-            select = Select(self, "path node", FgetHitboxPoints = self.getHitboxPoints),
+            select = SelectLambda(self, "path node", FgetHitboxPoints = self.getHitboxPoints),
             click = ClickLambda(self, FonLeftClick = lambda : print("left click"), FonRightClick = lambda : print("right click")),
             drawOrder = DrawOrder.NODE
             )

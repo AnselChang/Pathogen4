@@ -17,7 +17,7 @@ import pygame
 # only purpose is to connect two points. 
 
 class StraightPathSegmentEntity(PathSegmentEntity):
-    def __init__(self, interactor, first: Entity, second: Entity,) -> None:
+    def __init__(self, interactor, first: Entity, second: Entity) -> None:
         super().__init__(interactor, first, second)
 
 

@@ -5,6 +5,8 @@ from reference_frame import PointRef, Ref, VectorRef
 from pygame_functions import drawTransparentRect
 from dimensions import Dimensions
 from field_transform import FieldTransform
+from math_functions import isInsideBox
+
 import pygame, time
 
 """
@@ -20,25 +22,44 @@ Right drag over screen -> move field
 class SelectorBox:
 
     def __init__(self):
-        self.selector = SelectHandler()
         self.disable()
 
     def enable(self, start: tuple):
         self.active = True
         self.start = start
-        self.selector.startSelection(start)
+        self.x1, self.y1 = start
 
     def disable(self):
         self.active = False
 
     def isEnabled(self):
         return self.active
+    
+    # Whether at least one of the hitbox points fall inside the multiselect rectangle
+    def isSelecting(self, entity: Entity, x2, y2):
+        for point in entity.select.getHitboxPoints():
+            if isInsideBox(*point.screenRef, self.x1, self.y1, x2, y2):
+                return True
+        return False
 
     # return a list of selected entities
     def update(self, end: tuple, entities: EntityManager) -> list[Entity]:
 
         self.end = end
-        return self.selector.updateSelection(end, entities.entities)
+        x2, y2 = end
+
+        self.selected: list[Entity] = []
+        for entity in entities.entities:
+
+            # not a multi-selectable entitity
+            if entity.select is None:
+                continue
+
+            if self.isSelecting(entity, x2, y2):
+                self.selected.append(entity)
+
+        return self.selected
+    
 
     def draw(self, screen: pygame.Surface):
 
@@ -58,7 +79,7 @@ class Interactor:
         self.box = SelectorBox()
 
         self.hoveredEntity: Entity = None
-        self.selectedEntities: list[Entity] = []
+        self.selected: SelectHandler = SelectHandler()
 
         self.leftDragging: bool = False
         self.rightDragging: bool = False
@@ -73,13 +94,35 @@ class Interactor:
 
         self.panning = False
 
-    def setSelectedEntities(self, entities: list[Entity]):
-        self.selectedEntities = entities
+    # objects in list A but not B
+    def setDifference(self, listA, listB):
+        return [obj for obj in listA if obj not in listB]
+
+    def setSelectedEntities(self, newSelected: list[Entity]):
+        add = self.setDifference(newSelected, self.selected.entities)
+        sub = self.setDifference(self.selected.entities, newSelected)
+        for entity in sub:
+            self.removeEntity(entity)
+        for entity in add:
+            self.addEntity(entity)
+
+    def addEntity(self, entity: Entity):
+        if self.selected.add(entity):
+            entity.select.onSelect(self)
+
+    def removeEntity(self, entity: Entity):
+        self.selected.remove(entity)
+        entity.select.onDeselect(self)
+
+    def removeAllEntities(self):
+        for entity in self.selected.entities:
+            entity.select.onDeselect(self)
+        self.selected.removeAll()
 
     def isMultiselect(self) -> bool:
         return self.box.active
 
-    def onMouseDown(self, entities: EntityManager, mouse: PointRef, isRight: bool):
+    def onMouseDown(self, entities: EntityManager, mouse: PointRef, isRight: bool, shiftKey: bool):
 
         # prevent double clicks
         if self.leftDragging or self.rightDragging:
@@ -92,22 +135,32 @@ class Interactor:
         if isRight:
             self.onRightMouseDown(entities, mouse)
         else:
-            self.onLeftMouseDown(entities, mouse)
+            self.onLeftMouseDown(entities, mouse, shiftKey)
 
-    def onLeftMouseDown(self, entities: EntityManager, mouse: PointRef):
+    def onLeftMouseDown(self, entities: EntityManager, mouse: PointRef, shiftKey: bool):
 
         self.leftDragging = True
         
         # disable multiselect
         self.box.disable()
         
+        # If shift key is pressed and there's a hovered entity, add/delete to selected.entities
+        if shiftKey and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
+
+            # If already in selected entities, remove
+            if self.hoveredEntity in self.selected.entities:
+                self.removeEntity(self.hoveredEntity)
+                self.leftDragging = False
+            else: # otherwise, add
+                self.addEntity(self.hoveredEntity)
+
         # if there's a group selected but the mouse is not clicking on the group, deselect
-        if self.hoveredEntity is None or self.hoveredEntity not in self.selectedEntities:
-            self.selectedEntities = []
+        elif self.hoveredEntity is None or self.hoveredEntity not in self.selected.entities:
+            self.removeAllEntities()
 
         # Start dragging a single object
-        if len(self.selectedEntities) == 0 and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
-            self.selectedEntities = [self.hoveredEntity]
+        if len(self.selected.entities) == 0 and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
+            self.addEntity(self.hoveredEntity)
 
         # start panning
         mx, my = mouse.screenRef
@@ -135,11 +188,12 @@ class Interactor:
         self.panning = False
 
     def canDragSelection(self, offset):
-        for selected in self.selectedEntities:
+        for selected in self.selected.entities:
             if selected.drag is not None:
                 if not selected.drag.canDragOffset(offset):
                     return False
         return True
+
 
     def onMouseMove(self, entities: EntityManager, mouse: PointRef):
         self.didMove = True
@@ -150,7 +204,7 @@ class Interactor:
         
         # Update multiselect
         if self.box.isEnabled():
-            self.selectedEntities = self.box.update(mouse.screenRef, entities)
+            self.setSelectedEntities(self.box.update(mouse.screenRef, entities))
 
         # Calculate how much the mouse moved this tick
         mouseDelta: VectorRef = mouse - self.mousePrevious
@@ -158,7 +212,7 @@ class Interactor:
 
         # Drag selection
         if self.leftDragging and not self.box.isEnabled() and self.canDragSelection(mouseDelta):
-            for selected in self.selectedEntities:
+            for selected in self.selected.entities:
                 if selected.drag is not None:
                     selected.drag.dragOffset(mouseDelta)
 

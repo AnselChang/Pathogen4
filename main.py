@@ -89,8 +89,9 @@ def main():
                 fieldTransform.changeZoom(mouse, event.y * 0.1)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 ctrlKey = pygame.key.get_pressed()[pygame.K_LCTRL]
+                shiftKey = pygame.key.get_pressed()[pygame.K_LSHIFT]
                 right = (event.button == 1 and ctrlKey) or event.button == 3
-                interactor.onMouseDown(entities, mouse, right)
+                interactor.onMouseDown(entities, mouse, right, shiftKey)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 interactor.onMouseUp(entities, mouse)

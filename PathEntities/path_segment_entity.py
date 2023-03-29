@@ -2,9 +2,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from reference_frame import PointRef, Ref
 
-from BaseEntity.EntityFunctions.click_function import Click, ClickLambda
-from BaseEntity.EntityFunctions.drag_function import Drag
-from BaseEntity.EntityFunctions.select_function import Select
+from BaseEntity.EntityFunctions.click_function import ClickLambda
+from BaseEntity.EntityFunctions.select_function import Select, SelectLambda
 from BaseEntity.entity import Entity
 from PathEntities.segment_entity import SegmentEntity
 from draw_order import DrawOrder
@@ -27,7 +26,7 @@ class PathSegmentEntity(SegmentEntity):
         
 
         super().__init__(first, second, 
-                         select = Select(self, "segment"),
+                         select = SelectLambda(self, "segment", FonSelect = lambda: print("select"), FonDeselect=lambda:print("deselect")),
                          click = ClickLambda(self,FOnDoubleClick = self.onDoubleClick),
                          drawOrder = DrawOrder.SEGMENT)
         

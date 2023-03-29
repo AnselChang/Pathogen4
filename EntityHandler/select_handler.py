@@ -3,38 +3,20 @@ from BaseEntity.EntityFunctions.select_function import Select
 from reference_frame import PointRef
 from math_functions import isInsideBox
 
+# handle what can be selected with other entities and what cannot
 class SelectHandler:
 
-    def startSelection(self, mouseStartPosition: tuple):
-        self.x1, self.y1 = mouseStartPosition
-        self.selectionID = None
+    def __init__(self):
 
-    # Whether at least one of the hitbox points fall inside the multiselect rectangle
-    def isSelecting(self, entity: Entity, x2, y2):
-        for point in entity.select.getHitboxPoints():
-            if isInsideBox(*point.screenRef, self.x1, self.y1, x2, y2):
-                return True
-        return False
+        self.entities: list[Entity] = []
 
-    # return if adding entity is successful
-    def updateSelection(self, mousePosition: tuple, entities: list[Entity]) -> list[Entity]:
+    # return true if successful add
+    def add(self, entity: Entity) -> bool:
+        self.entities.append(entity)
+        return True
 
-        x2, y2 = mousePosition
-        self.selected: list[Entity] = []
-        for entity in entities:
+    def remove(self, entity: Entity) -> None:
+        self.entities.remove(entity)
 
-            # not a multi-selectable entitity
-            if entity.select is None:
-                continue
-
-            if self.isSelecting(entity, x2, y2):
- 
-                # Define what other entities are selectable after the first entity is selected
-                if self.selectionID is None:
-                    self.selectionID = entity.select.id
-
-                # assert this entity is the same type as the other selected ones
-                if self.selectionID == entity.select.id:
-                    self.selected.append(entity)
-
-        return self.selected
+    def removeAll(self):
+        self.entities.clear()
