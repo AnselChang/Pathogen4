@@ -1,18 +1,17 @@
 from Adapters.adapter import Adapter
+from Commands.command_type import CommandType
 
 class TurnAdapter(Adapter):
 
     def __init__(self):
-        pass
-    
+        super().__init__(CommandType.TURN)
+        self.setDict(-1, -1)
+
     def set(self, startAngle: float, endAngle: float):
-        self._startAngle = startAngle
-        self._endAngle = endAngle
 
-    def getStartAngle(self) -> float:
-        return self._startAngle
-
-    def getEndAngle(self) -> float:
-        return self._endAngle
-
-    
+        super().setDict(
+            {
+                "theta1" : startAngle,
+                "theta2" : endAngle
+            }
+        )

@@ -1,7 +1,7 @@
-from BaseCommand.segment_command import SegmentCommand
+from BaseCommand.segment_command_state import SegmentCommandState
 from Adapters.straight_adapter import StraightAdapter
 
-class StraightCommand(SegmentCommand):
+class StraightCommandState(SegmentCommandState):
     
     def __init__(self, adapter: StraightAdapter):
         self.adapter = adapter

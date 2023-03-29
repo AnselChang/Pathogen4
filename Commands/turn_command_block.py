@@ -1,6 +1,7 @@
+from BaseCommand.command_state import CommandState
 from Adapters.turn_adapter import TurnAdapter
 
-class TurnCommand:
+class TurnCommandState(CommandState):
     
     def __init__(self, adapter: TurnAdapter):
         self.adapter = adapter

@@ -1,20 +1,20 @@
-from Adapters.adapter import SegmentAdapter
+from Adapters.adapter import Adapter
+from Commands.command_type import CommandType
 
-class StraightAdapter(SegmentAdapter):
+class StraightAdapter(Adapter):
 
     def __init__(self):
-        super().__init__(SegmentAdapter.ID.STRAIGHT)
+        super().__init__(CommandType.STRAIGHT)
+        self.setDict((-1,-1), (-1,-1), -1)
     
     def set(self, startPosition: tuple, endPosition: tuple, distance: float):
-        self._startPosition = startPosition
-        self._endPosition = endPosition
-        self._distance = distance
 
-    def getStartPosition(self) -> tuple:
-        return self._startPosition
-
-    def getEndPosition(self) -> tuple:
-        return self._endPosition
-
-    def getDistance(self) -> float:
-        return self._distance
+        super().setDict(
+            {
+                "x1" : startPosition[0],
+                "y1" : startPosition[1],
+                "x2" : endPosition[0],
+                "y2" : endPosition[1],
+                "distance" : distance
+            }
+        )

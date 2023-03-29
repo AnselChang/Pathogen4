@@ -1,7 +1,6 @@
-from BaseCommand.segment_command import SegmentCommand
-from BaseCommand.straight_command import StraightCommand
-from BaseCommand.arc_command import ArcCommand
-from BaseCommand.turn_command import TurnCommand
+from CommandCreation.command_builder import CommandBuilder
+
+from Commands.command_type import CommandType
 
 from NodeEntities.path_node_entity import PathNodeEntity
 from SegmentEntities.path_segment_entity import PathSegmentEntity
@@ -10,7 +9,7 @@ from SegmentEntities.path_segment_state import PathSegmentState
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
-from Adapters.adapter import SegmentAdapter
+from Adapters.adapter import Adapter
 from Adapters.turn_adapter import TurnAdapter
 from Adapters.straight_adapter import StraightAdapter
 
@@ -67,10 +66,10 @@ class PathSection:
         else:
             self.next.addSectionAtEnd(nodePosition)
 
-    def changeSegmentShape(self, segmentAdapter: SegmentAdapter):
-        if segmentAdapter.id == SegmentAdapter.ID.STRAIGHT:
+    def changeSegmentShape(self, segmentAdapter: Adapter):
+        if segmentAdapter.type == CommandType.STRAIGHT:
             self.segmentCommand = StraightCommand(segmentAdapter)
-        elif segmentAdapter.id == SegmentAdapter.ID.ARC:
+        elif segmentAdapter.type == CommandType.ID.ARC:
             self.segmentCommand = ArcCommand(segmentAdapter)
 
         self.commands[0] = self.segmentCommand # self.segmentCommand redefined, so update list
