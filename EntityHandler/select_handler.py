@@ -1,7 +1,4 @@
 from BaseEntity.entity import Entity
-from BaseEntity.EntityFunctions.select_function import Select
-from reference_frame import PointRef
-from math_functions import isInsideBox
 
 # handle what can be selected with other entities and what cannot
 class SelectHandler:

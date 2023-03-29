@@ -16,7 +16,7 @@ import pygame
 Abstract class for a segment-type entity that connects two entities
 """
 
-class SegmentEntity(Entity):
+class EdgeEntity(Entity):
     def __init__(self, first: Entity, second: Entity, drag: Drag = None, select: Select = None, click: Click = None, drawOrder: int = 0) -> None:
         super().__init__(drag = drag, select = select, click = click, drawOrder = drawOrder)
 
