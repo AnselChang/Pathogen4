@@ -6,12 +6,12 @@ from BaseEntity.EntityFunctions.click_function import Click
 from BaseEntity.EntityFunctions.drag_function import Drag
 from BaseEntity.EntityFunctions.select_function import Select
 from BaseEntity.entity import Entity
-from PathEntities.straight_edge_entity import StraightEdgeEntity
+from PathEntities.line_connector_entity import LineConnectorEnttiy
 
 
 import pygame
 
-class TestEdgeEntity(StraightEdgeEntity):
+class TestEdgeEntity(LineConnectorEnttiy):
     def __init__(self, first: Entity, second: Entity, drag: Drag = None, select: Select = None, click: Click = None) -> None:
         super().__init__(first = first,
                          second = second,

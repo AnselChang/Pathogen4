@@ -126,6 +126,13 @@ class Interactor:
         self.box.disable()
         self.panning = False
 
+    def canDragSelection(self, offset):
+        for selected in self.selectedEntities:
+            if selected.drag is not None:
+                if not selected.drag.canDragOffset(offset):
+                    return False
+        return True
+
     def onMouseMove(self, entities: EntityManager, mouse: PointRef):
         self.didMove = True
 
@@ -142,7 +149,8 @@ class Interactor:
         self.mousePrevious = mouse.copy()
 
         # Drag selection
-        if self.leftDragging and not self.box.isEnabled():
+        print(self.canDragSelection(mouseDelta))
+        if self.leftDragging and not self.box.isEnabled() and self.canDragSelection(mouseDelta):
             for selected in self.selectedEntities:
                 if selected.drag is not None:
                     selected.drag.dragOffset(mouseDelta)

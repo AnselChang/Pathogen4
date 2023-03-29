@@ -24,9 +24,6 @@ class CircleMixin(Entity):
 
         return points
 
-    def getPosition(self) -> PointRef:
-        raise Exception("Not implemented by subclass error")
-
     def isVisible(self) -> bool:
         return True
 

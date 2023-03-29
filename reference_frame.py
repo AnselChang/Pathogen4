@@ -116,7 +116,6 @@ class PointRef:
     def __str__(self):
         return "Point object:\nScreen: ({},{})\nField: ({},{})".format(*self.screenRef, *self.fieldRef)
 
-
 """A class that stores a translation vector in both field and reference frames.
 PointRef + VectorRef = PointRef
 PointRef - VectorRef = PointRef

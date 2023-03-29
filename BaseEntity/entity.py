@@ -13,6 +13,10 @@ class Entity(ABC):
         self.drag = drag
         self.select = select
         self.click = click
+        self.children: list[Entity] = []
+    
+    def addChild(self, child: 'Entity'):
+        self.children.append(child)
         
     @abstractmethod
     def isVisible(self) -> bool:

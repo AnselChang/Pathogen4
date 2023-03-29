@@ -8,6 +8,7 @@ class RadioEntity(Entity):
     # id is used to distinguish between radio entities
     def __init__(self, id):
         super().__init__(click = ClickLambda(
+            self,
             FonLeftClick = lambda : self.onClick()
         ))
 

@@ -6,18 +6,19 @@ from BaseEntity.EntityFunctions.click_function import Click
 from BaseEntity.EntityFunctions.drag_function import Drag
 from BaseEntity.EntityFunctions.select_function import Select
 from BaseEntity.entity import Entity
+from PathEntities.segment_entity import SegmentEntity
 
 from pygame_functions import drawLine
 from math_functions import pointTouchingLine
 
 import pygame
 
-class StraightEdgeEntity(Entity):
-    def __init__(self, first: Entity, second: Entity, hitboxThickness: int, drag: Drag = None, select: Select = None, click: Click = None) -> None:
-        super().__init__(drag = drag, select = select, click = click)
+# Abstract class for a non-functional edge
+# only purpose is to connect two points. 
 
-        self.first = first
-        self.second = second
+class LineConnectorEnttiy(SegmentEntity):
+    def __init__(self, first: Entity, second: Entity, hitboxThickness: int, drag: Drag = None, select: Select = None, click: Click = None) -> None:
+        super().__init__(first, second, drag = drag, select = select, click = click)
 
         self.hitboxThickness = hitboxThickness
     

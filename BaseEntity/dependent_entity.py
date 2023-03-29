@@ -11,6 +11,7 @@ class DependentEntity(Entity):
         Entity.__init__(self, drag = drag, click = click, select = select)
         self.vector = initialOffset
         self.parent = parent
+        self.parent.addChild(self)
 
     def getPosition(self) -> PointRef:
         return self.parent.getPosition() + self.vector

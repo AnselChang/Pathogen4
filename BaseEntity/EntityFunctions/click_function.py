@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 
 class Click(ABC):
 
+    def __init__(self, entity):
+        self.entity = entity
+
     @abstractmethod
     def onLeftClick(self):
         pass
@@ -12,7 +15,9 @@ class Click(ABC):
 
 class ClickLambda(Click):
 
-    def __init__(self, FonLeftClick = lambda: None, FonRightClick = lambda: None):
+    def __init__(self, entity, FonLeftClick = lambda: None, FonRightClick = lambda: None):
+        super().__init__(entity)
+        
         self.FonLeftClick = FonLeftClick
         self.FonRightClick = FonRightClick
 
