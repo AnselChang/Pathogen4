@@ -6,11 +6,13 @@ from BaseEntity.EntityFunctions.click_function import ClickLambda
 class RadioEntity(Entity):
 
     # id is used to distinguish between radio entities
-    def __init__(self, id):
+    def __init__(self, id, drawOrder: int = 0):
         super().__init__(click = ClickLambda(
             self,
-            FonLeftClick = lambda : self.onClick()
-        ))
+            FonLeftClick = lambda : self.onClick(),
+        ),
+        drawOrder = drawOrder
+        )
 
         self.group = None
         self.id = id

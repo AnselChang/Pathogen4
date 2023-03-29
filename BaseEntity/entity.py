@@ -9,7 +9,10 @@ from BaseEntity.EntityFunctions.select_function import Select
 import pygame
 
 class Entity(ABC):
-    def __init__(self, drag: Drag = None, select: Select = None, click: Click = None) -> None:
+
+    # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
+    def __init__(self, drag: Drag = None, select: Select = None, click: Click = None, drawOrder: int = 0) -> None:
+        self.drawOrder = drawOrder
         self.drag = drag
         self.select = select
         self.click = click

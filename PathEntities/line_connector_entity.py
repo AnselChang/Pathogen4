@@ -16,9 +16,9 @@ import pygame
 # Abstract class for a non-functional edge
 # only purpose is to connect two points. 
 
-class LineConnectorEnttiy(SegmentEntity):
-    def __init__(self, first: Entity, second: Entity, hitboxThickness: int, drag: Drag = None, select: Select = None, click: Click = None) -> None:
-        super().__init__(first, second, drag = drag, select = select, click = click)
+class LineConnectorEntity(SegmentEntity):
+    def __init__(self, first: Entity, second: Entity, hitboxThickness: int, drag: Drag = None, select: Select = None, click: Click = None, drawOrder: int = 0) -> None:
+        super().__init__(first, second, drag = drag, select = select, click = click, drawOrder = drawOrder)
 
         self.hitboxThickness = hitboxThickness
     

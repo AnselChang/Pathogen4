@@ -10,6 +10,7 @@ class EntityManager:
 
     def addEntity(self, entity: Entity):
         self.entities.append(entity)
+        self.entities.sort(key = lambda entity: entity.drawOrder, reverse = True)
 
     def removeEntity(self, entity: Entity):
         self.entities.remove(entity)
@@ -37,7 +38,6 @@ class EntityManager:
             return closest
     
     def drawEntities(self, interactor, screen: pygame.Surface):
-
 
 
         for entity in self.entities:

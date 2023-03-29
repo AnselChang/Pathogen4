@@ -31,7 +31,8 @@ class CircleMixin(Entity):
         return True
 
     def isTouching(self, position: PointRef) -> bool:
-        return self.distanceTo(position) <= self.radius
+        MARGIN = 4
+        return self.distanceTo(position) <= self.radius + MARGIN
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         r = self.radiusH if isHovered else self.radius

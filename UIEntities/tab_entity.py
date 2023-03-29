@@ -5,6 +5,7 @@ from UIEntities.radio_entity import RadioEntity
 from math_functions import isInsideBox2
 from pygame_functions import drawText, FONT15
 from dimensions import Dimensions
+from draw_order import DrawOrder
 import pygame
 
 # Subclasses implement: isTouching, distanceTo, draw
@@ -12,7 +13,7 @@ class TabEntity(RadioEntity):
 
     # id is used to distinguish between radio entities
     def __init__(self, dimensions: Dimensions, text: str, tabID: int, numTabs: int):
-        super().__init__(text)
+        super().__init__(text, DrawOrder.TAB)
 
         self.dimensions = dimensions
 

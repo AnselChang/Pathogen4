@@ -6,23 +6,24 @@ from BaseEntity.EntityFunctions.click_function import Click
 from BaseEntity.EntityFunctions.drag_function import Drag
 from BaseEntity.EntityFunctions.select_function import Select
 from BaseEntity.entity import Entity
-from PathEntities.line_connector_entity import LineConnectorEnttiy
-
+from PathEntities.line_connector_entity import LineConnectorEntity
+from draw_order import DrawOrder
 
 import pygame
 
-class TestEdgeEntity(LineConnectorEnttiy):
+class TestEdgeEntity(LineConnectorEntity):
     def __init__(self, first: Entity, second: Entity, drag: Drag = None, select: Select = None, click: Click = None) -> None:
         super().__init__(first = first,
                          second = second,
                          hitboxThickness = 5,
                          drag = drag,
                          select = select,
-                         click = click)
+                         click = click,
+                         drawOrder = DrawOrder.SEGMENT)
     
     def getColor(self, isActive: bool, isHovered: bool) -> tuple:
         if isHovered:
-            return [200, 200, 200]
+            return [120, 120, 120]
         else:
             return [100,100,100]
 

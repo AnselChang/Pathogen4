@@ -1,3 +1,5 @@
+from BaseEntity.static_entity import StaticEntity
+
 from PathEntities.path_node_entity import PathNodeEntity
 from PathEntities.test_edge_entity import TestEdgeEntity
 
@@ -9,6 +11,7 @@ from EntityHandler.interactor import Interactor
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
 from dimensions import Dimensions
+from draw_order import DrawOrder
 import pygame, random
 import sys
 
@@ -26,6 +29,12 @@ def initTabs(dimensions, entities) -> RadioGroup:
     for i, text in enumerate(tabNames):
         tabs.add(TabEntity(dimensions, text, i, N))
     return tabs
+
+def drawPanelBackground(screen, dimensions):
+    # draw panel
+        x, y = dimensions.FIELD_WIDTH, 0
+        width, height = dimensions.PANEL_WIDTH, dimensions.SCREEN_HEIGHT
+        pygame.draw.rect(screen, (100,100,100), (x, y, width, height))
 
 def main():
     
@@ -56,6 +65,10 @@ def main():
 
         previous = current
 
+    # Add permanent static entities
+    entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
+    entities.addEntity(StaticEntity(lambda: drawPanelBackground(screen, dimensions), drawOrder = DrawOrder.PANEL_BACKGROUND))
+    entities.addEntity(StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX))
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0")
@@ -89,15 +102,7 @@ def main():
         screen.fill((255,255,255))
         fieldTransform.draw(screen)
 
-         # draw panel
-        x, y = dimensions.FIELD_WIDTH, 0
-        width, height = dimensions.PANEL_WIDTH, dimensions.SCREEN_HEIGHT
-        pygame.draw.rect(screen, (100,100,100), (x, y, width, height))
-
         entities.drawEntities(interactor, screen)
-        interactor.draw(screen)
-
-       
 
         # Update display and maintain frame rate
         pygame.display.flip()

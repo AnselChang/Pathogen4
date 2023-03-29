@@ -149,7 +149,6 @@ class Interactor:
         self.mousePrevious = mouse.copy()
 
         # Drag selection
-        print(self.canDragSelection(mouseDelta))
         if self.leftDragging and not self.box.isEnabled() and self.canDragSelection(mouseDelta):
             for selected in self.selectedEntities:
                 if selected.drag is not None:
@@ -169,7 +168,7 @@ class Interactor:
             else:
                 self.hoveredEntity.click.onLeftClick()
 
-    def draw(self, screen: pygame.Surface):
+    def drawSelectBox(self, screen: pygame.Surface):
 
         # Draw multiselect box
         self.box.draw(screen)
