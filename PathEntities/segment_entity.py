@@ -22,3 +22,5 @@ class SegmentEntity(Entity):
 
         self.first = first
         self.second = second
+
+        

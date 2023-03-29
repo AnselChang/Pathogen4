@@ -5,6 +5,7 @@ from BaseEntity.EntityFunctions.drag_function import Drag
 from BaseEntity.EntityFunctions.click_function import Click
 from BaseEntity.EntityFunctions.select_function import Select
 from pygame_functions import drawTransparentCircle
+from math_functions import scaleTuple, clampTuple, intTuple
 import pygame, math
 
 class CircleMixin(Entity):

@@ -1,6 +1,9 @@
 import pygame, pygame.gfxdraw, math
 import math_functions
 
+def shade(color: tuple, scalar: float):
+    return math_functions.intTuple(math_functions.clampTuple(math_functions.scaleTuple(color, scalar), 0, 255))
+
 # Draw a transparent rect on a Pygame surface
 def drawTransparentRect(surface, x1, y1, x2, y2, color, alpha):
     

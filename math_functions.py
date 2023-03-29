@@ -28,6 +28,12 @@ def scaleTuple(nums: tuple, scalar: float):
 def divideTuple(nums: tuple, scalar: float):
     return [i / scalar for i in nums]
 
+def clampTuple(nums: tuple, min: float, max: float):
+    return [clamp(i, min, max) for i in nums]
+
+def intTuple(nums: tuple):
+    return [int(i) for i in nums]
+
 def hypo(s1, s2):
     return math.sqrt(s1*s1 + s2*s2)
 

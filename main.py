@@ -1,7 +1,7 @@
 from BaseEntity.static_entity import StaticEntity
 
 from PathEntities.path_node_entity import PathNodeEntity
-from PathEntities.test_edge_entity import TestEdgeEntity
+from PathEntities.straight_path_segment_entity import StraightPathSegmentEntity
 
 from UIEntities.radio_group import RadioGroup
 from UIEntities.tab_entity import TabEntity
@@ -55,13 +55,13 @@ def main():
     previous = PathNodeEntity(PointRef(Ref.SCREEN, (50,50)))
     entities.addEntity(previous)
 
-    for i in range(5):
+    for i in range(10):
 
-        x = random.randint(50, dimensions.FIELD_WIDTH)
-        y = random.randint(50, dimensions.SCREEN_HEIGHT)
+        x = random.randint(50, dimensions.FIELD_WIDTH/2)
+        y = random.randint(50, dimensions.SCREEN_HEIGHT/2)
         current = PathNodeEntity(PointRef(Ref.SCREEN, (x,y)))
         entities.addEntity(current)
-        entities.addEntity(TestEdgeEntity(previous, current))
+        entities.addEntity(StraightPathSegmentEntity(previous, current))
 
         previous = current
 
