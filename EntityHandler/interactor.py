@@ -81,6 +81,16 @@ class Interactor:
 
     def onLeftMouseDown(self, entities: EntityManager, mouse: PointRef, shiftKey: bool):
 
+        # handle double-click logic
+        if self.hoveredEntity is not None:
+            if self.previousClickEntity is self.hoveredEntity and time.time() - self.previousClickTime < self.DOUBLE_CLICK_TIME:
+                self.hoveredEntity.click.onDoubleLeftClick()
+                self.previousClickEntity = None
+            else: # single click logic
+                self.previousClickEntity = self.hoveredEntity
+                self.previousClickTime = time.time()
+
+
         self.leftDragging = True
         
         # disable multiselect
@@ -170,14 +180,8 @@ class Interactor:
             if isRight:
                 self.hoveredEntity.click.onRightClick()
             else:
-                # handle double-click logic
-                if self.previousClickEntity is self.hoveredEntity and time.time() - self.previousClickTime < self.DOUBLE_CLICK_TIME:
-                    self.hoveredEntity.click.onDoubleLeftClick()
-                    self.previousClickEntity = None
-                else: # single click logic
-                    self.hoveredEntity.click.onLeftClick()
-                    self.previousClickEntity = self.hoveredEntity
-                    self.previousClickTime = time.time()
+                self.hoveredEntity.click.onLeftClick()
+
 
         # create new node if right click field
         elif isRight and self.hoveredEntity is None:
