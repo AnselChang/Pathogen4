@@ -5,7 +5,7 @@ from reference_frame import PointRef, Ref, VectorRef
 from pygame_functions import drawTransparentRect
 from dimensions import Dimensions
 from field_transform import FieldTransform
-import pygame
+import pygame, time
 
 """
 Left click actions are for selecting
@@ -66,7 +66,15 @@ class Interactor:
         self.mouseStartDrag: tuple = None
         self.didMove: bool = False
 
+        # these variables deal with double clicking
+        self.previousClickEntity = None
+        self.previousClickTime = None
+        self.DOUBLE_CLICK_TIME = 0.3 # second
+
         self.panning = False
+
+    def setSelectedEntities(self, entities: list[Entity]):
+        self.selectedEntities = entities
 
     def isMultiselect(self) -> bool:
         return self.box.active
@@ -98,7 +106,7 @@ class Interactor:
             self.selectedEntities = []
 
         # Start dragging a single object
-        if len(self.selectedEntities) == 0 and self.hoveredEntity is not None:
+        if len(self.selectedEntities) == 0 and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
             self.selectedEntities = [self.hoveredEntity]
 
         # start panning
@@ -166,7 +174,14 @@ class Interactor:
             if isRight:
                 self.hoveredEntity.click.onRightClick()
             else:
-                self.hoveredEntity.click.onLeftClick()
+                # handle double-click logic
+                if self.previousClickEntity is self.hoveredEntity and time.time() - self.previousClickTime < self.DOUBLE_CLICK_TIME:
+                    self.hoveredEntity.click.onDoubleLeftClick()
+                    self.previousClickEntity = None
+                else: # single click logic
+                    self.hoveredEntity.click.onLeftClick()
+                    self.previousClickEntity = self.hoveredEntity
+                    self.previousClickTime = time.time()
 
     def drawSelectBox(self, screen: pygame.Surface):
 

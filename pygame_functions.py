@@ -25,20 +25,9 @@ def drawTransparentCircle(surface, center, radius, color, alpha):
     surface.blit(circleSurface, (center[0]-radius, center[1]-radius))
 
 # Draw a thick line on a Pygame surface
-def drawLine(screen: pygame.Surface, color: tuple, x1: int, y1: int, x2: int, y2: int, thickness: int = 1, alpha: int = 255):
+def drawLine(screen: pygame.Surface, color: tuple, x1: int, y1: int, x2: int, y2: int, thickness: int = 1, borderColor: tuple = None):
 
     thickness = round(thickness)
-
-    if alpha != 255:
-        mx = min(x1, x2)
-        my = min(y1, y2)
-        dx = abs(x1-x2)
-        dy = abs(y1-y2)
-        x1 -= mx
-        x2 -= mx
-        y1 -= my
-        y2 -= my
-
 
     X0 = [x1,y1]
     X1 = [x2,y2]
@@ -52,16 +41,12 @@ def drawLine(screen: pygame.Surface, color: tuple, x1: int, y1: int, x2: int, y2
     BL = (center_L1[0] + (length/2.) * math.cos(angle) + (thickness/2.) * math.sin(angle), center_L1[1] - (thickness/2.) * math.cos(angle) + (length/2.) * math.sin(angle))
     BR = (center_L1[0] - (length/2.) * math.cos(angle) + (thickness/2.) * math.sin(angle), center_L1[1] - (thickness/2.) * math.cos(angle) - (length/2.) * math.sin(angle))
 
-    if alpha == 255:
-        pygame.gfxdraw.aapolygon(screen, (UL, UR, BR, BL), color)
-        pygame.gfxdraw.filled_polygon(screen, (UL, UR, BR, BL), color)
-    else:
-        surface = pygame.Surface([dx, dy], pygame.SRCALPHA)
-        
-        pygame.gfxdraw.aapolygon(surface, (UL, UR, BR, BL), (*color, alpha))
-        pygame.gfxdraw.filled_polygon(surface, (UL, UR, BR, BL), (*color, alpha))
+    pygame.gfxdraw.aapolygon(screen, (UL, UR, BR, BL), color)
+    pygame.gfxdraw.filled_polygon(screen, (UL, UR, BR, BL), color)
 
-        screen.blit(surface, (mx, my))
+    if borderColor is not None:
+        pygame.gfxdraw.aapolygon(screen, (UL, UR, BR, BL), borderColor)
+    
 
 pygame.font.init()
 FONT_PATH = 'Corbel.ttf'

@@ -61,7 +61,7 @@ def main():
         y = random.randint(50, dimensions.SCREEN_HEIGHT/2)
         current = PathNodeEntity(PointRef(Ref.SCREEN, (x,y)))
         entities.addEntity(current)
-        entities.addEntity(StraightPathSegmentEntity(previous, current))
+        entities.addEntity(StraightPathSegmentEntity(interactor, previous, current))
 
         previous = current
 

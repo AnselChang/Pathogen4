@@ -22,32 +22,51 @@ We also define the constants that apply across all segment types here, like colo
 """
 
 class PathSegmentEntity(SegmentEntity):
-    def __init__(self, first: Entity, second: Entity, drag: Drag = None, select: Select = None, click: Click = None) -> None:
+    def __init__(self, interactor, first: Entity, second: Entity) -> None:
 
         
 
-        super().__init__(first, second, drag = drag, select = select, drawOrder = DrawOrder.SEGMENT,
-                         click = ClickLambda(self, FonRightClick = self.reverseSegmentDirection)
-                         )
+        super().__init__(first, second, 
+                         select = Select(self, "segment"),
+                         click = ClickLambda(self,FOnDoubleClick = self.onDoubleClick),
+                         drawOrder = DrawOrder.SEGMENT)
         
+        self.interactor = interactor
+
         self.isReversed = False
 
         self.thickness = 3
         self.hitboxThickness = 5
         self.colorForward = [122, 191, 118]
         self.colorForwardH = shade(self.colorForward, 0.9)
+        self.colorForwardA = shade(self.colorForward, 0.4)
         self.colorReversed = [191, 118, 118]
         self.colorReversedH = shade(self.colorReversed, 0.9)
+        self.colorReversedA = shade(self.colorReversed, 0.4)
+
+    def onDoubleClick(self):
+        entities = [self, self.first, self.second]
+        self.interactor.setSelectedEntities(entities)
 
     def reverseSegmentDirection(self):
         self.isReversed = not self.isReversed
 
-    def getColor(self, isHovered: bool = False):
+    def getColor(self, isActive: bool = False, isHovered: bool = False):
 
         if self.isReversed:
-            return self.colorReversedH if isHovered else self.colorReversed
+            if isActive:
+                return self.colorReversedA
+            elif isHovered:
+                return self.colorReversedH
+            else:
+                return self.colorReversed
         else:
-            return self.colorForwardH if isHovered else self.colorForward
+            if isActive:
+                return self.colorForwardA
+            elif isHovered:
+                return self.colorForwardH
+            else:
+                return self.colorForward
         
     def isVisible(self) -> bool:
         return True
