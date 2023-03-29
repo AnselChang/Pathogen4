@@ -5,7 +5,7 @@ from reference_frame import PointRef, Ref
 from SegmentEntities.path_segment_state import PathSegmentState
 from SegmentEntities.edge_entity import EdgeEntity
 
-from Adapters.adapter import SegmentAdapter
+from Adapters.adapter import Adapter
 from Adapters.straight_adapter import StraightAdapter
 
 from pygame_functions import drawLine
@@ -21,7 +21,7 @@ class StraightSegmentState(PathSegmentState):
         super().__init__(segment)
         self.adapter = StraightAdapter()
 
-    def getAdapter(self) -> SegmentAdapter:
+    def getAdapter(self) -> Adapter:
         return self.adapter
 
     def updateAdapter(self) -> None:

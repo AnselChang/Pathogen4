@@ -1,5 +1,6 @@
 from CommandCreation.command_definition import CommandType, CommandDefinition
 from Commands.command_state import CommandState
+from Commands.command_block_entity import CommandBlockEntity
 from Adapters.adapter import Adapter
 
 """
@@ -21,6 +22,10 @@ class CommandBuilder:
     def getNumCommands(self, type: CommandType) -> int:
         return len(self.commandDefinitions[type])
     
-    def buildCommand(self, adapter: Adapter, index: int = 0) -> CommandState:
+    def buildCommandState(self, adapter: Adapter, index: int = 0) -> CommandState:
         definition = self.commandDefinitions[adapter.type][index]
         return CommandState(definition, adapter)
+    
+    def buildCommand(self, adapter: Adapter, index: int = 0) -> CommandBlockEntity:
+        state = self.buildCommandState(adapter, index)
+        return 

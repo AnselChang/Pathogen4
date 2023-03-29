@@ -10,7 +10,7 @@ from SegmentEntities.edge_entity import EdgeEntity
 from SegmentEntities.path_segment_state import PathSegmentState
 from SegmentEntities.PathSegmentStates.straight_segment_state import StraightSegmentState
 
-from Adapters.adapter import SegmentAdapter, AdapterInterface
+from Adapters.adapter import Adapter, AdapterInterface
 
 from draw_order import DrawOrder
 from pygame_functions import shade
@@ -44,11 +44,13 @@ class PathSegmentEntity(EdgeEntity, AdapterInterface):
         self.colorReversedH = shade(self.colorReversed, 0.9)
         self.colorReversedA = shade(self.colorReversed, 0.4)
 
+        self.updateAdapter()
+
     def changeSegmentShape(self, newStateClass: type[PathSegmentState]):
         self.state = newStateClass(self)
         self.section.changeSegmentShape(self.getAdapter())
 
-    def getAdapter(self) -> SegmentAdapter:
+    def getAdapter(self) -> Adapter:
         return self.state.getAdapter()
     
     def updateAdapter(self) -> None:

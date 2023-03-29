@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from CommandCreation.command_definition import CommandDefinition
 from Widgets.widget import Widget
+from Widgets.readout import Readout
 from Adapters.adapter import Adapter
 from Observers.observer import Observer
 import re
@@ -10,7 +11,7 @@ A ready-made command
 Text template has text like $distance$, in which case command will search for distance attribute
 in both adapter and widgets
 
-Can be initialized with a factory
+Can be initialized with CommandBuilder
 """
 class CommandState(ABC):
 
@@ -20,6 +21,7 @@ class CommandState(ABC):
 
         self.adapter: Adapter = adapter
         self.widgets: list[Widget] = definition.widgets
+        self.readouts: list[Readout] = definition.readouts
 
         self.adapter.addObserver(observer)
         for widget in self.widgets:

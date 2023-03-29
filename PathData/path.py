@@ -1,6 +1,7 @@
 from CommandCreation.command_builder import CommandBuilder
+from Commands.command_block_entity import CommandBlockEntity
 
-from Commands.command_type import CommandType
+from CommandCreation.command_type import CommandType
 
 from NodeEntities.path_node_entity import PathNodeEntity
 from SegmentEntities.path_segment_entity import PathSegmentEntity
@@ -13,31 +14,39 @@ from Adapters.adapter import Adapter
 from Adapters.turn_adapter import TurnAdapter
 from Adapters.straight_adapter import StraightAdapter
 
+from linked_list import LinkedList
+
 from reference_frame import PointRef
 
 """
 A class storing state for a segment and the node after it.
 Also stores the relevant commands, and facilitates their interface through Adapter design pattern
 """
-class PathSection:
+class Path:
 
-    def __init__(self, previous: 'PathSection', entities: EntityManager, interactor: Interactor, nodePosition: PointRef):
-
-        self.previous = previous
-        self.next: PathSection = None
+    def __init__(self, commandBuilder: CommandBuilder, entities: EntityManager, interactor: Interactor, startPosition: PointRef):
             
-
+        self.commandBuilder = commandBuilder
         self.entities = entities
         self.interactor = interactor
 
-        self.node: PathNodeEntity = PathNodeEntity(self, position = nodePosition)
-        entities.addEntity(self.node)
+        self.commands = LinkedList()
+
+        self.addNode(startPosition)
+
+    def addNode(self, nodePosition: PointRef):
         
-        self.inlineTurnCommands: list[TurnCommand]
-        self.turnCommand: TurnCommand = TurnCommand(self.node.getAdapter())
+        # create node and add entity
+        self.node: PathNodeEntity = PathNodeEntity(self, position = nodePosition)
+        self.entities.addEntity(self.node)
 
-        self.commands = [self.turnCommand]
+        # create turn command and add entity
+        self.turnCommand = self.commandBuilder.buildCommand(self.node.getAdapter())
+        self.entities.addEntity(self.turnCommand)
+        self.commands.addToEnd(self.turnCommand)
 
+    def addNodeSection(self, nodePosition: PointRef):
+                
         if self.previous is None:
 
             self.segment = None
@@ -47,36 +56,36 @@ class PathSection:
             
             self.previous.next = self
 
+            # create segment and add entity
             self.segment: PathSegmentEntity = PathSegmentEntity(self, interactor, self.previous.node, self.node)
-            self.segment.updateAdapter()
             entities.addEntity(self.segment)
 
-            self.segmentCommand: SegmentCommand = StraightCommand(self.segment.getAdapter())
+            # create turn command and add entity
+            self.segmentCommand = commandBuilder.buildCommand(self.segment.getAdapter())
             self.commands.insert(0, self.segmentCommand)
 
             self.node.prevSegment = self.segment
             self.previous.node.nextSegment = self.segment
+
+            self.segment.updateAdapter()
 
         self.node.updateAdapter()
 
     # recursively iterate to last section and add
     def addSectionAtEnd(self, nodePosition: PointRef):
         if self.next is None:
-            self.next = PathSection(self, self.entities, self.interactor, nodePosition)
+            self.next = PathSection(self, self.commandBuilder, self.entities, self.interactor, nodePosition)
         else:
             self.next.addSectionAtEnd(nodePosition)
 
     def changeSegmentShape(self, segmentAdapter: Adapter):
-        if segmentAdapter.type == CommandType.STRAIGHT:
-            self.segmentCommand = StraightCommand(segmentAdapter)
-        elif segmentAdapter.type == CommandType.ID.ARC:
-            self.segmentCommand = ArcCommand(segmentAdapter)
 
-        self.commands[0] = self.segmentCommand # self.segmentCommand redefined, so update list
+        state = self.commandBuilder.buildCommandState(segmentAdapter)
+        self.segmentCommand.setState(state)
         
 
     def addInlineTurn(self, inlineTurnAdapter: TurnAdapter):
-        inlineTurnCommand = TurnCommand(inlineTurnAdapter)
+        inlineTurnCommand = self.commandBuilder.buildCommand(inlineTurnAdapter)
         self.inlineTurnCommands.append(inlineTurnCommand)
 
         turnCommandIndex = self.commands.index(self.turnCommand)

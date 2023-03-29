@@ -45,6 +45,7 @@ class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface):
         self.nextSegment = nextSegment
 
         self.adapter: TurnAdapter = TurnAdapter()
+        self.updateAdapter()
 
     def getColor(self) -> tuple:
         return self.FIRST_BLUE_COLOR if self.section.previous is None else self.BLUE_COLOR

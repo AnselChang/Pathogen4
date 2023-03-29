@@ -5,7 +5,7 @@ class TurnAdapter(Adapter):
 
     def __init__(self):
         super().__init__(CommandType.TURN)
-        self.setDict(-1, -1)
+        self.set(-1, -1)
 
     def set(self, startAngle: float, endAngle: float):
 

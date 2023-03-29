@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from Widgets.widget import Widget
-from Commands.command_type import CommandType
+from Widgets.readout import Readout
+from CommandCreation.command_type import CommandType
 
 """
 Immutable struct used to represent all the data for initializing a command
@@ -12,4 +13,5 @@ class CommandDefinition:
     type: CommandType
     name: str
     widgets: list[Widget]
+    readouts: list[Readout]
     templateText: str

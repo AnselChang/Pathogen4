@@ -11,6 +11,8 @@ from EntityHandler.interactor import Interactor
 
 from PathData.path_section import PathSection
 
+from CommandCreation.command_builder import CommandBuilder
+
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
 from dimensions import Dimensions
@@ -52,8 +54,11 @@ def main():
     interactor = Interactor(dimensions, fieldTransform)
     entities = EntityManager()
 
+    # initialize commands
+    commandBuilder = CommandBuilder()
+
     # Create path
-    path = PathSection(None, entities, interactor, PointRef(Ref.FIELD, (24,24)))
+    path = PathSection(None, commandBuilder, entities, interactor, PointRef(Ref.FIELD, (24,24)))
 
     # Create tabs
     tabs = initTabs(dimensions, entities)

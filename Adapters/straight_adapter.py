@@ -5,7 +5,7 @@ class StraightAdapter(Adapter):
 
     def __init__(self):
         super().__init__(CommandType.STRAIGHT)
-        self.setDict((-1,-1), (-1,-1), -1)
+        self.set((-1,-1), (-1,-1), -1)
     
     def set(self, startPosition: tuple, endPosition: tuple, distance: float):
 

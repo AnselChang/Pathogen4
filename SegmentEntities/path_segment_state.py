@@ -3,7 +3,7 @@ from enum import Enum
 from reference_frame import PointRef
 from BaseEntity.entity import Entity
 from SegmentEntities.edge_entity import EdgeEntity
-from Adapters.adapter import SegmentAdapter
+from Adapters.adapter import Adapter
 import pygame
 
 """
@@ -16,7 +16,7 @@ class PathSegmentState(ABC):
         self.segment = segment # type PathSegmentEntity (the parent)
 
     @abstractmethod
-    def getAdapter(self) -> SegmentAdapter:
+    def getAdapter(self) -> Adapter:
         pass
 
     @abstractmethod
