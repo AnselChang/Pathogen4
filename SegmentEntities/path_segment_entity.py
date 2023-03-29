@@ -10,6 +10,8 @@ from SegmentEntities.edge_entity import EdgeEntity
 from SegmentEntities.path_segment_state import PathSegmentState
 from SegmentEntities.PathSegmentStates.straight_segment_state import StraightSegmentState
 
+from Adapters.adapter import SegmentAdapter, AdapterInterface
+
 from draw_order import DrawOrder
 from pygame_functions import shade
 import pygame
@@ -20,14 +22,15 @@ that define behavior for straight/arc/bezier shapes. Easy to switch between stat
 We also define the constants that apply across all segment types here, like color and thickness
 """
 
-class PathSegmentEntity(EdgeEntity):
-    def __init__(self, interactor, first: Entity, second: Entity) -> None:
+class PathSegmentEntity(EdgeEntity, AdapterInterface):
+    def __init__(self, section, interactor, first: Entity, second: Entity) -> None:
         
         super().__init__(first, second, 
                          select = SelectLambda(self, "segment", FonSelect = lambda: print("select"), FonDeselect=lambda:print("deselect")),
                          click = ClickLambda(self,FOnDoubleClick = self.onDoubleClick),
                          drawOrder = DrawOrder.SEGMENT)
         
+        self.section = section
         self.interactor = interactor
         self.state: PathSegmentState = StraightSegmentState(self)
         self.isReversed = False
@@ -40,6 +43,16 @@ class PathSegmentEntity(EdgeEntity):
         self.colorReversed = [191, 118, 118]
         self.colorReversedH = shade(self.colorReversed, 0.9)
         self.colorReversedA = shade(self.colorReversed, 0.4)
+
+    def changeSegmentShape(self, newStateClass: type[PathSegmentState]):
+        self.state = newStateClass(self)
+        self.section.changeSegmentShape(self.getAdapter())
+
+    def getAdapter(self) -> SegmentAdapter:
+        return self.state.getAdapter()
+    
+    def updateAdapter(self) -> None:
+        self.state.updateAdapter()
 
     def onDoubleClick(self):
         entities = [self, self.first, self.second]
@@ -67,6 +80,12 @@ class PathSegmentEntity(EdgeEntity):
         
     def isVisible(self) -> bool:
         return True
+    
+    def getStartTheta(self) -> float:
+        return self.state.getStartTheta()
+
+    def getEndTheta(self) -> float:
+        return self.state.getEndTheta()
     
     def isTouching(self, position: PointRef) -> bool:
         return self.state.isTouching(position)

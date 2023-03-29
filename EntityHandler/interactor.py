@@ -5,6 +5,7 @@ from EntityHandler.selector_box import SelectorBox
 from reference_frame import PointRef, VectorRef
 from dimensions import Dimensions
 from field_transform import FieldTransform
+from math_functions import isInsideBox
 
 import pygame, time
 
@@ -118,12 +119,12 @@ class Interactor:
             self.box.enable(self.mouseStartDrag)
             self.box.update(mouse.screenRef, entities)
 
-    def onMouseUp(self, entities: EntityManager, mouse: PointRef):
+    def onMouseUp(self, entities: EntityManager, mouse: PointRef, path):
         isRight = self.rightDragging
         self.leftDragging = False
         self.rightDragging = False
         if not self.didMove:
-            self.onMouseClick(entities, mouse, isRight)
+            self.onMouseClick(entities, mouse, isRight, path)
 
         self.box.disable()
         self.panning = False
@@ -164,7 +165,7 @@ class Interactor:
             self.fieldTransform.updatePan(mx - self.mouseStartDrag[0], my - self.mouseStartDrag[1])
 
     # It is guaranteed that onMouseMove() was not called if this function is called
-    def onMouseClick(self, entities: EntityManager, mouse: PointRef, isRight: bool):
+    def onMouseClick(self, entities: EntityManager, mouse: PointRef, isRight: bool, path):
         if self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:
                 self.hoveredEntity.click.onRightClick()
@@ -177,6 +178,11 @@ class Interactor:
                     self.hoveredEntity.click.onLeftClick()
                     self.previousClickEntity = self.hoveredEntity
                     self.previousClickTime = time.time()
+
+        # create new node if right click field
+        elif isRight and self.hoveredEntity is None:
+            if isInsideBox(*mouse.screenRef, 0, 0, self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT):
+                path.addSectionAtEnd(mouse.copy())
 
     def drawSelectBox(self, screen: pygame.Surface):
 

@@ -3,6 +3,7 @@ from enum import Enum
 from reference_frame import PointRef
 from BaseEntity.entity import Entity
 from SegmentEntities.edge_entity import EdgeEntity
+from Adapters.adapter import SegmentAdapter
 import pygame
 
 """
@@ -13,6 +14,22 @@ Also provides an interface for getting thetas at both sides, and holding referen
 class PathSegmentState(ABC):
     def __init__(self, segment: EdgeEntity) -> None:
         self.segment = segment # type PathSegmentEntity (the parent)
+
+    @abstractmethod
+    def getAdapter(self) -> SegmentAdapter:
+        pass
+
+    @abstractmethod
+    def updateAdapter(self) -> None:
+        pass
+
+    @abstractmethod
+    def getStartTheta(self) -> float:
+        pass
+
+    @abstractmethod
+    def getEndTheta(self) -> float:
+        pass
 
     @abstractmethod
     def isTouching(self, position: PointRef) -> bool:

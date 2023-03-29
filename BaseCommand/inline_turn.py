@@ -1,0 +1,2 @@
+class InlineTurn:
+    pass

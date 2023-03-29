@@ -5,6 +5,9 @@ from reference_frame import PointRef, Ref
 from SegmentEntities.path_segment_state import PathSegmentState
 from SegmentEntities.edge_entity import EdgeEntity
 
+from Adapters.adapter import SegmentAdapter
+from Adapters.straight_adapter import StraightAdapter
+
 from pygame_functions import drawLine
 from math_functions import pointTouchingLine
 
@@ -16,7 +19,21 @@ import pygame
 class StraightSegmentState(PathSegmentState):
     def __init__(self, segment: EdgeEntity) -> None:
         super().__init__(segment)
+        self.adapter = StraightAdapter()
 
+    def getAdapter(self) -> SegmentAdapter:
+        return self.adapter
+
+    def updateAdapter(self) -> None:
+        posA = self.segment.first.getPosition()
+        posB = self.segment.second.getPosition()
+        self.adapter.set(posA.fieldRef, posB.fieldRef, (posB - posA).magnitude(Ref.FIELD))
+
+    def getStartTheta(self) -> float:
+        return (self.segment.second.getPosition() - self.segment.first.getPosition()).theta()
+
+    def getEndTheta(self) -> float:
+        return self.getStartTheta()
 
     def isTouching(self, position: PointRef) -> bool:
         mx, my = position.screenRef

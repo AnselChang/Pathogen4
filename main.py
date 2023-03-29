@@ -8,6 +8,9 @@ from UIEntities.tab_entity import TabEntity
 
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
+
+from PathData.path_section import PathSection
+
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
 from dimensions import Dimensions
@@ -49,21 +52,12 @@ def main():
     interactor = Interactor(dimensions, fieldTransform)
     entities = EntityManager()
 
+    # Create path
+    path = PathSection(None, entities, interactor, PointRef(Ref.FIELD, (24,24)))
+
     # Create tabs
     tabs = initTabs(dimensions, entities)
 
-    previous = PathNodeEntity(PointRef(Ref.SCREEN, (50,50)))
-    entities.addEntity(previous)
-
-    for i in range(10):
-
-        x = random.randint(50, dimensions.FIELD_WIDTH/2)
-        y = random.randint(50, dimensions.SCREEN_HEIGHT/2)
-        current = PathNodeEntity(PointRef(Ref.SCREEN, (x,y)))
-        entities.addEntity(current)
-        entities.addEntity(PathSegmentEntity(interactor, previous, current))
-
-        previous = current
 
     # Add permanent static entities
     entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
@@ -94,7 +88,7 @@ def main():
                 interactor.onMouseDown(entities, mouse, right, shiftKey)
 
             elif event.type == pygame.MOUSEBUTTONUP:
-                interactor.onMouseUp(entities, mouse)
+                interactor.onMouseUp(entities, mouse, path)
 
             elif event.type == pygame.MOUSEMOTION:
                 interactor.onMouseMove(entities, mouse)
