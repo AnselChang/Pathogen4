@@ -49,12 +49,16 @@ class PathSection:
             self.previous.next = self
 
             self.segment: PathSegmentEntity = PathSegmentEntity(self, interactor, self.previous.node, self.node)
+            self.segment.updateAdapter()
             entities.addEntity(self.segment)
 
             self.segmentCommand: SegmentCommand = StraightCommand(self.segment.getAdapter())
             self.commands.insert(0, self.segmentCommand)
 
             self.node.prevSegment = self.segment
+            self.previous.node.nextSegment = self.segment
+
+        self.node.updateAdapter()
 
     # recursively iterate to last section and add
     def addSectionAtEnd(self, nodePosition: PointRef):

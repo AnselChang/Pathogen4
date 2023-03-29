@@ -11,6 +11,7 @@ from Adapters.adapter import AdapterInterface
 from Adapters.turn_adapter import TurnAdapter
 
 from math_functions import isInsideBox
+from pygame_functions import shade
 
 """
 Interactable path nodes
@@ -19,6 +20,9 @@ Referenced in PathSection
 """
 
 class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface):
+
+    BLUE_COLOR = (102, 153, 255)
+    FIRST_BLUE_COLOR = (40, 40, 255)
 
     def __init__(self, section, position: PointRef, prevSegment: PathSegmentEntity = None, nextSegment: PathSegmentEntity = None):
         super().__init__(
@@ -35,13 +39,15 @@ class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface):
         
         self.section = section
         
-        blue = (102, 153, 255)
-        CircleMixin.__init__(self, 10, 12, blue)
+        CircleMixin.__init__(self, 10, 12)
 
         self.prevSegment = prevSegment
         self.nextSegment = nextSegment
 
         self.adapter: TurnAdapter = TurnAdapter()
+
+    def getColor(self) -> tuple:
+        return self.FIRST_BLUE_COLOR if self.section.previous is None else self.BLUE_COLOR
 
     def getAdapter(self) -> TurnAdapter:
         return self.adapter
@@ -67,4 +73,3 @@ class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface):
         if not self.nextSegment is None:
             self.nextSegment.updateAdapter()
         self.updateAdapter()
-

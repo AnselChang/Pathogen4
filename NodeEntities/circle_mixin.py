@@ -10,11 +10,13 @@ import pygame, math
 
 class CircleMixin(Entity):
 
-    def __init__(self, radius: int, hoveredRadius: int, color: tuple):
+    def __init__(self, radius: int, hoveredRadius: int):
         self.radius = radius
         self.radiusH = hoveredRadius
-        self.color = color
 
+    @abstractmethod
+    def getColor(self) -> tuple:
+        pass
 
     def getHitboxPoints(self) -> list[PointRef]:
 
@@ -40,7 +42,7 @@ class CircleMixin(Entity):
         pos = self.getPosition().screenRef
 
         # draw circle
-        pygame.draw.circle(screen, self.color, pos, r)
+        pygame.draw.circle(screen, self.getColor(), pos, r)
 
         # draw border if active
         if isActive:

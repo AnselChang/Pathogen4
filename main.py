@@ -93,6 +93,9 @@ def main():
             elif event.type == pygame.MOUSEMOTION:
                 interactor.onMouseMove(entities, mouse)
 
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    print(str(path))
         # Clear screen
         screen.fill((255,255,255))
         fieldTransform.draw(screen)

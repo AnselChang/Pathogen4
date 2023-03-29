@@ -30,7 +30,8 @@ class StraightSegmentState(PathSegmentState):
         self.adapter.set(posA.fieldRef, posB.fieldRef, (posB - posA).magnitude(Ref.FIELD))
 
     def getStartTheta(self) -> float:
-        return (self.segment.second.getPosition() - self.segment.first.getPosition()).theta()
+        theta = (self.segment.second.getPosition() - self.segment.first.getPosition()).theta()
+        return (2 * 3.1415 - theta) % (2*3.1415)
 
     def getEndTheta(self) -> float:
         return self.getStartTheta()
