@@ -38,6 +38,7 @@ class Path:
         self._addInserter(self.commandList.addToEnd) # add initial CommandInserter
         self._addInserter(self.commandList.addToEnd) # add final CommandInserter
         self._addRawNode(startPosition) # add start node
+        self.node.updateAdapter()
 
     def _addInserter(self, func):
 

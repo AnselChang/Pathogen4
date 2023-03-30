@@ -67,3 +67,22 @@ def drawText(surface: pygame.Surface, font: pygame.font, string: str, color: tup
     x -= text.get_width()*alignX
     y -= text.get_height()*alignY
     surface.blit(text, (x,y))
+
+# Return an image given a filename
+def getImage(filename: str, imageScale: float = 1) -> pygame.Surface:
+    unscaledImage = pygame.image.load(filename).convert_alpha()
+    if imageScale == 1:
+        return unscaledImage
+    else:
+        dimensions = ( int(unscaledImage.get_width() * imageScale), int(unscaledImage.get_height() * imageScale) )
+        return pygame.transform.smoothscale(unscaledImage, dimensions)
+    
+# Draw surface with center coordinates (cx, cy)
+def drawSurface(surface: pygame.Surface, drawnSurface: pygame.Surface, cx: int, cy: int, angle: float = 0):
+    
+    if angle != 0:
+        drawnSurface = pygame.transform.rotate(drawnSurface, angle)
+
+    r = drawnSurface.get_rect()
+    rect = drawnSurface.get_rect(center = (cx, cy))
+    surface.blit(drawnSurface, (rect.x, rect.y))

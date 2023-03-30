@@ -13,6 +13,7 @@ from PathData.path import Path
 
 from CommandCreation.command_builder import CommandBuilder
 
+from image_manager import ImageManager
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
 from dimensions import Dimensions
@@ -49,13 +50,16 @@ def main():
     fieldTransform: FieldTransform = FieldTransform(dimensions)
     initReferenceframe(dimensions, fieldTransform)
     mouse: PointRef = PointRef()
+
+    # initialize images
+    images = ImageManager()
     
     # Initialize entities
     interactor = Interactor(dimensions, fieldTransform)
     entities = EntityManager()
 
     # initialize commands
-    commandBuilder = CommandBuilder(interactor, dimensions)
+    commandBuilder = CommandBuilder(interactor, images, dimensions)
 
     # Create path
     path = Path(commandBuilder, entities, interactor, dimensions, PointRef(Ref.FIELD, (24,24)))

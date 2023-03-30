@@ -10,6 +10,8 @@ from linked_list import LinkedListNode
 from Adapters.adapter import Adapter
 from Adapters.straight_adapter import StraightAdapter
 
+from image_manager import ImageID
+
 from pygame_functions import drawLine
 from math_functions import pointTouchingLine
 
@@ -30,6 +32,7 @@ class StraightSegmentState(PathSegmentState):
         posA = self.segment.getPrevious().getPosition()
         posB = self.segment.getNext().getPosition()
         self.adapter.set(posA.fieldRef, posB.fieldRef, (posB - posA).magnitude(Ref.FIELD))
+        self.adapter.setIcon(ImageID.STRAIGHT_REVERSE if self.segment.isReversed else ImageID.STRAIGHT_FORWARD)
 
     def getStartTheta(self) -> float:
         theta = (self.segment.getNext().getPosition() - self.segment.getPrevious().getPosition()).theta()

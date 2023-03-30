@@ -10,10 +10,12 @@ from draw_order import DrawOrder
 from Adapters.adapter import AdapterInterface
 from Adapters.turn_adapter import TurnAdapter
 
+from image_manager import ImageID
 from linked_list import LinkedListNode
 
 from math_functions import isInsideBox
 from pygame_functions import shade
+from angle_functions import deltaInHeading
 
 """
 Interactable path nodes
@@ -53,17 +55,20 @@ class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface, LinkedLis
     
     def updateAdapter(self) -> None:
         if self.getPrevious() is None and self.getNext() is None:
-            self.adapter.set(0,0)
+            start, end = 0,0
         elif self.getPrevious() is not None and self.getNext() is None:
             angle = self.getPrevious().getEndTheta()
-            self.adapter.set(angle, angle)
+            start, end = angle, angle
         elif self.getNext() is not None and self.getPrevious() is None:
             angle = self.getNext().getStartTheta()
-            self.adapter.set(angle, angle)
+            start, end = angle, angle
         else:
-            startAngle = self.getPrevious().getEndTheta()
-            endAngle = self.getNext().getEndTheta()
-            self.adapter.set(startAngle, endAngle)
+            start = self.getPrevious().getEndTheta()
+            end = self.getNext().getEndTheta()
+            
+        self.adapter.set(start, end)
+        direction = deltaInHeading(start, end)
+        self.adapter.setIcon(ImageID.TURN_RIGHT if direction >= 0 else ImageID.TURN_LEFT)
 
     def move(self, offset: VectorRef):
         self.position += offset

@@ -13,10 +13,11 @@ from Animation.motion_profile import MotionProfile
 
 from linked_list import LinkedListNode
 
+from image_manager import ImageManager, ImageID
 from draw_order import DrawOrder
 from dimensions import Dimensions
 from reference_frame import PointRef, Ref
-from pygame_functions import shade
+from pygame_functions import shade, drawText, FONT20, drawSurface
 from math_functions import isInsideBox2
 import pygame
 
@@ -29,7 +30,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def setState(self, state: CommandState):
         self.state = state
     
-    def __init__(self, state: CommandState, interactor: Interactor, dimensions: Dimensions):
+    def __init__(self, state: CommandState, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
         super().__init__(
             select = SelectLambda(self,
                 id = "command",
@@ -46,6 +47,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.setState(state)
         
         self.interactor = interactor
+        self.images = images
         self.dimensions = dimensions
 
         self.Y_BETWEEN_COMMANDS_MIN = 30
@@ -145,14 +147,26 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         
         x, y, width, height = self.getRect()
 
+        # draw rounded rect
         color = COMMAND_INFO[self.state.type].color
         if isHovered:
             color = shade(color, 1.2)
         pygame.draw.rect(screen, color, (x, y, width, height), border_radius = self.CORNER_RADIUS)
 
+        # draw selected border
         if isActive:
             pygame.draw.rect(screen, (0,0,0), (x, y, width, height), border_radius = self.CORNER_RADIUS, width = 1)
 
+        # draw icon
+        iconImage = self.images.get(self.state.adapter.getIcon())
+        x = self.dimensions.FIELD_WIDTH + 20
+        y = self.currentY + self.Y_BETWEEN_COMMANDS_MIN / 2
+        drawSurface(screen, iconImage, x, y)
+
+        # draw function name
+        text = self.state.name + "()"
+        x = self.dimensions.FIELD_WIDTH + 40
+        drawText(screen, FONT20, text, (0,0,0), x, y, alignX = 0)
 
     def toString(self) -> str:
         pass
