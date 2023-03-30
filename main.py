@@ -59,7 +59,7 @@ def main():
     entities = EntityManager()
 
     # initialize commands
-    commandBuilder = CommandBuilder(interactor, images, dimensions)
+    commandBuilder = CommandBuilder(entities, interactor, images, dimensions)
 
     # Create path
     path = Path(commandBuilder, entities, interactor, dimensions, PointRef(Ref.FIELD, (24,24)))

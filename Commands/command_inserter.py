@@ -4,6 +4,8 @@ from BaseEntity.EntityListeners.click_listener import ClickLambda
 
 from Commands.command_block_entity import CommandBlockEntity
 
+from EntityHandler.interactor import Interactor
+
 from dimensions import Dimensions
 from linked_list import LinkedListNode
 from reference_frame import PointRef, Ref
@@ -20,7 +22,7 @@ A "plus" button that, when clicked, inserts a custom command there
 
 class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
 
-    def __init__(self, dimensions: Dimensions, onInsert = lambda: None):
+    def __init__(self, interactor: Interactor, dimensions: Dimensions, onInsert = lambda: None):
 
         super().__init__(
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
@@ -28,6 +30,7 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
             drawOrder = DrawOrder.COMMAND_INSERTER)
         LinkedListNode.__init__(self)
 
+        self.interactor = interactor
         self.dimensions = dimensions
 
         self.START_Y = 43
@@ -38,7 +41,7 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
         self.X_MARGIN = 6
         self.Y_MARGIN = 3
         self.CORNER_RADIUS = 3
-        self.MOUSE_MARGIN = 4
+        self.MOUSE_MARGIN = 0
 
         # cross specs
         self.RADIUS = 6
@@ -59,6 +62,10 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
         self.updateNextY()
 
     def onHoverOn(self):
+
+        if len(self.interactor.selected.entities) > 1:
+            return
+
         self.isHovered = True
         self.updateNextY()
 

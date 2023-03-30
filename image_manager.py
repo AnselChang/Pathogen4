@@ -8,6 +8,8 @@ class ImageID(Enum):
     TURN_LEFT = auto()
     TURN_RIGHT = auto()
     CUSTOM = auto()
+    TRASH_ON = auto()
+    TRASH_OFF = auto()
 
 class Image:
 
@@ -29,3 +31,7 @@ class ImageManager:
         self.images[ImageID.TURN_LEFT] = Image("CommandIcons/TurnLeft.png", size)
         self.images[ImageID.TURN_RIGHT] = Image("CommandIcons/TurnRight.png", size)
         self.images[ImageID.CUSTOM] = Image("CommandIcons/Custom.png", size)
+
+        size = 0.03
+        self.images[ImageID.TRASH_ON] = Image("OtherIcons/TrashOn.png", size)
+        self.images[ImageID.TRASH_OFF] = Image("OtherIcons/TrashOff.png", size)

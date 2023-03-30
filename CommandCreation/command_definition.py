@@ -22,3 +22,5 @@ class CommandDefinition:
         self.widgets = widgets
         self.readouts = readouts
         self.templateText = templateText
+
+        

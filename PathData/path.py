@@ -42,7 +42,7 @@ class Path:
 
     def _addInserter(self, func):
 
-        inserter = CommandInserter(self.dimensions, self.addCustomCommand)
+        inserter = CommandInserter(self.interactor, self.dimensions, self.addCustomCommand)
         func(inserter)
         self.entities.addEntity(inserter)
         inserter.initPosition()

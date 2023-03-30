@@ -2,7 +2,11 @@ from CommandCreation.command_definition import CommandType, CommandDefinition
 from CommandCreation.preset_commands import CommandDefinitionPresets
 from Commands.command_state import CommandState
 from Commands.command_block_entity import CommandBlockEntity
+from Commands.custom_command_block_entity import CustomCommandBlockEntity
+
 from EntityHandler.interactor import Interactor
+from EntityHandler.entity_manager import EntityManager
+
 from Adapters.adapter import Adapter, CustomAdapter
 from image_manager import ImageManager
 from dimensions import Dimensions
@@ -13,8 +17,9 @@ Stores all the different CommandDefinitions. Creates CommandStates based on Comm
 
 class CommandBuilder:
 
-    def __init__(self, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
+    def __init__(self, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
 
+        self.entities = entities
         self.interactor = interactor
         self.images = images
         self.dimensions = dimensions
@@ -43,8 +48,10 @@ class CommandBuilder:
         return CommandState(definition, adapter)
     
     def buildCommand(self, adapter: Adapter, index: int = 0) -> CommandBlockEntity:
+        assert(adapter.type != CommandType.CUSTOM)
         state = self.buildCommandState(adapter, index)
-        return CommandBlockEntity(state, self.interactor, self.images, self.dimensions)
+        return CommandBlockEntity(state, self.entities, self.interactor, self.images, self.dimensions)
     
     def buildCustomCommand(self, index: int = 0) -> CommandBlockEntity:
-        return self.buildCommand(CustomAdapter(), index)
+        state = self.buildCommandState(CustomAdapter(), index)
+        return CustomCommandBlockEntity(state, self.entities, self.interactor, self.images, self.dimensions)

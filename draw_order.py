@@ -5,6 +5,7 @@ class DrawOrder(IntEnum):
     MOUSE_SELECT_BOX = auto()
     TAB = auto()
     COMMAND_INSERTER = auto()
+    WIDGET = auto()
     COMMANND_BLOCK = auto()
     PANEL_BACKGROUND = auto()
     NODE = auto()

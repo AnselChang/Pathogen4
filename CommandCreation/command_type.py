@@ -18,5 +18,5 @@ COMMAND_INFO = {
     CommandType.STRAIGHT : CommandTypeInfo((209, 61, 61)),
     CommandType.ARC : CommandTypeInfo((0,0,0)),
     CommandType.BEZIER : CommandTypeInfo((0,0,0)),
-    CommandType.CUSTOM : CommandTypeInfo((136, 61, 209))
+    CommandType.CUSTOM : CommandTypeInfo((156, 71, 229))
 }

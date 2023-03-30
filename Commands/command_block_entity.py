@@ -5,8 +5,9 @@ from BaseEntity.EntityListeners.tick_listener import TickLambda
 from Adapters.adapter import Adapter
 
 from Commands.command_state import CommandState
-from CommandCreation.command_type import COMMAND_INFO
+from CommandCreation.command_type import COMMAND_INFO, CommandType
 
+from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
 from Animation.motion_profile import MotionProfile
@@ -30,7 +31,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def setState(self, state: CommandState):
         self.state = state
     
-    def __init__(self, state: CommandState, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
+    def __init__(self, state: CommandState, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
         super().__init__(
             select = SelectLambda(self,
                 id = "command",
@@ -46,6 +47,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         LinkedListNode.__init__(self)
         self.setState(state)
         
+        self.entities = entities
         self.interactor = interactor
         self.images = images
         self.dimensions = dimensions
@@ -54,6 +56,14 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.Y_BETWEEN_COMMANDS_MAX = 100
         self.CORNER_RADIUS = 3
         self.X_MARGIN = 6
+
+        self.initWidgets()
+
+
+    # add all widgets as entities to entitiy manager
+    def initWidgets(self):
+        pass
+
 
     # commands are sandwiched by CommandInserters
     def getPreviousCommand(self) -> 'CommandBlockEntity':
@@ -155,7 +165,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
         # draw selected border
         if isActive:
-            pygame.draw.rect(screen, (0,0,0), (x, y, width, height), border_radius = self.CORNER_RADIUS, width = 1)
+            pygame.draw.rect(screen, (0,0,0), (x, y, width, height), border_radius = self.CORNER_RADIUS, width = 2)
 
         # draw icon
         iconImage = self.images.get(self.state.adapter.getIcon())
