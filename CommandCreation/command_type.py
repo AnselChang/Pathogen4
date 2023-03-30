@@ -14,8 +14,8 @@ class CommandTypeInfo:
     color: tuple
 
 COMMAND_INFO = {
-    CommandType.TURN : CommandTypeInfo((0,0,0)),
-    CommandType.STRAIGHT : CommandTypeInfo((0,0,0)),
+    CommandType.TURN : CommandTypeInfo((61, 119, 209)),
+    CommandType.STRAIGHT : CommandTypeInfo((209, 61, 61)),
     CommandType.ARC : CommandTypeInfo((0,0,0)),
     CommandType.BEZIER : CommandTypeInfo((0,0,0)),
     CommandType.CUSTOM : CommandTypeInfo((0,0,0))

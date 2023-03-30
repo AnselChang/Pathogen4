@@ -3,6 +3,7 @@ from CommandCreation.preset_commands import CommandDefinitionPresets
 from Commands.command_state import CommandState
 from Commands.command_block_entity import CommandBlockEntity
 from Adapters.adapter import Adapter
+from dimensions import Dimensions
 
 """
 Stores all the different CommandDefinitions. Creates CommandStates based on CommandDefintions
@@ -10,7 +11,9 @@ Stores all the different CommandDefinitions. Creates CommandStates based on Comm
 
 class CommandBuilder:
 
-    def __init__(self):
+    def __init__(self, dimensions: Dimensions):
+
+        self.dimensions = dimensions
 
         # initialize empty list for each command type
         self.commandDefinitions : dict[CommandType, list[CommandDefinition]] = {}
@@ -37,4 +40,4 @@ class CommandBuilder:
     
     def buildCommand(self, adapter: Adapter, index: int = 0) -> CommandBlockEntity:
         state = self.buildCommandState(adapter, index)
-        return CommandBlockEntity(state)
+        return CommandBlockEntity(state, self.dimensions)

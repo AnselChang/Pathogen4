@@ -46,6 +46,7 @@ class Path:
         self.turnCommand = self.commandBuilder.buildCommand(self.node.getAdapter())
         self.commandList.addToEnd(self.turnCommand)
         self.entities.addEntity(self.turnCommand)
+        self.turnCommand.recomputePosition()
 
     def _addRawSegment(self):
 
@@ -58,6 +59,7 @@ class Path:
         self.segmentCommand = self.commandBuilder.buildCommand(self.segment.getAdapter())
         self.commandList.addToEnd(self.segmentCommand)
         self.entities.addEntity(self.segmentCommand)
+        self.segmentCommand.recomputePosition()
 
     def addNode(self, nodePosition: PointRef):
 

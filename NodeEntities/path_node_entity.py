@@ -21,7 +21,7 @@ PathSegmentEntities connect two PathNodeEntities
 Referenced in PathSection
 """
 
-class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface, LinkedListNode):
+class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface, LinkedListNode[PathSegmentEntity]):
 
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)

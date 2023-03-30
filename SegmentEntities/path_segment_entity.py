@@ -23,7 +23,7 @@ that define behavior for straight/arc/bezier shapes. Easy to switch between stat
 We also define the constants that apply across all segment types here, like color and thickness
 """
 
-class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode):
+class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
     def __init__(self, interactor) -> None:
         
         super().__init__(select = SelectLambda(self, "segment", FonSelect = lambda: print("select"), FonDeselect=lambda:print("deselect")),

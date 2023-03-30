@@ -1,12 +1,15 @@
-class LinkedListNode:
-    def __init__(self):
-        self._next = None
-        self._prev = None
+from typing import TypeVar, Generic
 
-    def getPrevious(self):
+T = TypeVar('T')
+class LinkedListNode(Generic[T]):
+    def __init__(self):
+        self._next: T = None
+        self._prev: T = None
+
+    def getPrevious(self) -> T:
         return self._prev
     
-    def getNext(self):
+    def getNext(self) -> T:
         return self._next
 
 class LinkedList:
