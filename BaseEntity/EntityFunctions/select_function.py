@@ -6,9 +6,10 @@ from reference_frame import PointRef
 
 class Select(ABC):
 
-    def __init__(self, entity, id: str):
+    def __init__(self, entity, id: str, enableToggle: bool):
         self.entity = entity
         self.id = id
+        self.enableToggle = enableToggle # if set to true, clicking while selected will deselect
 
     # the rect bounding box for the object
     @abstractmethod
@@ -26,8 +27,8 @@ class Select(ABC):
     
 class SelectLambda(Select):
 
-    def __init__(self, entity, id: str, FgetHitbox = lambda : None, FonSelect = lambda: None, FonDeselect = lambda: None):
-        super().__init__(entity, id)
+    def __init__(self, entity, id: str, enableToggle: bool = False, FgetHitbox = lambda : None, FonSelect = lambda: None, FonDeselect = lambda: None):
+        super().__init__(entity, id, enableToggle)
         self.FgetHitbox = FgetHitbox
         self.FonSelect = FonSelect
         self.FonDeselect = FonDeselect

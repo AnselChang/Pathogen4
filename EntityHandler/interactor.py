@@ -82,7 +82,7 @@ class Interactor:
     def onLeftMouseDown(self, entities: EntityManager, mouse: PointRef, shiftKey: bool):
 
         # handle double-click logic
-        if self.hoveredEntity is not None:
+        if self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if self.previousClickEntity is self.hoveredEntity and time.time() - self.previousClickTime < self.DOUBLE_CLICK_TIME:
                 self.hoveredEntity.click.onDoubleLeftClick()
                 self.previousClickEntity = None
@@ -110,9 +110,13 @@ class Interactor:
         elif self.hoveredEntity is None or self.hoveredEntity not in self.selected.entities:
             self.removeAllEntities()
 
-        # Start dragging a single object
-        if len(self.selected.entities) == 0 and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
-            self.addEntity(self.hoveredEntity)
+        if self.hoveredEntity is not None and self.hoveredEntity.select is not None:
+            # if enableToggle flag set, disable selection if clicking and already seleected:
+            if len(self.selected.entities) == 1 and self.hoveredEntity is self.selected.entities[0] and self.hoveredEntity.select.enableToggle:
+                self.removeEntity(self.hoveredEntity)
+            # Start dragging a single object
+            elif len(self.selected.entities) == 0:
+                self.addEntity(self.hoveredEntity)
 
         # start panning
         mx, my = mouse.screenRef

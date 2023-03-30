@@ -17,3 +17,6 @@ class SelectHandler:
 
     def removeAll(self):
         self.entities.clear()
+
+    def hasOnly(self, entity: Entity) -> bool:
+        return len(self.entities) == 1 and entity is self.entities[0]

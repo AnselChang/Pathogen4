@@ -2,6 +2,7 @@ from CommandCreation.command_definition import CommandType, CommandDefinition
 from CommandCreation.preset_commands import CommandDefinitionPresets
 from Commands.command_state import CommandState
 from Commands.command_block_entity import CommandBlockEntity
+from EntityHandler.interactor import Interactor
 from Adapters.adapter import Adapter
 from dimensions import Dimensions
 
@@ -11,8 +12,9 @@ Stores all the different CommandDefinitions. Creates CommandStates based on Comm
 
 class CommandBuilder:
 
-    def __init__(self, dimensions: Dimensions):
+    def __init__(self, interactor: Interactor, dimensions: Dimensions):
 
+        self.interactor = interactor
         self.dimensions = dimensions
 
         # initialize empty list for each command type
@@ -40,4 +42,4 @@ class CommandBuilder:
     
     def buildCommand(self, adapter: Adapter, index: int = 0) -> CommandBlockEntity:
         state = self.buildCommandState(adapter, index)
-        return CommandBlockEntity(state, self.dimensions)
+        return CommandBlockEntity(state, self.interactor, self.dimensions)
