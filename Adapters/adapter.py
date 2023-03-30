@@ -18,6 +18,10 @@ class Adapter(ABC, Observable):
             return self._dict[variable]
         else:
             return None
+        
+class NullAdapter(Adapter):
+    def __init__(self):
+        super().__init__(CommandType.CUSTOM, {})
 
 
 class AdapterInterface(ABC):

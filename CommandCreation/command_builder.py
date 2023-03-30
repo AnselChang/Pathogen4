@@ -3,7 +3,7 @@ from CommandCreation.preset_commands import CommandDefinitionPresets
 from Commands.command_state import CommandState
 from Commands.command_block_entity import CommandBlockEntity
 from EntityHandler.interactor import Interactor
-from Adapters.adapter import Adapter
+from Adapters.adapter import Adapter, NullAdapter
 from dimensions import Dimensions
 
 """
@@ -43,3 +43,6 @@ class CommandBuilder:
     def buildCommand(self, adapter: Adapter, index: int = 0) -> CommandBlockEntity:
         state = self.buildCommandState(adapter, index)
         return CommandBlockEntity(state, self.interactor, self.dimensions)
+    
+    def buildCustomCommand(self, index: int = 0) -> CommandBlockEntity:
+        return self.buildCommand(NullAdapter(), index)

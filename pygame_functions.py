@@ -49,14 +49,15 @@ def drawLine(screen: pygame.Surface, color: tuple, x1: int, y1: int, x2: int, y2
     
 
 pygame.font.init()
-FONT_PATH = 'Corbel.ttf'
+FONT_PATH = 'CascadiaCode.ttf'
 FONT15 = pygame.font.Font(FONT_PATH, 15)
 FONT20 = pygame.font.Font(FONT_PATH, 20)
 FONT25 = pygame.font.Font(FONT_PATH, 25)
 FONT30 = pygame.font.Font(FONT_PATH, 30)
 FONT40 = pygame.font.Font(FONT_PATH, 40)
 
-FONTCODE = pygame.font.SysFont("arial", 8)
+FONTCODE = pygame.font.Font(FONT_PATH, 8)
+#FONTCODE = pygame.font.SysFont("arial", 8)
 
 # align = 0 -> align left/top
 # align = 0.5 -> align mid

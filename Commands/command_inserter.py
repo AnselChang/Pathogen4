@@ -20,11 +20,11 @@ A "plus" button that, when clicked, inserts a custom command there
 
 class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
 
-    def __init__(self, dimensions: Dimensions):
+    def __init__(self, dimensions: Dimensions, onInsert = lambda: None):
 
         super().__init__(
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
-            click = ClickLambda(self, FonLeftClick = self.onClick),
+            click = ClickLambda(self, FonLeftClick = lambda: onInsert(self)),
             drawOrder = DrawOrder.COMMAND_INSERTER)
         LinkedListNode.__init__(self)
 
@@ -57,10 +57,6 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
         else:
             self.currentY = prev.currentY + prev.getHeight()
         self.updateNextY()
-
-    def onClick(self):
-        print("click inserter")
-
 
     def onHoverOn(self):
         self.isHovered = True

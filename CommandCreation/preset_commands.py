@@ -7,7 +7,8 @@ class CommandDefinitionPresets:
 
         self.presets: list[CommandDefinition] = [
             CommandDefinition(CommandType.STRAIGHT, "goForward"),
-            CommandDefinition(CommandType.TURN, "goTurn")
+            CommandDefinition(CommandType.TURN, "goTurn"),
+            CommandDefinition(CommandType.CUSTOM, "code")
         ]
 
     def getPresets(self) -> list[CommandDefinition]:

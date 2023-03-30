@@ -35,14 +35,14 @@ class Path:
         self.pathList = LinkedList() # linked list of nodes and segments
         self.commandList = LinkedList() # linked list of CommandEntities
 
-        self._addInserter() # add initial CommandInserter
-        self._addInserter() # add final CommandInserter
+        self._addInserter(self.commandList.addToEnd) # add initial CommandInserter
+        self._addInserter(self.commandList.addToEnd) # add final CommandInserter
         self._addRawNode(startPosition) # add start node
 
-    def _addInserter(self):
+    def _addInserter(self, func):
 
-        inserter = CommandInserter(self.dimensions)
-        self.commandList.addToEnd(inserter)
+        inserter = CommandInserter(self.dimensions, self.addCustomCommand)
+        func(inserter)
         self.entities.addEntity(inserter)
         inserter.initPosition()
 
@@ -73,13 +73,23 @@ class Path:
         self.segmentCommand.initPosition()
 
     def addNode(self, nodePosition: PointRef):
-        self._addInserter()
+        self._addInserter(self.commandList.addToEnd)
         self._addRawSegment()
-        self._addInserter()
+        self._addInserter(self.commandList.addToEnd)
         self._addRawNode(nodePosition)
 
         self.segment.updateAdapter()
         self.node.updateAdapter()
+
+    # add custom command where inserter is
+    def addCustomCommand(self, inserter: CommandInserter):
+        # add the custom command after the inserter
+        command = self.commandBuilder.buildCustomCommand()
+        self.commandList.insertAfter(inserter, command)
+        self.entities.addEntity(command)
+        command.initPosition()
+
+        self._addInserter(lambda newInserter: self.commandList.insertAfter(command, newInserter))
 
     def changeSegmentShape(self, segmentAdapter: Adapter):
 

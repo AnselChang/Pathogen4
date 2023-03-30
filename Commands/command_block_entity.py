@@ -48,7 +48,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.interactor = interactor
         self.dimensions = dimensions
 
-        self.Y_BETWEEN_COMMANDS_MIN = 40
+        self.Y_BETWEEN_COMMANDS_MIN = 30
         self.Y_BETWEEN_COMMANDS_MAX = 100
         self.CORNER_RADIUS = 3
         self.X_MARGIN = 6
@@ -93,6 +93,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     # Update animation every tick
     def onTick(self):
         if not self.expandMotion.isDone():
+            self.expandMotion.tick()
             self.updateNextY()
 
     # expand command
