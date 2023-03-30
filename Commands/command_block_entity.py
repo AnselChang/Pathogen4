@@ -21,18 +21,18 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     
     def __init__(self, state: CommandState, dimensions: Dimensions):
         super().__init__(
-            select = SelectLambda(self, "command"),
+            select = SelectLambda(self, "command", FgetHitbox = lambda: pygame.Rect(*self.getRect())),
             drawOrder = DrawOrder.COMMANND_BLOCK)
         LinkedListNode.__init__(self)
         self.setState(state)
         
         self.dimensions = dimensions
 
-        self.START_Y = 35
+        self.START_Y = 43
         self.Y_BETWEEN_COMMANDS = 40
-        self.Y_MARGIN = 3
+        self.Y_MARGIN = 4
         self.CORNER_RADIUS = 3
-        self.X_MARGIN = 5
+        self.X_MARGIN = 6
 
         self.recomputePosition()
 
@@ -53,13 +53,16 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
     def isVisible(self) -> bool:
         return True
+    
+    def getRect(self) -> tuple:
+        x = self.dimensions.FIELD_WIDTH + self.X_MARGIN
+        width = self.dimensions.PANEL_WIDTH - 2 * self.X_MARGIN
+        y = self.currentY + self.Y_MARGIN
+        height = self.Y_BETWEEN_COMMANDS - 2 * self.Y_MARGIN
+        return x, y, width, height
 
     def isTouching(self, position: PointRef) -> bool:
-        x = self.dimensions.FIELD_WIDTH
-        width = self.dimensions.PANEL_WIDTH
-        y = self.currentY
-        height = self.Y_BETWEEN_COMMANDS
-        return isInsideBox2(*position.screenRef, x, y, width, height)
+        return isInsideBox2(*position.screenRef, *self.getRect())
 
     def getPosition(self) -> PointRef:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH / 2
@@ -67,10 +70,8 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         return PointRef(Ref.SCREEN, (x,y))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        x = self.dimensions.FIELD_WIDTH + self.X_MARGIN
-        width = self.dimensions.PANEL_WIDTH - 2 * self.X_MARGIN
-        y = self.currentY + self.Y_MARGIN
-        height = self.Y_BETWEEN_COMMANDS - 2 * self.Y_MARGIN
+        
+        x, y, width, height = self.getRect()
 
         color = COMMAND_INFO[self.state.type].color
         if isHovered:

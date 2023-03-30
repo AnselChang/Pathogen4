@@ -18,17 +18,12 @@ class CircleMixin(Entity):
     def getColor(self) -> tuple:
         pass
 
-    def getHitboxPoints(self) -> list[PointRef]:
+    # get the hitbox rect approximately spanning the circle
+    def getHitbox(self) -> pygame.Rect:
 
-        position = self.getPosition()
-        points: list[PointRef] = [position]
-        PI = 3.14
-        
-        for theta in [0, PI/2, PI, 3*PI/2]:
-            dx, dy = self.radius * math.cos(theta), self.radius * math.sin(theta)
-            points.append(position + VectorRef(Ref.SCREEN, (dx,dy)))
-
-        return points
+        hitbox = pygame.Rect(0, 0, self.radius * 1.5, self.radius * 1.5)
+        hitbox.center = self.getPosition().screenRef
+        return hitbox
 
     def isVisible(self) -> bool:
         return True

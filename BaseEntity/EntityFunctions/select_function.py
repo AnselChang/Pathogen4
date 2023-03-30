@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+import pygame
 
 from reference_frame import PointRef
 
@@ -9,8 +10,9 @@ class Select(ABC):
         self.entity = entity
         self.id = id
 
+    # the rect bounding box for the object
     @abstractmethod
-    def getHitboxPoints(self) -> list[PointRef]:
+    def getHitbox(self) -> pygame.Rect:
         return
     
     @abstractmethod
@@ -24,14 +26,14 @@ class Select(ABC):
     
 class SelectLambda(Select):
 
-    def __init__(self, entity, id: str, FgetHitboxPoints = lambda : [], FonSelect = lambda: None, FonDeselect = lambda: None):
+    def __init__(self, entity, id: str, FgetHitbox = lambda : None, FonSelect = lambda: None, FonDeselect = lambda: None):
         super().__init__(entity, id)
-        self.FgetHitboxPoints = FgetHitboxPoints
+        self.FgetHitbox = FgetHitbox
         self.FonSelect = FonSelect
         self.FonDeselect = FonDeselect
 
-    def getHitboxPoints(self) -> list[PointRef]:
-        return self.FgetHitboxPoints()
+    def getHitbox(self) -> pygame.Rect:
+        return self.FgetHitbox()
     
     def onSelect(self, interactor) -> None:
         self.FonSelect()

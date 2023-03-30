@@ -21,12 +21,16 @@ class SelectorBox:
     def isEnabled(self):
         return self.active
     
-    # Whether at least one of the hitbox points fall inside the multiselect rectangle
+    # Whether the selector rectangle intersects with the hitbox rectangle of the entity
     def isSelecting(self, entity: Entity, x2, y2):
-        for point in entity.select.getHitboxPoints():
-            if isInsideBox(*point.screenRef, self.x1, self.y1, x2, y2):
-                return True
-        return False
+        hitboxRect = entity.select.getHitbox()
+
+        # in this case, there is no specified hitbox
+        if hitboxRect is None:
+            return False
+
+        selectorRect = pygame.Rect(self.x1, self.y1, x2 - self.x1, y2 - self.y1)
+        return selectorRect.colliderect(hitboxRect)
 
     # return a list of selected entities
     def update(self, end: tuple, entities: EntityManager) -> list[Entity]:

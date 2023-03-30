@@ -34,7 +34,7 @@ class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface, LinkedLis
                 FcanDragOffset = lambda offset: isInsideBox(*(self.getPosition()+offset).fieldRef, 0, 0, 144, 144),
                 FdragOffset = lambda offset: self.move(offset)
             ),
-            select = SelectLambda(self, "path node", FgetHitboxPoints = self.getHitboxPoints),
+            select = SelectLambda(self, "path node", FgetHitbox = self.getHitbox),
             click = ClickLambda(self, FonLeftClick = lambda : print("left click"), FonRightClick = lambda : print("right click")),
             drawOrder = DrawOrder.NODE
             )
