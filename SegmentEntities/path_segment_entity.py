@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from reference_frame import PointRef, Ref
 
-from BaseEntity.EntityFunctions.click_function import ClickLambda
-from BaseEntity.EntityFunctions.select_function import SelectLambda
+from BaseEntity.EntityListeners.click_listener import ClickLambda
+from BaseEntity.EntityListeners.select_listener import SelectLambda
 from BaseEntity.entity import Entity
 
 from SegmentEntities.path_segment_state import PathSegmentState

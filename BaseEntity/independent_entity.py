@@ -1,8 +1,8 @@
 from BaseEntity.entity import Entity
 from reference_frame import PointRef
-from BaseEntity.EntityFunctions.drag_function import Drag
-from BaseEntity.EntityFunctions.click_function import Click
-from BaseEntity.EntityFunctions.select_function import Select
+from BaseEntity.EntityListeners.drag_listener import Drag
+from BaseEntity.EntityListeners.click_listener import Click
+from BaseEntity.EntityListeners.select_listener import Select
 
 class IndependentEntity(Entity):
 

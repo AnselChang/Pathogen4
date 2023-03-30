@@ -1,6 +1,6 @@
 from BaseEntity.entity import Entity
-from BaseEntity.EntityFunctions.select_function import SelectLambda
-from BaseEntity.EntityFunctions.tick_function import TickLambda
+from BaseEntity.EntityListeners.select_listener import SelectLambda
+from BaseEntity.EntityListeners.tick_listener import TickLambda
 
 from Adapters.adapter import Adapter
 
@@ -25,6 +25,9 @@ import pygame
 class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
     expandedEntity: 'CommandBlockEntity' = None
+
+    def setState(self, state: CommandState):
+        self.state = state
     
     def __init__(self, state: CommandState, interactor: Interactor, dimensions: Dimensions):
         super().__init__(
@@ -45,12 +48,17 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.interactor = interactor
         self.dimensions = dimensions
 
-        self.START_Y = 43
         self.Y_BETWEEN_COMMANDS_MIN = 40
         self.Y_BETWEEN_COMMANDS_MAX = 100
-        self.Y_MARGIN = 4
         self.CORNER_RADIUS = 3
         self.X_MARGIN = 6
+
+    # commands are sandwiched by CommandInserters
+    def getPreviousCommand(self) -> 'CommandBlockEntity':
+        return self.getPrevious().getPrevious()
+    
+    def getNextCommand(self) -> 'CommandBlockEntity':
+        return self.getNext().getNext()
 
     # MUST call this after being added to the linked list
     def initPosition(self):
@@ -60,40 +68,46 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.expandMotion = MotionProfile(self.Y_BETWEEN_COMMANDS_MIN, self.Y_BETWEEN_COMMANDS_MIN,
                                           speed = 0.25)
 
-        if self.getPrevious() is None:
-            self.currentY = self.START_Y
-        else:
-            self.currentY = self.getPrevious().currentY + self.getPrevious().getHeight()
-        self.updateNextCommandY()
+        prev = self.getPrevious()
+        self.currentY = prev.currentY + prev.getHeight()
+        self.updateNextY()
 
+    # get height of the command
     def getHeight(self) -> float:
+        if not self.isVisible():
+            return 0
         return self.expandMotion.get()
 
-    def updateNextCommandY(self):
+    # based on this command's height, find next command's y
+    def updateNextY(self):
 
-        next = self.getNext()
+        nextInsert = self.getNext()
 
-        if next is None:
+        if nextInsert is None:
             return
         
-        next.currentY = self.currentY + self.getHeight()    
-        next.updateNextCommandY()
+        nextInsert.currentY = self.currentY + self.getHeight()
+        nextInsert.updateNextY()
+                
 
+    # Update animation every tick
     def onTick(self):
         if not self.expandMotion.isDone():
-            print(self.expandMotion.tick())
-            self.updateNextCommandY()
+            self.updateNextY()
 
+    # expand command
     def setExpanded(self):
         self.isExpanded = True
         CommandBlockEntity.expandedEntity = self
         self.expandMotion.setEndValue(self.Y_BETWEEN_COMMANDS_MAX)
 
+    # minimize command
     def setContracted(self):
         self.isExpanded = False
         CommandBlockEntity.expandedEntity = None
         self.expandMotion.setEndValue(self.Y_BETWEEN_COMMANDS_MIN)
 
+    # try to expand command when selected, but only when it's the only thing selected
     def onSelect(self):
 
         # only expand if it's the only thing selected
@@ -103,20 +117,19 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
             if CommandBlockEntity.expandedEntity is not None:
                 CommandBlockEntity.expandedEntity.setContracted()
 
+    # minimize command when not selected
     def onDeselect(self):
         self.setContracted()
-
-    def setState(self, state: CommandState):
-        self.state = state
 
     def isVisible(self) -> bool:
         return True
     
+    # the dimensions of the command rectangle, calculated on-the-fly
     def getRect(self) -> tuple:
         x = self.dimensions.FIELD_WIDTH + self.X_MARGIN
         width = self.dimensions.PANEL_WIDTH - 2 * self.X_MARGIN
-        y = self.currentY + self.Y_MARGIN
-        height = self.getHeight() - 2 * self.Y_MARGIN
+        y = self.currentY
+        height = self.getHeight()
         return x, y, width, height
 
     def isTouching(self, position: PointRef) -> bool:

@@ -58,7 +58,7 @@ def main():
     commandBuilder = CommandBuilder(interactor, dimensions)
 
     # Create path
-    path = Path(commandBuilder, entities, interactor, PointRef(Ref.FIELD, (24,24)))
+    path = Path(commandBuilder, entities, interactor, dimensions, PointRef(Ref.FIELD, (24,24)))
 
     # Create tabs
     tabs = initTabs(dimensions, entities)
@@ -77,7 +77,7 @@ def main():
     # Main game loop
     while True:
         mouse.screenRef = pygame.mouse.get_pos()
-        interactor.hoveredEntity = entities.getEntityAtPosition(mouse)
+        interactor.setHoveredEntity(entities.getEntityAtPosition(mouse))
 
         # handle events and call callbacks
         for event in pygame.event.get():

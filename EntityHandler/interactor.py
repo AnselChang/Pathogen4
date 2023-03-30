@@ -63,6 +63,21 @@ class Interactor:
 
     def isMultiselect(self) -> bool:
         return self.box.active
+    
+    def setHoveredEntity(self, entity: Entity):
+        
+        if self.hoveredEntity is not entity:
+
+            # previous entity stopped hovering, so onHoverOff callback
+            if self.hoveredEntity is not None and self.hoveredEntity.hover is not None:
+                self.hoveredEntity.hover.onHoverOff()
+
+            # new entity hovered, so onHoverOn callback
+            if entity is not None and entity.hover is not None:
+                entity.hover.onHoverOn()
+
+        # update hovered entity
+        self.hoveredEntity = entity
 
     def onMouseDown(self, entities: EntityManager, mouse: PointRef, isRight: bool, shiftKey: bool):
 

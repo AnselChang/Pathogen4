@@ -1,9 +1,9 @@
 from NodeEntities.circle_mixin import CircleMixin
 from BaseEntity.independent_entity import IndependentEntity
 from reference_frame import PointRef, VectorRef
-from BaseEntity.EntityFunctions.drag_function import DragLambda
-from BaseEntity.EntityFunctions.click_function import ClickLambda
-from BaseEntity.EntityFunctions.select_function import Select, SelectLambda
+from BaseEntity.EntityListeners.drag_listener import DragLambda
+from BaseEntity.EntityListeners.click_listener import ClickLambda
+from BaseEntity.EntityListeners.select_listener import Select, SelectLambda
 from SegmentEntities.path_segment_entity import PathSegmentEntity
 from draw_order import DrawOrder
 

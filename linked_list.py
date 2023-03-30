@@ -37,6 +37,9 @@ class LinkedList:
             node._prev = self.tail
             self.tail = node
 
+    def insertBeforeEnd(self, node):
+        self.insertBefore(self.tail, node)
+
     def insertBefore(self, node, newNode):
 
         if self.head is None:

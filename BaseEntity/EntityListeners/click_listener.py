@@ -13,6 +13,10 @@ class Click(ABC):
     def onRightClick(self):
         pass
 
+    @abstractmethod
+    def onDoubleLeftClick(self):
+        pass
+
 class ClickLambda(Click):
 
     def __init__(self, entity, FonLeftClick = lambda: None, FonRightClick = lambda: None, FOnDoubleClick = lambda: None):

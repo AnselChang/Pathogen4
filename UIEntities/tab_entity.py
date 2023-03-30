@@ -1,5 +1,5 @@
 from reference_frame import PointRef, Ref
-from BaseEntity.EntityFunctions.click_function import ClickLambda
+from BaseEntity.EntityListeners.click_listener import ClickLambda
 from UIEntities.radio_entity import RadioEntity
 
 from math_functions import isInsideBox2

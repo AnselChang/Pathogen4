@@ -1,6 +1,6 @@
 from BaseEntity.entity import Entity
 from reference_frame import PointRef
-from BaseEntity.EntityFunctions.click_function import ClickLambda
+from BaseEntity.EntityListeners.click_listener import ClickLambda
 
 # Subclasses implement: isVisible, isTouching, distanceTo, draw
 class RadioEntity(Entity):

@@ -1,5 +1,6 @@
 from CommandCreation.command_builder import CommandBuilder
 from Commands.command_block_entity import CommandBlockEntity
+from Commands.command_inserter import CommandInserter
 
 from CommandCreation.command_type import CommandType
 
@@ -15,7 +16,7 @@ from Adapters.turn_adapter import TurnAdapter
 from Adapters.straight_adapter import StraightAdapter
 
 from linked_list import LinkedList
-
+from dimensions import Dimensions
 from reference_frame import PointRef
 
 """
@@ -24,16 +25,26 @@ Also stores the relevant commands, and facilitates their interface through Adapt
 """
 class Path:
 
-    def __init__(self, commandBuilder: CommandBuilder, entities: EntityManager, interactor: Interactor, startPosition: PointRef):
+    def __init__(self, commandBuilder: CommandBuilder, entities: EntityManager, interactor: Interactor, dimensions: Dimensions, startPosition: PointRef):
             
         self.commandBuilder = commandBuilder
         self.entities = entities
         self.interactor = interactor
+        self.dimensions = dimensions
 
         self.pathList = LinkedList() # linked list of nodes and segments
         self.commandList = LinkedList() # linked list of CommandEntities
 
-        self._addRawNode(startPosition)
+        self._addInserter() # add initial CommandInserter
+        self._addInserter() # add final CommandInserter
+        self._addRawNode(startPosition) # add start node
+
+    def _addInserter(self):
+
+        inserter = CommandInserter(self.dimensions)
+        self.commandList.addToEnd(inserter)
+        self.entities.addEntity(inserter)
+        inserter.initPosition()
 
     def _addRawNode(self, nodePosition: PointRef):
 
@@ -44,7 +55,7 @@ class Path:
 
         # create turn command and add entity
         self.turnCommand = self.commandBuilder.buildCommand(self.node.getAdapter())
-        self.commandList.addToEnd(self.turnCommand)
+        self.commandList.insertBeforeEnd(self.turnCommand)
         self.entities.addEntity(self.turnCommand)
         self.turnCommand.initPosition()
 
@@ -57,13 +68,14 @@ class Path:
 
         # create segment command and add entity
         self.segmentCommand = self.commandBuilder.buildCommand(self.segment.getAdapter())
-        self.commandList.addToEnd(self.segmentCommand)
+        self.commandList.insertBeforeEnd(self.segmentCommand)
         self.entities.addEntity(self.segmentCommand)
         self.segmentCommand.initPosition()
 
     def addNode(self, nodePosition: PointRef):
-
+        self._addInserter()
         self._addRawSegment()
+        self._addInserter()
         self._addRawNode(nodePosition)
 
         self.segment.updateAdapter()
