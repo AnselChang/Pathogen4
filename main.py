@@ -65,18 +65,21 @@ def main():
 
 
     # Add permanent static entities
+    entities.addEntity(StaticEntity(lambda: screen.fill((255,255,255)), drawOrder = DrawOrder.BACKGROUND))
     entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
     entities.addEntity(StaticEntity(lambda: drawPanelBackground(screen, dimensions), drawOrder = DrawOrder.PANEL_BACKGROUND))
     entities.addEntity(StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX))
 
     # initialize pygame artifacts
-    pygame.display.set_caption("Pathogen 4.0")
+    pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
     clock = pygame.time.Clock()
+
     # Main game loop
     while True:
         mouse.screenRef = pygame.mouse.get_pos()
         interactor.hoveredEntity = entities.getEntityAtPosition(mouse)
 
+        # handle events and call callbacks
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -98,18 +101,15 @@ def main():
             elif event.type == pygame.MOUSEMOTION:
                 interactor.onMouseMove(entities, mouse)
 
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    print(str(path))
-        # Clear screen
-        screen.fill((255,255,255))
-        fieldTransform.draw(screen)
+        # Perform calculations
+        entities.tick()
 
+        # Draw everything
         entities.drawEntities(interactor, screen)
 
         # Update display and maintain frame rate
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(60) # fps
 
 if __name__ == "__main__":
     main()

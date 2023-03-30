@@ -1,5 +1,6 @@
 from BaseEntity.entity import Entity
 from BaseEntity.EntityFunctions.select_function import SelectLambda
+from BaseEntity.EntityFunctions.tick_function import TickLambda
 
 from Adapters.adapter import Adapter
 
@@ -7,6 +8,8 @@ from Commands.command_state import CommandState
 from CommandCreation.command_type import COMMAND_INFO
 
 from EntityHandler.interactor import Interactor
+
+from Animation.motion_profile import MotionProfile
 
 from linked_list import LinkedListNode
 
@@ -21,7 +24,7 @@ import pygame
 
 class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
-    expanded: 'CommandBlockEntity' = None
+    expandedEntity: 'CommandBlockEntity' = None
     
     def __init__(self, state: CommandState, interactor: Interactor, dimensions: Dimensions):
         super().__init__(
@@ -32,6 +35,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
                 FonSelect = self.onSelect,
                 FonDeselect = self.onDeselect
             ),
+            tick = TickLambda(self, FonTick = self.onTick),
             drawOrder = DrawOrder.COMMANND_BLOCK
         )
 
@@ -48,46 +52,59 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.CORNER_RADIUS = 3
         self.X_MARGIN = 6
 
-        # the height of the command. set to min or max based on whether it is selected
-        self.thisHeight = self.Y_BETWEEN_COMMANDS_MIN
-        self.recomputePosition()
+    # MUST call this after being added to the linked list
+    def initPosition(self):
 
-    def recomputePosition(self):
+        # the height of the command is updated through a motion profile animation based on goal height (minimized/maximized)
+        self.isExpanded = False
+        self.expandMotion = MotionProfile(self.Y_BETWEEN_COMMANDS_MIN, self.Y_BETWEEN_COMMANDS_MIN,
+                                          speed = 0.25)
 
-        prev = self.getPrevious()
+        if self.getPrevious() is None:
+            self.currentY = self.START_Y
+        else:
+            self.currentY = self.getPrevious().currentY + self.getPrevious().getHeight()
+        self.updateNextCommandY()
+
+    def getHeight(self) -> float:
+        return self.expandMotion.get()
+
+    def updateNextCommandY(self):
+
         next = self.getNext()
 
-        # calculate the upper border of the command (still a margin between mouse and command)
-        if prev is None:
-            self.currentY = self.START_Y 
-        else:
-            self.currentY = prev.currentY + prev.thisHeight
+        if next is None:
+            return
         
-        # Recursively update commands below this one
-        if next is not None:
-            next.recomputePosition()
+        next.currentY = self.currentY + self.getHeight()    
+        next.updateNextCommandY()
+
+    def onTick(self):
+        if not self.expandMotion.isDone():
+            print(self.expandMotion.tick())
+            self.updateNextCommandY()
+
+    def setExpanded(self):
+        self.isExpanded = True
+        CommandBlockEntity.expandedEntity = self
+        self.expandMotion.setEndValue(self.Y_BETWEEN_COMMANDS_MAX)
+
+    def setContracted(self):
+        self.isExpanded = False
+        CommandBlockEntity.expandedEntity = None
+        self.expandMotion.setEndValue(self.Y_BETWEEN_COMMANDS_MIN)
 
     def onSelect(self):
 
         # only expand if it's the only thing selected
-        if not self.interactor.selected.hasOnly(self):
-
-            if CommandBlockEntity.expanded is not None:
-                CommandBlockEntity.expanded.onDeselect()
-
-            return
-
-        self.thisHeight = self.Y_BETWEEN_COMMANDS_MAX
-        CommandBlockEntity.expanded = self
-
-        if self.getNext() is not None:
-            self.getNext().recomputePosition()
+        if self.interactor.selected.hasOnly(self):
+            self.setExpanded()
+        else:
+            if CommandBlockEntity.expandedEntity is not None:
+                CommandBlockEntity.expandedEntity.setContracted()
 
     def onDeselect(self):
-        self.thisHeight = self.Y_BETWEEN_COMMANDS_MIN
-
-        if self.getNext() is not None:
-            self.getNext().recomputePosition()
+        self.setContracted()
 
     def setState(self, state: CommandState):
         self.state = state
@@ -99,7 +116,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         x = self.dimensions.FIELD_WIDTH + self.X_MARGIN
         width = self.dimensions.PANEL_WIDTH - 2 * self.X_MARGIN
         y = self.currentY + self.Y_MARGIN
-        height = self.thisHeight - 2 * self.Y_MARGIN
+        height = self.getHeight() - 2 * self.Y_MARGIN
         return x, y, width, height
 
     def isTouching(self, position: PointRef) -> bool:
@@ -107,7 +124,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
     def getPosition(self) -> PointRef:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH / 2
-        y = self.currentY + self.thisHeight / 2
+        y = self.currentY + self.getHeight() / 2
         return PointRef(Ref.SCREEN, (x,y))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

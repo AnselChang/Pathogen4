@@ -8,12 +8,21 @@ class EntityManager:
 
         self.entities: list[Entity] = []
 
+        # entities that own Tick (must call onTick() every tick)
+        self.tickEntities: list[Entity] = []
+
     def addEntity(self, entity: Entity):
         self.entities.append(entity)
         self.entities.sort(key = lambda entity: entity.drawOrder, reverse = True)
 
+        if entity.tick is not None:
+            self.tickEntities.append(entity)
+
     def removeEntity(self, entity: Entity):
         self.entities.remove(entity)
+
+        if entity in self.tickEntities:
+            self.tickEntities.remove(entity)
 
     def getEntityAtPosition(self, position: PointRef) -> Entity:
 
@@ -39,9 +48,14 @@ class EntityManager:
     
     def drawEntities(self, interactor, screen: pygame.Surface):
 
-
         for entity in self.entities:
             if entity.isVisible():
                 selected = entity in interactor.selected.entities
                 hovering = entity is interactor.hoveredEntity and (selected or not (interactor.leftDragging or interactor.rightDragging))
                 entity.draw(screen, selected, hovering)
+
+    # call onTick() for every entity with tick object
+    def tick(self):
+
+        for entity in self.tickEntities:
+            entity.tick.onTick()

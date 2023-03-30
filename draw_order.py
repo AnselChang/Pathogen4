@@ -9,3 +9,4 @@ class DrawOrder(IntEnum):
     NODE = auto()
     SEGMENT = auto()
     FIELD_BACKGROUND = auto()
+    BACKGROUND = auto()
