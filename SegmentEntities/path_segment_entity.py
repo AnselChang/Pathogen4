@@ -6,11 +6,12 @@ from BaseEntity.EntityFunctions.click_function import ClickLambda
 from BaseEntity.EntityFunctions.select_function import SelectLambda
 from BaseEntity.entity import Entity
 
-from SegmentEntities.edge_entity import EdgeEntity
 from SegmentEntities.path_segment_state import PathSegmentState
 from SegmentEntities.PathSegmentStates.straight_segment_state import StraightSegmentState
 
 from Adapters.adapter import Adapter, AdapterInterface
+
+from linked_list import LinkedListNode
 
 from draw_order import DrawOrder
 from pygame_functions import shade
@@ -22,15 +23,15 @@ that define behavior for straight/arc/bezier shapes. Easy to switch between stat
 We also define the constants that apply across all segment types here, like color and thickness
 """
 
-class PathSegmentEntity(EdgeEntity, AdapterInterface):
-    def __init__(self, section, interactor, first: Entity, second: Entity) -> None:
+class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode):
+    def __init__(self, interactor) -> None:
         
-        super().__init__(first, second, 
-                         select = SelectLambda(self, "segment", FonSelect = lambda: print("select"), FonDeselect=lambda:print("deselect")),
+        super().__init__(select = SelectLambda(self, "segment", FonSelect = lambda: print("select"), FonDeselect=lambda:print("deselect")),
                          click = ClickLambda(self,FOnDoubleClick = self.onDoubleClick),
                          drawOrder = DrawOrder.SEGMENT)
         
-        self.section = section
+        LinkedListNode.__init__(self)
+
         self.interactor = interactor
         self.state: PathSegmentState = StraightSegmentState(self)
         self.isReversed = False
@@ -44,11 +45,16 @@ class PathSegmentEntity(EdgeEntity, AdapterInterface):
         self.colorReversedH = shade(self.colorReversed, 0.9)
         self.colorReversedA = shade(self.colorReversed, 0.4)
 
-        self.updateAdapter()
 
     def changeSegmentShape(self, newStateClass: type[PathSegmentState]):
         self.state = newStateClass(self)
         self.section.changeSegmentShape(self.getAdapter())
+
+    def onNodeMove(self, node: Entity):
+        if node is self.getPrevious():
+            self.getPrevious().onAngleChange()
+        else:
+            self.getNext().onAngleChange()
 
     def getAdapter(self) -> Adapter:
         return self.state.getAdapter()
@@ -57,7 +63,7 @@ class PathSegmentEntity(EdgeEntity, AdapterInterface):
         self.state.updateAdapter()
 
     def onDoubleClick(self):
-        entities = [self, self.first, self.second]
+        entities = [self, self.getPrevious(), self.getNext()]
         self.interactor.setSelectedEntities(entities)
 
     def reverseSegmentDirection(self):

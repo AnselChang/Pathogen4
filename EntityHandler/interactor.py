@@ -186,7 +186,7 @@ class Interactor:
         # create new node if right click field
         elif isRight and self.hoveredEntity is None:
             if isInsideBox(*mouse.screenRef, 0, 0, self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT):
-                path.addSectionAtEnd(mouse.copy())
+                path.addNode(mouse.copy())
 
     def drawSelectBox(self, screen: pygame.Surface):
 

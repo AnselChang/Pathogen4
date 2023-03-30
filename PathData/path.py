@@ -30,81 +30,48 @@ class Path:
         self.entities = entities
         self.interactor = interactor
 
-        self.commands = LinkedList()
+        self.pathList = LinkedList() # linked list of nodes and segments
+        self.commandList = LinkedList() # linked list of CommandEntities
 
-        self.addNode(startPosition)
+        self._addRawNode(startPosition)
 
-    def addNode(self, nodePosition: PointRef):
-        
+    def _addRawNode(self, nodePosition: PointRef):
+
         # create node and add entity
-        self.node: PathNodeEntity = PathNodeEntity(self, position = nodePosition)
+        self.node: PathNodeEntity = PathNodeEntity(position = nodePosition)
+        self.pathList.addToEnd(self.node)
         self.entities.addEntity(self.node)
 
         # create turn command and add entity
         self.turnCommand = self.commandBuilder.buildCommand(self.node.getAdapter())
+        self.commandList.addToEnd(self.turnCommand)
         self.entities.addEntity(self.turnCommand)
-        self.commands.addToEnd(self.turnCommand)
 
-    def addNodeSection(self, nodePosition: PointRef):
-                
-        if self.previous is None:
+    def _addRawSegment(self):
 
-            self.segment = None
-            self.segmentCommand = None
+        # create segment and add entity
+        self.segment: PathSegmentEntity = PathSegmentEntity(self.interactor)
+        self.pathList.addToEnd(self.segment)
+        self.entities.addEntity(self.segment)
 
-        else:
-            
-            self.previous.next = self
+        # create segment command and add entity
+        self.segmentCommand = self.commandBuilder.buildCommand(self.segment.getAdapter())
+        self.commandList.addToEnd(self.segmentCommand)
+        self.entities.addEntity(self.segmentCommand)
 
-            # create segment and add entity
-            self.segment: PathSegmentEntity = PathSegmentEntity(self, interactor, self.previous.node, self.node)
-            entities.addEntity(self.segment)
+    def addNode(self, nodePosition: PointRef):
 
-            # create turn command and add entity
-            self.segmentCommand = commandBuilder.buildCommand(self.segment.getAdapter())
-            self.commands.insert(0, self.segmentCommand)
+        self._addRawSegment()
+        self._addRawNode(nodePosition)
 
-            self.node.prevSegment = self.segment
-            self.previous.node.nextSegment = self.segment
-
-            self.segment.updateAdapter()
-
+        self.segment.updateAdapter()
         self.node.updateAdapter()
-
-    # recursively iterate to last section and add
-    def addSectionAtEnd(self, nodePosition: PointRef):
-        if self.next is None:
-            self.next = PathSection(self, self.commandBuilder, self.entities, self.interactor, nodePosition)
-        else:
-            self.next.addSectionAtEnd(nodePosition)
 
     def changeSegmentShape(self, segmentAdapter: Adapter):
 
         state = self.commandBuilder.buildCommandState(segmentAdapter)
         self.segmentCommand.setState(state)
-        
 
-    def addInlineTurn(self, inlineTurnAdapter: TurnAdapter):
-        inlineTurnCommand = self.commandBuilder.buildCommand(inlineTurnAdapter)
-        self.inlineTurnCommands.append(inlineTurnCommand)
-
-        turnCommandIndex = self.commands.index(self.turnCommand)
-        self.commands.insert(turnCommandIndex, inlineTurnCommand)
-
-    def removeInlineTurn(self):
-        self.commands.remove(self.inlineTurnCommands[-1])
-        del self.inlineTurnCommands[-1]
-
-    # return string of entire list of commands for whole path (recursively expands next section)
-    def __str__(self) -> str:
-        string = ""
-        for command in self.commands:
-            string += str(command) + "\n"
-        
-        if self.next is not None:
-            string += str(self.next)
-
-        return string
     
     
 

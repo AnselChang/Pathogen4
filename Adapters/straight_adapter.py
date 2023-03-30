@@ -1,20 +1,25 @@
 from Adapters.adapter import Adapter
-from Commands.command_type import CommandType
+from CommandCreation.command_type import CommandType
 
 class StraightAdapter(Adapter):
 
     def __init__(self):
-        super().__init__(CommandType.STRAIGHT)
-        self.set((-1,-1), (-1,-1), -1)
-    
-    def set(self, startPosition: tuple, endPosition: tuple, distance: float):
 
-        super().setDict(
-            {
-                "x1" : startPosition[0],
-                "y1" : startPosition[1],
-                "x2" : endPosition[0],
-                "y2" : endPosition[1],
-                "distance" : distance
+        dict = {
+                "x1" : -1,
+                "y1" : -1,
+                "x2" : -1,
+                "y2" : -1,
+                "distance" : -1
             }
-        )
+
+        super().__init__(CommandType.STRAIGHT, dict)
+    
+    def set(self, startPosition: tuple = None, endPosition: tuple = None, distance: float = None):
+
+        if startPosition is not None:
+            self._dict["x1"], self._dict["y1"] = startPosition
+        if endPosition is not None:
+            self._dict["x2"], self._dict["y2"] = endPosition
+        if distance is not None:
+            self._dict["distance"] = distance

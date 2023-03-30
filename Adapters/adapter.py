@@ -1,18 +1,14 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from Observers.observer import Observable
-from Commands.command_type import CommandType
+from CommandCreation.command_type import CommandType
 
 
 class Adapter(ABC, Observable):
 
-    def __init__(self, type: CommandType):
+    def __init__(self, type: CommandType, dict: dict):
         self.type = type
-        self._dict: None = None
-
-    def setDict(self, dict: dict):
-        self._dict = dict
-        self.notify()
+        self._dict: dict = dict
 
     def getDict(self) -> dict:
         return self._dict

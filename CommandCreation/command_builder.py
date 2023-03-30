@@ -1,4 +1,5 @@
 from CommandCreation.command_definition import CommandType, CommandDefinition
+from CommandCreation.preset_commands import CommandDefinitionPresets
 from Commands.command_state import CommandState
 from Commands.command_block_entity import CommandBlockEntity
 from Adapters.adapter import Adapter
@@ -11,7 +12,15 @@ class CommandBuilder:
 
     def __init__(self):
 
+        # initialize empty list for each command type
         self.commandDefinitions : dict[CommandType, list[CommandDefinition]] = {}
+        for type in CommandType:
+            self.commandDefinitions[type] = []
+
+        # initially populate with preset commands. make sure there's one command per type at least
+        presets = CommandDefinitionPresets()
+        for preset in presets.getPresets():
+            self.registerCommand(preset)
 
     def registerCommand(self, command: CommandDefinition):
         self.commandDefinitions[command.type].append(command)
@@ -28,4 +37,4 @@ class CommandBuilder:
     
     def buildCommand(self, adapter: Adapter, index: int = 0) -> CommandBlockEntity:
         state = self.buildCommandState(adapter, index)
-        return 
+        return CommandBlockEntity(state)

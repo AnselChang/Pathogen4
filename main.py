@@ -9,7 +9,7 @@ from UIEntities.tab_entity import TabEntity
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
-from PathData.path_section import PathSection
+from PathData.path import Path
 
 from CommandCreation.command_builder import CommandBuilder
 
@@ -58,7 +58,7 @@ def main():
     commandBuilder = CommandBuilder()
 
     # Create path
-    path = PathSection(None, commandBuilder, entities, interactor, PointRef(Ref.FIELD, (24,24)))
+    path = Path(commandBuilder, entities, interactor, PointRef(Ref.FIELD, (24,24)))
 
     # Create tabs
     tabs = initTabs(dimensions, entities)

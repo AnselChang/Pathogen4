@@ -1,17 +1,20 @@
 from Adapters.adapter import Adapter
-from Commands.command_type import CommandType
+from CommandCreation.command_type import CommandType
 
 class TurnAdapter(Adapter):
 
     def __init__(self):
-        super().__init__(CommandType.TURN)
-        self.set(-1, -1)
 
-    def set(self, startAngle: float, endAngle: float):
-
-        super().setDict(
-            {
-                "theta1" : startAngle,
-                "theta2" : endAngle
+        dict = {
+                "theta1" : -1,
+                "theta2" : -1,
             }
-        )
+
+        super().__init__(CommandType.TURN, dict)
+    
+    def set(self, startAngle: float = None, endAngle: float = None):
+
+        if startAngle is not None:
+            self._dict["theta1"] = startAngle
+        if endAngle is not None:
+            self._dict["theta2"] = endAngle

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from reference_frame import PointRef
 from BaseEntity.entity import Entity
-from SegmentEntities.edge_entity import EdgeEntity
+from linked_list import LinkedListNode
 from Adapters.adapter import Adapter
 import pygame
 
@@ -12,7 +12,7 @@ Also provides an interface for getting thetas at both sides, and holding referen
 """
 
 class PathSegmentState(ABC):
-    def __init__(self, segment: EdgeEntity) -> None:
+    def __init__(self, segment: Entity | LinkedListNode) -> None:
         self.segment = segment # type PathSegmentEntity (the parent)
 
     @abstractmethod

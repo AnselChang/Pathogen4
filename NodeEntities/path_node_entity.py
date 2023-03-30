@@ -10,6 +10,8 @@ from draw_order import DrawOrder
 from Adapters.adapter import AdapterInterface
 from Adapters.turn_adapter import TurnAdapter
 
+from linked_list import LinkedListNode
+
 from math_functions import isInsideBox
 from pygame_functions import shade
 
@@ -19,12 +21,12 @@ PathSegmentEntities connect two PathNodeEntities
 Referenced in PathSection
 """
 
-class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface):
+class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface, LinkedListNode):
 
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)
 
-    def __init__(self, section, position: PointRef, prevSegment: PathSegmentEntity = None, nextSegment: PathSegmentEntity = None):
+    def __init__(self, position: PointRef):
         super().__init__(
             position = position,
             drag = DragLambda(
@@ -37,40 +39,42 @@ class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface):
             drawOrder = DrawOrder.NODE
             )
         
-        self.section = section
-        
+        LinkedListNode.__init__(self)
+                
         CircleMixin.__init__(self, 10, 12)
 
-        self.prevSegment = prevSegment
-        self.nextSegment = nextSegment
-
         self.adapter: TurnAdapter = TurnAdapter()
-        self.updateAdapter()
 
     def getColor(self) -> tuple:
-        return self.FIRST_BLUE_COLOR if self.section.previous is None else self.BLUE_COLOR
+        return self.FIRST_BLUE_COLOR if self.getPrevious() is None else self.BLUE_COLOR
 
     def getAdapter(self) -> TurnAdapter:
         return self.adapter
     
     def updateAdapter(self) -> None:
-        if self.prevSegment is None and self.nextSegment is None:
+        if self.getPrevious() is None and self.getNext() is None:
             self.adapter.set(0,0)
-        elif self.prevSegment is not None and self.nextSegment is None:
-            angle = self.prevSegment.getEndTheta()
+        elif self.getPrevious() is not None and self.getNext() is None:
+            angle = self.getPrevious().getEndTheta()
             self.adapter.set(angle, angle)
-        elif self.nextSegment is not None and self.prevSegment is None:
-            angle = self.nextSegment.getStartTheta()
+        elif self.getNext() is not None and self.getPrevious() is None:
+            angle = self.getNext().getStartTheta()
             self.adapter.set(angle, angle)
         else:
-            startAngle = self.prevSegment.getEndTheta()
-            endAngle = self.nextSegment.getEndTheta()
+            startAngle = self.getPrevious().getEndTheta()
+            endAngle = self.getNext().getEndTheta()
             self.adapter.set(startAngle, endAngle)
 
     def move(self, offset: VectorRef):
         self.position += offset
-        if not self.prevSegment is None:
-            self.prevSegment.updateAdapter()
-        if not self.nextSegment is None:
-            self.nextSegment.updateAdapter()
+        self.onNodeMove()
+
+    def onNodeMove(self):
+        if not self.getPrevious() is None:
+            self.getPrevious().onNodeMove(self)
+        if not self.getNext() is None:
+            self.getNext().onNodeMove(self)
+        self.updateAdapter()
+
+    def onAngleChange(self):
         self.updateAdapter()

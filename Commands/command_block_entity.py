@@ -2,6 +2,7 @@ from BaseEntity.entity import Entity
 from Adapters.adapter import Adapter
 from reference_frame import PointRef, Ref
 from Commands.command_state import CommandState
+from draw_order import DrawOrder
 import pygame
 
 
@@ -9,19 +10,17 @@ import pygame
 class CommandBlockEntity(Entity):
     
     def __init__(self, state: CommandState):
+        super().__init__(drawOrder = DrawOrder.COMMANND_BLOCK)
         self.setState(state)
 
     def setState(self, state: CommandState):
         self.state = state
 
     def isVisible(self) -> bool:
-        pass
+        return True
 
     def isTouching(self, position: PointRef) -> bool:
-        pass
-
-    def distanceTo(self, position: PointRef) -> float:
-        return (position - self.getPosition()).magnitude(Ref.SCREEN)
+        return False
 
     def getPosition(self) -> PointRef:
         pass
