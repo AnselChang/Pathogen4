@@ -34,8 +34,7 @@ class ReadoutEntity(Entity):
     
     def getPosition(self) -> PointRef:
         px, py = self.definedReadout.getPositionRatio()
-        x = self.parentCommand.getX() + px * self.parentCommand.getWidth()
-        y = self.parentCommand.getY() + py * self.parentCommand.getHeight()
+        x,y = self.parentCommand.getAddonPosition(px, py)
         return PointRef(Ref.SCREEN, (x, y))
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

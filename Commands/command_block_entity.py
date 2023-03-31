@@ -140,6 +140,9 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def getAddonsOpacity(self) -> float:
         ratio = self.position.getExpandedRatio()
         return ratio * ratio
+    
+    def getAddonPosition(self, px: float, py: float) -> tuple:
+        return self.position.getAddonPosition(px, py)
 
     def isTouching(self, position: PointRef) -> bool:
         return isInsideBox2(*position.screenRef, *self.getRect())
@@ -167,6 +170,8 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         color = COMMAND_INFO[self.type].color
         if isHovered or self.isWidgetHovering() or self.isOtherHovering():
             color = shade(color, 1.2)
+        else:
+            color = shade(color, 1.1)
         pygame.draw.rect(screen, color, (x, y, width, height), border_radius = CORNER_RADIUS)
 
         # draw selected border

@@ -19,7 +19,7 @@ class CommandBlockPosition:
         self.dimensions = dimensions
 
         self.Y_BETWEEN_COMMANDS_MIN = 30
-        self.Y_BETWEEN_COMMANDS_MAX = 100
+        self.Y_BETWEEN_COMMANDS_MAX = 120
         self.X_MARGIN = 6
 
         # the height of the command is updated through a motion profile animation based on goal height (minimized/maximized)
@@ -65,6 +65,12 @@ class CommandBlockPosition:
     def getExpandedRatio(self) -> float:
         return (self.getHeight() - self.Y_BETWEEN_COMMANDS_MIN) / (self.Y_BETWEEN_COMMANDS_MAX - self.Y_BETWEEN_COMMANDS_MIN)
     
+    def getAddonPosition(self, px: float, py: float) -> tuple:
+        x = self.getX() + px * self.getWidth()
+        y = self.Y_BETWEEN_COMMANDS_MIN
+        y += self.getY() + py * (self.getHeight() - self.Y_BETWEEN_COMMANDS_MIN)
+        return x,y
+
     # every tick, update animation if exists
     def onTick(self):
         if not self.expandMotion.isDone():

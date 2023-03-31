@@ -42,8 +42,7 @@ class WidgetEntity(Entity):
 
     def getPosition(self) -> tuple:
         px, py = self.definedWidget.getPositionRatio()
-        x = self.parentCommand.getX() + px * self.parentCommand.getWidth()
-        y = self.parentCommand.getY() + py * self.parentCommand.getHeight()
+        x,y = self.parentCommand.getAddonPosition(px, py)
         return PointRef(Ref.SCREEN, (x, y))
     
     def getValue(self) -> float:
