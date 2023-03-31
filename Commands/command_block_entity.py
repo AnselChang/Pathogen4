@@ -3,7 +3,6 @@ from BaseEntity.EntityListeners.select_listener import SelectLambda
 from BaseEntity.EntityListeners.tick_listener import TickLambda
 
 from Adapters.path_adapter import PathAdapter
-from Adapters.widget_adapter import WidgetAdapter
 
 from CommandCreation.command_type import COMMAND_INFO, CommandTypeInfo
 from CommandCreation.command_definition_database import CommandDefinitionDatabase
@@ -11,8 +10,8 @@ from CommandCreation.command_definition import CommandDefinition
 
 from Commands.command_block_position import CommandBlockPosition
 
-from Widgets.widget_type import WidgetType
 from Widgets.widget_entity import WidgetEntity
+from Widgets.readout_entity import ReadoutEntity
 
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
@@ -33,21 +32,6 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
     expandedEntity: 'CommandBlockEntity' = None
 
-    def getDefinition(self) -> CommandDefinition:
-        return self.database.getDefinition(self.type, self.definitionIndex)
-    
-    def getCodeText(self) -> str:
-        return self.getDefinition().getCodeText(self.pathAdapter, self.widgetAdapter)
-    
-    # Given the command widgets, create the WidgetEntities and add to entity manager
-    def manifestWidgets(self) -> list[WidgetEntity]:
-        entities = []
-        for widget in self.getDefinition().widgets:
-            entity = WidgetEntity(self, widget)
-            self.entities.addEntity(entity)
-            entities.append(entity)
-        return entities
-    
     def __init__(self, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
         super().__init__(
             select = SelectLambda(self,
@@ -74,10 +58,33 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.dimensions = dimensions
 
         self.widgetEntities = self.manifestWidgets()
+        self.readoutEntities = self.manifestReadouts()
 
     # MUST call this after being added to the linked list
     def initPosition(self):
         self.position = CommandBlockPosition(self, self.dimensions)
+
+    def getDefinition(self) -> CommandDefinition:
+        return self.database.getDefinition(self.type, self.definitionIndex)
+    
+    # Given the command widgets, create the WidgetEntities and add to entity manager
+    def manifestWidgets(self) -> list[WidgetEntity]:
+        entities = []
+        for widget in self.getDefinition().widgets:
+            entity = WidgetEntity(self, widget)
+            self.entities.addEntity(entity)
+            entities.append(entity)
+        return entities
+    
+    # Given the command widgets, create the ReadoutEntities and add to entity manager
+    def manifestReadouts(self) -> list[ReadoutEntity]:
+        readouts = []
+        for readout in self.getDefinition().readouts:
+            readout = ReadoutEntity(self, readout, self.pathAdapter)
+            self.entities.addEntity(readout)
+            readouts.append(readout)
+        return readouts
+    
 
     # commands are sandwiched by CommandInserters
     def getPreviousCommand(self) -> 'CommandBlockEntity':
@@ -155,7 +162,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         # draw icon
         iconImage = self.images.get(self.pathAdapter.getIcon())
         x = self.dimensions.FIELD_WIDTH + 20
-        y = self.getY() + self.position.Y_BETWEEN_COMMANDS_MIN / 2
+        y = self.position.getCenterPosition()[1]
         drawSurface(screen, iconImage, x, y)
 
         # draw function name

@@ -1,8 +1,9 @@
-from CommandCreation.command_definition_database import CommandBuilder
+from CommandCreation.command_definition_database import CommandDefinitionDatabase
 from Commands.command_block_entity import CommandBlockEntity
 from Commands.command_inserter import CommandInserter
 
 from CommandCreation.command_type import CommandType
+from CommandCreation.command_block_entity_factory import CommandBlockEntityFactory
 
 from NodeEntities.path_node_entity import PathNodeEntity
 from SegmentEntities.path_segment_entity import PathSegmentEntity
@@ -11,7 +12,7 @@ from SegmentEntities.path_segment_state import PathSegmentState
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
-from Adapters.path_adapter import PathAdapter
+from Adapters.path_adapter import PathAdapter, NullPathAdapter
 from Adapters.turn_adapter import TurnAdapter
 from Adapters.straight_adapter import StraightAdapter
 
@@ -25,11 +26,12 @@ Also stores the relevant commands, and facilitates their interface through Adapt
 """
 class Path:
 
-    def __init__(self, commandBuilder: CommandBuilder, entities: EntityManager, interactor: Interactor, dimensions: Dimensions, startPosition: PointRef):
+    def __init__(self, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, commandFactory: CommandBlockEntityFactory, dimensions: Dimensions, startPosition: PointRef):
             
-        self.commandBuilder = commandBuilder
+        self.database = database
         self.entities = entities
         self.interactor = interactor
+        self.commandFactory = commandFactory
         self.dimensions = dimensions
 
         self.pathList = LinkedList() # linked list of nodes and segments
@@ -55,7 +57,7 @@ class Path:
         self.entities.addEntity(self.node)
 
         # create turn command and add entity
-        self.turnCommand = self.commandBuilder.buildCommand(self.node.getAdapter())
+        self.turnCommand = self.commandFactory.create(self.node.getAdapter())
         self.commandList.insertBeforeEnd(self.turnCommand)
         self.entities.addEntity(self.turnCommand)
         self.turnCommand.initPosition()
@@ -68,7 +70,7 @@ class Path:
         self.entities.addEntity(self.segment)
 
         # create segment command and add entity
-        self.segmentCommand = self.commandBuilder.buildCommand(self.segment.getAdapter())
+        self.segmentCommand = self.commandFactory.create(self.segment.getAdapter())
         self.commandList.insertBeforeEnd(self.segmentCommand)
         self.entities.addEntity(self.segmentCommand)
         self.segmentCommand.initPosition()
@@ -85,18 +87,12 @@ class Path:
     # add custom command where inserter is
     def addCustomCommand(self, inserter: CommandInserter):
         # add the custom command after the inserter
-        command = self.commandBuilder.buildCustomCommand()
+        command = self.commandFactory.create(NullPathAdapter)
         self.commandList.insertAfter(inserter, command)
         self.entities.addEntity(command)
         command.initPosition()
 
         self._addInserter(lambda newInserter: self.commandList.insertAfter(command, newInserter))
-
-    def changeSegmentShape(self, segmentAdapter: PathAdapter):
-
-        state = self.commandBuilder.buildCommandState(segmentAdapter)
-        self.segmentCommand.setState(state)
-
     
     
 

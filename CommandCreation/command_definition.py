@@ -1,5 +1,5 @@
 from Widgets.defined_widget import DefinedWidget
-from Widgets.readout_state import ReadoutState
+from Widgets.defined_readout import DefinedReadout
 from CommandCreation.command_type import CommandType
 
 from Adapters.path_adapter import PathAdapter
@@ -18,7 +18,7 @@ This object holds WidgetState and ReadoutState which store relative location, bu
 
 class CommandDefinition:
 
-    def __init__(self, type: CommandType, name: str, widgets: list[DefinedWidget], readouts: list[ReadoutState], templateText: str):
+    def __init__(self, type: CommandType, name: str, widgets: list[DefinedWidget], readouts: list[DefinedReadout], templateText: str):
 
         self.type = type
         self.name = name

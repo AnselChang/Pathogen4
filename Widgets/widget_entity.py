@@ -16,7 +16,8 @@ import pygame
 
 """
 Belongs to a specific CommandBlockEntity.
-Owns a WidgetType which specifies the information for the widget for the CommandType in general
+Owns a DefinedWidget which stores information about the widget's context for all commands of that type
+Owns a WidgetValue which stores information about the widget's context for this specific CommandBlock
 """
 
 class WidgetEntity(Entity):
@@ -37,10 +38,10 @@ class WidgetEntity(Entity):
         # Holds the widget state for the specific CommandBlockEntity that owns this
         self.value = WidgetValue(value = self.widgetType.getDefaultValue())
 
-    def getPosition(self) -> PointRef:
-        dx, dy = self.definedWidget.getPositionOffset()
-        x = self.parentCommand.getX() + dx
-        y = self.parentCommand.getY() + dy
+    def getPosition(self) -> tuple:
+        px, py = self.definedWidget.getPositionRatio()
+        x = self.parentCommand.getX() + px * self.parentCommand.getWidth()
+        y = self.parentCommand.getY() + py * self.parentCommand.getHeight()
         return PointRef(Ref.SCREEN, (x, y))
     
     def getValue(self) -> float:

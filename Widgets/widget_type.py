@@ -4,8 +4,6 @@ from BaseEntity.EntityListeners.select_listener import Select, SelectLambda
 from BaseEntity.EntityListeners.tick_listener import Tick, TickLambda
 from BaseEntity.EntityListeners.hover_listener import Hover, HoverLambda
 
-from Widgets.defined_widget import DefinedWidget
-
 from draw_order import DrawOrder
 
 from abc import ABC, abstractmethod

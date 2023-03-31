@@ -11,7 +11,8 @@ from EntityHandler.interactor import Interactor
 
 from PathData.path import Path
 
-from CommandCreation.command_builder import CommandBuilder
+from CommandCreation.command_definition_database import CommandDefinitionDatabase
+from CommandCreation.command_block_entity_factory import CommandBlockEntityFactory
 
 from image_manager import ImageManager
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
@@ -59,10 +60,11 @@ def main():
     entities = EntityManager()
 
     # initialize commands
-    commandBuilder = CommandBuilder(entities, interactor, images, dimensions)
+    database = CommandDefinitionDatabase(entities, interactor, images, dimensions)
+    commandEntityFactory = CommandBlockEntityFactory(database, entities, interactor, images, dimensions)
 
     # Create path
-    path = Path(commandBuilder, entities, interactor, dimensions, PointRef(Ref.FIELD, (24,24)))
+    path = Path(database, entities, interactor, commandEntityFactory, dimensions, PointRef(Ref.FIELD, (24,24)))
 
     # Create tabs
     tabs = initTabs(dimensions, entities)

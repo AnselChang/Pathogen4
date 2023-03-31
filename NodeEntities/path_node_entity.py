@@ -7,7 +7,7 @@ from BaseEntity.EntityListeners.select_listener import Select, SelectLambda
 from SegmentEntities.path_segment_entity import PathSegmentEntity
 from draw_order import DrawOrder
 
-from Adapters.adapter import AdapterInterface
+from Adapters.path_adapter import AdapterInterface
 from Adapters.turn_adapter import TurnAdapter
 
 from image_manager import ImageID

@@ -38,6 +38,9 @@ class CommandBlockPosition:
     def getY(self) -> float:
         return self.currentY
     
+    def getWidth(self) -> float:
+        return self.dimensions.PANEL_WIDTH - 2 * self.X_MARGIN
+    
     # get height of the command
     def getHeight(self) -> float:
         if not self.command.isVisible():
@@ -46,15 +49,11 @@ class CommandBlockPosition:
     
     # the dimensions of the command rectangle, calculated on-the-fly
     def getRect(self) -> tuple:
-        x = self.getX()
-        width = self.dimensions.PANEL_WIDTH - 2 * self.X_MARGIN
-        y = self.getY()
-        height = self.getHeight()
-        return x, y, width, height
+        return self.getX(), self.getY(), self.getWidth(), self.getHeight()
     
     def getCenterPosition(self) -> tuple:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH / 2
-        y = self.currentY + self.getHeight() / 2
+        y = self.getY() + self.getHeight() / 2
         return x,y
     
     # every tick, update animation if exists
