@@ -49,7 +49,7 @@ class TabEntity(RadioEntity):
 
         rect = self.getRect()
 
-        if self is self.group.getEntity():
+        if self is self.group.getActiveEntity():
             color = (150, 150, 150)
         elif isHovered:
             color = (180, 180, 180)
@@ -59,7 +59,7 @@ class TabEntity(RadioEntity):
                          border_top_left_radius = self.r, border_top_right_radius = self.r)
         
         # draw border. black if selected
-        color = (0,0,0) if self is self.group.getEntity() else (100,100,100)
+        color = (0,0,0) if self.isActive() else (100,100,100)
         pygame.draw.rect(screen, color, rect,
                          border_top_left_radius = self.r, border_top_right_radius = self.r, width = 1)
         

@@ -2,6 +2,9 @@ from Animation.motion_profile import MotionProfile
 
 from BaseEntity.entity import Entity
 
+from Commands.command_expansion import CommandExpansion
+from Observers.observer import Observer
+
 from linked_list import LinkedListNode
 from dimensions import Dimensions
 
@@ -14,16 +17,20 @@ This also handles the expand/shrink animation
 
 class CommandBlockPosition:
 
-    def __init__(self, commandBlockEntity: Entity | LinkedListNode, dimensions: Dimensions):
+    def __init__(self, commandBlockEntity: Entity | LinkedListNode, commandExpansion: CommandExpansion, dimensions: Dimensions):
         self.command = commandBlockEntity
+        self.commandExpansion = commandExpansion
         self.dimensions = dimensions
+
+        # whenever a global expansion flag is changed, recompute each individual command expansion
+        self.commandExpansion.addObserver(Observer(onNotify = self.recomputeExpansion))
 
         self.Y_BETWEEN_COMMANDS_MIN = 30
         self.Y_BETWEEN_COMMANDS_MAX = 120
         self.X_MARGIN = 6
 
         # the height of the command is updated through a motion profile animation based on goal height (minimized/maximized)
-        self.isExpanded = False
+        self._isExpanded = False
         self.expandMotion = MotionProfile(self.Y_BETWEEN_COMMANDS_MIN, self.Y_BETWEEN_COMMANDS_MIN,
                                           speed = 0.25)
         
@@ -89,10 +96,42 @@ class CommandBlockPosition:
 
     # expand command
     def setExpanded(self):
-        self.isExpanded = True
-        self.expandMotion.setEndValue(self.Y_BETWEEN_COMMANDS_MAX)
+        
+        # If all are being forced to contract right now, disable forceContract, but 
+        # all other commands should retain being contracted except this one
+        if self.commandExpansion.getForceCollapse():
+            self.command.path.setAllLocalExpansion(False)
+            self.commandExpansion.setForceCollapse(False)
+
+        self._isExpanded = True
+        self.recomputeExpansion()
 
     # minimize command
-    def setContracted(self):
-        self.isExpanded = False
-        self.expandMotion.setEndValue(self.Y_BETWEEN_COMMANDS_MIN)
+    def setCollapsed(self):
+
+         # If all are being forced to expand right now, disable forceExpand, but 
+        # all other commands should retain being expanded except this one
+        if self.commandExpansion.getForceExpand():
+            self.command.path.setAllLocalExpansion(True)
+            self.commandExpansion.setForceExpand(False)
+
+        self._isExpanded = False
+        self.recomputeExpansion()
+
+    def isExpanded(self) -> bool:
+        if self.commandExpansion.getForceCollapse():
+            return False
+        elif self.commandExpansion.getForceExpand():
+            return True
+        return self._isExpanded
+
+    def recomputeExpansion(self):
+
+        if self.isExpanded():
+            x = self.Y_BETWEEN_COMMANDS_MAX
+        else:
+            x = self.Y_BETWEEN_COMMANDS_MIN
+        
+        self.expandMotion.setEndValue(x)
+
+    

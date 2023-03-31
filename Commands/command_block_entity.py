@@ -1,5 +1,5 @@
 from BaseEntity.entity import Entity
-from BaseEntity.EntityListeners.select_listener import SelectLambda
+from BaseEntity.EntityListeners.click_listener import ClickLambda
 from BaseEntity.EntityListeners.tick_listener import TickLambda
 
 from Adapters.path_adapter import PathAdapter
@@ -8,6 +8,7 @@ from CommandCreation.command_type import COMMAND_INFO
 from CommandCreation.command_definition import CommandDefinition
 
 from Commands.command_block_position import CommandBlockPosition
+from Commands.command_expansion import CommandExpansion
 
 from Widgets.widget_entity import WidgetEntity
 from Widgets.readout_entity import ReadoutEntity
@@ -16,7 +17,6 @@ from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
 from linked_list import LinkedListNode
-
 from image_manager import ImageManager
 from draw_order import DrawOrder
 from dimensions import Dimensions
@@ -29,23 +29,18 @@ import pygame, re
 
 class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
-    expandedEntity: 'CommandBlockEntity' = None
 
-    def __init__(self, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
+    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, dimensions: Dimensions):
         super().__init__(
-            select = SelectLambda(self,
-                id = "command",
-                enableToggle = True,
-                FgetHitbox = lambda: pygame.Rect(*self.getRect()),
-                FonSelect = self.onSelect,
-                FonDeselect = self.onDeselect
-            ),
+            click = ClickLambda(self, FonLeftClick = self.onClick),
             tick = TickLambda(self, FonTick = self.onTick),
             drawOrder = DrawOrder.COMMANND_BLOCK
         )
 
         LinkedListNode.__init__(self)
         self.definitionIndex: int = 0
+
+        self.path = path
 
         self.pathAdapter = pathAdapter
         
@@ -59,7 +54,8 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.widgetEntities = self.manifestWidgets()
         self.readoutEntities = self.manifestReadouts()
 
-        self.position = CommandBlockPosition(self, self.dimensions)
+        self.position = CommandBlockPosition(self, commandExpansion, self.dimensions)
+        self.position.setCollapsed()
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)
@@ -99,21 +95,12 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.position.onTick()
 
     # try to expand command when selected, but only when it's the only thing selected
-    def onSelect(self):
+    def onClick(self):
 
-        # only expand if it's the only thing selected
-        if self.interactor.selected.hasOnly(self):
-            self.position.setExpanded()
-            CommandBlockEntity.expandedEntity = self
+        if self.position.isExpanded():
+            self.position.setCollapsed()
         else:
-            if CommandBlockEntity.expandedEntity is not None:
-                CommandBlockEntity.expandedEntity.position.setContracted()
-                CommandBlockEntity.expandedEntity = None
-
-    # minimize command when not selected
-    def onDeselect(self):
-        self.position.setContracted()
-        CommandBlockEntity.expandedEntity = None
+            self.position.setExpanded()
 
     def isVisible(self) -> bool:
         return True
@@ -175,7 +162,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         pygame.draw.rect(screen, color, (x, y, width, height), border_radius = CORNER_RADIUS)
 
         # draw selected border
-        if isActive:
+        if self.position.isExpanded() and False:
             pygame.draw.rect(screen, (0,0,0), (x, y, width, height), border_radius = CORNER_RADIUS, width = 2)
 
         # draw icon

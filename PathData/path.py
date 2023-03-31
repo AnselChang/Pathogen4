@@ -1,6 +1,8 @@
 from CommandCreation.command_definition_database import CommandDefinitionDatabase
 from Commands.command_block_entity import CommandBlockEntity
+from Commands.command_block_position import CommandBlockPosition
 from Commands.command_inserter import CommandInserter
+from Commands.command_expansion import CommandExpansion
 
 from CommandCreation.command_type import CommandType
 from CommandCreation.command_block_entity_factory import CommandBlockEntityFactory
@@ -26,12 +28,13 @@ Also stores the relevant commands, and facilitates their interface through Adapt
 """
 class Path:
 
-    def __init__(self, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, commandFactory: CommandBlockEntityFactory, dimensions: Dimensions, startPosition: PointRef):
+    def __init__(self, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, commandFactory: CommandBlockEntityFactory, commandExpansion: CommandExpansion, dimensions: Dimensions, startPosition: PointRef):
             
         self.database = database
         self.entities = entities
         self.interactor = interactor
         self.commandFactory = commandFactory
+        self.commandExpansion = commandExpansion
         self.dimensions = dimensions
 
         self.pathList = LinkedList() # linked list of nodes and segments
@@ -60,7 +63,7 @@ class Path:
         self.entities.addEntity(self.node)
 
         # create turn command and add entity
-        self.turnCommand = self.commandFactory.create(self.node.getAdapter())
+        self.turnCommand = self.commandFactory.create(self, self.node.getAdapter())
         func(self.turnCommand)
         self.entities.addEntity(self.turnCommand)
 
@@ -72,7 +75,7 @@ class Path:
         self.entities.addEntity(self.segment)
 
         # create segment command and add entity
-        self.segmentCommand = self.commandFactory.create(self.segment.getAdapter())
+        self.segmentCommand = self.commandFactory.create(self, self.segment.getAdapter())
         self.commandList.insertBeforeEnd(self.segmentCommand)
         self.entities.addEntity(self.segmentCommand)
 
@@ -89,13 +92,18 @@ class Path:
     # add custom command where inserter is
     def addCustomCommand(self, inserter: CommandInserter):
         # add the custom command after the inserter
-        command = self.commandFactory.create(NullPathAdapter())
+        command = self.commandFactory.create(self, NullPathAdapter())
         self.commandList.insertAfter(inserter, command)
         self.entities.addEntity(command)
         self._addInserter(lambda newInserter: self.commandList.insertAfter(command, newInserter))
 
         self.recomputeY()
-        
-    
 
-    
+
+    def setAllLocalExpansion(self, isExpand: bool):
+        node: CommandBlockEntity = self.commandList.head
+        while node is not None:
+            if isinstance(node, CommandBlockEntity):
+                node.position._isExpanded = isExpand
+                node.position.recomputeExpansion()
+            node = node.getNext()

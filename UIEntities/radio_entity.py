@@ -6,7 +6,7 @@ from BaseEntity.EntityListeners.click_listener import ClickLambda
 class RadioEntity(Entity):
 
     # id is used to distinguish between radio entities
-    def __init__(self, id, drawOrder: int = 0):
+    def __init__(self, id, drawOrder: int = 0, onUpdate = lambda isOn: None):
         super().__init__(click = ClickLambda(
             self,
             FonLeftClick = lambda : self.onClick(),
@@ -17,11 +17,21 @@ class RadioEntity(Entity):
         self.group = None
         self.id = id
 
+        self.onUpdate = onUpdate
+
     def setRadioGroup(self, radioGroup):
         self.group = radioGroup
 
     def onClick(self):
+        old = self.isActive()
         self.group.onClick(self)
+        
+        if self.isActive() is not old: # if there's been a change
+            self.onUpdate(self.isActive)
+
 
     def toString(self) -> str:
         return self.id
+    
+    def isActive(self) -> bool:
+        return self is self.group.getActiveEntity()

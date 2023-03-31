@@ -87,3 +87,23 @@ def drawSurface(surface: pygame.Surface, drawnSurface: pygame.Surface, cx: int, 
     r = drawnSurface.get_rect()
     rect = drawnSurface.get_rect(center = (cx, cy))
     surface.blit(drawnSurface, (rect.x, rect.y))
+
+def brightenSurface(surface, brightness): # brigtness from 0-255
+    # Convert the surface to a new format that allows direct pixel access
+    surface = surface.convert_alpha().copy()
+
+    # Loop over the pixels and increase the brightness of each pixel
+    for x in range(surface.get_width()):
+        for y in range(surface.get_height()):
+            r, g, b, a = surface.get_at((x, y))
+            r = min(r + brightness, 255)
+            g = min(g + brightness, 255)
+            b = min(b + brightness, 255)
+            surface.set_at((x, y), (r, g, b, a))
+
+    return surface
+
+def scaleSurface(surface, scale):
+    width = int(surface.get_width() * scale)
+    height = int(surface.get_height() * scale)
+    return pygame.transform.smoothscale(surface, (width, height))

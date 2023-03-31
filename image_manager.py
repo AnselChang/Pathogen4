@@ -10,6 +10,10 @@ class ImageID(Enum):
     CUSTOM = auto()
     TRASH_ON = auto()
     TRASH_OFF = auto()
+    MAX_ON = auto()
+    MAX_OFF = auto()
+    MIN_ON = auto()
+    MIN_OFF = auto()
 
 class Image:
 
@@ -35,3 +39,9 @@ class ImageManager:
         size = 0.03
         self.images[ImageID.TRASH_ON] = Image("OtherIcons/TrashOn.png", size)
         self.images[ImageID.TRASH_OFF] = Image("OtherIcons/TrashOff.png", size)
+
+        size = 0.07
+        self.images[ImageID.MAX_ON] = Image("OtherIcons/max_on.png", size)
+        self.images[ImageID.MAX_OFF] = Image("OtherIcons/max_off.png", size)
+        self.images[ImageID.MIN_ON] = Image("OtherIcons/min_on.png", size)
+        self.images[ImageID.MIN_OFF] = Image("OtherIcons/min_off.png", size)

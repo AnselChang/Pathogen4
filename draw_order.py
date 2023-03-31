@@ -4,6 +4,7 @@ from enum import IntEnum, auto
 class DrawOrder(IntEnum):
     MOUSE_SELECT_BOX = auto()
     TAB = auto()
+    UI_BUTTON = auto()
     COMMAND_INSERTER = auto()
     READOUT = auto()
     WIDGET = auto()
