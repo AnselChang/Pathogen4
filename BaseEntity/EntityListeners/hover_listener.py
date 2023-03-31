@@ -4,14 +4,13 @@ class Hover(ABC):
 
     def __init__(self, entity):
         self.entity = entity
+        self.isHovering = False
 
-    @abstractmethod
     def onHoverOn(self):
-        pass
+        self.isHovering = True
 
-    @abstractmethod
     def onHoverOff(self):
-        pass
+        self.isHovering = False
 
 class HoverLambda(Hover):
 
@@ -22,7 +21,9 @@ class HoverLambda(Hover):
         self.FonHoverOff = FonHoverOff
 
     def onHoverOn(self):
+        super().onHoverOn()
         self.FonHoverOn()
 
     def onHoverOff(self):
+        super().onHoverOff()
         self.FonHoverOff()

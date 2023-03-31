@@ -1,7 +1,7 @@
-from Adapters.adapter import Adapter
+from Adapters.path_adapter import PathAdapter
 from CommandCreation.command_type import CommandType
 
-class StraightAdapter(Adapter):
+class StraightAdapter(PathAdapter):
 
     def __init__(self):
 

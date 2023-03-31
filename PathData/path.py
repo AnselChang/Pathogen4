@@ -1,4 +1,4 @@
-from CommandCreation.command_builder import CommandBuilder
+from CommandCreation.command_definition_database import CommandBuilder
 from Commands.command_block_entity import CommandBlockEntity
 from Commands.command_inserter import CommandInserter
 
@@ -11,7 +11,7 @@ from SegmentEntities.path_segment_state import PathSegmentState
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
-from Adapters.adapter import Adapter
+from Adapters.path_adapter import PathAdapter
 from Adapters.turn_adapter import TurnAdapter
 from Adapters.straight_adapter import StraightAdapter
 
@@ -92,7 +92,7 @@ class Path:
 
         self._addInserter(lambda newInserter: self.commandList.insertAfter(command, newInserter))
 
-    def changeSegmentShape(self, segmentAdapter: Adapter):
+    def changeSegmentShape(self, segmentAdapter: PathAdapter):
 
         state = self.commandBuilder.buildCommandState(segmentAdapter)
         self.segmentCommand.setState(state)

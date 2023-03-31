@@ -9,7 +9,7 @@ from BaseEntity.entity import Entity
 from SegmentEntities.path_segment_state import PathSegmentState
 from SegmentEntities.PathSegmentStates.straight_segment_state import StraightSegmentState
 
-from Adapters.adapter import Adapter, AdapterInterface
+from Adapters.path_adapter import PathAdapter, AdapterInterface
 
 from linked_list import LinkedListNode
 
@@ -56,7 +56,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
         else:
             self.getNext().onAngleChange()
 
-    def getAdapter(self) -> Adapter:
+    def getAdapter(self) -> PathAdapter:
         return self.state.getAdapter()
     
     def updateAdapter(self) -> None:

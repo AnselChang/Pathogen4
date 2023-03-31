@@ -5,7 +5,7 @@ from CommandCreation.command_type import CommandType
 from image_manager import ImageID
 
 
-class Adapter(ABC, Observable):
+class PathAdapter(ABC, Observable):
 
     def __init__(self, type: CommandType, dict: dict):
         self.type = type
@@ -27,7 +27,7 @@ class Adapter(ABC, Observable):
     def getIcon(self) -> ImageID:
         return self.icon
         
-class CustomAdapter(Adapter):
+class NullPathAdapter(PathAdapter):
     def __init__(self):
         super().__init__(CommandType.CUSTOM, {})
         self.setIcon(ImageID.CUSTOM)
@@ -36,7 +36,7 @@ class CustomAdapter(Adapter):
 class AdapterInterface(ABC):
 
     @abstractmethod
-    def getAdapter(self) -> Adapter:
+    def getAdapter(self) -> PathAdapter:
         pass
 
     @abstractmethod

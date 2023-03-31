@@ -2,15 +2,20 @@ from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.select_listener import SelectLambda
 from BaseEntity.EntityListeners.tick_listener import TickLambda
 
-from Adapters.adapter import Adapter
+from Adapters.path_adapter import PathAdapter
+from Adapters.widget_adapter import WidgetAdapter
 
-from Commands.command_state import CommandState
-from CommandCreation.command_type import COMMAND_INFO, CommandType
+from CommandCreation.command_type import COMMAND_INFO, CommandTypeInfo
+from CommandCreation.command_definition_database import CommandDefinitionDatabase
+from CommandCreation.command_definition import CommandDefinition
+
+from Commands.command_block_position import CommandBlockPosition
+
+from Widgets.widget_type import WidgetType
+from Widgets.widget_entity import WidgetEntity
 
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
-
-from Animation.motion_profile import MotionProfile
 
 from linked_list import LinkedListNode
 
@@ -20,7 +25,7 @@ from dimensions import Dimensions
 from reference_frame import PointRef, Ref
 from pygame_functions import shade, drawText, FONT20, drawSurface
 from math_functions import isInsideBox2
-import pygame
+import pygame, re
 
 
 
@@ -28,10 +33,22 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
     expandedEntity: 'CommandBlockEntity' = None
 
-    def setState(self, state: CommandState):
-        self.state = state
+    def getDefinition(self) -> CommandDefinition:
+        return self.database.getDefinition(self.type, self.definitionIndex)
     
-    def __init__(self, state: CommandState, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
+    def getCodeText(self) -> str:
+        return self.getDefinition().getCodeText(self.pathAdapter, self.widgetAdapter)
+    
+    # Given the command widgets, create the WidgetEntities and add to entity manager
+    def manifestWidgets(self) -> list[WidgetEntity]:
+        entities = []
+        for widget in self.getDefinition().widgets:
+            entity = WidgetEntity(self, widget)
+            self.entities.addEntity(entity)
+            entities.append(entity)
+        return entities
+    
+    def __init__(self, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
         super().__init__(
             select = SelectLambda(self,
                 id = "command",
@@ -45,25 +62,22 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         )
 
         LinkedListNode.__init__(self)
-        self.setState(state)
+        self.definitionIndex: int = 0
+
+        self.pathAdapter = pathAdapter
         
+        self.type = self.pathAdapter.type
+        self.database = database
         self.entities = entities
         self.interactor = interactor
         self.images = images
         self.dimensions = dimensions
 
-        self.Y_BETWEEN_COMMANDS_MIN = 30
-        self.Y_BETWEEN_COMMANDS_MAX = 100
-        self.CORNER_RADIUS = 3
-        self.X_MARGIN = 6
+        self.widgetEntities = self.manifestWidgets()
 
-        self.initWidgets()
-
-
-    # add all widgets as entities to entitiy manager
-    def initWidgets(self):
-        pass
-
+    # MUST call this after being added to the linked list
+    def initPosition(self):
+        self.position = CommandBlockPosition(self, self.dimensions)
 
     # commands are sandwiched by CommandInserters
     def getPreviousCommand(self) -> 'CommandBlockEntity':
@@ -72,111 +86,113 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def getNextCommand(self) -> 'CommandBlockEntity':
         return self.getNext().getNext()
 
-    # MUST call this after being added to the linked list
-    def initPosition(self):
-
-        # the height of the command is updated through a motion profile animation based on goal height (minimized/maximized)
-        self.isExpanded = False
-        self.expandMotion = MotionProfile(self.Y_BETWEEN_COMMANDS_MIN, self.Y_BETWEEN_COMMANDS_MIN,
-                                          speed = 0.25)
-
-        prev = self.getPrevious()
-        self.currentY = prev.currentY + prev.getHeight()
-        self.updateNextY()
-
-    # get height of the command
-    def getHeight(self) -> float:
-        if not self.isVisible():
-            return 0
-        return self.expandMotion.get()
-
     # based on this command's height, find next command's y
     def updateNextY(self):
-
-        nextInsert = self.getNext()
-
-        if nextInsert is None:
-            return
-        
-        nextInsert.currentY = self.currentY + self.getHeight()
-        nextInsert.updateNextY()
-                
+        self.position.updateNextY()      
 
     # Update animation every tick
     def onTick(self):
-        if not self.expandMotion.isDone():
-            self.expandMotion.tick()
-            self.updateNextY()
-
-    # expand command
-    def setExpanded(self):
-        self.isExpanded = True
-        CommandBlockEntity.expandedEntity = self
-        self.expandMotion.setEndValue(self.Y_BETWEEN_COMMANDS_MAX)
-
-    # minimize command
-    def setContracted(self):
-        self.isExpanded = False
-        CommandBlockEntity.expandedEntity = None
-        self.expandMotion.setEndValue(self.Y_BETWEEN_COMMANDS_MIN)
+        self.position.onTick()
 
     # try to expand command when selected, but only when it's the only thing selected
     def onSelect(self):
 
         # only expand if it's the only thing selected
         if self.interactor.selected.hasOnly(self):
-            self.setExpanded()
+            self.position.setExpanded()
+            CommandBlockEntity.expandedEntity = self
         else:
             if CommandBlockEntity.expandedEntity is not None:
-                CommandBlockEntity.expandedEntity.setContracted()
+                CommandBlockEntity.expandedEntity.position.setContracted()
+                CommandBlockEntity.expandedEntity = None
 
     # minimize command when not selected
     def onDeselect(self):
-        self.setContracted()
+        self.position.setContracted()
+        CommandBlockEntity.expandedEntity = None
 
     def isVisible(self) -> bool:
         return True
     
-    # the dimensions of the command rectangle, calculated on-the-fly
+    def getX(self) -> float:
+        return self.position.getX()
+    
+    def getY(self) -> float:
+        return self.position.getY()
+    
     def getRect(self) -> tuple:
-        x = self.dimensions.FIELD_WIDTH + self.X_MARGIN
-        width = self.dimensions.PANEL_WIDTH - 2 * self.X_MARGIN
-        y = self.currentY
-        height = self.getHeight()
-        return x, y, width, height
+        return self.position.getRect()
 
     def isTouching(self, position: PointRef) -> bool:
         return isInsideBox2(*position.screenRef, *self.getRect())
 
     def getPosition(self) -> PointRef:
-        x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH / 2
-        y = self.currentY + self.getHeight() / 2
-        return PointRef(Ref.SCREEN, (x,y))
+        return PointRef(Ref.SCREEN, self.position.getCenterPosition())
+    
+    # whether some widget of command block is hovering
+    def isWidgetHovering(self) -> bool:
+        for widget in self.widgetEntities:
+            if widget.hover.isHovering:
+                return True
+        return False
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
-        x, y, width, height = self.getRect()
+        CORNER_RADIUS = 3
+
+        x, y, width, height = self.position.getRect()
 
         # draw rounded rect
         color = COMMAND_INFO[self.state.type].color
-        if isHovered:
+        if isHovered or self.isWidgetHovering():
             color = shade(color, 1.2)
-        pygame.draw.rect(screen, color, (x, y, width, height), border_radius = self.CORNER_RADIUS)
+        pygame.draw.rect(screen, color, (x, y, width, height), border_radius = CORNER_RADIUS)
 
         # draw selected border
         if isActive:
-            pygame.draw.rect(screen, (0,0,0), (x, y, width, height), border_radius = self.CORNER_RADIUS, width = 2)
+            pygame.draw.rect(screen, (0,0,0), (x, y, width, height), border_radius = CORNER_RADIUS, width = 2)
 
         # draw icon
-        iconImage = self.images.get(self.state.adapter.getIcon())
+        iconImage = self.images.get(self.pathAdapter.getIcon())
         x = self.dimensions.FIELD_WIDTH + 20
-        y = self.currentY + self.Y_BETWEEN_COMMANDS_MIN / 2
+        y = self.getY() + self.position.Y_BETWEEN_COMMANDS_MIN / 2
         drawSurface(screen, iconImage, x, y)
 
         # draw function name
-        text = self.state.name + "()"
+        text = self.getDefinition().name + "()"
         x = self.dimensions.FIELD_WIDTH + 40
         drawText(screen, FONT20, text, (0,0,0), x, y, alignX = 0)
 
     def toString(self) -> str:
-        pass
+        return "Command Block Entity"
+
+     # Try to find variable name in self.adapter and self.widgets and replace with value
+    def _replaceWithValue(self, token: str) -> str:
+        if token.startswith("$") and token.endswith("$"):
+            variableName = token[1:-1]
+
+            value = self.pathAdapter.get(variableName)
+            if value is not None:
+                return value
+            
+            for widgetEntity in self.widgetEntities:
+                if variableName == widgetEntity.getName():
+                    return widgetEntity.getValue()
+                
+        # No variable found. return string as-is
+        return token
+
+    # recalculate final text from template
+    # Given pathAdapter and widgetAdapter specific to the command block
+    def getCodeText(self):
+
+        result = ""
+
+        # Split each $variable$ into tokens
+        tokens = re.split(r'(\$[^\$]+\$)', self.getDefinition().templateText)
+
+        # replace each $variable$ with value
+        for token in tokens:
+            result += self._replaceWithValue(token)
+
+        return result

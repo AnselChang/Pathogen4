@@ -7,7 +7,7 @@ from Commands.custom_command_block_entity import CustomCommandBlockEntity
 from EntityHandler.interactor import Interactor
 from EntityHandler.entity_manager import EntityManager
 
-from Adapters.adapter import Adapter, CustomAdapter
+from Adapters.path_adapter import PathAdapter, NullPathAdapter
 from image_manager import ImageManager
 from dimensions import Dimensions
 
@@ -15,7 +15,7 @@ from dimensions import Dimensions
 Stores all the different CommandDefinitions. Creates CommandStates based on CommandDefintions
 """
 
-class CommandBuilder:
+class CommandDefinitionDatabase:
 
     def __init__(self, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
 
@@ -25,33 +25,37 @@ class CommandBuilder:
         self.dimensions = dimensions
 
         # initialize empty list for each command type
-        self.commandDefinitions : dict[CommandType, list[CommandDefinition]] = {}
+        self.definitions : dict[CommandType, list[CommandDefinition]] = {}
         for type in CommandType:
-            self.commandDefinitions[type] = []
+            self.definitions[type] = []
 
         # initially populate with preset commands. make sure there's one command per type at least
         presets = CommandDefinitionPresets()
         for preset in presets.getPresets():
-            self.registerCommand(preset)
+            self.registerDefinition(preset)
 
-    def registerCommand(self, command: CommandDefinition):
-        self.commandDefinitions[command.type].append(command)
+    def registerDefinition(self, command: CommandDefinition):
+        self.definitions[command.type].append(command)
 
-    def getCommandNames(self, type: CommandType) -> list[str]:
-        return [definition.name for definition in self.commandDefinitions[type]]
+    def getDefinitionNames(self, type: CommandType) -> list[str]:
+        return [definition.name for definition in self.definitions[type]]
     
-    def getNumCommands(self, type: CommandType) -> int:
-        return len(self.commandDefinitions[type])
+    def getNumDefitions(self, type: CommandType) -> int:
+        return len(self.definitions[type])
     
-    def buildCommandState(self, adapter: Adapter, index: int = 0) -> CommandState:
-        definition = self.commandDefinitions[adapter.type][index]
+    def getDefinition(self, type: CommandType, index: int = 0) -> CommandDefinition:
+        return self.definitions[type][index]
+    
+    # REST OF THESE DO NOT BELONG HERE
+    def buildCommandState(self, adapter: PathAdapter, index: int = 0) -> CommandState:
+        definition = self.definitions[adapter.type][index]
         return CommandState(definition, adapter)
     
-    def buildCommand(self, adapter: Adapter, index: int = 0) -> CommandBlockEntity:
+    def buildCommand(self, adapter: PathAdapter, index: int = 0) -> CommandBlockEntity:
         assert(adapter.type != CommandType.CUSTOM)
         state = self.buildCommandState(adapter, index)
         return CommandBlockEntity(state, self.entities, self.interactor, self.images, self.dimensions)
     
     def buildCustomCommand(self, index: int = 0) -> CommandBlockEntity:
-        state = self.buildCommandState(CustomAdapter(), index)
+        state = self.buildCommandState(NullPathAdapter(), index)
         return CustomCommandBlockEntity(state, self.entities, self.interactor, self.images, self.dimensions)

@@ -7,7 +7,7 @@ from BaseEntity.entity import Entity
 
 from linked_list import LinkedListNode
 
-from Adapters.adapter import Adapter
+from Adapters.path_adapter import PathAdapter
 from Adapters.straight_adapter import StraightAdapter
 
 from image_manager import ImageID
@@ -25,7 +25,7 @@ class StraightSegmentState(PathSegmentState):
         super().__init__(segment)
         self.adapter = StraightAdapter()
 
-    def getAdapter(self) -> Adapter:
+    def getAdapter(self) -> PathAdapter:
         return self.adapter
 
     def updateAdapter(self) -> None:

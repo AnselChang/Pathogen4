@@ -77,6 +77,10 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
         if not self.isVisible():
             return 0
         return self.Y_MAX if self.isHovered else self.Y_MIN
+    
+    def setY(self, y: int):
+        self.currentY = y
+        self.updateNextY()
 
     # based on this command's height, find next command's y
     def updateNextY(self):
