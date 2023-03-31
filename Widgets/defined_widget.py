@@ -1,9 +1,5 @@
 from Widgets.widget_type import WidgetType
 
-from abc import ABC, abstractmethod
-from reference_frame import PointRef
-from dimensions import Dimensions
-
 """
 A CommandDefinition holds a list of DefinedWidgets.
 A defined widget which has a widget type, as well as information relevant to a CommandDefinition
@@ -13,8 +9,7 @@ and any other field names...
 
 class DefinedWidget:
 
-    def __init__(self, dimensions: Dimensions, widgetType: WidgetType, name: str, px: int, py: int, dict: dict[str, float] = {}):
-        self.dimensions = dimensions
+    def __init__(self, widgetType: WidgetType, name: str, px: int, py: int, dict: dict[str, float] = {}):
         self.widgetType = widgetType
         self._name = name
         self._dict = dict

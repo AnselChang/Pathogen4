@@ -7,17 +7,23 @@ from image_manager import ImageID
 
 class PathAdapter(ABC, Observable):
 
-    def __init__(self, type: CommandType, dict: dict):
+    def __init__(self, type: CommandType, attributes: type[Enum]):
         self.type = type
-        self._dict: dict = dict
         self.icon: ImageID = None
+
+        self._dict: dict[Enum, float] = {}
+        for attribute in attributes:
+            self._dict[attribute] = -1
 
     def getDict(self) -> dict:
         return self._dict
     
-    def get(self, variable: str) -> float | str | None:
-        if variable in self._dict:
-            return self._dict[variable]
+    def set(self, attribute: Enum, value: float):
+        self._dict[attribute] = value
+    
+    def get(self, attribute: Enum) -> float:
+        if attribute in self._dict:
+            return self._dict[attribute]
         else:
             return None
         

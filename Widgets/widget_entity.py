@@ -11,6 +11,7 @@ from Widgets.widget_value import WidgetValue
 from Widgets.widget_type import WidgetType
 from Widgets.defined_widget import DefinedWidget
 
+from draw_order import DrawOrder
 from reference_frame import PointRef, Ref
 import pygame
 
@@ -28,7 +29,8 @@ class WidgetEntity(Entity):
         super().__init__(
             click = ClickLambda(self, FonLeftClick = self.onLeftClick, FonRightClick = self.onRightClick),
             drag = DragLambda(self, FstartDragging = self.onStartDrag, FdragOffset = self.onDragOffset, FstopDragging = self.onStopDrag),
-            hover = HoverLambda()
+            hover = HoverLambda(),
+            drawOrder = DrawOrder.WIDGET
         )
 
         self.parentCommand = parentCommand

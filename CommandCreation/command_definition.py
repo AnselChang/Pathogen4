@@ -2,8 +2,6 @@ from Widgets.defined_widget import DefinedWidget
 from Widgets.defined_readout import DefinedReadout
 from CommandCreation.command_type import CommandType
 
-from Adapters.path_adapter import PathAdapter
-
 import re
 
 """

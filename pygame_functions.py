@@ -62,8 +62,9 @@ FONTCODE = pygame.font.Font(FONT_PATH, 8)
 # align = 0 -> align left/top
 # align = 0.5 -> align mid
 # align = 1 -> align right/bottom
-def drawText(surface: pygame.Surface, font: pygame.font, string: str, color: tuple, x: int, y: int, alignX: float = 0.5, alignY: float = 0.5):
+def drawText(surface: pygame.Surface, font: pygame.font, string: str, color: tuple, x: int, y: int, alignX: float = 0.5, alignY: float = 0.5, opacity = 1):
     text = font.render(string, True, color)
+    text.set_alpha(opacity * 255)
     x -= text.get_width()*alignX
     y -= text.get_height()*alignY
     surface.blit(text, (x,y))

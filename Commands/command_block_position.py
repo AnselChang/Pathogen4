@@ -57,6 +57,14 @@ class CommandBlockPosition:
         y = self.getY() + self.getHeight() / 2
         return x,y
     
+    # the center y position of the title header on the top of the command
+    def getCenterHeadingY(self) -> float:
+        return self.getY() + self.Y_BETWEEN_COMMANDS_MIN / 2
+    
+    # return 1 if expanded, 0 if not, and in between
+    def getExpandedRatio(self) -> float:
+        return (self.getHeight() - self.Y_BETWEEN_COMMANDS_MIN) / (self.Y_BETWEEN_COMMANDS_MAX - self.Y_BETWEEN_COMMANDS_MIN)
+    
     # every tick, update animation if exists
     def onTick(self):
         if not self.expandMotion.isDone():

@@ -126,12 +126,20 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     
     def setY(self, y: float):
         self.position.setY(y)
+
+    def getWidth(self) -> float:
+        return self.position.getWidth()
     
     def getHeight(self) -> float:
         return self.position.getHeight()
     
     def getRect(self) -> tuple:
         return self.position.getRect()
+    
+    # return 0 if minimized, 1 if maximized, and in between
+    def getAddonsOpacity(self) -> float:
+        ratio = self.position.getExpandedRatio()
+        return ratio * ratio
 
     def isTouching(self, position: PointRef) -> bool:
         return isInsideBox2(*position.screenRef, *self.getRect())
@@ -168,7 +176,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         # draw icon
         iconImage = self.images.get(self.pathAdapter.getIcon())
         x = self.dimensions.FIELD_WIDTH + 20
-        y = self.position.getCenterPosition()[1]
+        y = self.position.getCenterHeadingY()
         drawSurface(screen, iconImage, x, y)
 
         # draw function name

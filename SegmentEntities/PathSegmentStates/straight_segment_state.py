@@ -8,7 +8,7 @@ from BaseEntity.entity import Entity
 from linked_list import LinkedListNode
 
 from Adapters.path_adapter import PathAdapter
-from Adapters.straight_adapter import StraightAdapter
+from Adapters.straight_adapter import StraightAdapter, StraightAttributeID
 
 from image_manager import ImageID
 
@@ -31,7 +31,13 @@ class StraightSegmentState(PathSegmentState):
     def updateAdapter(self) -> None:
         posA = self.segment.getPrevious().getPosition()
         posB = self.segment.getNext().getPosition()
-        self.adapter.set(posA.fieldRef, posB.fieldRef, (posB - posA).magnitude(Ref.FIELD))
+
+        self.adapter.set(StraightAttributeID.X1, posA.fieldRef[0])
+        self.adapter.set(StraightAttributeID.Y1, posA.fieldRef[1])
+        self.adapter.set(StraightAttributeID.X2, posB.fieldRef[0])
+        self.adapter.set(StraightAttributeID.Y2, posB.fieldRef[1])
+        self.adapter.set(StraightAttributeID.DISTANCE, (posB - posA).magnitude(Ref.FIELD))
+
         self.adapter.setIcon(ImageID.STRAIGHT_REVERSE if self.segment.isReversed else ImageID.STRAIGHT_FORWARD)
 
     def getStartTheta(self) -> float:

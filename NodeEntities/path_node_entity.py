@@ -8,7 +8,7 @@ from SegmentEntities.path_segment_entity import PathSegmentEntity
 from draw_order import DrawOrder
 
 from Adapters.path_adapter import AdapterInterface
-from Adapters.turn_adapter import TurnAdapter
+from Adapters.turn_adapter import TurnAdapter, TurnAttributeID
 
 from image_manager import ImageID
 from linked_list import LinkedListNode
@@ -66,7 +66,9 @@ class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface, LinkedLis
             start = self.getPrevious().getEndTheta()
             end = self.getNext().getEndTheta()
             
-        self.adapter.set(start, end)
+        self.adapter.set(TurnAttributeID.THETA1, start)
+        self.adapter.set(TurnAttributeID.THETA2, end)
+
         direction = deltaInHeading(start, end)
         self.adapter.setIcon(ImageID.TURN_RIGHT if direction >= 0 else ImageID.TURN_LEFT)
 

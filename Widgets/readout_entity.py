@@ -4,6 +4,7 @@ from Adapters.path_adapter import PathAdapter
 from Widgets.defined_readout import DefinedReadout
 
 from reference_frame import PointRef, Ref
+from draw_order import DrawOrder
 from pygame_functions import drawText, FONT15
 import pygame
 
@@ -15,12 +16,14 @@ Owns a DefinedReadout which stores information about the widget's context for al
 class ReadoutEntity(Entity):
     def __init__(self, parentCommand: Entity, definedReadout: DefinedReadout, pathAdapter: PathAdapter):
 
+        super().__init__(drawOrder = DrawOrder.READOUT)
+
         self.parentCommand = parentCommand
         self.definedReadout = definedReadout
         self.pathAdapter = pathAdapter
 
     def getText(self) -> str:
-        return str(self.pathAdapter.get(self.variableName))
+        return str(self.pathAdapter.get(self.definedReadout.getAttribute()))
     
     def isVisible(self) -> bool:
         return self.parentCommand.isVisible()
@@ -36,7 +39,9 @@ class ReadoutEntity(Entity):
         return PointRef(Ref.SCREEN, (x, y))
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        drawText(screen, FONT15, self.getText(), (0,0,0), *self.getPosition().screenRef)
+        # opacity: 1 = solid, 0 = invisible
+        opacity = self.parentCommand.getAddonsOpacity()
+        drawText(screen, FONT15, self.getText(), (0,0,0), *self.getPosition().screenRef, opacity = opacity)
 
     def toString(self) -> str:
         return "Readout entity"
