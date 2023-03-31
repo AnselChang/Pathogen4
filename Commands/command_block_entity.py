@@ -65,7 +65,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         entities = []
         for widget in self.getDefinition().widgets:
             entity = WidgetEntity(self, widget)
-            self.entities.addEntity(entity)
+            self.entities.addEntity(entity, self)
             entities.append(entity)
         return entities
     
@@ -74,7 +74,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         readouts = []
         for readout in self.getDefinition().readouts:
             readout = ReadoutEntity(self, readout, self.pathAdapter)
-            self.entities.addEntity(readout)
+            self.entities.addEntity(readout, self)
             readouts.append(readout)
         return readouts
     

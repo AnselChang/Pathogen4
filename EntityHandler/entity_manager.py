@@ -11,7 +11,12 @@ class EntityManager:
         # entities that own Tick (must call onTick() every tick)
         self.tickEntities: list[Entity] = []
 
-    def addEntity(self, entity: Entity):
+    # by setting a parent, it will be removed when parent is removed
+    def addEntity(self, entity: Entity, parent: Entity = None):
+        
+        if parent is not None:
+            entity._setParent(parent)
+
         self.entities.append(entity)
         self.entities.sort(key = lambda entity: entity.drawOrder, reverse = True)
 
@@ -19,6 +24,10 @@ class EntityManager:
             self.tickEntities.append(entity)
 
     def removeEntity(self, entity: Entity):
+
+        for child in entity._children:
+            self.entities.remove(child)
+
         self.entities.remove(entity)
 
         if entity in self.tickEntities:

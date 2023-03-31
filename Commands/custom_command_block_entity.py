@@ -17,7 +17,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         super().__init__(path, pathAdapter, database, entities, interactor, commandExpansion, images, dimensions)
 
         self.trash = Trash(self, self.images, self.dimensions, onDelete = self.delete)
-        self.entities.addEntity(self.trash)
+        self.entities.addEntity(self.trash, self)
 
     def delete(self):
         self.path.deleteCustomCommand(self)

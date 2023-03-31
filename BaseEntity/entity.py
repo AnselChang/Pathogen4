@@ -20,10 +20,13 @@ class Entity(ABC):
         self.click = click
         self.tick = tick
         self.hover = hover
-        self.children: list[Entity] = []
-    
-    def addChild(self, child: 'Entity'):
-        self.children.append(child)
+        self._children: list[Entity] = []
+        self._parent: Entity = None
+        
+    # setting child will make sure that when parent is removed from manager, children will be too
+    def _setParent(self, parent: 'Entity'):
+        self._parent = parent
+        parent._children.append(self)
 
     def distanceTo(self, position: PointRef) -> float:
         return (position - self.getPosition()).magnitude(Ref.SCREEN)
