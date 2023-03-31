@@ -116,7 +116,7 @@ def main():
         entities.tick()
 
         # Draw everything
-        entities.drawEntities(interactor, screen)
+        entities.drawEntities(interactor, screen, mouse.screenRef, dimensions)
 
         # Update display and maintain frame rate
         pygame.display.flip()

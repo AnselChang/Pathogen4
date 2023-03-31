@@ -31,11 +31,13 @@ class CommandExpansion(Observable):
                 "id" : ButtonID.COLLAPSE,
                 "imageOn" : ImageID.MIN_ON,
                 "imageOff" : ImageID.MIN_OFF,
+                "tooltip" : "Collapse all commands"
             },
             {
                 "id" : ButtonID.EXPAND,
                 "imageOn" : ImageID.MAX_ON,
                 "imageOff" : ImageID.MAX_OFF,
+                "tooltip" : "Expand all commands"
             }
         ]
 
@@ -43,7 +45,7 @@ class CommandExpansion(Observable):
             minOn = images.get(dict["imageOn"])
             minOff = images.get(dict["imageOff"])
             x = lambda i=i: self.partition(dimensions, i, self.buttons.N()) 
-            button = ImageRadioEntity(dict["id"], minOn, minOff, x, y, onUpdate = lambda isOn: self.notify()) 
+            button = ImageRadioEntity(dict["id"], minOn, minOff, x, y, onUpdate = lambda isOn: self.notify(), tooltip = dict["tooltip"]) 
             self.buttons.add(button)
 
     def setForceCollapse(self, isCollapse: bool):

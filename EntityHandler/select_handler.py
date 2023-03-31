@@ -20,3 +20,6 @@ class SelectHandler:
 
     def hasOnly(self, entity: Entity) -> bool:
         return len(self.entities) == 1 and entity is self.entities[0]
+    
+    def isEmpty(self) -> bool:
+        return len(self.entities) == 0

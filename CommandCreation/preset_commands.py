@@ -20,6 +20,7 @@ class CommandDefinitionPresets:
         builder = CommandDefinitionBuilder(CommandType.STRAIGHT)
         builder.setName("goForward")
         builder.addReadout(StraightAttributeID.DISTANCE, 0.5, 0.5)
+        # builder.addWidget([widget])
         return builder.build()
 
     def getTurnPreset(self) -> CommandDefinition:

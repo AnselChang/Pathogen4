@@ -6,13 +6,14 @@ from math_functions import isInsideBox2
 from pygame_functions import drawSurface, brightenSurface
 from dimensions import Dimensions
 from draw_order import DrawOrder
+from Tooltips.tooltip import TooltipOwner, Tooltip
 import pygame
 
 # Subclasses implement: isTouching, distanceTo, draw
-class ImageRadioEntity(RadioEntity):
+class ImageRadioEntity(RadioEntity, TooltipOwner):
 
     # id is used to distinguish between radio entities
-    def __init__(self, id: str, imageOn: pygame.Surface, imageOff: pygame.Surface, xIntOrCallback: int, yIntOrCallback: int, onUpdate = lambda isOn: None):
+    def __init__(self, id: str, imageOn: pygame.Surface, imageOff: pygame.Surface, xIntOrCallback: int, yIntOrCallback: int, tooltip: str | list[str] = None, onUpdate = lambda isOn: None):
         super().__init__(id, DrawOrder.UI_BUTTON, onUpdate = onUpdate)
 
         self.xIntOrCallback, self.yIntOrCallback = xIntOrCallback, yIntOrCallback
@@ -22,6 +23,14 @@ class ImageRadioEntity(RadioEntity):
         HOVER_DELTA = 50
         self.imageOn = {False: imageOn, True: brightenSurface(imageOn, HOVER_DELTA)}
         self.imageOff = {False: imageOff, True: brightenSurface(imageOff, HOVER_DELTA)}
+
+        if tooltip is None:
+            self.tooltip = None
+        else:
+            self.tooltip = Tooltip(tooltip)
+
+    def getTooltip(self) -> Tooltip | None:
+        return self.tooltip
 
     def getPositionRaw(self) -> tuple:
         x = self.xIntOrCallback if type(self.xIntOrCallback) == int else self.xIntOrCallback()

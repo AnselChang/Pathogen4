@@ -1,5 +1,7 @@
 from BaseEntity.entity import Entity
 from reference_frame import PointRef
+from Tooltips.tooltip import TooltipOwner
+from dimensions import Dimensions
 import pygame
 
 class EntityManager:
@@ -55,13 +57,20 @@ class EntityManager:
                     closest = entity
             return closest
     
-    def drawEntities(self, interactor, screen: pygame.Surface):
+    def drawEntities(self, interactor, screen: pygame.Surface, mousePosition: tuple, dimensions: Dimensions):
 
         for entity in self.entities:
             if entity.isVisible():
                 selected = entity in interactor.selected.entities
                 hovering = entity is interactor.hoveredEntity and (selected or not (interactor.leftDragging or interactor.rightDragging))
                 entity.draw(screen, selected, hovering)
+
+        # draw tooltips on top of the entities
+        for entity in self.entities:
+            if isinstance(entity, TooltipOwner) and entity.isVisible() and entity is interactor.hoveredEntity and interactor.selected.isEmpty():
+                entity.drawTooltip(screen, mousePosition, dimensions)
+
+
 
     # call onTick() for every entity with tick object
     def tick(self):
