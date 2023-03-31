@@ -70,11 +70,11 @@ class LinkedList:
             self.head = None
             self.tail = None
         elif self.head is node:
-            self.head = self.head.__next
-            self.head.__prev = None
+            self.head = self.head._next
+            self.head._prev = None
         elif self.tail is node:
-            self.tail = self.tail.__prev
-            self.tail.__next = None
+            self.tail = self.tail._prev
+            self.tail._next = None
         else:
             node._prev._next = node._next
             node._next._prev = node._prev

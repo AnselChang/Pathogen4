@@ -96,6 +96,12 @@ class Path:
         self.recomputeY()
 
     def deleteCustomCommand(self, command: CustomCommandBlockEntity):
+
+        # remove the inserter after the command
+        self.entities.removeEntity(command.getNext())
+        self.commandList.remove(command.getNext())
+
+        # remove the command
         self.commandList.remove(command)
         self.entities.removeEntity(command)
         self.recomputeY()

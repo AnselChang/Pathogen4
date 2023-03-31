@@ -30,7 +30,7 @@ class Trash(Entity):
         return True
 
     def isTouching(self, position: PointRef) -> bool:
-        return (position - self.getPosition()).magnitude(Ref.SCREEN) < 10
+        return (position - self.getPosition()).magnitude(Ref.SCREEN) < 12
 
     def getPosition(self) -> PointRef:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH - 30
