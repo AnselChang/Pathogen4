@@ -44,13 +44,3 @@ class CommandDefinitionDatabase:
     
     def getDefinition(self, type: CommandType, index: int = 0) -> CommandDefinition:
         return self.definitions[type][index]
-    
-    # DO NOT BELONG
-    def buildCommand(self, adapter: PathAdapter, index: int = 0) -> CommandBlockEntity:
-        assert(adapter.type != CommandType.CUSTOM)
-        state = self.buildCommandState(adapter, index)
-        return CommandBlockEntity(state, self.entities, self.interactor, self.images, self.dimensions)
-    
-    def buildCustomCommand(self, index: int = 0) -> CommandBlockEntity:
-        state = self.buildCommandState(NullPathAdapter(), index)
-        return CustomCommandBlockEntity(state, self.entities, self.interactor, self.images, self.dimensions)

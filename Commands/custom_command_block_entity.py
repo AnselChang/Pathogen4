@@ -20,7 +20,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         self.entities.addEntity(self.trash)
 
     def delete(self):
-        pass
+        self.path.deleteCustomCommand(self)
 
     def isOtherHovering(self) -> bool:
         return self.trash.hover.isHovering

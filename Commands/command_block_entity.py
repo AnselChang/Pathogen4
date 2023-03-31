@@ -161,10 +161,6 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
             color = shade(color, 1.1)
         pygame.draw.rect(screen, color, (x, y, width, height), border_radius = CORNER_RADIUS)
 
-        # draw selected border
-        if self.position.isExpanded() and False:
-            pygame.draw.rect(screen, (0,0,0), (x, y, width, height), border_radius = CORNER_RADIUS, width = 2)
-
         # draw icon
         iconImage = self.images.get(self.pathAdapter.getIcon())
         x = self.dimensions.FIELD_WIDTH + 20

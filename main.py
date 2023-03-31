@@ -49,7 +49,7 @@ def main():
     
     # Initialize field
     dimensions = Dimensions()
-    screen = dimensions.resizeScreen(800, 800)
+    screen = dimensions.resizeScreen(800, 600)
     fieldTransform: FieldTransform = FieldTransform(dimensions)
     initReferenceframe(dimensions, fieldTransform)
     mouse: PointRef = PointRef()

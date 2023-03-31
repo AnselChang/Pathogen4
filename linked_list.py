@@ -44,7 +44,7 @@ class LinkedList:
 
         if self.head is None:
             return
-        if self.head == node:
+        if self.head is node:
             self.addToBeginning(newNode)
             return
                 
@@ -55,7 +55,7 @@ class LinkedList:
 
     def insertAfter(self, node, newNode):
 
-        if self.tail == node:
+        if self.tail is node:
             self.addToEnd(newNode)
             return
 
@@ -63,6 +63,21 @@ class LinkedList:
         node._next._prev = newNode
         node._next = newNode
         newNode._prev = node
+
+    def remove(self, node):
+
+        if self.head is self.tail:
+            self.head = None
+            self.tail = None
+        elif self.head is node:
+            self.head = self.head.__next
+            self.head.__prev = None
+        elif self.tail is node:
+            self.tail = self.tail.__prev
+            self.tail.__next = None
+        else:
+            node._prev._next = node._next
+            node._next._prev = node._prev
 
     def printList(self):
         current = self.head

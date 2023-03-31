@@ -1,22 +1,18 @@
 from CommandCreation.command_definition_database import CommandDefinitionDatabase
 from Commands.command_block_entity import CommandBlockEntity
-from Commands.command_block_position import CommandBlockPosition
+from Commands.custom_command_block_entity import CustomCommandBlockEntity
 from Commands.command_inserter import CommandInserter
 from Commands.command_expansion import CommandExpansion
 
-from CommandCreation.command_type import CommandType
 from CommandCreation.command_block_entity_factory import CommandBlockEntityFactory
 
 from NodeEntities.path_node_entity import PathNodeEntity
 from SegmentEntities.path_segment_entity import PathSegmentEntity
-from SegmentEntities.path_segment_state import PathSegmentState
 
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
-from Adapters.path_adapter import PathAdapter, NullPathAdapter
-from Adapters.turn_adapter import TurnAdapter
-from Adapters.straight_adapter import StraightAdapter
+from Adapters.path_adapter import NullPathAdapter
 
 from linked_list import LinkedList
 from dimensions import Dimensions
@@ -99,7 +95,12 @@ class Path:
 
         self.recomputeY()
 
+    def deleteCustomCommand(self, command: CustomCommandBlockEntity):
+        self.commandList.remove(command)
+        self.entities.removeEntity(command)
+        self.recomputeY()
 
+    # set the local expansion flag for each command to isExpand
     def setAllLocalExpansion(self, isExpand: bool):
         node: CommandBlockEntity = self.commandList.head
         while node is not None:

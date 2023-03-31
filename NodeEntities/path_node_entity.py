@@ -1,5 +1,5 @@
 from NodeEntities.circle_mixin import CircleMixin
-from BaseEntity.independent_entity import IndependentEntity
+from BaseEntity.entity import Entity
 from reference_frame import PointRef, VectorRef
 from BaseEntity.EntityListeners.drag_listener import DragLambda
 from BaseEntity.EntityListeners.click_listener import ClickLambda
@@ -23,14 +23,13 @@ PathSegmentEntities connect two PathNodeEntities
 Referenced in PathSection
 """
 
-class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface, LinkedListNode[PathSegmentEntity]):
+class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathSegmentEntity]):
 
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)
 
     def __init__(self, position: PointRef):
-        super().__init__(
-            position = position,
+        Entity.__init__(self,
             drag = DragLambda(
                 self,
                 FcanDragOffset = lambda offset: isInsideBox(*(self.getPosition()+offset).fieldRef, 0, 0, 144, 144),
@@ -43,9 +42,13 @@ class PathNodeEntity(IndependentEntity, CircleMixin, AdapterInterface, LinkedLis
         
         LinkedListNode.__init__(self)
                 
-        CircleMixin.__init__(self, 10, 12)
+        super().__init__(10, 12)
 
+        self.position = position
         self.adapter: TurnAdapter = TurnAdapter()
+
+    def getPosition(self) -> PointRef:
+        return self.position
 
     def getColor(self) -> tuple:
         return self.FIRST_BLUE_COLOR if self.getPrevious() is None else self.BLUE_COLOR
