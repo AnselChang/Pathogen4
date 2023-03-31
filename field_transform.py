@@ -1,5 +1,7 @@
+from image_manager import ImageID, ImageManager
 from dimensions import Dimensions
 from math_functions import clamp
+from pygame_functions import scaleSurface
 import pygame
 import weakref
 
@@ -14,16 +16,16 @@ object would be used in cases like for PointRef objects to figure out their fiel
 """
 class FieldTransform:
 
-    def __init__(self, dimensions: Dimensions, fieldZoom: float = 1, xyFieldPanInPixels: tuple = (0,0)):
+    def __init__(self, images: ImageManager, dimensions: Dimensions, fieldZoom: float = 1, xyFieldPanInPixels: tuple = (0,0)):
 
         self.pointsAndVectors: list = weakref.WeakSet()
 
+        self._images = images
         self._dimensions = dimensions
         self.zoom = fieldZoom
         self._panX, self._panY = xyFieldPanInPixels
 
-        self.rawFieldSurface: pygame.Surface = pygame.image.load("Images/squarefield.png")
-        self.rawSize = self.rawFieldSurface.get_width()
+        self.rawSize = self._images.get(ImageID.FIELD).get_width()
 
         self.resizeScreen()
 
@@ -32,26 +34,27 @@ class FieldTransform:
             obj.recalculate()
 
     def resizeScreen(self):
+
         self.zoom = self._dimensions.LARGER_FIELD_SIDE / self.rawSize
-        self.size = self.rawSize * self.zoom
         self.updateScaledSurface()
         self._boundFieldPan()
         self.recalculatePointsAndVectors()
 
     # Whenever the zoom is changed, this function should be called to scale the raw surface into the scaled one
     def updateScaledSurface(self):
+        rawImage = self._images.get(ImageID.FIELD)
         self.size = self.rawSize * self.zoom
-
-        self.scaledFieldSurface: pygame.Surface = pygame.transform.smoothscale(
-            self.rawFieldSurface, [self.size, self.size])
+        self.scaledFieldSurface = scaleSurface(rawImage, self.zoom)
 
     # Restrict the panning range for the field as to keep the field in sight of the screen
     def _boundFieldPan(self):
 
+        MARGIN = 0
+
         minPanX = self._dimensions.FIELD_WIDTH - self.size
         minPanY = self._dimensions.SCREEN_HEIGHT - self.size
-        self._panX = clamp(self._panX, minPanX, 0)
-        self._panY = clamp(self._panY, minPanY, 0)
+        self._panX = clamp(self._panX, minPanX - MARGIN, MARGIN)
+        self._panY = clamp(self._panY, minPanY - MARGIN, MARGIN)
 
     # mouse is a PointRef
     def changeZoom(self, mouse, deltaZoom: float):

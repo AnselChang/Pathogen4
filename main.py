@@ -16,7 +16,7 @@ from CommandCreation.command_block_entity_factory import CommandBlockEntityFacto
 
 from Commands.command_expansion import CommandExpansion
 
-from image_manager import ImageManager
+from image_manager import ImageManager, ImageID
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
 from dimensions import Dimensions
@@ -46,16 +46,21 @@ def drawPanelBackground(screen, dimensions):
         pygame.draw.rect(screen, (100,100,100), (x, y, width, height))
 
 def main():
+
     
     # Initialize field
     dimensions = Dimensions()
     screen = dimensions.resizeScreen(800, 600)
-    fieldTransform: FieldTransform = FieldTransform(dimensions)
+
+    images = ImageManager()
+    imageSize = images.get(ImageID.FIELD).get_width()
+    dimensions.setFieldSizePixels(imageSize, 19)
+
+
+    fieldTransform: FieldTransform = FieldTransform(images, dimensions)
     initReferenceframe(dimensions, fieldTransform)
     mouse: PointRef = PointRef()
-
-    # initialize images
-    images = ImageManager()
+    
     
     # Initialize entities
     interactor = Interactor(dimensions, fieldTransform)

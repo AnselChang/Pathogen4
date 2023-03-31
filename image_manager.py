@@ -3,6 +3,7 @@ import pygame
 from enum import Enum, auto
 
 class ImageID(Enum):
+    FIELD = auto()
     STRAIGHT_FORWARD = auto()
     STRAIGHT_REVERSE = auto()
     TURN_LEFT = auto()
@@ -17,7 +18,7 @@ class ImageID(Enum):
 
 class Image:
 
-    def __init__(self, path: str, imageScale: float):
+    def __init__(self, path: str, imageScale: float = 1):
         self.image = getImage("Images/" + path, imageScale)
 
 class ImageManager:
@@ -28,6 +29,8 @@ class ImageManager:
     def __init__(self):
 
         self.images: dict[ImageID, Image] = {}
+
+        self.images[ImageID.FIELD] = Image("squarefield.png")
 
         size = 0.045
         self.images[ImageID.STRAIGHT_FORWARD] = Image("CommandIcons/StraightForward.png", size)

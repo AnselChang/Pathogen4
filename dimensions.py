@@ -6,6 +6,13 @@ class Dimensions:
 
         self.RATIO = 0.7
 
+        self.FIELD_SIZE_IN_INCHES = 144
+
+    def setFieldSizePixels(self, pixels: int, margin: int):
+        self.FIELD_SIZE_IN_PIXELS = pixels
+        self.PIXELS_TO_FIELD_CORNER = margin
+        self.FIELD_SIZE_IN_PIXELS_NO_MARGIN = self.FIELD_SIZE_IN_PIXELS - 2 * margin
+
     # Resize screen to (screenWidth, screenHeight) and return a new instance of the screen with updated dimensions
     def resizeScreen(self, screenWidth: int, screenHeight: int) -> pygame.Surface:
 
@@ -15,9 +22,5 @@ class Dimensions:
 
         larger = max(self.SCREEN_HEIGHT, self.FIELD_WIDTH)
         self.LARGER_FIELD_SIDE = larger
-
-        self.PIXELS_TO_FIELD_CORNER = 19 * (larger / 800) 
-        self.FIELD_SIZE_IN_PIXELS = 766 * (larger / 800)
-        self.FIELD_SIZE_IN_INCHES = 144
 
         return pygame.display.set_mode((screenWidth,screenHeight), pygame.RESIZABLE)

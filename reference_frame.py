@@ -50,16 +50,16 @@ class PointRef:
         normalizedScreenY = (pointS[1] - panY) / self.transform.zoom
 
         # convert to field reference frame
-        xf = (normalizedScreenX - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS * dimensions.FIELD_SIZE_IN_INCHES
-        yf = (normalizedScreenY - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS * dimensions.FIELD_SIZE_IN_INCHES
+        xf = (normalizedScreenX - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN * dimensions.FIELD_SIZE_IN_INCHES
+        yf = (normalizedScreenY - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN * dimensions.FIELD_SIZE_IN_INCHES
 
         return xf, yf
 
     # Given we only store the point in the field reference frame, we need to convert it to return as screen reference frame
     def _fieldToScreen(self, pointF: tuple) -> tuple:
         # convert to normalized (pre-zoom and pre-panning) coordinates
-        normalizedScreenX = pointF[0] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS + dimensions.PIXELS_TO_FIELD_CORNER
-        normalizedScreenY = pointF[1] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS + dimensions.PIXELS_TO_FIELD_CORNER
+        normalizedScreenX = pointF[0] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN + dimensions.PIXELS_TO_FIELD_CORNER
+        normalizedScreenY = pointF[1] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN + dimensions.PIXELS_TO_FIELD_CORNER
 
         # convert to screen reference frame
         panX, panY = self.transform.getPan()
@@ -153,13 +153,13 @@ class VectorRef:
 
     # Given we only store the point in the field reference frame, convert to field reference frame before storing it
     def _setScreenRef(self, vector: tuple):
-        scalar = dimensions.FIELD_SIZE_IN_INCHES / dimensions.FIELD_SIZE_IN_PIXELS / self.transform.zoom
+        scalar = dimensions.FIELD_SIZE_IN_INCHES / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN / self.transform.zoom
         self._vxf = vector[0] * scalar
         self._vyf = vector[1] * scalar
 
     # Given we only store the point in the field reference frame, we need to convert it to return as screen reference frame
     def _getScreenRef(self):
-        scalar = self.transform.zoom * dimensions.FIELD_SIZE_IN_PIXELS / dimensions.FIELD_SIZE_IN_INCHES
+        scalar = self.transform.zoom * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN / dimensions.FIELD_SIZE_IN_INCHES
         return self._vxf * scalar, self._vyf * scalar
 
     screenRef = property(_getScreenRef, _setScreenRef)
