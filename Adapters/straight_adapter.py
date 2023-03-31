@@ -16,5 +16,5 @@ class StraightAdapter(PathAdapter):
 
         super().__init__(CommandType.STRAIGHT, StraightAttributeID)
 
-    def set(self, attribute: StraightAttributeID, value: float):
-        super().set(attribute, value)
+    def set(self, attribute: StraightAttributeID, value: float, string: str):
+        super().set(attribute, value, string)

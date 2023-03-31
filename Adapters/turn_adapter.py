@@ -13,5 +13,5 @@ class TurnAdapter(PathAdapter):
 
         super().__init__(CommandType.TURN, TurnAttributeID)
 
-    def set(self, attribute: TurnAttributeID, value: float):
-        super().set(attribute, value)
+    def set(self, attribute: TurnAttributeID, value: float, string: str):
+        super().set(attribute, value, string)

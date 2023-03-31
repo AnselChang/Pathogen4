@@ -32,11 +32,13 @@ class StraightSegmentState(PathSegmentState):
         posA = self.segment.getPrevious().getPosition()
         posB = self.segment.getNext().getPosition()
 
-        self.adapter.set(StraightAttributeID.X1, posA.fieldRef[0])
-        self.adapter.set(StraightAttributeID.Y1, posA.fieldRef[1])
-        self.adapter.set(StraightAttributeID.X2, posB.fieldRef[0])
-        self.adapter.set(StraightAttributeID.Y2, posB.fieldRef[1])
-        self.adapter.set(StraightAttributeID.DISTANCE, (posB - posA).magnitude(Ref.FIELD))
+        self.adapter.set(StraightAttributeID.X1, posA.fieldRef[0], f"{posA.fieldRef[0]:.1f})")
+        self.adapter.set(StraightAttributeID.Y1, posA.fieldRef[1], f"{posA.fieldRef[1]:.1f})")
+        self.adapter.set(StraightAttributeID.X2, posB.fieldRef[0], f"{posB.fieldRef[0]:.1f})")
+        self.adapter.set(StraightAttributeID.Y2, posB.fieldRef[1], f"{posB.fieldRef[1]:.1f})")
+
+        distance = (posB - posA).magnitude(Ref.FIELD)
+        self.adapter.set(StraightAttributeID.DISTANCE, distance, f"{distance:.1f}\"")
 
         self.adapter.setIcon(ImageID.STRAIGHT_REVERSE if self.segment.isReversed else ImageID.STRAIGHT_FORWARD)
 

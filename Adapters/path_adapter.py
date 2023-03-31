@@ -11,19 +11,30 @@ class PathAdapter(ABC, Observable):
         self.type = type
         self.icon: ImageID = None
 
-        self._dict: dict[Enum, float] = {}
+        self._dictValue: dict[Enum, float] = {}
+        self._dictStr: dict[Enum, str] = {}
         for attribute in attributes:
-            self._dict[attribute] = -1
+            self._dictValue[attribute] = -1
+            self._dictStr[attribute] = ""
 
     def getDict(self) -> dict:
         return self._dict
     
-    def set(self, attribute: Enum, value: float):
-        self._dict[attribute] = value
+    # value: the raw numerical value to be used in generated code
+    # string: to be displayed by readouts, etc.
+    def set(self, attribute: Enum, value: float, string: str):
+        self._dictValue[attribute] = round(value, 3)
+        self._dictStr[attribute] = string
     
-    def get(self, attribute: Enum) -> float:
-        if attribute in self._dict:
-            return self._dict[attribute]
+    def getValue(self, attribute: Enum) -> float:
+        if attribute in self._dictValue:
+            return self._dictValue[attribute]
+        else:
+            return None
+        
+    def getString(self, attribute: Enum) -> str:
+        if attribute in self._dictStr:
+            return self._dictStr[attribute]
         else:
             return None
         

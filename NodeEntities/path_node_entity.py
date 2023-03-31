@@ -16,6 +16,7 @@ from linked_list import LinkedListNode
 from math_functions import isInsideBox
 from pygame_functions import shade
 from angle_functions import deltaInHeading
+from format_functions import formatDegrees
 
 """
 Interactable path nodes
@@ -69,8 +70,8 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
             start = self.getPrevious().getEndTheta()
             end = self.getNext().getEndTheta()
             
-        self.adapter.set(TurnAttributeID.THETA1, start)
-        self.adapter.set(TurnAttributeID.THETA2, end)
+        self.adapter.set(TurnAttributeID.THETA1, start, formatDegrees(start, 1))
+        self.adapter.set(TurnAttributeID.THETA2, end, formatDegrees(end, 1))
 
         direction = deltaInHeading(start, end)
         self.adapter.setIcon(ImageID.TURN_RIGHT if direction >= 0 else ImageID.TURN_LEFT)

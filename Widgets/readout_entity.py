@@ -23,7 +23,7 @@ class ReadoutEntity(Entity):
         self.pathAdapter = pathAdapter
 
     def getText(self) -> str:
-        return str(self.pathAdapter.get(self.definedReadout.getAttribute()))
+        return str(self.pathAdapter.getString(self.definedReadout.getAttribute()))
     
     def isVisible(self) -> bool:
         return self.parentCommand.isVisible()
