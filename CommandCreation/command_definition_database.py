@@ -1,6 +1,5 @@
 from CommandCreation.command_definition import CommandType, CommandDefinition
 from CommandCreation.preset_commands import CommandDefinitionPresets
-from Commands.command_state import CommandState
 from Commands.command_block_entity import CommandBlockEntity
 from Commands.custom_command_block_entity import CustomCommandBlockEntity
 

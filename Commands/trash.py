@@ -1,5 +1,6 @@
 from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.click_listener import ClickLambda
+from BaseEntity.EntityListeners.hover_listener import HoverLambda
 
 from image_manager import ImageManager, ImageID
 from dimensions import Dimensions
@@ -16,6 +17,7 @@ class Trash(Entity):
         
         super().__init__(
             click = ClickLambda(self, FonLeftClick = onDelete),
+            hover = HoverLambda(self),
             drawOrder = DrawOrder.WIDGET
         )
         
@@ -32,7 +34,7 @@ class Trash(Entity):
 
     def getPosition(self) -> PointRef:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH - 30
-        y = self.parentCommand.currentY + self.parentCommand.getHeight() / 2
+        y = self.parentCommand.getY() + self.parentCommand.getHeight() / 2
         return PointRef(Ref.SCREEN, (x,y))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

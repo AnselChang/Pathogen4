@@ -1,6 +1,10 @@
 from Adapters.path_adapter import PathAdapter
+
 from Commands.command_block_entity import CommandBlockEntity
+from Commands.custom_command_block_entity import CustomCommandBlockEntity
+
 from CommandCreation.command_definition_database import CommandDefinitionDatabase
+from CommandCreation.command_type import CommandType
 
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
@@ -18,4 +22,7 @@ class CommandBlockEntityFactory:
         self.dimensions = dimensions
 
     def create(self, adapter: PathAdapter) -> CommandBlockEntity:
-        return CommandBlockEntity(adapter, self.database, self.entities, self.interactor, self.images, self.dimensions)
+        if adapter.type == CommandType.CUSTOM:
+            return CustomCommandBlockEntity(adapter, self.database, self.entities, self.interactor, self.images, self.dimensions)
+        else:
+            return CommandBlockEntity(adapter, self.database, self.entities, self.interactor, self.images, self.dimensions)

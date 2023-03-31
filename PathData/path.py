@@ -38,18 +38,21 @@ class Path:
         self.commandList = LinkedList() # linked list of CommandEntities
 
         self._addInserter(self.commandList.addToEnd) # add initial CommandInserter
+        self._addRawNode(startPosition, self.commandList.addToEnd) # add start node
         self._addInserter(self.commandList.addToEnd) # add final CommandInserter
-        self._addRawNode(startPosition) # add start node
+        self.recomputeY()
         self.node.updateAdapter()
+
+    def recomputeY(self):
+        self.commandList.head.updateNextY()
 
     def _addInserter(self, func):
 
         inserter = CommandInserter(self.interactor, self.dimensions, self.addCustomCommand)
         func(inserter)
         self.entities.addEntity(inserter)
-        inserter.initPosition()
 
-    def _addRawNode(self, nodePosition: PointRef):
+    def _addRawNode(self, nodePosition: PointRef, func):
 
         # create node and add entity
         self.node: PathNodeEntity = PathNodeEntity(position = nodePosition)
@@ -58,9 +61,8 @@ class Path:
 
         # create turn command and add entity
         self.turnCommand = self.commandFactory.create(self.node.getAdapter())
-        self.commandList.insertBeforeEnd(self.turnCommand)
+        func(self.turnCommand)
         self.entities.addEntity(self.turnCommand)
-        self.turnCommand.initPosition()
 
     def _addRawSegment(self):
 
@@ -73,27 +75,27 @@ class Path:
         self.segmentCommand = self.commandFactory.create(self.segment.getAdapter())
         self.commandList.insertBeforeEnd(self.segmentCommand)
         self.entities.addEntity(self.segmentCommand)
-        self.segmentCommand.initPosition()
 
     def addNode(self, nodePosition: PointRef):
         self._addInserter(self.commandList.addToEnd)
         self._addRawSegment()
         self._addInserter(self.commandList.addToEnd)
-        self._addRawNode(nodePosition)
+        self._addRawNode(nodePosition, self.commandList.insertBeforeEnd)
 
+        self.recomputeY()
         self.segment.updateAdapter()
         self.node.updateAdapter()
 
     # add custom command where inserter is
     def addCustomCommand(self, inserter: CommandInserter):
         # add the custom command after the inserter
-        command = self.commandFactory.create(NullPathAdapter)
+        command = self.commandFactory.create(NullPathAdapter())
         self.commandList.insertAfter(inserter, command)
         self.entities.addEntity(command)
-        command.initPosition()
-
         self._addInserter(lambda newInserter: self.commandList.insertAfter(command, newInserter))
-    
+
+        self.recomputeY()
+        
     
 
     

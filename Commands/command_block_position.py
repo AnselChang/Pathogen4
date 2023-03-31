@@ -1,5 +1,4 @@
 from Animation.motion_profile import MotionProfile
-from Commands.command_inserter import CommandInserter
 
 from BaseEntity.entity import Entity
 
@@ -15,7 +14,7 @@ This also handles the expand/shrink animation
 
 class CommandBlockPosition:
 
-    def __init__(self, commandBlockEntity: Entity | LinkedListNode[CommandInserter], dimensions: Dimensions):
+    def __init__(self, commandBlockEntity: Entity | LinkedListNode, dimensions: Dimensions):
         self.command = commandBlockEntity
         self.dimensions = dimensions
 
@@ -27,16 +26,18 @@ class CommandBlockPosition:
         self.isExpanded = False
         self.expandMotion = MotionProfile(self.Y_BETWEEN_COMMANDS_MIN, self.Y_BETWEEN_COMMANDS_MIN,
                                           speed = 0.25)
+        
+        self.setY(0)
 
-        prev = self.getPrevious()
-        self.currentY = prev.currentY + prev.getHeight()
-        self.updateNextY()
 
     def getX(self) -> float:
         return self.dimensions.FIELD_WIDTH + self.X_MARGIN
     
     def getY(self) -> float:
         return self.currentY
+    
+    def setY(self, y: float):
+        self.currentY = y
     
     def getWidth(self) -> float:
         return self.dimensions.PANEL_WIDTH - 2 * self.X_MARGIN

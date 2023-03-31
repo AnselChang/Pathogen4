@@ -4,8 +4,7 @@ from BaseEntity.EntityListeners.tick_listener import TickLambda
 
 from Adapters.path_adapter import PathAdapter
 
-from CommandCreation.command_type import COMMAND_INFO, CommandTypeInfo
-from CommandCreation.command_definition_database import CommandDefinitionDatabase
+from CommandCreation.command_type import COMMAND_INFO
 from CommandCreation.command_definition import CommandDefinition
 
 from Commands.command_block_position import CommandBlockPosition
@@ -18,7 +17,7 @@ from EntityHandler.interactor import Interactor
 
 from linked_list import LinkedListNode
 
-from image_manager import ImageManager, ImageID
+from image_manager import ImageManager
 from draw_order import DrawOrder
 from dimensions import Dimensions
 from reference_frame import PointRef, Ref
@@ -32,7 +31,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
     expandedEntity: 'CommandBlockEntity' = None
 
-    def __init__(self, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
+    def __init__(self, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
         super().__init__(
             select = SelectLambda(self,
                 id = "command",
@@ -60,8 +59,6 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.widgetEntities = self.manifestWidgets()
         self.readoutEntities = self.manifestReadouts()
 
-    # MUST call this after being added to the linked list
-    def initPosition(self):
         self.position = CommandBlockPosition(self, self.dimensions)
 
     def getDefinition(self) -> CommandDefinition:
@@ -127,6 +124,12 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def getY(self) -> float:
         return self.position.getY()
     
+    def setY(self, y: float):
+        self.position.setY(y)
+    
+    def getHeight(self) -> float:
+        return self.position.getHeight()
+    
     def getRect(self) -> tuple:
         return self.position.getRect()
 
@@ -142,6 +145,9 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
             if widget.hover.isHovering:
                 return True
         return False
+    
+    def isOtherHovering(self) -> bool:
+        return False
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
@@ -150,8 +156,8 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         x, y, width, height = self.position.getRect()
 
         # draw rounded rect
-        color = COMMAND_INFO[self.state.type].color
-        if isHovered or self.isWidgetHovering():
+        color = COMMAND_INFO[self.type].color
+        if isHovered or self.isWidgetHovering() or self.isOtherHovering():
             color = shade(color, 1.2)
         pygame.draw.rect(screen, color, (x, y, width, height), border_radius = CORNER_RADIUS)
 

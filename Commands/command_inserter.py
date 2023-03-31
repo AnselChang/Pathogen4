@@ -49,17 +49,8 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
         self.THICK = 3 # cross thick radius
         self.THIN = 1 # cross thin radius
 
-
+        self.currentY = self.START_Y
         self.isHovered = False
-
-    # MUST CALL THIS AFTER ADDING TO LINKED LIST
-    def initPosition(self):
-        prev = self.getPrevious()
-        if prev is None:
-            self.currentY = self.START_Y
-        else:
-            self.currentY = prev.currentY + prev.getHeight()
-        self.updateNextY()
 
     def onHoverOn(self):
 
@@ -78,6 +69,9 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
             return 0
         return self.Y_MAX if self.isHovered else self.Y_MIN
     
+    def getY(self) -> int:
+        return self.currentY
+    
     def setY(self, y: int):
         self.currentY = y
         self.updateNextY()
@@ -90,7 +84,7 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
         if nextCommand is None:
             return
         
-        nextCommand.currentY = self.currentY + self.getHeight() 
+        nextCommand.setY(self.currentY + self.getHeight())
         
         nextCommand.updateNextY()
         
