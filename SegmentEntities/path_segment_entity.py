@@ -53,9 +53,9 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
     def onNodeMove(self, node: Entity):
         self.updateAdapter()
         if node is self.getPrevious():
-            self.getPrevious().onAngleChange()
-        else:
             self.getNext().onAngleChange()
+        else:
+            self.getPrevious().onAngleChange()
 
     def getAdapter(self) -> PathAdapter:
         return self.state.getAdapter()
