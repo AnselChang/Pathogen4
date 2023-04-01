@@ -67,7 +67,7 @@ class Interactor:
     def isMultiselect(self) -> bool:
         return self.box.active
     
-    def setHoveredEntity(self, entity: Entity):
+    def setHoveredEntity(self, entity: Entity, mouse: PointRef):
         
         if self.hoveredEntity is not entity:
 
@@ -79,8 +79,13 @@ class Interactor:
             if entity is not None and entity.hover is not None:
                 entity.hover.onHoverOn()
 
+        
+        if entity is not None and entity.hover is not None:
+            entity.hover.whileHovering(mouse)
+
         # update hovered entity
         self.hoveredEntity = entity
+        
 
     def onMouseDown(self, entities: EntityManager, mouse: PointRef, isRight: bool, shiftKey: bool):
 

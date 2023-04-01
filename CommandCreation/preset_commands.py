@@ -25,7 +25,7 @@ class CommandDefinitionPresets:
         builder = CommandDefinitionBuilder(CommandType.STRAIGHT)
         builder.setName("goForward")
         builder.addReadout(StraightAttributeID.DISTANCE, 0.5, 0.5)
-        builder.addWidget(CheckboxWidget(), "checkbox", 0.5, 0.75)
+        builder.addWidget(CheckboxWidget("enabled", "disabled"), "checkbox", 0.5, 0.75)
         return builder.build()
 
     def getTurnPreset(self) -> CommandDefinition:

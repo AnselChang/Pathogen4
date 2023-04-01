@@ -96,7 +96,7 @@ def main():
     # Main game loop
     while True:
         mouse.screenRef = pygame.mouse.get_pos()
-        interactor.setHoveredEntity(entities.getEntityAtPosition(mouse))
+        interactor.setHoveredEntity(entities.getEntityAtPosition(mouse), mouse)
 
         # handle events and call callbacks
         for event in pygame.event.get():

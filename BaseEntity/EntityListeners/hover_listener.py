@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from reference_frame import PointRef
 
 class HoverListener(ABC):
 
@@ -12,13 +13,17 @@ class HoverListener(ABC):
     def onHoverOff(self):
         self.isHovering = False
 
+    def whileHovering(self, mouse: PointRef):
+        pass
+
 class HoverLambda(HoverListener):
 
-    def __init__(self, entity, FonHoverOn = lambda: None, FonHoverOff = lambda: None):
+    def __init__(self, entity, FonHoverOn = lambda: None, FonHoverOff = lambda: None, FWhileHovering = lambda mouse: None):
         super().__init__(entity)
 
         self.FonHoverOn = FonHoverOn
         self.FonHoverOff = FonHoverOff
+        self.FWhileHovering = FWhileHovering
 
     def onHoverOn(self):
         super().onHoverOn()
@@ -27,3 +32,7 @@ class HoverLambda(HoverListener):
     def onHoverOff(self):
         super().onHoverOff()
         self.FonHoverOff()
+
+    def whileHovering(self, mouse: PointRef):
+        super().whileHovering(mouse)
+        self.FWhileHovering(mouse)

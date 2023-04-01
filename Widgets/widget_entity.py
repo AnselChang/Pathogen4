@@ -10,6 +10,8 @@ from BaseEntity.EntityListeners.hover_listener import HoverLambda
 from Widgets.widget_type import WidgetType
 from Widgets.defined_widget import DefinedWidget
 
+from Tooltips.tooltip import TooltipOwner, Tooltip
+
 from image_manager import ImageID
 from draw_order import DrawOrder
 from reference_frame import PointRef, Ref
@@ -21,7 +23,7 @@ Owns a DefinedWidget which stores information about the widget's context for all
 Stores the actual value of the widget
 """
 
-class WidgetEntity(Entity):
+class WidgetEntity(Entity, TooltipOwner):
 
     def __init__(self, parentCommand: Entity, definedWidget: DefinedWidget):
             
@@ -69,6 +71,9 @@ class WidgetEntity(Entity):
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         self.widgetType.draw(self, screen, isActive, isHovered)
+
+    def getTooltip(self) -> Tooltip | None:
+        return self.widgetType.getTooltip(self)
 
     def toString(self) -> str:
         return "widget"

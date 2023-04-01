@@ -9,10 +9,9 @@ Does not hold the widget value itself (set and get that from widgetEntity)
 
 class DefinedWidget:
 
-    def __init__(self, widgetType: WidgetType, name: str, px: int, py: int, dict: dict[str, float] = {}):
+    def __init__(self, widgetType: WidgetType, name: str, px: int, py: int):
         self.widgetType = widgetType
         self._name = name
-        self._dict = dict
 
         # px and py are numbers (0-1) representing 0 (top/left) and 1 (top/right) for relative position
         self._px, self._py = px, py
@@ -25,9 +24,3 @@ class DefinedWidget:
     
     def getPositionRatio(self) -> tuple:
         return self._px, self._py
-
-    def setAttribute(self, attribute: str, value: float):
-        self._dict[attribute] = value
-
-    def getAttribute(self, attribute: str):
-        return self._dict[attribute]
