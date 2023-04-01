@@ -115,6 +115,7 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
     def isTouching(self, position: PointRef) -> bool:
         return isInsideBox2(*position.screenRef, *self.getRect(True))
 
+
     def getPosition(self) -> PointRef:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH / 2
         y = self.currentY + self.getHeight() / 2

@@ -139,3 +139,23 @@ class Path:
 
     def getScrollbarOffset(self) -> int:
         return self.scrollbar.getOffset()
+    
+    # When dragging a custom command. Gets the closest inserter object to the mouse
+    def getClosestInserter(self, mouse: PointRef) -> CommandInserter | None:
+
+        mx, my = mouse.screenRef
+
+        closestInserter: CommandInserter = self.commandList.head
+        closestDistance = abs(closestInserter.getY() - my)
+
+        inserter: CommandInserter = self.commandList.head
+        while inserter is not None:
+            if isinstance(inserter, CommandInserter):
+
+                distance = abs(inserter.getY() - my)
+                if distance < closestDistance:
+                    closestDistance = distance
+                    closestInserter = inserter
+            inserter = inserter.getNext()
+
+        return closestInserter
