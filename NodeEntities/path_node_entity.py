@@ -3,7 +3,7 @@ from BaseEntity.entity import Entity
 from reference_frame import PointRef, VectorRef
 from BaseEntity.EntityListeners.drag_listener import DragLambda
 from BaseEntity.EntityListeners.click_listener import ClickLambda
-from BaseEntity.EntityListeners.select_listener import Select, SelectLambda
+from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
 from SegmentEntities.path_segment_entity import PathSegmentEntity
 from draw_order import DrawOrder
 

@@ -1,8 +1,8 @@
-from BaseEntity.EntityListeners.click_listener import Click, ClickLambda
-from BaseEntity.EntityListeners.drag_listener import Drag, DragLambda
-from BaseEntity.EntityListeners.select_listener import Select, SelectLambda
-from BaseEntity.EntityListeners.tick_listener import Tick, TickLambda
-from BaseEntity.EntityListeners.hover_listener import Hover, HoverLambda
+from BaseEntity.EntityListeners.click_listener import ClickListener, ClickLambda
+from BaseEntity.EntityListeners.drag_listener import DragListener, DragLambda
+from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
+from BaseEntity.EntityListeners.tick_listener import TickListener, TickLambda
+from BaseEntity.EntityListeners.hover_listener import HoverListener, HoverLambda
 
 from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.hover_listener import HoverLambda

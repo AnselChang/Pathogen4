@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class Click(ABC):
+class ClickListener(ABC):
 
     def __init__(self, entity):
         self.entity = entity
@@ -17,7 +17,7 @@ class Click(ABC):
     def onDoubleLeftClick(self):
         pass
 
-class ClickLambda(Click):
+class ClickLambda(ClickListener):
 
     def __init__(self, entity, FonLeftClick = lambda: None, FonRightClick = lambda: None, FOnDoubleClick = lambda: None):
         super().__init__(entity)

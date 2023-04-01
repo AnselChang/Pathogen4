@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 # onTick() is called every tick
 
-class Tick(ABC):
+class TickListener(ABC):
 
     def __init__(self, entity):
         self.entity = entity
@@ -12,7 +12,7 @@ class Tick(ABC):
         pass
 
 
-class TickLambda(Tick):
+class TickLambda(TickListener):
 
     def __init__(self, entity, FonTick = lambda: None):
         super().__init__(entity)

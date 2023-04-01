@@ -1,8 +1,8 @@
-from BaseEntity.EntityListeners.click_listener import Click, ClickLambda
-from BaseEntity.EntityListeners.drag_listener import Drag, DragLambda
-from BaseEntity.EntityListeners.select_listener import Select, SelectLambda
-from BaseEntity.EntityListeners.tick_listener import Tick, TickLambda
-from BaseEntity.EntityListeners.hover_listener import Hover, HoverLambda
+from BaseEntity.EntityListeners.click_listener import ClickListener, ClickLambda
+from BaseEntity.EntityListeners.drag_listener import DragListener, DragLambda
+from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
+from BaseEntity.EntityListeners.tick_listener import TickListener, TickLambda
+from BaseEntity.EntityListeners.hover_listener import HoverListener, HoverLambda
 
 from draw_order import DrawOrder
 
@@ -17,7 +17,7 @@ Does not hold information for things specific to a CommandDefinition (location, 
 
 class WidgetType:
 
-    def __init__(self, drag: Drag = None, select: Select = None, click: Click = None, tick: Tick = None, hover: Hover = None, drawOrder: int = 0):
+    def __init__(self, drag: DragListener = None, select: SelectListener = None, click: ClickListener = None, tick: TickListener = None, hover: HoverListener = None, drawOrder: int = 0):
         self.drag = drag
         self.select = select
         self.click = click

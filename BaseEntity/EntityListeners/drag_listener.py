@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from reference_frame import VectorRef
 
-class Drag(ABC):
+class DragListener(ABC):
 
     def __init__(self, entity):
         self.entity = entity
@@ -22,7 +22,7 @@ class Drag(ABC):
     def stopDragging(self):
         pass
 
-class DragLambda(Drag):
+class DragLambda(DragListener):
 
     def __init__(self, entity, FstartDragging = lambda: None, FcanDragOffset = lambda offset: True, FdragOffset = lambda: None, FstopDragging = lambda: None):
         super().__init__(entity)

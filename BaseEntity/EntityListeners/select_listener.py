@@ -4,7 +4,7 @@ import pygame
 
 from reference_frame import PointRef
 
-class Select(ABC):
+class SelectListener(ABC):
 
     def __init__(self, entity, id: str, enableToggle: bool):
         self.entity = entity
@@ -25,7 +25,7 @@ class Select(ABC):
         pass
     
     
-class SelectLambda(Select):
+class SelectLambda(SelectListener):
 
     def __init__(self, entity, id: str, enableToggle: bool = False, FgetHitbox = lambda : None, FonSelect = lambda: None, FonDeselect = lambda: None):
         super().__init__(entity, id, enableToggle)

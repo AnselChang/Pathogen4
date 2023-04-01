@@ -1,9 +1,9 @@
 from abc import abstractmethod
 from BaseEntity.entity import Entity
 from reference_frame import PointRef, Ref, VectorRef
-from BaseEntity.EntityListeners.drag_listener import Drag
-from BaseEntity.EntityListeners.click_listener import Click
-from BaseEntity.EntityListeners.select_listener import Select
+from BaseEntity.EntityListeners.drag_listener import DragListener
+from BaseEntity.EntityListeners.click_listener import ClickListener
+from BaseEntity.EntityListeners.select_listener import SelectListener
 from pygame_functions import drawTransparentCircle
 from math_functions import scaleTuple, clampTuple, intTuple
 import pygame, math

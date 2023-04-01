@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class Hover(ABC):
+class HoverListener(ABC):
 
     def __init__(self, entity):
         self.entity = entity
@@ -12,7 +12,7 @@ class Hover(ABC):
     def onHoverOff(self):
         self.isHovering = False
 
-class HoverLambda(Hover):
+class HoverLambda(HoverListener):
 
     def __init__(self, entity, FonHoverOn = lambda: None, FonHoverOff = lambda: None):
         super().__init__(entity)
