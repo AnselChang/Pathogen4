@@ -141,6 +141,11 @@ class Interactor:
             elif len(self.selected.entities) == 0:
                 self.addEntity(self.hoveredEntity)
 
+        # start dragging all the selected entities
+        for entity in self.selected.entities:
+            if entity.drag is not None:
+                entity.drag.onStartDrag(mouse)
+
         # start panning
         mx, my = mouse.screenRef
         if self.hoveredEntity is None and mx < self.dimensions.FIELD_WIDTH:
@@ -169,7 +174,7 @@ class Interactor:
     def canDragSelection(self, offset):
         for selected in self.selected.entities:
             if selected.drag is not None:
-                if not selected.drag.canDragOffset(offset):
+                if not selected.drag.canDrag(offset):
                     return False
         return True
 
@@ -185,22 +190,12 @@ class Interactor:
         if self.box.isEnabled():
             self.setSelectedEntities(self.box.update(mouse.screenRef, entities))
 
-        # Calculate how much the mouse moved this tick
-        mouseDelta: VectorRef = mouse - self.mousePrevious
 
         # Drag selection
-        if self.leftDragging and not self.box.isEnabled() and self.canDragSelection(mouseDelta):
-            
-            """
-            We only update self.mousePrevious when it's draggable, so that when it's not,
-            the mouseDelta can build up until it's draggable again. Otherwise,
-            entities may get stuck
-            """
-            self.mousePrevious = mouse.copy()
-
+        if self.leftDragging and not self.box.isEnabled() and self.canDragSelection(mouse):
             for selected in self.selected.entities:
                 if selected.drag is not None:
-                    selected.drag.dragOffset(mouseDelta)
+                    selected.drag.onDrag(mouse)
 
         # pan field
         if self.leftDragging and self.panning:

@@ -1,8 +1,6 @@
 from BaseEntity.entity import Entity
 from Adapters.path_adapter import PathAdapter
 
-from Widgets.readout_definition import ReadoutDefinition
-
 from reference_frame import PointRef, Ref
 from draw_order import DrawOrder
 from pygame_functions import drawText, FONT15
@@ -14,7 +12,7 @@ Owns a DefinedReadout which stores information about the widget's context for al
 """
 
 class ReadoutEntity(Entity):
-    def __init__(self, parentCommand: Entity, definedReadout: ReadoutDefinition, pathAdapter: PathAdapter):
+    def __init__(self, parentCommand: Entity, pathAdapter: PathAdapter, definedReadout):
 
         super().__init__(drawOrder = DrawOrder.READOUT)
 

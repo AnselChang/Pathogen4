@@ -20,7 +20,7 @@ class SelectHandler:
         if entity.select.type == SelectorType.SOLO and not self.isEmpty():
             # do not allow if something already selected, and entity is SOLO
             return False
-        elif len(self.entities) == 1 and self.entities[0].type == SelectorType.SOLO:
+        elif len(self.entities) == 1 and self.entities[0].select.type == SelectorType.SOLO:
             # do not allow if something is already selected and that something is SOLO
             return False
 

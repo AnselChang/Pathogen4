@@ -1,4 +1,5 @@
 from enum import Enum
+from Widgets.readout_entity import ReadoutEntity
 
 """
 A CommandDefinition holds a list of DefinedReadouts.
@@ -12,6 +13,9 @@ class ReadoutDefinition:
 
         # px and py are numbers (0-1) representing 0 (top/left) and 1 (top/right) for relative position
         self._px, self._py = px, py
+
+    def make(self, parentCommand, pathAdapter) -> ReadoutEntity:
+        return ReadoutEntity(parentCommand, pathAdapter, self)
 
     def getPositionRatio(self) -> tuple:
         return self._px, self._py

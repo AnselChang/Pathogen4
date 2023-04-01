@@ -6,6 +6,7 @@ from BaseEntity.EntityListeners.click_listener import ClickLambda
 from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
 from SegmentEntities.path_segment_entity import PathSegmentEntity
 from draw_order import DrawOrder
+from EntityHandler.interactor import Interactor
 
 from Adapters.path_adapter import AdapterInterface
 from Adapters.turn_adapter import TurnAdapter, TurnAttributeID
@@ -18,6 +19,8 @@ from pygame_functions import shade
 from angle_functions import deltaInHeading
 from format_functions import formatDegrees
 
+import pygame
+
 """
 Interactable path nodes
 Neighbors PathSegmentEntities
@@ -29,12 +32,13 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)
 
-    def __init__(self, position: PointRef):
+    def __init__(self, interactor: Interactor, position: PointRef):
         Entity.__init__(self,
             drag = DragLambda(
                 self,
-                FcanDragOffset = lambda offset: isInsideBox(*(self.getPosition()+offset).fieldRef, 0, 0, 144, 144),
-                FdragOffset = lambda offset: self.move(offset)
+                FonStartDrag = self.onStartDrag,
+                FcanDrag = self.canDrag,
+                FonDrag = self.onDrag
             ),
             select = SelectLambda(self, "path node", FgetHitbox = self.getHitbox),
             click = ClickLambda(self, FonLeftClick = lambda : print("left click"), FonRightClick = lambda : print("right click")),
@@ -45,6 +49,7 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
                 
         super().__init__(10, 12)
 
+        self.interactor = interactor
         self.position = position
         self.adapter: TurnAdapter = TurnAdapter()
 
@@ -76,8 +81,24 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         direction = deltaInHeading(start, end)
         self.adapter.setIcon(ImageID.TURN_RIGHT if direction >= 0 else ImageID.TURN_LEFT)
 
-    def move(self, offset: VectorRef):
-        self.position += offset
+    def onStartDrag(self, mouse: PointRef):
+        self.mouseStartDrag = mouse.copy()
+        self.startPosition = self.getPosition().copy()
+
+    def canDrag(self, mouse: PointRef) -> bool:
+
+        pos = self.startPosition + (mouse - self.mouseStartDrag)
+        return isInsideBox(*pos.fieldRef, 0, 0, 144, 144)
+
+
+    def onDrag(self, mouse: PointRef):
+
+        self.position = self.startPosition + (mouse - self.mouseStartDrag)
+
+        # if the only one being dragged and shift key not pressed, constrain with snapping
+        if self.interactor.selected.hasOnly(self) and not pygame.key.get_pressed()[pygame.K_LSHIFT]:
+            self.constrainPosition()
+
         self.onNodeMove()
 
     def onNodeMove(self):
@@ -89,3 +110,6 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
 
     def onAngleChange(self):
         self.updateAdapter()
+
+    def constrainPosition(self):
+        pass

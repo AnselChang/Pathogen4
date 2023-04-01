@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from reference_frame import VectorRef
+from reference_frame import VectorRef, PointRef
 
 class DragListener(ABC):
 
@@ -7,39 +7,39 @@ class DragListener(ABC):
         self.entity = entity
     
     @abstractmethod
-    def startDragging(self):
+    def onStartDrag(self, mouse: PointRef):
         pass
 
     @abstractmethod
-    def canDragOffset(self, offset: VectorRef) -> bool:
+    def canDrag(self, mouse: PointRef) -> bool:
         pass
 
     @abstractmethod
-    def dragOffset(self, offset: VectorRef):
+    def onDrag(self, mouse: PointRef):
         pass
 
     @abstractmethod
-    def stopDragging(self):
+    def onStopDrag(self):
         pass
 
 class DragLambda(DragListener):
 
-    def __init__(self, entity, FstartDragging = lambda: None, FcanDragOffset = lambda offset: True, FdragOffset = lambda: None, FstopDragging = lambda: None):
+    def __init__(self, entity, FonStartDrag = lambda: None, FonDrag = lambda offset: True, FcanDrag = lambda: None, FonStopDrag = lambda: None):
         super().__init__(entity)
         
-        self.FstartDragging = FstartDragging
-        self.FcanDragOffset = FcanDragOffset
-        self.FdragOffset = FdragOffset
-        self.FstopDragging = FstopDragging
+        self.FonStartDrag = FonStartDrag
+        self.FonDrag = FonDrag
+        self.FcanDrag = FcanDrag
+        self.FonStopDrag = FonStopDrag
 
-    def startDragging(self):
-        self.FstartDragging()
+    def onStartDrag(self, mouse: PointRef):
+        self.FonStartDrag(mouse)
 
-    def canDragOffset(self, offset: VectorRef) -> bool:
-        return self.FcanDragOffset(offset)
+    def canDrag(self, mouse: PointRef) -> bool:
+        return self.FcanDrag(mouse)
 
-    def dragOffset(self, offset: VectorRef):
-        self.FdragOffset(offset)
+    def onDrag(self, mouse: PointRef):
+        self.FonDrag(mouse)
 
-    def stopDragging(self):
-        self.FstartDragging()
+    def onStopDrag(self):
+        self.FonStopDrag()

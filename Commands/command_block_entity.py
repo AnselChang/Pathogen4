@@ -80,7 +80,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def manifestReadouts(self) -> list[ReadoutEntity]:
         readouts = []
         for readout in self.getDefinition().readouts:
-            readout = ReadoutEntity(self, readout, self.pathAdapter)
+            readout = readout.make(self, self.pathAdapter)
             self.entities.addEntity(readout, self)
             readouts.append(readout)
         return readouts
