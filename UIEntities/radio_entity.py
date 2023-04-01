@@ -2,7 +2,9 @@ from BaseEntity.entity import Entity
 from reference_frame import PointRef
 from BaseEntity.EntityListeners.click_listener import ClickLambda
 
-# Subclasses implement: isVisible, isTouching, distanceTo, draw
+"""
+A single option object for a RadioGroup
+"""
 class RadioEntity(Entity):
 
     # id is used to distinguish between radio entities

@@ -9,9 +9,7 @@ from CommandCreation.command_type import CommandType
 from enum import Enum
 
 """
-Used to store and update the temporary state while the command is being designed by the user.
-Handles stuff like adding each individual widget at a time, renaming, etc.
-When the user is finished, instantiates an immutable CommandDefinition
+Instantiates a CommandDefinition
 """
 
 class CommandDefinitionBuilder:

@@ -1,3 +1,5 @@
+# observer design pattern
+
 class Observer:
 
     def __init__(self, onNotify = lambda : None):

@@ -11,7 +11,7 @@ from pygame_functions import drawSurface
 import pygame
 
 # trash button for custom commands
-class Trash(Entity):
+class TrashEntity(Entity):
 
     def __init__(self, parentCommand: Entity, images: ImageManager, dimensions: Dimensions, onDelete = lambda: None):
         

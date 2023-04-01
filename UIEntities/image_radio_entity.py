@@ -9,7 +9,11 @@ from draw_order import DrawOrder
 from Tooltips.tooltip import TooltipOwner, Tooltip
 import pygame
 
-# Subclasses implement: isTouching, distanceTo, draw
+"""
+Easily create image radio options through this class
+Either pass in integers to (xIntOrCallback, yIntOrCallback),
+or pass in functions for getters of x and y
+"""
 class ImageRadioEntity(RadioEntity, TooltipOwner):
 
     # id is used to distinguish between radio entities

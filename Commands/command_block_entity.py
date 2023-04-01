@@ -25,7 +25,14 @@ from pygame_functions import shade, drawText, FONT20, drawSurface
 from math_functions import isInsideBox2
 import pygame, re
 
-
+"""
+A CommandBlockEntity object describes a single instance of a command block
+displayed on the right panel.
+It references some CommandDefinition at any given point, which specfies the template of the
+command. Note the same CommandDefinition may be shared by multiple CommandBlockEntities
+The WidgetEntities and pathAdapters hold the informatino for this specific instance.
+Position calculation is offloaded to CommandBlockPosition
+"""
 
 class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 

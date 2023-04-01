@@ -7,7 +7,6 @@ from BaseEntity.EntityListeners.hover_listener import HoverListener, HoverLambda
 from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.hover_listener import HoverLambda
 
-from Widgets.widget_value import WidgetValue
 from Widgets.widget_type import WidgetType
 from Widgets.defined_widget import DefinedWidget
 
@@ -18,7 +17,7 @@ import pygame
 """
 Belongs to a specific CommandBlockEntity.
 Owns a DefinedWidget which stores information about the widget's context for all commands of that type
-Owns a WidgetValue which stores information about the widget's context for this specific CommandBlock
+Stores the actual value of the widget
 """
 
 class WidgetEntity(Entity):
@@ -38,7 +37,7 @@ class WidgetEntity(Entity):
         self.widgetType = definedWidget.widgetType
 
         # Holds the widget state for the specific CommandBlockEntity that owns this
-        self.value = WidgetValue(value = self.widgetType.getDefaultValue())
+        self.value = self.widgetType.getDefaultValue()
 
     def getPosition(self) -> tuple:
         px, py = self.definedWidget.getPositionRatio()
@@ -46,10 +45,10 @@ class WidgetEntity(Entity):
         return PointRef(Ref.SCREEN, (x, y))
     
     def getValue(self) -> float:
-        return self.value.getValue()
+        return self.value
     
     def setValue(self, value: float):
-        self.value.setValue(value)
+        self.value = value
 
     def getName(self) -> str:
         return self.definedWidget.getName()

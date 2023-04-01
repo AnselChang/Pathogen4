@@ -10,6 +10,15 @@ from BaseEntity.EntityListeners.hover_listener import HoverListener
 
 import pygame
 
+"""
+Any graphical or interactable object should subclass Entity. By adding entities to
+EntityManager, it auto-handles all mouse interaction and drawing capabilities through Interactor.
+Optionally pass in drag, select, etc. listeners to recieve mouse interaction callbacks
+for your entity.
+DrawOrder, with enum defined in draw_order.py, specifies the layering of the drawn objects.
+Feel free to add to DrawOrder enum if you want to order a new entity type.
+"""
+
 class Entity(ABC):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
@@ -24,6 +33,7 @@ class Entity(ABC):
         self._parent: Entity = None
         
     # setting child will make sure that when parent is removed from manager, children will be too
+    # do not call this manually; handled by EntityManager
     def _setParent(self, parent: 'Entity'):
         self._parent = parent
         parent._children.append(self)
@@ -47,9 +57,8 @@ class Entity(ABC):
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         pass
 
-    @abstractmethod
     def toString(self) -> str:
-        pass
+        "Generic entity"
 
     def __str__(self):
         return f"Entity: {self.toString()}"

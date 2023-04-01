@@ -70,6 +70,7 @@ class Tooltip:
 
         screen.blit(self.tooltip, (x,y))
 
+# Entities that have tooltips should implement this
 class TooltipOwner(ABC):
 
     @abstractmethod

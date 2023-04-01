@@ -13,6 +13,11 @@ from EntityHandler.interactor import Interactor
 from image_manager import ImageManager
 from dimensions import Dimensions
 
+
+"""
+Construct CommandBlockEntity objects
+"""
+
 class CommandBlockEntityFactory:
 
     def __init__(self, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, dimensions: Dimensions):

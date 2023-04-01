@@ -4,6 +4,10 @@ from Tooltips.tooltip import TooltipOwner
 from dimensions import Dimensions
 import pygame
 
+"""
+Handles the list of entities. Add and remove entities and it will automatically
+update and draw them every tick.
+"""
 class EntityManager:
 
     def __init__(self):

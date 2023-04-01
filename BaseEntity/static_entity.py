@@ -6,6 +6,9 @@ import pygame
 
 """
 A entity that does not change and is always drawn
+Not subclassable.
+Pass a lambda function that draws the thing you want to the constructor.
+EntityManager will automatically draw that thing every frame, respecting drawOrder
 """
 class StaticEntity(Entity):
 

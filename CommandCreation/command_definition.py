@@ -9,7 +9,7 @@ Struct used to represent the structure of a user-created command
 Namely, the widgets and the text template
 CommandBlocks will refer to one of these structs at a time, and users can change which
     definition object to use associated with the selected CommandBlock
-This object holds WidgetState and ReadoutState which store relative location, but must refer to
+This object holds DefinedWidget and DefinedReadout which store relative location, but must refer to
     the command it belongs to in order to get absolute position
 """
 

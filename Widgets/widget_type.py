@@ -13,6 +13,8 @@ import pygame
 """
 A generic widget type (slider, checkbox, etc).
 Does not hold information for things specific to a CommandDefinition (location, name)
+If implementing this, use widgetEntity to get and set the widget value.
+DO NOT STORE ANY INTERNAL STATE SPECIFIC TO INDIVIDUAL COMMANDS HERE
 """
 
 class WidgetType:

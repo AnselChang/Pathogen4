@@ -2,6 +2,10 @@ from CommandCreation.command_definition import CommandDefinition
 from CommandCreation.command_definition_builder import CommandDefinitionBuilder
 from CommandCreation.command_type import CommandType
 
+"""
+The default set of command definitions at the start of the program
+"""
+
 class CommandDefinitionPresets:
 
     def getPresets(self) -> list[CommandDefinition]:

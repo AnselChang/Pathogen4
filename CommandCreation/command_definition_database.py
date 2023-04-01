@@ -11,7 +11,7 @@ from image_manager import ImageManager
 from dimensions import Dimensions
 
 """
-Stores all the different CommandDefinitions. Creates CommandStates based on CommandDefintions
+Stores all the different CommandDefinitions
 """
 
 class CommandDefinitionDatabase:

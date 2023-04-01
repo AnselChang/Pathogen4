@@ -9,7 +9,10 @@ from math_functions import isInsideBox
 
 import pygame, time
 
-
+"""
+Deals with the mouse interaction of the software. Invokes callbacks for relevant
+entities based on mouse input
+"""
 
 class Interactor:
 

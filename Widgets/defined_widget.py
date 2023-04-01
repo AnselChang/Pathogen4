@@ -3,8 +3,8 @@ from Widgets.widget_type import WidgetType
 """
 A CommandDefinition holds a list of DefinedWidgets.
 A defined widget which has a widget type, as well as information relevant to a CommandDefinition
-Namely: holds information for variable name, position relative to command,
-and any other field names...
+Namely: holds information for variable name and position relative to command
+Does not hold the widget value itself (set and get that from widgetEntity)
 """
 
 class DefinedWidget:

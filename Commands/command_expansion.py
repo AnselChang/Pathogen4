@@ -9,7 +9,7 @@ from enum import Enum, auto
 
 """
 Manage expanding and collapsing commands
-Holds two global states: forceExpand, forceCollapse
+Handles the forceExpand and forceCollapse buttons at the bottom of the panel
 """
 
 class ButtonID(Enum):

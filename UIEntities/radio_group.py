@@ -1,6 +1,8 @@
 from UIEntities.radio_entity import RadioEntity
 
-# a group of radio_entities, where only one is selected at a time
+"""a group of radio_entities, where only one is selected at a time
+If allowNoSelect is True, then no option being selected is allowed
+"""
 class RadioGroup:
 
     def __init__(self, entityManager, allowNoSelect: bool = False):

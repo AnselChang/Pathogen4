@@ -1,5 +1,11 @@
 from BaseEntity.entity import Entity
 
+
+"""
+Deals with selecting and multiselecting entities.
+Holds a list of the entities currently selected.
+"""
+
 # handle what can be selected with other entities and what cannot
 class SelectHandler:
 

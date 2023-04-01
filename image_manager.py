@@ -2,6 +2,11 @@ from pygame_functions import getImage
 import pygame
 from enum import Enum, auto
 
+"""
+Instantiates and caches all the image surface objects.
+to get an image surface, do something like imageManager.get(ImageID.FIELD)
+"""
+
 class ImageID(Enum):
     FIELD = auto()
     STRAIGHT_FORWARD = auto()

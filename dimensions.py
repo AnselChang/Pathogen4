@@ -1,5 +1,9 @@
 import pygame
 
+"""
+Holds the mutable dimensions information about the window. updates as window resizes
+"""
+
 class Dimensions:
 
     def __init__(self):

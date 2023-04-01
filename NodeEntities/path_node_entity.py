@@ -20,7 +20,7 @@ from format_functions import formatDegrees
 
 """
 Interactable path nodes
-PathSegmentEntities connect two PathNodeEntities
+Neighbors PathSegmentEntities
 Referenced in PathSection
 """
 
