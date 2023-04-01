@@ -40,6 +40,9 @@ def hypo(s1, s2):
 def distance(x1,y1,x2,y2):
     return hypo(y2-y1, x2-x1)
 
+def distanceTuples(point1, point2):
+    return distance(*point1, *point2)
+
 # Distance between point (x, y) and line (x1, y1,),(x2,y2)
 def distancePointToLine(x, y, x1, y1, x2, y2, signed: bool = False):
     ans = ((x2-x1)*(y1-y) - (x1-x)*(y2-y1)) / distance(x1, y1, x2, y2)
@@ -59,3 +62,27 @@ def pointTouchingLine(mouseX: int, mouseY: int, x1: int, y1: int, x2: int, y2: i
         if distance(mouseX, mouseY, x1, y1) < dist and distance(mouseX, mouseY, x2, y2) < dist:
             return True
     return False
+
+# Bound angle to between -pi and pi, preferring the smaller magnitude
+def boundAngleRadians(angle: float) -> float:
+    PI = 3.1415
+    angle %= 2 * PI
+    if angle < -PI:
+        angle += 2*PI
+    if angle > PI:
+        angle -= 2*PI
+    return angle
+    
+# Find the closest angle between two universal angles
+def deltaInHeading(targetHeading: float, currentHeading: float) -> float:
+    return boundAngleRadians(targetHeading - currentHeading)
+
+# Vector projection algorithm
+def pointOnLineClosestToPoint(pointX: int, pointY: int, firstX: int, firstY: int, secondX: int, secondY: int) -> tuple:
+    ax = pointX - firstX
+    ay = pointY - firstY
+    bx = secondX - firstX
+    by = secondY - firstY
+
+    scalar = (ax * bx + ay * by) / (bx * bx + by * by)
+    return [firstX + scalar * bx, firstY + scalar * by]

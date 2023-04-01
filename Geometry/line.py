@@ -1,9 +1,14 @@
+from math_functions import deltaInHeading, pointOnLineClosestToPoint
 import math
 
 class Line:
-    def __init__(self, point: tuple, theta):
+    def __init__(self, point: tuple, theta = None, point2: tuple = None):
         self.point = point
-        self.theta = theta
+
+        if theta is None:
+            self.theta = math.atan2(self.point2[1] - self.point[1], self.point2[0] - self.point[0])
+        else:
+            self.theta = theta
         
     def intersection(self, other: 'Line') -> tuple:
         x1, y1 = self.point
@@ -12,7 +17,7 @@ class Line:
         theta2 = other.theta
         
         # Check if the lines are parallel
-        if abs(theta1 - theta2) < 1e-6:
+        if abs(deltaInHeading(theta1, theta2)) < 1e-6:
             return None
         
         # Calculate the intersection point
@@ -24,10 +29,5 @@ class Line:
     def closestPoint(self, point: tuple):
         x0, y0 = point
         x1, y1 = self.point
-        theta = self.theta
-        
-        # Calculate the point on the line closest to the given point
-        x = (x0 + math.tan(theta) * (y1 - y0) + math.cos(theta) * x1) / (math.tan(theta)**2 + 1)
-        y = y1 + math.tan(theta) * (x - x1)
-        
-        return x, y
+        x2, y2 = x1 + math.cos(self.theta), y1 + math.sin(self.theta)
+        return pointOnLineClosestToPoint(x0, y0, x1, y1, x2, y2)

@@ -11,6 +11,8 @@ from EntityHandler.interactor import Interactor
 from Adapters.path_adapter import AdapterInterface
 from Adapters.turn_adapter import TurnAdapter, TurnAttributeID
 
+from NodeEntities.constraint_manager import ConstraintManager
+
 from image_manager import ImageID
 from linked_list import LinkedListNode
 
@@ -90,7 +92,6 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         pos = self.startPosition + (mouse - self.mouseStartDrag)
         return isInsideBox(*pos.fieldRef, 0, 0, 144, 144)
 
-
     def onDrag(self, mouse: PointRef):
 
         self.position = self.startPosition + (mouse - self.mouseStartDrag)
@@ -111,5 +112,50 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
     def onAngleChange(self):
         self.updateAdapter()
 
+    # "Snaps" to neighbors. Documentation in ConstraintManager
     def constrainPosition(self):
-        pass
+        SNAPPING_POWER = 5 # in pixels
+        constraints = ConstraintManager(self.position, SNAPPING_POWER)
+
+        # snap to previous
+        if self.getPrevious() is not None:
+            pNode: PathNodeEntity = self.getPrevious().getPrevious()
+            if pNode.getPrevious() is not None:
+                constraints.addConstraint(
+                    other = pNode.getPosition(),
+                    theta = pNode.getPrevious().getEndTheta()
+                )
+        
+        # snap to next
+        if self.getNext() is not None:
+            nNode: PathNodeEntity = self.getNext().getNext()
+            if nNode.getNext() is not None:
+                constraints.addConstraint(
+                    other = nNode.getPosition(),
+                    theta = nNode.getNext().getStartTheta()
+                )
+        
+        # snap in between
+        if self.getPrevious() is not None and self.getNext() is not None:
+            pNodePos = self.getPrevious().getPrevious().getPosition()
+            nNodePos = self.getNext().getNext().getPosition()
+            constraints.addConstraint(
+                other = pNodePos,
+                theta = (nNodePos - pNodePos).theta()
+            )
+
+        # The four cardinal directions
+        PI = 3.1415
+        for theta in [0, PI/2]:
+            if self.getPrevious() is not None:
+                constraints.addConstraint(
+                    other = self.getPrevious().getPrevious().getPosition(),
+                    theta = theta
+                )
+            if self.getNext() is not None:
+                constraints.addConstraint(
+                    other = self.getNext().getNext().getPosition(),
+                    theta = theta
+                )
+
+        self.position = constraints.get()

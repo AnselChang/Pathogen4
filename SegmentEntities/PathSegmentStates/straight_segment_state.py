@@ -44,7 +44,7 @@ class StraightSegmentState(PathSegmentState):
 
     def getStartTheta(self) -> float:
         theta = (self.segment.getNext().getPosition() - self.segment.getPrevious().getPosition()).theta()
-        return (2 * 3.1415 - theta) % (2*3.1415)
+        return theta
 
     def getEndTheta(self) -> float:
         return self.getStartTheta()
