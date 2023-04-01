@@ -25,7 +25,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, dimensions: Dimensions):
         
         super().__init__(path, pathAdapter, database, entities, interactor, commandExpansion, images, dimensions,
-                         drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag)
+                         drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag)
                          )
 
         self.trash = TrashEntity(self, self.images, self.dimensions, onDelete = self.delete)
@@ -38,7 +38,12 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         return self.trash.hover.isHovering
     
     def onStartDrag(self, mouse: PointRef):
-        print("start")
+        pass
+
+    def onStopDrag(self):
+        pass
+
+    
     
     def onDrag(self, mouse: PointRef):
         inserter: CommandInserter = self.path.getClosestInserter(mouse)

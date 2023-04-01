@@ -33,9 +33,12 @@ class CommandBlockPosition:
         # the height of the command is updated through a motion profile animation based on goal height (minimized/maximized)
         self._isExpanded = False
         self.expandMotion = MotionProfile(self.Y_BETWEEN_COMMANDS_MIN, self.Y_BETWEEN_COMMANDS_MIN,
-                                          speed = 0.25)
+                                          speed = 0.4)
         
+        self.animatedDragPosition = MotionProfile(0,0, speed = 0.3)
+        self.initialPositionNotSet = True
         self.setY(0)
+        self.initialPositionNotSet = True
         self.recomputeExpansion()
 
 
@@ -43,10 +46,15 @@ class CommandBlockPosition:
         return self.dimensions.FIELD_WIDTH + self.X_MARGIN_LEFT
     
     def getY(self) -> float:
-        return self.currentY
+        #return self.currentY
+        return self.animatedDragPosition.get()
     
     def setY(self, y: float):
         self.currentY = y
+        self.animatedDragPosition.setEndValue(y)
+        if self.initialPositionNotSet:
+            self.initialPositionNotSet = False
+            self.animatedDragPosition.forceToEndValue()
     
     def getWidth(self) -> float:
         return self.dimensions.PANEL_WIDTH - self.X_MARGIN_LEFT - self.X_MARGIN_RIGHT
@@ -78,8 +86,9 @@ class CommandBlockPosition:
 
     # every tick, update animation if exists
     def onTick(self):
-        if not self.expandMotion.isDone():
+        if not self.expandMotion.isDone() or not self.animatedDragPosition.isDone():
             self.expandMotion.tick()
+            self.animatedDragPosition.tick()
             self.command.path.recomputeY()
 
     # based on this command's height, find next command's y

@@ -20,6 +20,9 @@ class MotionProfile:
         self._endValue = endValue
         self._doneThreshold = abs(endValue - self._currentValue) * 0.01
 
+    def forceToEndValue(self):
+        self._currentValue = self._endValue
+    
     def get(self) -> float:
         return self._currentValue
 

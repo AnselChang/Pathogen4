@@ -166,6 +166,11 @@ class Interactor:
         isRight = self.rightDragging
         self.leftDragging = False
         self.rightDragging = False
+
+        for selected in self.selected.entities:
+            if selected.drag is not None:
+                selected.drag.onStopDrag()
+
         if not self.didMove:
             self.onMouseClick(entities, mouse, isRight, path)
 
