@@ -62,7 +62,6 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.readoutEntities = self.manifestReadouts()
 
         self.position = CommandBlockPosition(self, commandExpansion, self.dimensions)
-        self.position.setCollapsed()
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)

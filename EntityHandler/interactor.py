@@ -213,7 +213,6 @@ class Interactor:
             else:
                 self.hoveredEntity.click.onLeftClick()
 
-
         # create new node if right click field
         elif isRight and self.hoveredEntity is None:
             if isInsideBox(*mouse.screenRef, 0, 0, self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT):

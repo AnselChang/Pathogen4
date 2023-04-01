@@ -13,15 +13,17 @@ EntityManager will automatically draw that thing every frame, respecting drawOrd
 class StaticEntity(Entity):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
-    def __init__(self, Fdraw = lambda: None, drawOrder: int = 0) -> None:
+    def __init__(self, Fdraw = lambda: None, Ftouching = lambda position: False, drawOrder: int = 0, name: str = "Static Entity") -> None:
         super().__init__(drawOrder = drawOrder)
         self.Fdraw = Fdraw
+        self.Ftouching = Ftouching
+        self.name = name
         
     def isVisible(self) -> bool:
         return True
 
     def isTouching(self, position: PointRef) -> bool:
-        return False
+        return self.Ftouching(position)
 
     def getPosition(self) -> PointRef:
         return PointRef()
@@ -30,4 +32,4 @@ class StaticEntity(Entity):
         self.Fdraw()
 
     def toString(self) -> str:
-        return "Static entitity"
+        return self.name

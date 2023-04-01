@@ -2,6 +2,7 @@ from BaseEntity.entity import Entity
 from reference_frame import PointRef
 from Tooltips.tooltip import TooltipOwner
 from dimensions import Dimensions
+from draw_order import DrawOrder
 import pygame
 
 """
@@ -41,17 +42,26 @@ class EntityManager:
 
     def getEntityAtPosition(self, position: PointRef) -> Entity:
 
+        drawOrder: DrawOrder = None
         self.touching: list[Entity] = []
         for entity in self.entities:
             if entity.isVisible() and entity.isTouching(position):
+                drawOrder = entity.drawOrder
                 self.touching.append(entity)
 
+        # At this point, drawOrder is set to entity with highest priority
+        # We delete all entities from self.touching that are not this priority
+        self.touching = [entity for entity in self.touching if entity.drawOrder == drawOrder]
+
+        # Now we find the winning entity from the list.
         if len(self.touching) == 0:
+            # no entity touching
             return None
         elif len(self.touching) == 1:
+            # Simple case. Only one touching entity, so return
             return self.touching[0]
         else:
-            # Find the closest one touching
+            # Multiple entities touching mouse. Find the closest one touching
             closestDistance = self.touching[0].distanceTo(position)
             closest = self.touching[0]
             for entity in self.touching[1:]:

@@ -36,6 +36,7 @@ class CommandBlockPosition:
                                           speed = 0.25)
         
         self.setY(0)
+        self.recomputeExpansion()
 
 
     def getX(self) -> float:

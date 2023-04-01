@@ -22,6 +22,7 @@ from field_transform import FieldTransform
 from dimensions import Dimensions
 from draw_order import DrawOrder
 from pygame_functions import getGradientSurface
+from math_functions import isInsideBox2
 import pygame, random
 import sys
 
@@ -96,7 +97,12 @@ def main():
     c2 = (*panelColor, 0)
     height = 30
     offset = 35
-    entities.addEntity(StaticEntity(lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height, c1, c2), (dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - height - offset)), drawOrder = DrawOrder.GRADIENT_PANEL))
+    entities.addEntity(StaticEntity(
+        lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height, c1, c2), (dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - height - offset)),
+        Ftouching = lambda position: isInsideBox2(*position.screenRef, dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset - height/2, dimensions.PANEL_WIDTH, offset + height/2),
+        drawOrder = DrawOrder.GRADIENT_PANEL,
+        name = "gradient"
+    ))
     entities.addEntity(StaticEntity(lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset, dimensions.PANEL_WIDTH, offset]), drawOrder = DrawOrder.GRADIENT_PANEL))
 
     # initialize pygame artifacts
