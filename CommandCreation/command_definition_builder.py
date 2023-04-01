@@ -28,8 +28,8 @@ class CommandDefinitionBuilder:
     def setTemplateText(self, templateText: str):
         self.templateText = templateText
 
-    def addWidget(self, widget: DefinedWidget):
-        self.widgets.append(widget)
+    def addWidget(self, widgetType: WidgetType, name: str, px: int, py: int):
+        self.widgets.append(DefinedWidget(widgetType, name, px, py))
 
     def addReadout(self, attribute: Enum, px: float, py: float):
         self.readouts.append(DefinedReadout(attribute, px, py))

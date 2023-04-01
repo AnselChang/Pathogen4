@@ -1,11 +1,3 @@
-from BaseEntity.EntityListeners.click_listener import ClickListener, ClickLambda
-from BaseEntity.EntityListeners.drag_listener import DragListener, DragLambda
-from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
-from BaseEntity.EntityListeners.tick_listener import TickListener, TickLambda
-from BaseEntity.EntityListeners.hover_listener import HoverListener, HoverLambda
-
-from draw_order import DrawOrder
-
 from abc import ABC, abstractmethod
 from reference_frame import PointRef
 import pygame
@@ -18,16 +10,6 @@ DO NOT STORE ANY INTERNAL STATE SPECIFIC TO INDIVIDUAL COMMANDS HERE
 """
 
 class WidgetType:
-
-    def __init__(self, drag: DragListener = None, select: SelectListener = None, click: ClickListener = None, tick: TickListener = None, hover: HoverListener = None, drawOrder: int = 0):
-        self.drag = drag
-        self.select = select
-        self.click = click
-        self.tick = tick
-
-    @abstractmethod
-    def getDefaultName(self) -> str:
-        pass
 
     @abstractmethod
     def getDefaultValue(self) -> float:

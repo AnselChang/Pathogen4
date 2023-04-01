@@ -170,7 +170,7 @@ class VectorRef:
         if referenceFrame == Ref.FIELD:
             return refMag
         else:
-            return refMag * self.transform.zoom * dimensions.FIELD_SIZE_IN_PIXELS / dimensions.FIELD_SIZE_IN_INCHES
+            return refMag * self.transform.zoom * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN / dimensions.FIELD_SIZE_IN_INCHES
 
     # Get the angle of the vector in radians
     def theta(self) -> float:
@@ -214,12 +214,12 @@ class ScalarRef:
 
     # Given we only store the point in the field reference frame, convert to field reference frame before storing it
     def _setScreenRef(self, valueScreenRef: tuple):
-        scalar = dimensions.FIELD_SIZE_IN_INCHES / dimensions.FIELD_SIZE_IN_PIXELS / self.transform.zoom
+        scalar = dimensions.FIELD_SIZE_IN_INCHES / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN / self.transform.zoom
         self.fieldRef = valueScreenRef * scalar
 
     # Given we only store the point in the field reference frame, we need to convert it to return as screen reference frame
     def _getScreenRef(self):
-        scalar = self.transform.zoom * dimensions.FIELD_SIZE_IN_PIXELS / dimensions.FIELD_SIZE_IN_INCHES
+        scalar = self.transform.zoom * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN / dimensions.FIELD_SIZE_IN_INCHES
         return self.fieldRef * scalar
 
     screenRef = property(_getScreenRef, _getScreenRef)

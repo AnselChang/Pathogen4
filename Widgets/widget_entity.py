@@ -10,6 +10,7 @@ from BaseEntity.EntityListeners.hover_listener import HoverLambda
 from Widgets.widget_type import WidgetType
 from Widgets.defined_widget import DefinedWidget
 
+from image_manager import ImageID
 from draw_order import DrawOrder
 from reference_frame import PointRef, Ref
 import pygame
@@ -28,7 +29,7 @@ class WidgetEntity(Entity):
         super().__init__(
             click = ClickLambda(self, FonLeftClick = self.onLeftClick, FonRightClick = self.onRightClick),
             drag = DragLambda(self, FstartDragging = self.onStartDrag, FdragOffset = self.onDragOffset, FstopDragging = self.onStopDrag),
-            hover = HoverLambda(),
+            hover = HoverLambda(self),
             drawOrder = DrawOrder.WIDGET
         )
 
@@ -39,10 +40,16 @@ class WidgetEntity(Entity):
         # Holds the widget state for the specific CommandBlockEntity that owns this
         self.value = self.widgetType.getDefaultValue()
 
-    def getPosition(self) -> tuple:
+    def getImage(self, id: ImageID, opacity: float = 1) -> pygame.Surface:
+        return self.parentCommand.images.get(id, opacity)
+
+    def getPosition(self) -> PointRef:
         px, py = self.definedWidget.getPositionRatio()
         x,y = self.parentCommand.getAddonPosition(px, py)
         return PointRef(Ref.SCREEN, (x, y))
+    
+    def getOpacity(self) -> float:
+        return self.parentCommand.getAddonsOpacity()
     
     def getValue(self) -> float:
         return self.value

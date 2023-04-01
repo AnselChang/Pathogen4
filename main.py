@@ -24,6 +24,9 @@ from draw_order import DrawOrder
 import pygame, random
 import sys
 
+import cProfile
+
+
 pygame.init()
 
 RED = [255,0,0]
@@ -128,4 +131,5 @@ def main():
         clock.tick(60) # fps
 
 if __name__ == "__main__":
+    #cProfile.run('main()', sort='cumtime')
     main()
