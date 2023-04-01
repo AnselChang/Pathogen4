@@ -7,8 +7,6 @@ from BaseEntity.EntityListeners.hover_listener import HoverListener, HoverLambda
 from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.hover_listener import HoverLambda
 
-from Widgets.widget_type import WidgetType
-from Widgets.defined_widget import DefinedWidget
 
 from Tooltips.tooltip import TooltipOwner, Tooltip
 
@@ -16,6 +14,7 @@ from image_manager import ImageID
 from draw_order import DrawOrder
 from reference_frame import PointRef, Ref
 import pygame
+from abc import abstractmethod
 
 """
 Belongs to a specific CommandBlockEntity.
@@ -23,27 +22,38 @@ Owns a DefinedWidget which stores information about the widget's context for all
 Stores the actual value of the widget
 """
 
-class WidgetEntity(Entity, TooltipOwner):
+class WidgetEntity(Entity):
 
-    def __init__(self, parentCommand: Entity, definedWidget: DefinedWidget):
+    def __init__(self, parentCommand: Entity, definedWidget,
+                 click: ClickListener = None,
+                 drag: DragListener = None,
+                 hover: HoverListener = None,
+                 tick: TickListener = None
+                 ):
+        
+        if hover is None:
+            hover = HoverLambda(self)
             
-
-        super().__init__(
-            click = ClickLambda(self, FonLeftClick = self.onLeftClick, FonRightClick = self.onRightClick),
-            drag = DragLambda(self, FstartDragging = self.onStartDrag, FdragOffset = self.onDragOffset, FstopDragging = self.onStopDrag),
-            hover = HoverLambda(self),
-            drawOrder = DrawOrder.WIDGET
-        )
+        super().__init__(click = click, drag = drag, hover = hover, tick = tick, drawOrder = DrawOrder.WIDGET)
 
         self.parentCommand = parentCommand
         self.definedWidget = definedWidget
-        self.widgetType = definedWidget.widgetType
+        self.images = parentCommand.images
 
         # Holds the widget state for the specific CommandBlockEntity that owns this
-        self.value = self.widgetType.getDefaultValue()
+        self.value = self.getDefaultValue()
 
-    def getImage(self, id: ImageID, opacity: float = 1) -> pygame.Surface:
-        return self.parentCommand.images.get(id, opacity)
+    @abstractmethod
+    def getDefaultValue(self) -> float:
+        pass
+
+    @abstractmethod
+    def isTouchingWidget(self, position: PointRef) -> bool:
+        pass
+
+    @abstractmethod
+    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+        pass
 
     def getPosition(self) -> PointRef:
         px, py = self.definedWidget.getPositionRatio()
@@ -66,29 +76,7 @@ class WidgetEntity(Entity, TooltipOwner):
         return self.parentCommand.isVisible()
 
     def isTouching(self, position: PointRef) -> bool:
-        # can only touch widget if the command is expanded
-        return self.widgetType.isTouching(self, position) and self.parentCommand.isExpanded()
-
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        self.widgetType.draw(self, screen, isActive, isHovered)
-
-    def getTooltip(self) -> Tooltip | None:
-        return self.widgetType.getTooltip(self)
+        return self.parentCommand.isExpanded() and self.isTouchingWidget(position)
 
     def toString(self) -> str:
         return "widget"
-    
-    def onLeftClick(self):
-        self.widgetType.onLeftClick(self)
-
-    def onRightClick(self):
-        self.widgetType.onRightClick(self)
-
-    def onStartDrag(self):
-        self.widgetType.onStartDrag(self)
-
-    def onDragOffset(self):
-        self.widgetType.onDragOffset(self)
-
-    def onStopDrag(self):
-        self.widgetType.onStopDrag(self)

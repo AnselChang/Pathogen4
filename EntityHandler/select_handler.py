@@ -1,4 +1,5 @@
 from BaseEntity.entity import Entity
+from BaseEntity.EntityListeners.select_listener import SelectorType
 
 
 """
@@ -15,9 +16,17 @@ class SelectHandler:
 
     # return true if successful add
     def add(self, entity: Entity) -> bool:
+        
+        if entity.select.type == SelectorType.SOLO and not self.isEmpty():
+            # do not allow if something already selected, and entity is SOLO
+            return False
+        elif len(self.entities) == 1 and self.entities[0].type == SelectorType.SOLO:
+            # do not allow if something is already selected and that something is SOLO
+            return False
+
         self.entities.append(entity)
         return True
-
+    
     def remove(self, entity: Entity) -> None:
         self.entities.remove(entity)
 

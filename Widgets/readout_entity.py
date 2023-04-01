@@ -1,7 +1,7 @@
 from BaseEntity.entity import Entity
 from Adapters.path_adapter import PathAdapter
 
-from Widgets.defined_readout import DefinedReadout
+from Widgets.readout_definition import ReadoutDefinition
 
 from reference_frame import PointRef, Ref
 from draw_order import DrawOrder
@@ -14,7 +14,7 @@ Owns a DefinedReadout which stores information about the widget's context for al
 """
 
 class ReadoutEntity(Entity):
-    def __init__(self, parentCommand: Entity, definedReadout: DefinedReadout, pathAdapter: PathAdapter):
+    def __init__(self, parentCommand: Entity, definedReadout: ReadoutDefinition, pathAdapter: PathAdapter):
 
         super().__init__(drawOrder = DrawOrder.READOUT)
 

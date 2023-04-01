@@ -1,5 +1,5 @@
-from Widgets.defined_widget import DefinedWidget
-from Widgets.defined_readout import DefinedReadout
+from Widgets.widget_definition import WidgetDefinition
+from Widgets.readout_definition import ReadoutDefinition
 from CommandCreation.command_type import CommandType
 
 import re
@@ -15,7 +15,7 @@ This object holds DefinedWidget and DefinedReadout which store relative location
 
 class CommandDefinition:
 
-    def __init__(self, type: CommandType, name: str, widgets: list[DefinedWidget] = [], readouts: list[DefinedReadout] = [], templateText: str = "// [default text]"):
+    def __init__(self, type: CommandType, name: str, widgets: list[WidgetDefinition] = [], readouts: list[ReadoutDefinition] = [], templateText: str = "// [default text]"):
 
         self.type = type
         self.name = name

@@ -71,7 +71,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def manifestWidgets(self) -> list[WidgetEntity]:
         entities = []
         for widget in self.getDefinition().widgets:
-            entity = WidgetEntity(self, widget)
+            entity = widget.make(self)
             self.entities.addEntity(entity, self)
             entities.append(entity)
         return entities

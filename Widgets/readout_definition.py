@@ -5,7 +5,7 @@ A CommandDefinition holds a list of DefinedReadouts.
 A defined readout holds information for position relative to command
 """
 
-class DefinedReadout:
+class ReadoutDefinition:
 
     def __init__(self, attribute: Enum, px: int, py: int):
         self._attribute = attribute

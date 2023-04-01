@@ -1,8 +1,7 @@
 from CommandCreation.command_definition import CommandDefinition
 
-from Widgets.defined_widget import DefinedWidget
-from Widgets.widget_type import WidgetType
-from Widgets.defined_readout import DefinedReadout
+from Widgets.widget_definition import WidgetDefinition
+from Widgets.readout_definition import ReadoutDefinition
 
 from CommandCreation.command_type import CommandType
 
@@ -18,8 +17,8 @@ class CommandDefinitionBuilder:
 
         self.type = type
         self.name = "untitledFunction()"
-        self.widgets: list[DefinedWidget] = []
-        self.readouts: list[DefinedReadout] = []
+        self.widgets: list[WidgetDefinition] = []
+        self.readouts: list[ReadoutDefinition] = []
         self.templateText = "// [default text]"
 
     def setName(self, name: str):
@@ -28,11 +27,11 @@ class CommandDefinitionBuilder:
     def setTemplateText(self, templateText: str):
         self.templateText = templateText
 
-    def addWidget(self, widgetType: WidgetType, name: str, px: int, py: int):
-        self.widgets.append(DefinedWidget(widgetType, name, px, py))
+    def addWidget(self, widget: WidgetDefinition):
+        self.widgets.append(widget)
 
     def addReadout(self, attribute: Enum, px: float, py: float):
-        self.readouts.append(DefinedReadout(attribute, px, py))
+        self.readouts.append(ReadoutDefinition(attribute, px, py))
 
     def build(self) -> CommandDefinition:
         return CommandDefinition(

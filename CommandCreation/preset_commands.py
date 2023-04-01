@@ -1,7 +1,7 @@
 from CommandCreation.command_definition import CommandDefinition
 from CommandCreation.command_definition_builder import CommandDefinitionBuilder
 from CommandCreation.command_type import CommandType
-from Widgets.checkbox_widget import CheckboxWidget
+from Widgets.checkbox_widget import CheckboxWidgetDefinition
 
 """
 The default set of command definitions at the start of the program
@@ -25,7 +25,8 @@ class CommandDefinitionPresets:
         builder = CommandDefinitionBuilder(CommandType.STRAIGHT)
         builder.setName("goForward")
         builder.addReadout(StraightAttributeID.DISTANCE, 0.5, 0.5)
-        builder.addWidget(CheckboxWidget("enabled", "disabled"), "checkbox", 0.5, 0.75)
+        builder.addWidget(CheckboxWidgetDefinition("checkbox", 0.35, 0.75, "enabled a", "disabled a"))
+        builder.addWidget(CheckboxWidgetDefinition("checkbox", 0.65, 0.75, "enabled b", "disabled b"))
         return builder.build()
 
     def getTurnPreset(self) -> CommandDefinition:
