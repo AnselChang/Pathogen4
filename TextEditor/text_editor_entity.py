@@ -32,7 +32,7 @@ class CursorBlink:
 
 class TextEditorEntity(Entity):
 
-    def __init__(self, width: float, height: float, readColor: tuple, writeColor: tuple):
+    def __init__(self, width: float, height: float, readColor: tuple, writeColor: tuple, isDynamic: bool = False):
         
         super().__init__(
             key = KeyLambda(self, FonKeyDown = self.onKeyDown, FonKeyUp = self.onKeyUp),
@@ -42,6 +42,7 @@ class TextEditorEntity(Entity):
         
         self.width = width
         self.height = height
+        self.dynamic = isDynamic
 
         self.OUTER_X_MARGIN = 6
         self.OUTER_Y_MARGIN = 4
@@ -61,6 +62,8 @@ class TextEditorEntity(Entity):
             TextEditorMode.WRITE : writeColor
         }
 
+        self.collapse()
+
     @abstractmethod
     # top left corner, screen ref
     def getX(self) -> float:
@@ -70,6 +73,17 @@ class TextEditorEntity(Entity):
     # top left corner, screen ref
     def getY(self) -> float:
         pass
+
+    # extend line and return true if dynamic, return false if static
+    def extendLine(self) -> bool:
+        if self.dynamic:
+            self.setHeight(self.getHeight() + self.charHeight + self.INNER_Y_MARGIN)
+            return True
+        return False
+    
+    def collapse(self):
+        if self.dynamic:
+            self.setHeight(2 * self.OUTER_Y_MARGIN + len(self.textHandler.text) * (self.charHeight + self.INNER_Y_MARGIN) - self.INNER_Y_MARGIN)
 
     def getWidth(self) -> float:
         return self.width
@@ -120,7 +134,7 @@ class TextEditorEntity(Entity):
             y += self.charHeight + self.INNER_Y_MARGIN
 
         # draw blinkingcursor
-        if self.cursorBlink.get():
+        if self.mode == TextEditorMode.WRITE and self.cursorBlink.get():
             cx, cy = self.textHandler.getCursor()
             x = self.getX() + self.OUTER_X_MARGIN + cx * self.charWidth
             y = self.getY() + self.OUTER_Y_MARGIN + cy * (self.charHeight + self.INNER_Y_MARGIN)
@@ -130,6 +144,7 @@ class TextEditorEntity(Entity):
     def onKeyDown(self, key):
         if self.mode == TextEditorMode.WRITE:
             self.textHandler.onKeyDown(key)
+        self.collapse()
 
     def onKeyUp(self, key):
         pass

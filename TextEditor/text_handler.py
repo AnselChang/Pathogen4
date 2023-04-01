@@ -46,7 +46,7 @@ class TextHandler:
         # insert new line if there is room
         if key == pygame.K_RETURN:
             # can't add anymore lines
-            if len(self.text) == self.textEditor.getMaxTextLines():
+            if len(self.text) == self.textEditor.getMaxTextLines() and not self.textEditor.extendLine():
                 return
             self.cursorY += 1
             self.text.insert(self.cursorY, "")

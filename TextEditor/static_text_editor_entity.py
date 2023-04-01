@@ -4,7 +4,7 @@ class StaticTextEditorEntity(TextEditorEntity):
 
     def __init__(self, x, y,  width, height, readColor: tuple, writeColor: tuple):
 
-        super().__init__(width, height, readColor, writeColor)
+        super().__init__(width, height, readColor, writeColor, True)
 
         self.x = x
         self.y = y
