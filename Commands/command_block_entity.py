@@ -1,6 +1,8 @@
 from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.click_listener import ClickLambda
 from BaseEntity.EntityListeners.tick_listener import TickLambda
+from BaseEntity.EntityListeners.drag_listener import DragListener
+from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
 
 from Adapters.path_adapter import PathAdapter
 
@@ -37,10 +39,12 @@ Position calculation is offloaded to CommandBlockPosition
 class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, dimensions: Dimensions):
+    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, dimensions: Dimensions, drag: DragListener = None):
         super().__init__(
             click = ClickLambda(self, FonLeftClick = self.onClick),
             tick = TickLambda(self, FonTick = self.onTick),
+            drag = drag,
+            select = SelectLambda(self, "command", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMANND_BLOCK
         )
 
@@ -168,7 +172,9 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
         # draw rounded rect
         color = COMMAND_INFO[self.type].color
-        if isHovered or self.isWidgetHovering() or self.isOtherHovering():
+        if isActive and isHovered and self.interactor.leftDragging:
+            color = shade(color, 1.15)
+        elif isHovered or self.isWidgetHovering() or self.isOtherHovering():
             color = shade(color, 1.2)
         else:
             color = shade(color, 1.1)
