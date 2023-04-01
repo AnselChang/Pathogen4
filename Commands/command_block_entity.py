@@ -104,7 +104,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     # try to expand command when selected, but only when it's the only thing selected
     def onClick(self):
 
-        if self.position.isExpanded():
+        if self.isExpanded():
             self.position.setCollapsed()
         else:
             self.position.setExpanded()
@@ -143,6 +143,9 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
     def getPosition(self) -> PointRef:
         return PointRef(Ref.SCREEN, self.position.getCenterPosition())
+    
+    def isExpanded(self) -> bool:
+        return self.position.isExpanded()
     
     # whether some widget of command block is hovering
     def isWidgetHovering(self) -> bool:

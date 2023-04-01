@@ -64,7 +64,8 @@ class WidgetEntity(Entity):
         return self.parentCommand.isVisible()
 
     def isTouching(self, position: PointRef) -> bool:
-        return self.widgetType.isTouching(self, position)
+        # can only touch widget if the command is expanded
+        return self.widgetType.isTouching(self, position) and self.parentCommand.isExpanded()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         self.widgetType.draw(self, screen, isActive, isHovered)
