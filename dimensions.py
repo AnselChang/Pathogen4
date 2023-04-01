@@ -1,10 +1,11 @@
+from Observers.observer import Observable
 import pygame
 
 """
 Holds the mutable dimensions information about the window. updates as window resizes
 """
 
-class Dimensions:
+class Dimensions(Observable):
 
     def __init__(self):
 
@@ -27,4 +28,7 @@ class Dimensions:
         larger = max(self.SCREEN_HEIGHT, self.FIELD_WIDTH)
         self.LARGER_FIELD_SIDE = larger
 
-        return pygame.display.set_mode((screenWidth,screenHeight), pygame.RESIZABLE)
+        screen = pygame.display.set_mode((screenWidth,screenHeight), pygame.RESIZABLE)
+        self.notify()
+
+        return screen

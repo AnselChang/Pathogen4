@@ -22,7 +22,7 @@ A "plus" button that, when clicked, inserts a custom command there
 
 class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
 
-    def __init__(self, interactor: Interactor, dimensions: Dimensions, onInsert = lambda: None):
+    def __init__(self, path, interactor: Interactor, dimensions: Dimensions, onInsert = lambda: None):
 
         super().__init__(
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
@@ -30,6 +30,7 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
             drawOrder = DrawOrder.COMMAND_INSERTER)
         LinkedListNode.__init__(self)
 
+        self.path = path
         self.interactor = interactor
         self.dimensions = dimensions
 
@@ -38,7 +39,8 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
         self.Y_MAX = 15
 
         # shaded area specs
-        self.X_MARGIN = 6
+        self.X_MARGIN_LEFT = 6
+        self.X_MARGIN_RIGHT = 18
         self.Y_MARGIN = 3
         self.CORNER_RADIUS = 3
         self.MOUSE_MARGIN = 0
@@ -58,11 +60,11 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
             return
 
         self.isHovered = True
-        self.updateNextY()
+        self.path.recomputeY()
 
     def onHoverOff(self):
         self.isHovered = False
-        self.updateNextY()
+        self.path.recomputeY()
 
     def getHeight(self):
         if not self.isVisible():
@@ -71,10 +73,14 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
     
     def getY(self) -> int:
         return self.currentY
+
+    # only call if this is first node
+    def setScrollbarOffset(self, scrollbarOffset):
+        self.setY(self.START_Y - scrollbarOffset)
+        self.updateNextY()
     
     def setY(self, y: int):
         self.currentY = y
-        self.updateNextY()
 
     # based on this command's height, find next command's y
     def updateNextY(self):
@@ -85,7 +91,6 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
             return
         
         nextCommand.setY(self.currentY + self.getHeight())
-        
         nextCommand.updateNextY()
         
          
@@ -93,8 +98,8 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
         return True
     
     def getRect(self, big: bool = False) -> tuple:
-        x = self.dimensions.FIELD_WIDTH + self.X_MARGIN
-        width = self.dimensions.PANEL_WIDTH - self.X_MARGIN*2
+        x = self.dimensions.FIELD_WIDTH + self.X_MARGIN_LEFT
+        width = self.dimensions.PANEL_WIDTH - self.X_MARGIN_LEFT - self.X_MARGIN_RIGHT
         y = self.currentY
         height = self.getHeight()
         

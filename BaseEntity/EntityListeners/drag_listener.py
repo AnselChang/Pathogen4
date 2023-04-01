@@ -24,7 +24,7 @@ class DragListener(ABC):
 
 class DragLambda(DragListener):
 
-    def __init__(self, entity, FonStartDrag = lambda: None, FonDrag = lambda offset: True, FcanDrag = lambda: None, FonStopDrag = lambda: None):
+    def __init__(self, entity, FonStartDrag = lambda mouse: None, FonDrag = lambda mouse: True, FcanDrag = lambda mouse: True, FonStopDrag = lambda: None):
         super().__init__(entity)
         
         self.FonStartDrag = FonStartDrag

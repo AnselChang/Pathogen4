@@ -27,7 +27,8 @@ class CommandBlockPosition:
 
         self.Y_BETWEEN_COMMANDS_MIN = 30
         self.Y_BETWEEN_COMMANDS_MAX = 120
-        self.X_MARGIN = 6
+        self.X_MARGIN_LEFT = 6
+        self.X_MARGIN_RIGHT = 18
 
         # the height of the command is updated through a motion profile animation based on goal height (minimized/maximized)
         self._isExpanded = False
@@ -38,7 +39,7 @@ class CommandBlockPosition:
 
 
     def getX(self) -> float:
-        return self.dimensions.FIELD_WIDTH + self.X_MARGIN
+        return self.dimensions.FIELD_WIDTH + self.X_MARGIN_LEFT
     
     def getY(self) -> float:
         return self.currentY
@@ -47,17 +48,13 @@ class CommandBlockPosition:
         self.currentY = y
     
     def getWidth(self) -> float:
-        return self.dimensions.PANEL_WIDTH - 2 * self.X_MARGIN
+        return self.dimensions.PANEL_WIDTH - self.X_MARGIN_LEFT - self.X_MARGIN_RIGHT
     
     # get height of the command
     def getHeight(self) -> float:
         if not self.command.isVisible():
             return 0
         return self.expandMotion.get()
-    
-    # the dimensions of the command rectangle, calculated on-the-fly
-    def getRect(self) -> tuple:
-        return self.getX(), self.getY(), self.getWidth(), self.getHeight()
     
     def getCenterPosition(self) -> tuple:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH / 2
@@ -82,7 +79,7 @@ class CommandBlockPosition:
     def onTick(self):
         if not self.expandMotion.isDone():
             self.expandMotion.tick()
-            self.updateNextY()
+            self.command.path.recomputeY()
 
     # based on this command's height, find next command's y
     def updateNextY(self):
@@ -93,6 +90,7 @@ class CommandBlockPosition:
             return
         
         nextInsert.setY(self.currentY + self.getHeight())
+        nextInsert.updateNextY()
 
     # expand command
     def setExpanded(self):

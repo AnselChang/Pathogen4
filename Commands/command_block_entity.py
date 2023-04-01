@@ -118,6 +118,9 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def getY(self) -> float:
         return self.position.getY()
     
+    def getScrollbarOffset(self) -> int:
+        return self.path.getScrollbarOffset()
+    
     def setY(self, y: float):
         self.position.setY(y)
 
@@ -127,8 +130,9 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def getHeight(self) -> float:
         return self.position.getHeight()
     
+    # the dimensions of the command rectangle, calculated on-the-fly
     def getRect(self) -> tuple:
-        return self.position.getRect()
+        return self.getX(), self.getY(), self.getWidth(), self.getHeight()
     
     # return 0 if minimized, 1 if maximized, and in between
     def getAddonsOpacity(self) -> float:
@@ -161,7 +165,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         
         CORNER_RADIUS = 3
 
-        x, y, width, height = self.position.getRect()
+        x, y, width, height = self.getRect()
 
         # draw rounded rect
         color = COMMAND_INFO[self.type].color

@@ -21,6 +21,7 @@ from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
 from dimensions import Dimensions
 from draw_order import DrawOrder
+from pygame_functions import getGradientSurface
 import pygame, random
 import sys
 
@@ -42,11 +43,11 @@ def initTabs(dimensions, entities) -> RadioGroup:
         tabs.add(TabEntity(dimensions, text, i, N))
     return tabs
 
-def drawPanelBackground(screen, dimensions):
+def drawPanelBackground(screen, dimensions, panelColor):
     # draw panel
         x, y = dimensions.FIELD_WIDTH, 0
         width, height = dimensions.PANEL_WIDTH, dimensions.SCREEN_HEIGHT
-        pygame.draw.rect(screen, (100,100,100), (x, y, width, height))
+        pygame.draw.rect(screen, panelColor, (x, y, width, height))
 
 def main():
 
@@ -84,10 +85,19 @@ def main():
 
 
     # Add permanent static entities
+    panelColor = (100,100,100)
     entities.addEntity(StaticEntity(lambda: screen.fill((255,255,255)), drawOrder = DrawOrder.BACKGROUND))
     entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
-    entities.addEntity(StaticEntity(lambda: drawPanelBackground(screen, dimensions), drawOrder = DrawOrder.PANEL_BACKGROUND))
+    entities.addEntity(StaticEntity(lambda: drawPanelBackground(screen, dimensions, panelColor), drawOrder = DrawOrder.PANEL_BACKGROUND))
     entities.addEntity(StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX))
+
+    # Add the gradient at the bottom of the commands
+    c1 = (*panelColor, 255)
+    c2 = (*panelColor, 0)
+    height = 30
+    offset = 35
+    entities.addEntity(StaticEntity(lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height, c1, c2), (dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - height - offset)), drawOrder = DrawOrder.GRADIENT_PANEL))
+    entities.addEntity(StaticEntity(lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset, dimensions.PANEL_WIDTH, offset]), drawOrder = DrawOrder.GRADIENT_PANEL))
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")

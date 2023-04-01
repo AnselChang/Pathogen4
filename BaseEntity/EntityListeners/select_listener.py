@@ -32,8 +32,8 @@ class SelectListener(ABC):
     
 class SelectLambda(SelectListener):
 
-    def __init__(self, entity, id: str, enableToggle: bool = False, FgetHitbox = lambda : None, FonSelect = lambda: None, FonDeselect = lambda: None):
-        super().__init__(entity, id, enableToggle)
+    def __init__(self, entity, id: str, enableToggle: bool = False, type: SelectorType = SelectorType.FREE, FgetHitbox = lambda : None, FonSelect = lambda: None, FonDeselect = lambda: None):
+        super().__init__(entity, id, enableToggle, type)
         self.FgetHitbox = FgetHitbox
         self.FonSelect = FonSelect
         self.FonDeselect = FonDeselect

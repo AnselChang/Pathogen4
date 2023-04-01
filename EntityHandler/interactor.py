@@ -146,6 +146,7 @@ class Interactor:
             if entity.drag is not None:
                 entity.drag.onStartDrag(mouse)
 
+
         # start panning
         mx, my = mouse.screenRef
         if self.hoveredEntity is None and mx < self.dimensions.FIELD_WIDTH:
@@ -196,6 +197,7 @@ class Interactor:
             for selected in self.selected.entities:
                 if selected.drag is not None:
                     selected.drag.onDrag(mouse)
+        
 
         # pan field
         if self.leftDragging and self.panning:

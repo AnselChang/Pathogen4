@@ -12,6 +12,9 @@ from SegmentEntities.path_segment_entity import PathSegmentEntity
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
+from PathData.command_scrollbar_entity import CommandScrollbarEntity
+from Observers.observer import Observer
+
 from Adapters.path_adapter import NullPathAdapter
 
 from linked_list import LinkedList
@@ -36,6 +39,12 @@ class Path:
         self.pathList = LinkedList() # linked list of nodes and segments
         self.commandList = LinkedList() # linked list of CommandEntities
 
+        # initialize scrollbar
+        self.scrollbar = CommandScrollbarEntity(dimensions)
+        self.scrollbar.addObserver(Observer(onNotify = self.recomputeY))
+        entities.addEntity(self.scrollbar)
+
+        # initialize first node
         self._addInserter(self.commandList.addToEnd) # add initial CommandInserter
         self._addRawNode(startPosition, self.commandList.addToEnd) # add start node
         self._addInserter(self.commandList.addToEnd) # add final CommandInserter
@@ -43,11 +52,13 @@ class Path:
         self.node.updateAdapter()
 
     def recomputeY(self):
-        self.commandList.head.updateNextY()
+        self.scrollbar.setContentHeight(self.getTotalCommandHeight())
+        self.scrollbar.update()
+        self.commandList.head.setScrollbarOffset(self.getScrollbarOffset())
 
     def _addInserter(self, func):
 
-        inserter = CommandInserter(self.interactor, self.dimensions, self.addCustomCommand)
+        inserter = CommandInserter(self, self.interactor, self.dimensions, self.addCustomCommand)
         func(inserter)
         self.entities.addEntity(inserter)
 
@@ -114,3 +125,17 @@ class Path:
                 node.position._isExpanded = isExpand
                 node.position.recomputeExpansion()
             node = node.getNext()
+
+    # get the height of all the commands + inserters, etc. useful for scrollbar
+    def getTotalCommandHeight(self) -> float:
+        height = 0
+        node: CommandBlockEntity | CommandInserter = self.commandList.head
+
+        while node is not None:
+            height += node.getHeight()
+            node = node.getNext()
+        
+        return height
+
+    def getScrollbarOffset(self) -> int:
+        return self.scrollbar.getOffset()
