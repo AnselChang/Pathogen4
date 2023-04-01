@@ -98,12 +98,24 @@ def main():
     height = 30
     offset = 35
     entities.addEntity(StaticEntity(
-        lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height, c1, c2), (dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - height - offset)),
+        lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height, c1, c2, invert=True), (dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - height - offset)),
         Ftouching = lambda position: isInsideBox2(*position.screenRef, dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset - height/2, dimensions.PANEL_WIDTH, offset + height/2),
         drawOrder = DrawOrder.GRADIENT_PANEL,
-        name = "gradient"
     ))
     entities.addEntity(StaticEntity(lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset, dimensions.PANEL_WIDTH, offset]), drawOrder = DrawOrder.GRADIENT_PANEL))
+    
+    # add grey rect at top to prevent commands from bleeding into panel
+    height = 30
+    height2 = 20
+    entities.addEntity(StaticEntity(
+        lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, 0, dimensions.PANEL_WIDTH, height]),
+        Ftouching = lambda position: isInsideBox2(*position.screenRef, dimensions.FIELD_WIDTH, 0, dimensions.PANEL_WIDTH, height + height2/2),
+        drawOrder = DrawOrder.GRADIENT_PANEL
+    ))
+    entities.addEntity(StaticEntity(
+        lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height2, c1, c2), (dimensions.FIELD_WIDTH, height)),
+        drawOrder = DrawOrder.GRADIENT_PANEL,
+    ))
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")

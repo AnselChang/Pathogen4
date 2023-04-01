@@ -108,7 +108,7 @@ def scaleSurface(surface, scale):
     height = int(surface.get_height() * scale)
     return pygame.transform.smoothscale(surface, (width, height))
 
-def getGradientSurface(width, height, color1, color2, vertical = True):
+def getGradientSurface(width, height, color1, color2, vertical = True, invert = False):
 
     """Draws a rectangle with a gradient from color1 to color2"""
     gradient = pygame.Surface((width, height))
@@ -116,11 +116,15 @@ def getGradientSurface(width, height, color1, color2, vertical = True):
         for y in range(height):
             progress = y / height
             color = [int(c1 * (1 - progress) + c2 * progress) for c1, c2 in zip(color1, color2)]
-            pygame.draw.line(gradient, color, (0, height-y-1), (width, height-y-1))
+            if invert:
+                y = height-y-1
+            pygame.draw.line(gradient, color, (0, y), (width, y))
     else:
         for x in range(width):
             progress = x / width
             color = [int(c1 * (1 - progress) + c2 * progress) for c1, c2 in zip(color1, color2)]
+            if invert:
+                x = width-x-1
             pygame.draw.line(gradient, color, (x, 0), (x, height))
     
     gradient.set_alpha(color1[3])
