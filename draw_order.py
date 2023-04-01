@@ -2,6 +2,7 @@ from enum import IntEnum, auto
 
 # Lowest number is drawn in the front
 class DrawOrder(IntEnum):
+    FRONT = auto()
     MOUSE_SELECT_BOX = auto()
     TAB = auto()
     UI_BUTTON = auto()

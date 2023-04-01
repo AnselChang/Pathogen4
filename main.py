@@ -16,6 +16,8 @@ from CommandCreation.command_block_entity_factory import CommandBlockEntityFacto
 
 from Commands.command_expansion import CommandExpansion
 
+from TextEditor.static_text_editor_entity import StaticTextEditorEntity
+
 from image_manager import ImageManager, ImageID
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
@@ -30,6 +32,7 @@ import cProfile
 
 
 pygame.init()
+pygame.key.set_repeat(400, 70)
 
 RED = [255,0,0]
 GREEN = [0,255,0]
@@ -117,6 +120,10 @@ def main():
         drawOrder = DrawOrder.GRADIENT_PANEL,
     ))
 
+    # test text box
+    textbox = StaticTextEditorEntity(300, 300, 100, 100, (239, 226, 174), (174, 198, 239))
+    entities.addEntity(textbox)
+
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
     clock = pygame.time.Clock()
@@ -147,6 +154,12 @@ def main():
 
             elif event.type == pygame.MOUSEMOTION:
                 interactor.onMouseMove(entities, mouse)
+
+            elif event.type == pygame.KEYDOWN:
+                entities.onKeyDown(event.key)
+
+            elif event.type == pygame.KEYUP:
+                entities.onKeyUp(event.key)
 
         # Perform calculations
         entities.tick()

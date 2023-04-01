@@ -7,6 +7,7 @@ from BaseEntity.EntityListeners.drag_listener import DragListener
 from BaseEntity.EntityListeners.select_listener import SelectListener
 from BaseEntity.EntityListeners.tick_listener import TickListener
 from BaseEntity.EntityListeners.hover_listener import HoverListener
+from BaseEntity.EntityListeners.key_listener import KeyListener
 
 import pygame
 
@@ -22,13 +23,21 @@ Feel free to add to DrawOrder enum if you want to order a new entity type.
 class Entity(ABC):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
-    def __init__(self, drag: DragListener = None, select: SelectListener = None, click: ClickListener = None, tick: TickListener = None, hover: HoverListener = None, drawOrder: int = 0) -> None:
+    def __init__(self, drag: DragListener = None,
+                 select: SelectListener = None,
+                 click: ClickListener = None,
+                 tick: TickListener = None,
+                 hover: HoverListener = None,
+                 key: KeyListener = None,
+                 drawOrder: int = 0) -> None:
+        
         self.drawOrder = drawOrder
         self.drag = drag
         self.select = select
         self.click = click
         self.tick = tick
         self.hover = hover
+        self.key = key
         self._children: list[Entity] = []
         self._parent: Entity = None
         

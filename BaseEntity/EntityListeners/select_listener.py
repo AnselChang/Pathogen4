@@ -42,7 +42,7 @@ class SelectLambda(SelectListener):
         return self.FgetHitbox()
     
     def onSelect(self, interactor) -> None:
-        self.FonSelect()
+        self.FonSelect(interactor)
 
     def onDeselect(self, interactor) -> None:
-        self.FonDeselect()
+        self.FonDeselect(interactor)

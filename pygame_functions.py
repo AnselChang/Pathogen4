@@ -56,7 +56,7 @@ FONT25 = pygame.font.Font(FONT_PATH, 25)
 FONT30 = pygame.font.Font(FONT_PATH, 30)
 FONT40 = pygame.font.Font(FONT_PATH, 40)
 
-FONTCODE = pygame.font.Font(FONT_PATH, 8)
+FONTCODE = pygame.font.Font('CascadiaMono.ttf', 10)
 #FONTCODE = pygame.font.SysFont("arial", 8)
 
 # align = 0 -> align left/top

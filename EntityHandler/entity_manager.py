@@ -17,6 +17,7 @@ class EntityManager:
 
         # entities that own Tick (must call onTick() every tick)
         self.tickEntities: list[Entity] = []
+        self.keyEntities: list[Entity] = []
 
     # by setting a parent, it will be removed when parent is removed
     def addEntity(self, entity: Entity, parent: Entity = None):
@@ -29,6 +30,8 @@ class EntityManager:
 
         if entity.tick is not None:
             self.tickEntities.append(entity)
+        if entity.key is not None:
+            self.keyEntities.append(entity)
 
     def removeEntity(self, entity: Entity):
 
@@ -39,6 +42,8 @@ class EntityManager:
 
         if entity in self.tickEntities:
             self.tickEntities.remove(entity)
+        if entity in self.keyEntities:
+            self.keyEntities.remove(entity)
 
     def getEntityAtPosition(self, position: PointRef) -> Entity:
 
@@ -84,10 +89,16 @@ class EntityManager:
             if isinstance(entity, TooltipOwner) and entity.isVisible() and entity is interactor.hoveredEntity and interactor.selected.isEmpty():
                 entity.drawTooltip(screen, mousePosition, dimensions)
 
-
-
     # call onTick() for every entity with tick object
     def tick(self):
 
         for entity in self.tickEntities:
             entity.tick.onTick()
+
+    def onKeyDown(self, key):
+        for entity in self.keyEntities:
+            entity.key.onKeyDown(key)
+
+    def onKeyUp(self, key):
+        for entity in self.keyEntities:
+            entity.key.onKeyUp(key)
