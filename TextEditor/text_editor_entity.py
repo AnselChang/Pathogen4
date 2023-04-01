@@ -17,6 +17,18 @@ class TextEditorMode(Enum):
     READ = auto()
     WRITE = auto()
 
+class CursorBlink:
+    def __init__(self, numOn: int, numOff: int):
+        self.i = 0
+        self.numOn = numOn
+        self.numOff = numOff
+
+    def get(self) -> bool:
+        self.i += 1
+        self.i %= self.numOn + self.numOff
+
+        return self.i < self.numOn
+
 
 class TextEditorEntity(Entity):
 
@@ -32,12 +44,15 @@ class TextEditorEntity(Entity):
         self.height = height
 
         self.OUTER_X_MARGIN = 6
-        self.OUTER_Y_MARGIN = 3
+        self.OUTER_Y_MARGIN = 4
         self.INNER_Y_MARGIN = 0
 
-        self.textHeight = FONTCODE.render("TEST", True, (0,0,0)).get_height()
+        test = FONTCODE.render("T", True, (0,0,0))
+        self.charWidth = test.get_width()
+        self.charHeight = test.get_height()
 
         self.textHandler = TextHandler(self)
+        self.cursorBlink = CursorBlink(35, 33)
 
         self.mode: TextEditorMode = TextEditorMode.READ
 
@@ -72,7 +87,7 @@ class TextEditorEntity(Entity):
         return self.getWidth() - self.OUTER_X_MARGIN * 2
     
     def getMaxTextLines(self) -> int:
-        return (self.getHeight() - 2*self.OUTER_Y_MARGIN + self.INNER_Y_MARGIN) // (self.textHeight + self.INNER_Y_MARGIN)
+        return (self.getHeight() - 2*self.OUTER_Y_MARGIN + self.INNER_Y_MARGIN) // (self.charHeight + self.INNER_Y_MARGIN)
 
     def getRect(self) -> tuple:
         return self.getX(), self.getY(), self.getWidth(), self.getHeight()
@@ -91,16 +106,25 @@ class TextEditorEntity(Entity):
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
+        # draw background
         BORDER_RADIUS = 3
         rect = self.getRect()
         pygame.draw.rect(screen, self.backgroundColor[self.mode], rect, border_radius = BORDER_RADIUS)
         pygame.draw.rect(screen, (0,0,0), rect, width = 2, border_radius = BORDER_RADIUS)
 
+        # draw text
         x = self.getX() + self.OUTER_X_MARGIN
         y = self.getY() + self.OUTER_Y_MARGIN
         for surface in self.textHandler.getSurfaces():
             screen.blit(surface, (x,y))
-            y += self.textHeight + self.INNER_Y_MARGIN
+            y += self.charHeight + self.INNER_Y_MARGIN
+
+        # draw blinkingcursor
+        if self.cursorBlink.get():
+            cx, cy = self.textHandler.getCursor()
+            x = self.getX() + self.OUTER_X_MARGIN + cx * self.charWidth
+            y = self.getY() + self.OUTER_Y_MARGIN + cy * (self.charHeight + self.INNER_Y_MARGIN)
+            pygame.draw.rect(screen, (0,0,0), (x, y, 1, self.charHeight))
 
 
     def onKeyDown(self, key):

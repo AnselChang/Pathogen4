@@ -29,6 +29,9 @@ class TextHandler:
 
         self.updateSurfaces()
 
+    def getCursor(self) -> tuple:
+        return self.cursorX, self.cursorY
+
     def isTextTooLong(self, text):
         width = FONTCODE.render(text, True, (0,0,0)).get_width()
         return width > self.textEditor.getMaxTextWidth()
