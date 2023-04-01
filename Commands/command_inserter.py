@@ -1,6 +1,7 @@
 from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.hover_listener import HoverLambda
 from BaseEntity.EntityListeners.click_listener import ClickLambda
+from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
 
 from Commands.command_block_entity import CommandBlockEntity
 
@@ -27,6 +28,7 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
         super().__init__(
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
             click = ClickLambda(self, FonLeftClick = lambda: onInsert(self)),
+            select = SelectLambda(self, "inserter", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMAND_INSERTER)
         LinkedListNode.__init__(self)
 
@@ -56,7 +58,7 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
 
     def onHoverOn(self):
 
-        if len(self.interactor.selected.entities) > 1:
+        if len(self.interactor.selected.entities) > 1 or self.interactor.leftDragging or self.interactor.rightDragging:
             return
 
         self.isHovered = True
@@ -120,10 +122,14 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
+        isActive = isActive and self.interactor.leftDragging and self.isHovered
+        
+        if isActive or self.isHovered:
+            
+            color = [140, 140, 140] if isActive else [160, 160, 160]
 
-        if isHovered:
             # draw shaded area
-            pygame.draw.rect(screen, [160, 160, 160], self.getRect(), border_radius = self.CORNER_RADIUS)
+            pygame.draw.rect(screen, color, self.getRect(), border_radius = self.CORNER_RADIUS)
 
             # draw cross
             x,y = self.getPosition().screenRef
