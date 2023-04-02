@@ -66,6 +66,9 @@ class TextHandler:
             if len(self.text) == self.textEditor.getMaxTextLines() and not self.textEditor.dynamic:
                 return
             
+            remainingText = line[self.cursorX:]
+            self.text[self.cursorY] = self.text[self.cursorY][:self.cursorX]
+            
             lastChar = line[self.cursorX - 1]
             if lastChar == ":" or lastChar == "{":
                 addIndent = 1
@@ -76,7 +79,7 @@ class TextHandler:
             self.cursorY += 1
             prevLeadingSpaces = self.countLeadingSpaces(line)
             leadingSpaces = prevLeadingSpaces + addIndent * self.TAB_LENGTH
-            self.text.insert(self.cursorY, " " * leadingSpaces)
+            self.text.insert(self.cursorY, " " * leadingSpaces + remainingText)
             self.cursorX = leadingSpaces
             self.textEditor.addRow()
 
@@ -92,10 +95,11 @@ class TextHandler:
                 
                 if self.cursorY == 0:
                     return
-                
+                remaining = self.text[self.cursorY]
                 del self.text[self.cursorY]
                 self.cursorY -= 1
-                self.cursorX = self.currentLineLength()
+                self.text[self.cursorY] += remaining
+                self.cursorX = self.currentLineLength() - len(remaining)
                 self.textEditor.removeRow()
             else:
 
@@ -142,6 +146,13 @@ class TextHandler:
             if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
                 char = self.getUpper(char)
                 if char is None:
+                    return
+                
+            # If typed ) or ], and already exists, just move cursorX by one
+            if self.cursorX < len(line):
+                nextChar = line[self.cursorX]
+                if (nextChar == "]" or nextChar == ")") and char == nextChar:
+                    self.cursorX += 1
                     return
 
             inserted = line[:self.cursorX] + char + self.getMirror(char) + line[self.cursorX:]
