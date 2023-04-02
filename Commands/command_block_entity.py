@@ -41,7 +41,9 @@ Position calculation is offloaded to CommandBlockPosition
 class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, dimensions: Dimensions, drag: DragListener = None):
+    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, dimensions: Dimensions, drag: DragListener = None,
+                 defaultExpand: bool = False
+                 ):
         super().__init__(
             click = ClickLambda(self, FonLeftClick = self.onClick),
             tick = TickLambda(self, FonTick = self.onTick),
@@ -64,7 +66,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.images = images
         self.dimensions = dimensions
 
-        self.position = CommandBlockPosition(self, commandExpansion, self.dimensions)
+        self.position = CommandBlockPosition(self, commandExpansion, self.dimensions, defaultExpand)
 
         self.widgetEntities = self.manifestWidgets()
         self.readoutEntities = self.manifestReadouts()

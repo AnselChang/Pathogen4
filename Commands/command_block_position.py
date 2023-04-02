@@ -17,7 +17,7 @@ This also handles the expand/shrink animation
 
 class CommandBlockPosition:
 
-    def __init__(self, commandBlockEntity: Entity | LinkedListNode, commandExpansion: CommandExpansion, dimensions: Dimensions):
+    def __init__(self, commandBlockEntity: Entity | LinkedListNode, commandExpansion: CommandExpansion, dimensions: Dimensions, defaultExpand: bool):
         self.command = commandBlockEntity
         self.commandExpansion = commandExpansion
         self.dimensions = dimensions
@@ -30,7 +30,7 @@ class CommandBlockPosition:
         self.X_MARGIN_RIGHT = 18
 
         # the height of the command is updated through a motion profile animation based on goal height (minimized/maximized)
-        self._isExpanded = False
+        self._isExpanded = defaultExpand
         self.expandMotion = MotionProfile(self.Y_BETWEEN_COMMANDS_MIN, self.Y_BETWEEN_COMMANDS_MIN,
                                           speed = 0.4)
         
