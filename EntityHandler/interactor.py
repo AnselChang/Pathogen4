@@ -41,7 +41,8 @@ class Interactor:
 
         # Deselecting entities with this flag enabled blocks selection/click actions
         # immediately after deslect. set this to true when that happens
-        self.greedyDeselect = False
+        self.greedyEntity: Entity = None
+        self.rawHoveredEntity: Entity = None
 
     # objects in list A but not B
     def setDifference(self, listA, listB):
@@ -56,6 +57,8 @@ class Interactor:
             self.addEntity(entity)
 
     def addEntity(self, entity: Entity):
+        if entity.select.greedy:
+            self.greedyEntity = entity
         if self.selected.add(entity):
             entity.select.onSelect(self)
 
@@ -72,7 +75,12 @@ class Interactor:
         return self.box.active
     
     def setHoveredEntity(self, entity: Entity, mouse: PointRef):
-        
+
+        self.rawHoveredEntity = entity
+
+        if self.greedyEntity is not None:
+            return
+
         if self.hoveredEntity is not entity:
 
             # previous entity stopped hovering, so onHoverOff callback
@@ -136,15 +144,10 @@ class Interactor:
 
         # if there's a group selected but the mouse is not clicking on the group, deselect
         elif self.hoveredEntity is None or self.hoveredEntity not in self.selected.entities:
-        
-            # If deselecting an entity with greedySelect flag set to true, do not allow selecting another entity at this tick
-            for entity in self.selected.entities:
-                if entity.select is not None and entity.select.greedyDeselect:
-                    self.greedyDeselect = True
 
             self.removeAllEntities()
 
-        if not self.greedyDeselect and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
+        if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
             # if enableToggle flag set, disable selection if clicking and already seleected:
             if len(self.selected.entities) == 1 and self.hoveredEntity is self.selected.entities[0] and self.hoveredEntity.select.enableToggle:
                 self.removeEntity(self.hoveredEntity)
@@ -188,7 +191,11 @@ class Interactor:
         self.box.disable()
         self.panning = False
 
-        self.greedyDeselect = False
+        # release the mouse elsewhere from the greedy entity, so release greedy entity
+        if self.greedyEntity is not None and self.rawHoveredEntity is not self.greedyEntity:
+            self.removeEntity(self.greedyEntity)
+            self.greedyEntity = None
+
 
     def canDragSelection(self, offset):
         for selected in self.selected.entities:
@@ -225,7 +232,7 @@ class Interactor:
 
     # It is guaranteed that onMouseMove() was not called if this function is called
     def onMouseClick(self, entities: EntityManager, mouse: PointRef, isRight: bool, path):
-        if not self.greedyDeselect and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
+        if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:
                 self.hoveredEntity.click.onRightClick()
             else:

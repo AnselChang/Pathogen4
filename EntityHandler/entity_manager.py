@@ -82,6 +82,10 @@ class EntityManager:
             if entity.isVisible():
                 selected = entity in interactor.selected.entities
                 hovering = entity is interactor.hoveredEntity and (selected or not (interactor.leftDragging or interactor.rightDragging))
+
+                if interactor.greedyEntity is not None and interactor.greedyEntity is not entity:
+                    hovering = False
+
                 entity.draw(screen, selected, hovering)
 
         # draw tooltips on top of the entities

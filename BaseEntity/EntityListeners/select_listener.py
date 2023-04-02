@@ -10,11 +10,15 @@ class SelectorType(Enum):
 
 class SelectListener(ABC):
 
-    def __init__(self, entity, id: str, enableToggle: bool, greedyDeselect: bool = False, type: SelectorType = SelectorType.FREE):
+    def __init__(self, entity, id: str, enableToggle: bool, greedy: bool = False, type: SelectorType = SelectorType.FREE):
         self.entity = entity
         self.id = id
         self.type = type
-        self.greedyDeselect = greedyDeselect # when deselected by clicking somewhere else, do not select the other thing
+
+        # when selected, nothing else is hovered
+        # when deselected by clicking somewhere else, do not select the other thing 
+        self.greedy = greedy 
+
         self.enableToggle = enableToggle # if set to true, clicking while selected will deselect
 
     # the rect bounding box for the object
@@ -33,8 +37,8 @@ class SelectListener(ABC):
     
 class SelectLambda(SelectListener):
 
-    def __init__(self, entity, id: str, enableToggle: bool = False, greedyDeselect: bool = False, type: SelectorType = SelectorType.FREE, FgetHitbox = lambda : None, FonSelect = lambda interactor: None, FonDeselect = lambda interactor: None):
-        super().__init__(entity, id, enableToggle, greedyDeselect, type)
+    def __init__(self, entity, id: str, enableToggle: bool = False, greedy: bool = False, type: SelectorType = SelectorType.FREE, FgetHitbox = lambda : None, FonSelect = lambda interactor: None, FonDeselect = lambda interactor: None):
+        super().__init__(entity, id, enableToggle, greedy, type)
         self.FgetHitbox = FgetHitbox
         self.FonSelect = FonSelect
         self.FonDeselect = FonDeselect

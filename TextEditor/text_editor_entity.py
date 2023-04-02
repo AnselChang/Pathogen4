@@ -26,7 +26,7 @@ class TextEditorEntity(Entity):
         
         Entity.__init__(self,
             key = KeyLambda(self, FonKeyDown = self.textEditor.onKeyDown, FonKeyUp = self.textEditor.onKeyUp),
-            select = SelectLambda(self, "text editor", type = SelectorType.SOLO, FonSelect = self.textEditor.onSelect, FonDeselect = self.textEditor.onDeselect),
+            select = SelectLambda(self, "text editor", type = SelectorType.SOLO, greedy = True, FonSelect = self.textEditor.onSelect, FonDeselect = self.textEditor.onDeselect),
             drawOrder = DrawOrder.FRONT
         )
 

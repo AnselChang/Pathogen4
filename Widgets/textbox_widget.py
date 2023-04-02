@@ -21,23 +21,21 @@ class TextboxWidgetEntity(WidgetEntity):
         READ_COLOR = (239, 226, 174)
         WRITE_COLOR = (174, 198, 239)
 
+        self.textEditor = TextEditor(self.getX, self.getY, definition.width, definition.height, READ_COLOR, WRITE_COLOR)
+
         super().__init__(parentCommand, definition,
             key = KeyLambda(self,
-                            FonKeyDown = lambda key: self.getTextEditor().onKeyDown(key),
-                            FonKeyUp = lambda key: self.getTextEditor().onKeyUp(key)
+                            FonKeyDown = self.textEditor.onKeyDown,
+                            FonKeyUp = self.textEditor.onKeyUp
                             ),
-            select = SelectLambda(self, "text editor", type = SelectorType.SOLO, greedyDeselect = True,
-                                  FonSelect = lambda interactor: self.getTextEditor().onSelect(interactor),
-                                  FonDeselect = lambda interactor: self.getTextEditor().onDeselect(interactor)
+            select = SelectLambda(self, "text editor", type = SelectorType.SOLO, greedy = True,
+                                  FonSelect = self.textEditor.onSelect,
+                                  FonDeselect = self.textEditor.onDeselect
                             )
         )
 
-        self.textEditor = TextEditor(self.getX, self.getY, definition.width, definition.height, READ_COLOR, WRITE_COLOR, self.getOpacity)
-
         self.onModifyDefinition()
 
-    def getTextEditor(self):
-        return self.textEditor
 
     def onModifyDefinition(self):
         self.textEditor.setWidth(self.definition.width)
