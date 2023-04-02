@@ -10,6 +10,8 @@ class TextHandler:
 
     def __init__(self, textEditor, defaultText: str | list[str] = [""]):
 
+        self.TAB_LENGTH = 3
+
         self.textEditor = textEditor
 
         if type(defaultText) == str:
@@ -39,6 +41,20 @@ class TextHandler:
     
     def currentLineLength(self):
         return len(self.text[self.cursorY])
+    
+    def isTabAt(self, cursorX, cursorY):
+
+        if cursorX < self.TAB_LENGTH:
+            return False
+
+        for x in range(cursorX - self.TAB_LENGTH, cursorX):
+            if self.text[cursorY][x] != " ":
+                return False
+        return True
+
+    def countLeadingSpaces(self, string):
+        print(len(string) - len(string.lstrip()))
+        return len(string) - len(string.lstrip())
 
     def onKeyDown(self, key):
 
@@ -50,10 +66,25 @@ class TextHandler:
             if len(self.text) == self.textEditor.getMaxTextLines() and not self.textEditor.dynamic:
                 return
             
+            lastChar = line[self.cursorX - 1]
+            if lastChar == ":" or lastChar == "{":
+                addIndent = 1
+            else:
+                addIndent = 0
+            
+            # maintain indentation
             self.cursorY += 1
-            self.text.insert(self.cursorY, "")
-            self.cursorX = 0
+            prevLeadingSpaces = self.countLeadingSpaces(line)
+            leadingSpaces = prevLeadingSpaces + addIndent * self.TAB_LENGTH
+            self.text.insert(self.cursorY, " " * leadingSpaces)
+            self.cursorX = leadingSpaces
             self.textEditor.addRow()
+
+            # add closing brace }
+            if len(self.text) < self.textEditor.getMaxTextLines() or self.textEditor.dynamic:
+                if lastChar == "{":
+                    self.text.insert(self.cursorY + 1, " " * prevLeadingSpaces + "}")
+                    self.textEditor.addRow()
 
         # Delete the current char, or delete the line if it is empty
         elif key == pygame.K_BACKSPACE:
@@ -67,8 +98,14 @@ class TextHandler:
                 self.cursorX = self.currentLineLength()
                 self.textEditor.removeRow()
             else:
-                self.text[self.cursorY] = line[:self.cursorX - 1] + line[self.cursorX:]
-                self.cursorX -= 1
+
+                # delete tab
+                if self.isTabAt(self.cursorX, self.cursorY):
+                    self.text[self.cursorY] = line[:self.cursorX - self.TAB_LENGTH] + line[self.cursorX:]
+                    self.cursorX -= self.TAB_LENGTH
+                else:
+                    self.text[self.cursorY] = line[:self.cursorX - 1] + line[self.cursorX:]
+                    self.cursorX -= 1
         elif key == pygame.K_LEFT:
             if self.cursorX > 0:
                 self.cursorX -= 1
@@ -92,7 +129,7 @@ class TextHandler:
         else:
             # insert char at the text cursor
             if key == pygame.K_TAB:
-                char = "   "
+                char = " "*self.TAB_LENGTH
             elif key == pygame.K_SPACE:
                 char = " "
             else:
@@ -107,7 +144,7 @@ class TextHandler:
                 if char is None:
                     return
 
-            inserted = line[:self.cursorX] + char + line[self.cursorX:]
+            inserted = line[:self.cursorX] + char + self.getMirror(char) + line[self.cursorX:]
 
             # abort if exceeds max text width
             if self.isTextTooLong(inserted):
@@ -135,6 +172,14 @@ class TextHandler:
     
     def getText(self) -> str:
         return self.fullText
+    
+    def getMirror(self, char) -> str:
+        if char == "(":
+            return ")"
+        elif char == "[":
+            return "]"
+        else:
+            return ""
     
     def getUpper(self, char) -> str:
         if char.isalpha():

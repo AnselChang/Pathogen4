@@ -80,8 +80,6 @@ class TextEditor(Observable):
             TextEditorMode.READ : readColor,
             TextEditorMode.WRITE : writeColor
         }
-
-        print("text init")
     
     def getHeight(self) -> float:
         return self.height
