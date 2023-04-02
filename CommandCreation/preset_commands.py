@@ -26,7 +26,6 @@ class CommandDefinitionPresets:
         builder = CommandDefinitionBuilder(CommandType.STRAIGHT)
         builder.setName("goForward")
         builder.addReadout(StraightAttributeID.DISTANCE, 0.5, 0.25)
-        builder.addWidget(TextboxWidgetDefinition("textbox", 0.5, 0.5, 100, 20))
         builder.addWidget(CheckboxWidgetDefinition("checkbox", 0.35, 0.75, "enabled a", "disabled a"))
         builder.addWidget(CheckboxWidgetDefinition("checkbox", 0.65, 0.75, "enabled b", "disabled b"))
         return builder.build()
@@ -41,6 +40,8 @@ class CommandDefinitionPresets:
     def getCodePreset(self) -> CommandDefinition:
         builder = CommandDefinitionBuilder(CommandType.CUSTOM)
         builder.setName("code")
+        builder.setHeight(80)
+        builder.addWidget(TextboxWidgetDefinition("textbox", 0.5, 0.4, 0.83, 1, isDynamic = True))
         return builder.build()
     
 

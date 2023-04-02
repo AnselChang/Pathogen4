@@ -16,7 +16,7 @@ class TextHandler:
             defaultText = [defaultText]
         elif len(defaultText) == 0:
             defaultText = [""]
-        self.text = defaultText
+        self.text = defaultText.copy()
 
         # set cursor to the end of the text
         self.cursorY = len(self.text) - 1
@@ -47,11 +47,13 @@ class TextHandler:
         # insert new line if there is room
         if key == pygame.K_RETURN:
             # can't add anymore lines
-            if len(self.text) == self.textEditor.getMaxTextLines() and not self.textEditor.extendLine():
+            if len(self.text) == self.textEditor.getMaxTextLines() and not self.textEditor.dynamic:
                 return
+            
             self.cursorY += 1
             self.text.insert(self.cursorY, "")
             self.cursorX = 0
+            self.textEditor.addRow()
 
         # Delete the current char, or delete the line if it is empty
         elif key == pygame.K_BACKSPACE:
@@ -63,6 +65,7 @@ class TextHandler:
                 del self.text[self.cursorY]
                 self.cursorY -= 1
                 self.cursorX = self.currentLineLength()
+                self.textEditor.removeRow()
             else:
                 self.text[self.cursorY] = line[:self.cursorX - 1] + line[self.cursorX:]
                 self.cursorX -= 1

@@ -7,6 +7,8 @@ from Widgets.widget_definition import WidgetDefinition
 
 from TextEditor.text_editor import TextEditor, TextEditorMode
 
+from Observers.observer import Observer
+
 from image_manager import ImageID
 from draw_order import DrawOrder
 from reference_frame import PointRef, Ref
@@ -21,7 +23,17 @@ class TextboxWidgetEntity(WidgetEntity):
         READ_COLOR = (239, 226, 174)
         WRITE_COLOR = (174, 198, 239)
 
-        self.textEditor = TextEditor(self.getX, self.getY, definition.width, definition.height, READ_COLOR, WRITE_COLOR)
+        width = lambda: parentCommand.dimensions.PANEL_WIDTH * definition.pwidth
+
+        self.textEditor = TextEditor(
+            self.getX, self.getY, width, definition.rows,
+            READ_COLOR, WRITE_COLOR,
+            isDynamic = definition.isDynamic
+        )
+
+        # Sends notification when text height changes
+        commandStretchObserver = Observer(onNotify = self.onCommandStretch)
+        self.textEditor.addObserver(commandStretchObserver)
 
         super().__init__(parentCommand, definition,
             key = KeyLambda(self,
@@ -38,9 +50,9 @@ class TextboxWidgetEntity(WidgetEntity):
 
 
     def onModifyDefinition(self):
-        self.textEditor.setWidth(self.definition.width)
-        self.textEditor.setHeight(self.definition.height)
-
+        # width is a lambda so is automatically updated
+        self.textEditor.setRows(self.definition.rows)
+        # isDynamic is immutable once set
 
     # top left corner, screen ref
     def getX(self) -> float:
@@ -48,7 +60,15 @@ class TextboxWidgetEntity(WidgetEntity):
     
     # top left corner, screen ref
     def getY(self) -> float:
-        return self.getPosition().screenRef[1] - self.textEditor.getHeight() / 2
+        return self.getPosition().screenRef[1] - self.textEditor.originalHeight / 2
+    
+    # for dynamic widgets. how much to stretch command height by
+    def getCommandStretch(self) -> int:
+        return max(0, self.textEditor.getHeight() - self.textEditor.originalHeight)
+    
+    def onCommandStretch(self):
+        #print("widget stretch")
+        self.notify()
     
     def getValue(self) -> bool:
         return self.textEditor.getText()
@@ -62,11 +82,12 @@ class TextboxWidgetEntity(WidgetEntity):
 
 class TextboxWidgetDefinition(WidgetDefinition):
 
-    def __init__(self, name: str, px: int, py: int, width: int, height: int):
+    def __init__(self, name: str, px: int, py: int, pwidth: int, rows: int, isDynamic: bool = False):
         super().__init__(name, px, py)
 
-        self.width = width
-        self.height = height
+        self.pwidth = pwidth
+        self.rows = rows
+        self.isDynamic = isDynamic
 
     def make(self, parentCommand) -> TextboxWidgetEntity:
         return TextboxWidgetEntity(parentCommand, self)

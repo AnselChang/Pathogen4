@@ -18,6 +18,8 @@ from Widgets.readout_entity import ReadoutEntity
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
+from Observers.observer import Observer
+
 from linked_list import LinkedListNode
 from image_manager import ImageManager
 from draw_order import DrawOrder
@@ -62,19 +64,25 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.images = images
         self.dimensions = dimensions
 
+        self.position = CommandBlockPosition(self, commandExpansion, self.dimensions)
+
         self.widgetEntities = self.manifestWidgets()
         self.readoutEntities = self.manifestReadouts()
 
-        self.position = CommandBlockPosition(self, commandExpansion, self.dimensions)
+        self.position.recomputeExpansion()
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)
     
     # Given the command widgets, create the WidgetEntities and add to entity manager
     def manifestWidgets(self) -> list[WidgetEntity]:
+
+        commandStretchObserver = Observer(onNotify = self.position.recomputeExpansion)
+
         entities = []
         for widget in self.getDefinition().widgets:
             entity = widget.make(self)
+            entity.addObserver(commandStretchObserver)
             self.entities.addEntity(entity, self)
             entities.append(entity)
         return entities
@@ -164,6 +172,13 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     
     def isFullyCollapsed(self) -> bool:
         return self.position.isFullyCollapsed()
+    
+    # how much the widgets stretch the command by. return the largest one
+    def getStretchFromWidgets(self) -> int:
+        stretch = 0
+        for widget in self.widgetEntities:
+            stretch = max(stretch, widget.getCommandStretch())
+        return stretch
     
     # whether some widget of command block is hovering
     def isWidgetHovering(self) -> bool:

@@ -17,12 +17,16 @@ class CommandDefinitionBuilder:
 
         self.type = type
         self.name = "untitledFunction()"
+        self.fullHeight = 120
         self.widgets: list[WidgetDefinition] = []
         self.readouts: list[ReadoutDefinition] = []
         self.templateText = "// [default text]"
 
     def setName(self, name: str):
         self.name = name
+
+    def setHeight(self, height: int):
+        self.fullHeight = height
 
     def setTemplateText(self, templateText: str):
         self.templateText = templateText
@@ -37,6 +41,7 @@ class CommandDefinitionBuilder:
         return CommandDefinition(
             type = self.type,
             name = self.name,
+            fullHeight = self.fullHeight,
             widgets = self.widgets,
             readouts = self.readouts,
             templateText = self.templateText

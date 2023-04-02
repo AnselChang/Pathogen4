@@ -15,10 +15,11 @@ This object holds DefinedWidget and DefinedReadout which store relative location
 
 class CommandDefinition:
 
-    def __init__(self, type: CommandType, name: str, widgets: list[WidgetDefinition] = [], readouts: list[ReadoutDefinition] = [], templateText: str = "// [default text]"):
+    def __init__(self, type: CommandType, name: str, fullHeight: int, widgets: list[WidgetDefinition] = [], readouts: list[ReadoutDefinition] = [], templateText: str = "// [default text]"):
 
         self.type = type
         self.name = name
+        self.fullHeight = fullHeight
         self.widgets = widgets
         self.readouts = readouts
         self.templateText = templateText # text template

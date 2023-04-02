@@ -11,6 +11,8 @@ from BaseEntity.EntityListeners.hover_listener import HoverLambda
 
 from Tooltips.tooltip import TooltipOwner, Tooltip
 
+from Observers.observer import Observable
+
 from image_manager import ImageID
 from draw_order import DrawOrder
 from reference_frame import PointRef, Ref
@@ -22,8 +24,8 @@ Belongs to a specific CommandBlockEntity.
 Owns a DefinedWidget which stores information about the widget's context for all commands of that type
 Stores the actual value of the widget
 """
-
-class WidgetEntity(Entity):
+# notifies observers when getCommandStretch() changes
+class WidgetEntity(Entity, Observable):
 
     def __init__(self, parentCommand: Entity, definition,
                  click: ClickListener = None,
@@ -42,6 +44,10 @@ class WidgetEntity(Entity):
         self.parentCommand = parentCommand
         self.definition = definition
         self.images = parentCommand.images
+
+    # for dynamic widgets. how much to stretch command height by
+    def getCommandStretch(self) -> int:
+        return 0
 
     @abstractmethod
     def onModifyDefinition(self):

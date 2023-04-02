@@ -34,7 +34,7 @@ class TrashEntity(Entity):
 
     def getPosition(self) -> PointRef:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH - 30
-        y = self.parentCommand.getY() + self.parentCommand.getHeight() / 2
+        y = self.parentCommand.getY() + self.parentCommand.position.Y_BETWEEN_COMMANDS_MIN / 2
         return PointRef(Ref.SCREEN, (x,y))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

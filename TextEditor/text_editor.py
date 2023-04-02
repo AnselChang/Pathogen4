@@ -2,6 +2,8 @@ from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.key_listener import KeyLambda
 from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
 
+from Observers.observer import Observable
+
 from TextEditor.text_handler import TextHandler
 
 from reference_frame import PointRef, Ref
@@ -33,16 +35,30 @@ class CursorBlink:
 
         return self.i < self.numOn
 
+# notifies observers whenever resized from text (isDynamic)
+class TextEditor(Observable):
 
-class TextEditor:
+    def setRows(self, rows):
+        self.height = 2 * self.OUTER_Y_MARGIN + rows * (self.charHeight + self.INNER_Y_MARGIN) - self.INNER_Y_MARGIN
+        self.rows = rows
+        self.notify()
 
-    def __init__(self, xFunc: int, yFunc: int, width: float, height: float, readColor: tuple, writeColor: tuple, isDynamic: bool = False):
+    def addRow(self):
+        self.setRows(self.rows + 1)
+
+    def removeRow(self):
+        self.setRows(self.rows - 1)
+
+    def __init__(self, xFunc: int, yFunc: int, widthFuncOrInt: float, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False):
         
         self.getX = xFunc
         self.getY = yFunc
-        self.width = width
-        self.height = height
+        if type(widthFuncOrInt) == int:
+            self.getWidth = lambda widthFuncOrInt=widthFuncOrInt: widthFuncOrInt
+        else:
+            self.getWidth = widthFuncOrInt
         self.dynamic = isDynamic
+
 
         self.OUTER_X_MARGIN = 6
         self.OUTER_Y_MARGIN = 4
@@ -51,6 +67,9 @@ class TextEditor:
         test = FONTCODE.render("T", True, (0,0,0))
         self.charWidth = test.get_width()
         self.charHeight = test.get_height()
+
+        self.setRows(rows)
+        self.originalHeight = self.height # so that original position can be maintained if height changes
 
         self.textHandler = TextHandler(self)
         self.cursorBlink = CursorBlink(35, 33)
@@ -62,33 +81,10 @@ class TextEditor:
             TextEditorMode.WRITE : writeColor
         }
 
-        self.collapse()
-
         print("text init")
-
-
-    # extend line and return true if dynamic, return false if static
-    def extendLine(self) -> bool:
-        if self.dynamic:
-            self.setHeight(self.getHeight() + self.charHeight + self.INNER_Y_MARGIN)
-            return True
-        return False
-    
-    def collapse(self):
-        if self.dynamic:
-            self.setHeight(2 * self.OUTER_Y_MARGIN + len(self.textHandler.text) * (self.charHeight + self.INNER_Y_MARGIN) - self.INNER_Y_MARGIN)
-
-    def getWidth(self) -> float:
-        return self.width
     
     def getHeight(self) -> float:
         return self.height
-
-    def setWidth(self, width: float):
-        self.width = width
-
-    def setHeight(self, height: float):
-        self.height = height
 
     def getMaxTextWidth(self) -> float:
         return self.getWidth() - self.OUTER_X_MARGIN * 2
@@ -141,9 +137,12 @@ class TextEditor:
 
 
     def onKeyDown(self, key):
-        if self.mode == TextEditorMode.WRITE:
-            self.textHandler.onKeyDown(key)
-        self.collapse()
+
+        # only useful when in write mode
+        if self.mode == TextEditorMode.READ:
+            return
+        
+        self.textHandler.onKeyDown(key)
 
     def onKeyUp(self, key):
         pass

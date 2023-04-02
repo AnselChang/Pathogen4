@@ -26,7 +26,6 @@ class CommandBlockPosition:
         self.commandExpansion.addObserver(Observer(onNotify = self.recomputeExpansion))
 
         self.Y_BETWEEN_COMMANDS_MIN = 30
-        self.Y_BETWEEN_COMMANDS_MAX = 120
         self.X_MARGIN_LEFT = 6
         self.X_MARGIN_RIGHT = 18
 
@@ -35,11 +34,16 @@ class CommandBlockPosition:
         self.expandMotion = MotionProfile(self.Y_BETWEEN_COMMANDS_MIN, self.Y_BETWEEN_COMMANDS_MIN,
                                           speed = 0.4)
         
+        self.widgetStretch = 0
+
         self.animatedDragPosition = MotionProfile(0,0, speed = 0.3)
         self.initialPositionNotSet = True
         self.setY(0)
         self.initialPositionNotSet = True
-        self.recomputeExpansion()
+
+    def getDefinedHeight(self) -> int:
+        return self.command.getDefinition().fullHeight
+        
 
     def isFullyCollapsed(self) -> bool:
         return self.expandMotion.isDone() and not self.isExpanded()
@@ -79,12 +83,12 @@ class CommandBlockPosition:
     
     # return 1 if expanded, 0 if not, and in between
     def getExpandedRatio(self) -> float:
-        return (self.getHeight() - self.Y_BETWEEN_COMMANDS_MIN) / (self.Y_BETWEEN_COMMANDS_MAX - self.Y_BETWEEN_COMMANDS_MIN)
+        return (self.getHeight() - self.Y_BETWEEN_COMMANDS_MIN) / (self.getDefinedHeight() - self.Y_BETWEEN_COMMANDS_MIN)
     
     def getAddonPosition(self, px: float, py: float) -> tuple:
         x = self.getX() + px * self.getWidth()
         y = self.Y_BETWEEN_COMMANDS_MIN
-        y += self.getY() + py * (self.getHeight() - self.Y_BETWEEN_COMMANDS_MIN)
+        y += self.getY() + py * (self.getHeight() - self.Y_BETWEEN_COMMANDS_MIN - self.widgetStretch)
         return x,y
 
     # every tick, update animation if exists
@@ -137,11 +141,13 @@ class CommandBlockPosition:
         return self._isExpanded
 
     def recomputeExpansion(self):
+
+        self.widgetStretch = self.command.getStretchFromWidgets()
         
         expanded = self.isExpanded()
 
         if expanded:
-            x = self.Y_BETWEEN_COMMANDS_MAX
+            x = self.getDefinedHeight() + self.widgetStretch
         else:
             x = self.Y_BETWEEN_COMMANDS_MIN
 
