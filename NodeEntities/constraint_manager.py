@@ -49,7 +49,7 @@ class ConstraintManager:
             return self.mouse
         
 
-        if len(self.constraints) == 1:
+        if len(self.constraints) == 1 or (len(self.constraints) == 2 and self.constraints[0].intersection(self.constraints[1]) is None):
             # Single constraint
             new = self.constraints[0].closestPoint(self.mouse.fieldRef)
         else:

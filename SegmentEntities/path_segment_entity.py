@@ -26,7 +26,7 @@ We also define the constants that apply across all segment types here, like colo
 class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
     def __init__(self, interactor) -> None:
         
-        super().__init__(select = SelectLambda(self, "segment", FonSelect = lambda: print("select"), FonDeselect=lambda:print("deselect")),
+        super().__init__(select = SelectLambda(self, "segment"),
                          click = ClickLambda(self,FOnDoubleClick = self.onDoubleClick),
                          drawOrder = DrawOrder.SEGMENT)
         
