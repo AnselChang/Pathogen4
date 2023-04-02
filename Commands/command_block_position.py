@@ -41,6 +41,9 @@ class CommandBlockPosition:
         self.initialPositionNotSet = True
         self.recomputeExpansion()
 
+    def isFullyCollapsed(self) -> bool:
+        return self.expandMotion.isDone() and not self.isExpanded()
+
 
     def getX(self) -> float:
         return self.dimensions.FIELD_WIDTH + self.X_MARGIN_LEFT
@@ -134,11 +137,20 @@ class CommandBlockPosition:
         return self._isExpanded
 
     def recomputeExpansion(self):
+        
+        expanded = self.isExpanded()
 
-        if self.isExpanded():
+        if expanded:
             x = self.Y_BETWEEN_COMMANDS_MAX
         else:
             x = self.Y_BETWEEN_COMMANDS_MIN
+
+        # If there is a change, then send callbacks to widgets
+        if self.expandMotion.get() != x:
+            if expanded:
+                self.command.onExpand()
+            else:
+                self.command.onCollapse()
         
         self.expandMotion.setEndValue(x)
 

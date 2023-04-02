@@ -16,3 +16,6 @@ class StaticTextEditorEntity(TextEditorEntity):
     # top left corner, screen ref
     def getY(self) -> float:
         return self.y
+    
+    def getOpacity(self) -> float:
+        return 1

@@ -39,6 +39,10 @@ class Interactor:
 
         self.panning = False
 
+        # Deselecting entities with this flag enabled blocks selection/click actions
+        # immediately after deslect. set this to true when that happens
+        self.greedyDeselect = False
+
     # objects in list A but not B
     def setDifference(self, listA, listB):
         return [obj for obj in listA if obj not in listB]
@@ -118,6 +122,7 @@ class Interactor:
         
         # disable multiselect
         self.box.disable()
+
         
         # If shift key is pressed and there's a hovered entity, add/delete to selected.entities
         if shiftKey and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
@@ -131,9 +136,15 @@ class Interactor:
 
         # if there's a group selected but the mouse is not clicking on the group, deselect
         elif self.hoveredEntity is None or self.hoveredEntity not in self.selected.entities:
+        
+            # If deselecting an entity with greedySelect flag set to true, do not allow selecting another entity at this tick
+            for entity in self.selected.entities:
+                if entity.select is not None and entity.select.greedyDeselect:
+                    self.greedyDeselect = True
+
             self.removeAllEntities()
 
-        if self.hoveredEntity is not None and self.hoveredEntity.select is not None:
+        if not self.greedyDeselect and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
             # if enableToggle flag set, disable selection if clicking and already seleected:
             if len(self.selected.entities) == 1 and self.hoveredEntity is self.selected.entities[0] and self.hoveredEntity.select.enableToggle:
                 self.removeEntity(self.hoveredEntity)
@@ -177,6 +188,8 @@ class Interactor:
         self.box.disable()
         self.panning = False
 
+        self.greedyDeselect = False
+
     def canDragSelection(self, offset):
         for selected in self.selected.entities:
             if selected.drag is not None:
@@ -212,7 +225,7 @@ class Interactor:
 
     # It is guaranteed that onMouseMove() was not called if this function is called
     def onMouseClick(self, entities: EntityManager, mouse: PointRef, isRight: bool, path):
-        if self.hoveredEntity is not None and self.hoveredEntity.click is not None:
+        if not self.greedyDeselect and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:
                 self.hoveredEntity.click.onRightClick()
             else:

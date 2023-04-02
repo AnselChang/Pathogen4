@@ -3,6 +3,7 @@ from BaseEntity.EntityListeners.drag_listener import DragListener, DragLambda
 from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
 from BaseEntity.EntityListeners.tick_listener import TickListener, TickLambda
 from BaseEntity.EntityListeners.hover_listener import HoverListener, HoverLambda
+from BaseEntity.EntityListeners.key_listener import KeyListener
 
 from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.hover_listener import HoverLambda
@@ -24,53 +25,62 @@ Stores the actual value of the widget
 
 class WidgetEntity(Entity):
 
-    def __init__(self, parentCommand: Entity, definedWidget,
+    def __init__(self, parentCommand: Entity, definition,
                  click: ClickListener = None,
                  drag: DragListener = None,
                  hover: HoverListener = None,
-                 tick: TickListener = None
+                 tick: TickListener = None,
+                 select: SelectListener = None,
+                 key: KeyListener = None
                  ):
         
         if hover is None:
             hover = HoverLambda(self)
             
-        super().__init__(click = click, drag = drag, hover = hover, tick = tick, drawOrder = DrawOrder.WIDGET)
+        super().__init__(click = click, drag = drag, hover = hover, tick = tick, select = select, key = key, drawOrder = DrawOrder.WIDGET)
 
         self.parentCommand = parentCommand
-        self.definedWidget = definedWidget
+        self.definition = definition
         self.images = parentCommand.images
 
-        # Holds the widget state for the specific CommandBlockEntity that owns this
-        self.value = self.getDefaultValue()
+    @abstractmethod
+    def onModifyDefinition(self):
+        pass
 
     @abstractmethod
-    def getDefaultValue(self) -> float:
+    def getValue(self) -> str | float:
         pass
 
     @abstractmethod
     def isTouchingWidget(self, position: PointRef) -> bool:
         pass
 
-    @abstractmethod
+    # override this
+    def onCommandExpand(self):
+        pass
+
+    # override this
+    def onCommandCollapse(self):
+        pass
+
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+        if not self.parentCommand.isFullyCollapsed():
+            self.drawWidget(screen, isActive, isHovered)
+
+    @abstractmethod
+    def drawWidget(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         pass
 
     def getPosition(self) -> PointRef:
-        px, py = self.definedWidget.getPositionRatio()
+        px, py = self.definition.getPositionRatio()
         x,y = self.parentCommand.getAddonPosition(px, py)
         return PointRef(Ref.SCREEN, (x, y))
     
     def getOpacity(self) -> float:
         return self.parentCommand.getAddonsOpacity()
-    
-    def getValue(self) -> float:
-        return self.value
-    
-    def setValue(self, value: float):
-        self.value = value
 
     def getName(self) -> str:
-        return self.definedWidget.getName()
+        return self.definition.getName()
     
     def isVisible(self) -> bool:
         return self.parentCommand.isVisible()

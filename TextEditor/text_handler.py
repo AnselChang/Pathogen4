@@ -26,8 +26,9 @@ class TextHandler:
         
 
         self.textSurfaces: list[pygame.Surface] = []
+        self.fullText = ""
 
-        self.updateSurfaces()
+        self.update()
 
     def getCursor(self) -> tuple:
         return self.cursorX, self.cursorY
@@ -111,19 +112,26 @@ class TextHandler:
             
             # update text list and surface
             self.text[self.cursorY] = inserted
-            self.updateSurfaces()
+            self.update()
 
             # make sure to move cursor one to the right
             self.cursorX += len(char)
 
 
-        self.updateSurfaces()
+        self.update()
 
-    def updateSurfaces(self):
+    def update(self):
         self.textSurfaces = [FONTCODE.render(textLine, True, (0,0,0)) for textLine in self.text]
+        self.fullText = ""
+        for textLine in self.text:
+            self.fullText += textLine + "\n"
+        self.fullText = self.fullText[-1]
 
     def getSurfaces(self) -> list[pygame.Surface]:
         return self.textSurfaces
+    
+    def getText(self) -> str:
+        return self.fullText
     
     def getUpper(self, char) -> str:
         if char.isalpha():

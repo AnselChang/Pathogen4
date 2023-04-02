@@ -17,24 +17,30 @@ class CheckboxWidgetEntity(WidgetEntity, TooltipOwner):
                          click = ClickLambda(self, FonLeftClick = self.onLeftClick)
                          )
 
-        if definition.tooltipOn is None:
+        self.value = False
+
+        self.onModifyDefinition()
+
+
+    def getValue(self) -> float:
+        return self.value
+    
+    def onModifyDefinition(self):
+        if self.definition.tooltipOn is None:
             self.tooltipOn = None
         else:
-            self.tooltipOn = Tooltip(definition.tooltipOn)
+            self.tooltipOn = Tooltip(self.definition.tooltipOn)
 
-        if definition.tooltipOff is None:
+        if self.definition.tooltipOff is None:
             self.tooltipOff = None
         else:
-            self.tooltipOff = Tooltip(definition.tooltipOff)
-
-    def getDefaultValue(self) -> float:
-        return False
+            self.tooltipOff = Tooltip(self.definition.tooltipOff)
 
     def isTouchingWidget(self, position: PointRef) -> bool:
          distance = (self.getPosition() - position).magnitude(Ref.SCREEN)
          return distance < 12
 
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+    def drawWidget(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         x, y = self.getPosition().screenRef
 
         if self.getValue():
@@ -49,7 +55,7 @@ class CheckboxWidgetEntity(WidgetEntity, TooltipOwner):
         return self.tooltipOn if self.getValue() else self.tooltipOff
 
     def onLeftClick(self):
-        self.setValue(not self.getValue())
+        self.value = not self.value
 
 class CheckboxWidgetDefinition(WidgetDefinition):
 

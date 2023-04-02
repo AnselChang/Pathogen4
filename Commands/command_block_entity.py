@@ -112,6 +112,14 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         else:
             self.position.setExpanded()
 
+    def onExpand(self):
+        for widget in self.widgetEntities:
+            widget.onCommandExpand()
+
+    def onCollapse(self):
+        for widget in self.widgetEntities:
+            widget.onCommandCollapse()
+
     def isVisible(self) -> bool:
         return True
     
@@ -154,10 +162,13 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     def isExpanded(self) -> bool:
         return self.position.isExpanded()
     
+    def isFullyCollapsed(self) -> bool:
+        return self.position.isFullyCollapsed()
+    
     # whether some widget of command block is hovering
     def isWidgetHovering(self) -> bool:
         for widget in self.widgetEntities:
-            if widget.hover.isHovering:
+            if widget.hover is not None and widget.hover.isHovering:
                 return True
         return False
     

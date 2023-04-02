@@ -121,8 +121,8 @@ def main():
     ))
 
     # test text box
-    textbox = StaticTextEditorEntity(300, 300, 100, 100, (239, 226, 174), (174, 198, 239))
-    entities.addEntity(textbox)
+    #textbox = StaticTextEditorEntity(300, 300, 100, 100, (239, 226, 174), (174, 198, 239))
+    #entities.addEntity(textbox)
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")

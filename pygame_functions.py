@@ -129,3 +129,4 @@ def getGradientSurface(width, height, color1, color2, vertical = True, invert = 
     
     gradient.set_alpha(color1[3])
     return gradient
+
