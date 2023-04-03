@@ -4,6 +4,7 @@ from reference_frame import PointRef, VectorRef
 from BaseEntity.EntityListeners.drag_listener import DragLambda
 from BaseEntity.EntityListeners.click_listener import ClickLambda
 from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
+from BaseEntity.EntityListeners.key_listener import KeyLambda
 from BaseEntity.EntityListeners.hover_listener import HoverLambda
 from SegmentEntities.path_segment_entity import PathSegmentEntity
 from draw_order import DrawOrder
@@ -49,6 +50,7 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
             select = SelectLambda(self, "path node", FgetHitbox = self.getHitbox),
             click = ClickLambda(self, FonLeftClick = lambda : print("left click"), FonRightClick = lambda : print("right click")),
             hover = HoverLambda(self, FonHoverOff = self.onHoverOff, FonHoverOn = self.onHoverOn),
+            key = KeyLambda(self, FonKeyDown = self.onKeyDown, FonKeyUp = self.onKeyUp),
             drawOrder = DrawOrder.NODE
             )
         
@@ -64,6 +66,8 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         SNAPPING_POWER = 5 # in pixels
         self.constraints = Constraints(SNAPPING_POWER, dimensions)
         entities.addEntity(self.constraints, self)
+
+        self.shiftKeyPressed = False
 
     def getPosition(self) -> PointRef:
         return self.position
@@ -118,7 +122,7 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         self.position = self.startPosition + (mouse - self.mouseStartDrag)
 
         # if the only one being dragged and shift key not pressed, constrain with snapping
-        if self.interactor.selected.hasOnly(self) and not pygame.key.get_pressed()[pygame.K_LSHIFT]:
+        if self.interactor.selected.hasOnly(self) and not self.shiftKeyPressed:
             self.constrainPosition()
 
         self.onNodeMove()
@@ -132,6 +136,15 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
 
     def onAngleChange(self):
         self.updateAdapter()
+
+    def onKeyDown(self, key):
+        if key == pygame.K_LSHIFT:
+            self.constraints.clear()
+            self.shiftKeyPressed = True
+
+    def onKeyUp(self, key):
+        if key == pygame.K_LSHIFT:
+            self.shiftKeyPressed = False
 
     # "Snaps" to neighbors. Documentation in ConstraintManager
     def constrainPosition(self):

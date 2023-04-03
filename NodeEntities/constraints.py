@@ -43,9 +43,12 @@ class Constraints(Entity):
     def hide(self):
         self.visible = False
 
+    def clear(self):
+        self.constraints.clear()
+
     def reset(self, mouse: PointRef):
         self.mouse = mouse
-        self.constraints.clear()
+        self.clear()
 
     # The constraint is some other node with an angle to snap to
     def addConstraint(self, other: PointRef, theta: float):
@@ -75,7 +78,7 @@ class Constraints(Entity):
             return self.mouse
         
 
-        if len(self.constraints) == 1 or (len(self.constraints) == 2 and self.constraints[0].intersection(self.constraints[1]) is None):
+        if len(self.constraints) == 1:
             # Single constraint
             new = self.constraints[0].closestPoint(self.mouse.fieldRef)
         else:
@@ -85,8 +88,8 @@ class Constraints(Entity):
             # intersecting lines cannot be super close to parallel
             # the intersection must be reasonably close to initial position
             if new is None or distanceTuples(self.mouse.fieldRef, new) > self.PIXEL_THRESHOLD:
-                self.constraints.clear()
-                return self.mouse
+                new = self.constraints[0].closestPoint(self.mouse.fieldRef)
+                del self.constraints[1]
 
         return PointRef(Ref.FIELD, new)
     
