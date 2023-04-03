@@ -28,7 +28,9 @@ class TextboxWidgetEntity(WidgetEntity):
         self.textEditor = TextEditor(
             self.getX, self.getY, width, definition.rows,
             READ_COLOR, WRITE_COLOR,
-            isDynamic = definition.isDynamic
+            isDynamic = definition.isDynamic,
+            isNumOnly = definition.isNumOnly,
+            isCentered = definition.isCentered
         )
 
         # Sends notification when text height changes
@@ -78,16 +80,29 @@ class TextboxWidgetEntity(WidgetEntity):
     
     def drawWidget(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         self.textEditor.draw(screen, isActive, isHovered, self.getOpacity())
-    
+
 
 class TextboxWidgetDefinition(WidgetDefinition):
 
-    def __init__(self, name: str, px: int, py: int, pwidth: int, rows: int, isDynamic: bool = False):
+    def __init__(self, name: str, px: int, py: int, pwidth: float, rows: int, isDynamic: bool, isNumOnly: bool, isCentered: bool):
         super().__init__(name, px, py)
 
         self.pwidth = pwidth
         self.rows = rows
         self.isDynamic = isDynamic
+        self.isNumOnly = isNumOnly
+        self.isCentered = isCentered
 
     def make(self, parentCommand) -> TextboxWidgetEntity:
         return TextboxWidgetEntity(parentCommand, self)
+    
+# dynamic, no text restrictions
+class CodeTextboxWidgetDefinition(TextboxWidgetDefinition):
+    def __init__(self, name: str, px: int, py: int, pwidth: float):
+        super().__init__(name, px, py, pwidth, 1, isDynamic = True, isNumOnly = False, isCentered = False)
+
+# numbers only, static
+class ValueTextboxWidgetDefinition(TextboxWidgetDefinition):
+
+    def __init__(self, name: str, px: int, py: int, pwidth: float):
+        super().__init__(name, px, py, pwidth, 1, isDynamic = False, isNumOnly = True, isCentered = True)

@@ -55,6 +55,12 @@ class TextHandler:
     def countLeadingSpaces(self, string):
         print(len(string) - len(string.lstrip()))
         return len(string) - len(string.lstrip())
+    
+    def hasPeriod(self) -> bool:
+        for line in self.text:
+            if "." in line:
+                return True
+        return False
 
     def onKeyDown(self, key):
 
@@ -131,6 +137,14 @@ class TextHandler:
                 self.cursorY += 1
                 self.cursorX = min(self.cursorX, self.currentLineLength())
         else:
+            # for number only, can only accept decimal values
+            if self.textEditor.numOnly:
+                if key == pygame.K_PERIOD:
+                    if self.hasPeriod():
+                        return
+                elif not pygame.key.name(key).isnumeric():
+                    return
+
             # insert char at the text cursor
             if key == pygame.K_TAB:
                 char = " "*self.TAB_LENGTH
@@ -177,6 +191,11 @@ class TextHandler:
         for textLine in self.text:
             self.fullText += textLine + "\n"
         self.fullText = self.fullText[-1]
+
+        self.maxSurfaceWidth = max(surface.get_width() for surface in self.textSurfaces)
+
+    def getSurfaceWidth(self) -> int:
+        return self.maxSurfaceWidth
 
     def getSurfaces(self) -> list[pygame.Surface]:
         return self.textSurfaces

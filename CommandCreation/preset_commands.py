@@ -2,7 +2,7 @@ from CommandCreation.command_definition import CommandDefinition
 from CommandCreation.command_definition_builder import CommandDefinitionBuilder
 from CommandCreation.command_type import CommandType
 from Widgets.checkbox_widget import CheckboxWidgetDefinition
-from Widgets.textbox_widget import TextboxWidgetDefinition
+from Widgets.textbox_widget import CodeTextboxWidgetDefinition, ValueTextboxWidgetDefinition
 
 """
 The default set of command definitions at the start of the program
@@ -34,14 +34,15 @@ class CommandDefinitionPresets:
         from Adapters.turn_adapter import TurnAttributeID
         builder = CommandDefinitionBuilder(CommandType.TURN)
         builder.setName("goTurn")
-        builder.addReadout(TurnAttributeID.THETA2, 0.5, 0.5)
+        builder.addReadout(TurnAttributeID.THETA2, 0.5, 0.3)
+        builder.addWidget(ValueTextboxWidgetDefinition("textbox", 0.5, 0.6, 0.4))
         return builder.build()
 
     def getCodePreset(self) -> CommandDefinition:
         builder = CommandDefinitionBuilder(CommandType.CUSTOM)
         builder.setName("code")
         builder.setHeight(80)
-        builder.addWidget(TextboxWidgetDefinition("textbox", 0.5, 0.4, 0.83, 1, isDynamic = True))
+        builder.addWidget(CodeTextboxWidgetDefinition("textbox", 0.5, 0.4, 0.83))
         return builder.build()
     
 

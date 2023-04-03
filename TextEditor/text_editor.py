@@ -49,7 +49,7 @@ class TextEditor(Observable):
     def removeRow(self):
         self.setRows(self.rows - 1)
 
-    def __init__(self, xFunc: int, yFunc: int, widthFuncOrInt: float, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False):
+    def __init__(self, xFunc: int, yFunc: int, widthFuncOrInt: float, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, isCentered: bool = False):
         
         self.getX = xFunc
         self.getY = yFunc
@@ -58,6 +58,8 @@ class TextEditor(Observable):
         else:
             self.getWidth = widthFuncOrInt
         self.dynamic = isDynamic
+        self.numOnly = isNumOnly
+        self.centered = isCentered
 
 
         self.OUTER_X_MARGIN = 6
@@ -117,17 +119,24 @@ class TextEditor(Observable):
         pygame.draw.rect(surf, self.backgroundColor[self.mode], [0,0,width,height], border_radius = BORDER_RADIUS)
         pygame.draw.rect(surf, (0,0,0), [0,0,width,height], width = 2, border_radius = BORDER_RADIUS)
         surf.set_alpha(opacity * 255)
+
+        # if centered, calculate offset and shift text surfaces
+        if self.centered:
+            offset = self.getWidth() / 2 - self.textHandler.getSurfaceWidth() / 2 - self.OUTER_X_MARGIN
+        else:
+            offset = 0
+
         # draw text
         x = self.OUTER_X_MARGIN
         y = self.OUTER_Y_MARGIN
         for surface in self.textHandler.getSurfaces():
-            surf.blit(surface, (x,y))
+            surf.blit(surface, (x + offset,y))
             y += self.charHeight + self.INNER_Y_MARGIN
 
         # draw blinkingcursor
         if self.mode == TextEditorMode.WRITE and self.cursorBlink.get():
             cx, cy = self.textHandler.getCursor()
-            x = self.OUTER_X_MARGIN + cx * self.charWidth
+            x = self.OUTER_X_MARGIN + cx * self.charWidth + offset
             y = self.OUTER_Y_MARGIN + cy * (self.charHeight + self.INNER_Y_MARGIN)
             pygame.draw.rect(surf, (0,0,0), (x, y, 1, self.charHeight))
 
