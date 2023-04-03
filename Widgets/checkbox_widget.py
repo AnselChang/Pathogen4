@@ -17,7 +17,7 @@ class CheckboxWidgetEntity(WidgetEntity, TooltipOwner):
                          click = ClickLambda(self, FonLeftClick = self.onLeftClick)
                          )
 
-        self.value = False
+        self.value = definition.defaultOn
 
         self.onModifyDefinition()
 
@@ -59,8 +59,9 @@ class CheckboxWidgetEntity(WidgetEntity, TooltipOwner):
 
 class CheckboxWidgetDefinition(WidgetDefinition):
 
-    def __init__(self, name: str, px: int, py: int, tooltipOn: str = None, tooltipOff: str = None):
+    def __init__(self, name: str, px: int, py: int, defaultOn: bool, tooltipOn: str = None, tooltipOff: str = None):
         super().__init__(name, px, py)
+        self.defaultOn = defaultOn
         self.tooltipOn = tooltipOn
         self.tooltipOff = tooltipOff
 

@@ -49,7 +49,7 @@ class TextEditor(Observable):
     def removeRow(self):
         self.setRows(self.rows - 1)
 
-    def __init__(self, xFunc: int, yFunc: int, widthFuncOrInt: float, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, isCentered: bool = False):
+    def __init__(self, xFunc: int, yFunc: int, widthFuncOrInt: float, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, isCentered: bool = False, defaultText: str = ""):
         
         self.getX = xFunc
         self.getY = yFunc
@@ -73,7 +73,7 @@ class TextEditor(Observable):
         self.setRows(rows)
         self.originalHeight = self.height # so that original position can be maintained if height changes
 
-        self.textHandler = TextHandler(self)
+        self.textHandler = TextHandler(self, defaultText = defaultText)
         self.cursorBlink = CursorBlink(35, 33)
 
         self.mode: TextEditorMode = TextEditorMode.READ

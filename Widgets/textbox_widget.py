@@ -30,7 +30,8 @@ class TextboxWidgetEntity(WidgetEntity):
             READ_COLOR, WRITE_COLOR,
             isDynamic = definition.isDynamic,
             isNumOnly = definition.isNumOnly,
-            isCentered = definition.isCentered
+            isCentered = definition.isCentered,
+            defaultText = definition.defaultText
         )
 
         # Sends notification when text height changes
@@ -84,11 +85,12 @@ class TextboxWidgetEntity(WidgetEntity):
 
 class TextboxWidgetDefinition(WidgetDefinition):
 
-    def __init__(self, name: str, px: int, py: int, pwidth: float, rows: int, isDynamic: bool, isNumOnly: bool, isCentered: bool):
+    def __init__(self, name: str, px: int, py: int, pwidth: float, rows: int, defaultText: str, isDynamic: bool, isNumOnly: bool, isCentered: bool):
         super().__init__(name, px, py)
 
         self.pwidth = pwidth
         self.rows = rows
+        self.defaultText = defaultText
         self.isDynamic = isDynamic
         self.isNumOnly = isNumOnly
         self.isCentered = isCentered
@@ -99,10 +101,11 @@ class TextboxWidgetDefinition(WidgetDefinition):
 # dynamic, no text restrictions
 class CodeTextboxWidgetDefinition(TextboxWidgetDefinition):
     def __init__(self, name: str, px: int, py: int, pwidth: float):
-        super().__init__(name, px, py, pwidth, 1, isDynamic = True, isNumOnly = False, isCentered = False)
+        super().__init__(name, px, py, pwidth, 1, defaultText = "", isDynamic = True, isNumOnly = False, isCentered = False)
 
 # numbers only, static
 class ValueTextboxWidgetDefinition(TextboxWidgetDefinition):
 
-    def __init__(self, name: str, px: int, py: int, pwidth: float):
-        super().__init__(name, px, py, pwidth, 1, isDynamic = False, isNumOnly = True, isCentered = True)
+    def __init__(self, name: str, px: int, py: int, pwidth: float, defaultValue: float):
+        defaultText = str(round(defaultValue, 3))
+        super().__init__(name, px, py, pwidth, 1, defaultText = defaultText, isDynamic = False, isNumOnly = True, isCentered = True)
