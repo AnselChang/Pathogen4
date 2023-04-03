@@ -25,7 +25,7 @@ from image_manager import ImageManager
 from draw_order import DrawOrder
 from dimensions import Dimensions
 from reference_frame import PointRef, Ref
-from pygame_functions import shade, drawText, FONT20, drawSurface
+from pygame_functions import shade, drawText, FONT20, drawSurface, drawTransparentRect
 from math_functions import isInsideBox2
 import pygame, re
 
@@ -65,6 +65,9 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.interactor = interactor
         self.images = images
         self.dimensions = dimensions
+
+        self.DRAG_OPACITY = 0.7
+        self.dragOffset = 0
 
         self.position = CommandBlockPosition(self, commandExpansion, self.dimensions, defaultExpand)
 
@@ -157,8 +160,17 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     
     # return 0 if minimized, 1 if maximized, and in between
     def getAddonsOpacity(self) -> float:
+
+        if self.isDragging():
+            return self.DRAG_OPACITY
+
         ratio = self.position.getExpandedRatio()
         return ratio * ratio
+    
+    # return 1 if not dragging, and dragged opacity if dragging
+    # not applicable for regular command blocks
+    def isDragging(self):
+        return False
     
     def getAddonPosition(self, px: float, py: float) -> tuple:
         return self.position.getAddonPosition(px, py)
@@ -206,7 +218,11 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
             color = shade(color, 1.2)
         else:
             color = shade(color, 1.1)
-        pygame.draw.rect(screen, color, (x, y, width, height), border_radius = CORNER_RADIUS)
+
+        if self.isDragging():
+            drawTransparentRect(screen, x, y, x+width, y+height, color, alpha = self.DRAG_OPACITY*255, radius = CORNER_RADIUS)
+        else:
+            pygame.draw.rect(screen, color, (x, y, width, height), border_radius = CORNER_RADIUS)
 
         # draw icon
         iconImage = self.images.get(self.pathAdapter.getIcon())

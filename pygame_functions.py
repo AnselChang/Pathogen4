@@ -5,7 +5,7 @@ def shade(color: tuple, scalar: float):
     return math_functions.intTuple(math_functions.clampTuple(math_functions.scaleTuple(color, scalar), 0, 255))
 
 # Draw a transparent rect on a Pygame surface
-def drawTransparentRect(surface, x1, y1, x2, y2, color, alpha):
+def drawTransparentRect(surface, x1, y1, x2, y2, color, alpha, radius = 0):
     
     width = abs(x2 - x1)
     height = abs(y2 - y1)
@@ -13,7 +13,7 @@ def drawTransparentRect(surface, x1, y1, x2, y2, color, alpha):
     y = min(y1, y2)
 
     rect_surface = pygame.Surface((width, height), pygame.SRCALPHA)
-    rect_surface.fill((color[0], color[1], color[2], alpha))
+    pygame.draw.rect(rect_surface, (*color, alpha), (0,0,width,height), border_radius = radius)
     surface.blit(rect_surface, (x, y))
 
 # Draw a transparent circle on a Pygame surface

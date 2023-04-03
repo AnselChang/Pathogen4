@@ -32,6 +32,8 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         self.trash = TrashEntity(self, self.images, self.dimensions, onDelete = self.delete)
         self.entities.addEntity(self.trash, self)
 
+        self.dragging = False
+
     def delete(self):
         self.path.deleteCustomCommand(self)
 
@@ -39,14 +41,23 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         return self.trash.hover.isHovering
     
     def onStartDrag(self, mouse: PointRef):
-        pass
+        self.dragging = True
+        self.startDragY = self.position.animatedDragPosition.get()
+        self.startMouseY = mouse.screenRef[1]
 
     def onStopDrag(self):
-        pass
+        self.dragging = False
+        self.dragOffset = 0
+
+    # return 1 if not dragging, and dragged opacity if dragging
+    # not applicable for regular command blocks
+    def isDragging(self):
+        return self.dragging
 
     
     
     def onDrag(self, mouse: PointRef):
+        self.dragOffset = mouse.screenRef[1] - self.startMouseY
         inserter: CommandInserter = self.path.getClosestInserter(mouse)
 
         # no change in position if dragging to immediate neighbor inserter

@@ -53,7 +53,10 @@ class CommandBlockPosition:
         return self.dimensions.FIELD_WIDTH + self.X_MARGIN_LEFT
     
     def getY(self) -> float:
-        #return self.currentY
+
+        if self.command.isDragging():
+            return self.command.startDragY + self.command.dragOffset        
+
         return self.animatedDragPosition.get()
     
     def setY(self, y: float):
