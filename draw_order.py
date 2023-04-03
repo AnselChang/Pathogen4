@@ -13,6 +13,7 @@ class DrawOrder(IntEnum):
     WIDGET = auto()
     COMMANND_BLOCK = auto()
     PANEL_BACKGROUND = auto()
+    CONSTRAINT_LINES = auto()
     NODE = auto()
     SEGMENT = auto()
     FIELD_BACKGROUND = auto()

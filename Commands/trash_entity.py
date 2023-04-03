@@ -33,7 +33,7 @@ class TrashEntity(Entity):
         return (position - self.getPosition()).magnitude(Ref.SCREEN) < 12
 
     def getPosition(self) -> PointRef:
-        x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH - 30
+        x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH - 60
         y = self.parentCommand.getY() + self.parentCommand.position.Y_BETWEEN_COMMANDS_MIN / 2
         return PointRef(Ref.SCREEN, (x,y))
 

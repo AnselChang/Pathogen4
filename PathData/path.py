@@ -65,7 +65,7 @@ class Path:
     def _addRawNode(self, nodePosition: PointRef, func):
 
         # create node and add entity
-        self.node: PathNodeEntity = PathNodeEntity(self.interactor, position = nodePosition)
+        self.node: PathNodeEntity = PathNodeEntity(self.entities, self.interactor, self.dimensions, position = nodePosition)
         self.pathList.addToEnd(self.node)
         self.entities.addEntity(self.node)
 

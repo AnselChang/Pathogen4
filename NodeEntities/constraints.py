@@ -1,6 +1,13 @@
+from BaseEntity.entity import Entity
+
+from dimensions import Dimensions
+from draw_order import DrawOrder
+
 from Geometry.line import Line
 from reference_frame import PointRef, Ref, ScalarRef
-from math_functions import distanceTuples
+from math_functions import distanceTuples, clipLineToBox, distanceTuples, hypo
+from pygame_functions import drawDottedLine
+import pygame, math
 
 """
 Handle constraints for dragging path nodes
@@ -10,16 +17,35 @@ Once all the constraints are added, the final position is calculated.
 For 0 constraints: position is unchanged
 For 1 constraints: snap to that line
 For 2 constraints: snap to the intersection of the two lines
+
+Also draws the constraints
 """
 
-class ConstraintManager:
+class Constraints(Entity):
 
     # if distance to line is less than pixel threshold, snap to line
-    def __init__(self, mouse: PointRef, pixelThreshold: int):
-        self.mouse = mouse
-        self.constraints: list[Line] = []
+    def __init__(self, pixelThreshold: int, dimensions: Dimensions):
 
+        super().__init__(
+            drawOrder = DrawOrder.CONSTRAINT_LINES
+        )
+
+        self.dimensions = dimensions
+        
+        self.constraints: list[Line] = []
         self.PIXEL_THRESHOLD = pixelThreshold
+
+        self.visible = False
+
+    def show(self):
+        self.visible = True
+
+    def hide(self):
+        self.visible = False
+
+    def reset(self, mouse: PointRef):
+        self.mouse = mouse
+        self.constraints.clear()
 
     # The constraint is some other node with an angle to snap to
     def addConstraint(self, other: PointRef, theta: float):
@@ -59,6 +85,31 @@ class ConstraintManager:
             # intersecting lines cannot be super close to parallel
             # the intersection must be reasonably close to initial position
             if new is None or distanceTuples(self.mouse.fieldRef, new) > self.PIXEL_THRESHOLD:
+                self.constraints.clear()
                 return self.mouse
 
         return PointRef(Ref.FIELD, new)
+    
+    def isVisible(self) -> bool:
+        return self.visible
+
+    def isTouching(self, position: PointRef) -> bool:
+        return False
+
+    def getPosition(self) -> PointRef:
+        return PointRef()
+
+    # draw all constraint lines
+    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+        for line in self.constraints:
+            point = PointRef(Ref.FIELD, line.point)
+            
+            startPoint, pointA = clipLineToBox(point.screenRef, line.theta, 0,0,self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT)
+
+            distance = distanceTuples(startPoint, pointA)
+            otherDistance = hypo(self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT) - distance
+
+            theta = line.theta + 3.1415
+            pointB = startPoint[0] + otherDistance * math.cos(theta), startPoint[1] + otherDistance * math.sin(theta)
+
+            drawDottedLine(screen, (0,0,0), pointA, pointB, 2, 4)

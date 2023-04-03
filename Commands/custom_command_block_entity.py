@@ -1,4 +1,5 @@
 from BaseEntity.EntityListeners.drag_listener import DragLambda
+from BaseEntity.static_entity import StaticEntity
 
 from Adapters.path_adapter import PathAdapter
 
@@ -13,6 +14,7 @@ from EntityHandler.interactor import Interactor
 from reference_frame import PointRef, Ref
 from image_manager import ImageManager
 from dimensions import Dimensions
+import pygame
 
 """
 CustomCommands have two additonal features compared to regular commands
@@ -29,8 +31,8 @@ class CustomCommandBlockEntity(CommandBlockEntity):
                          defaultExpand = True
                          )
 
-        self.trash = TrashEntity(self, self.images, self.dimensions, onDelete = self.delete)
-        self.entities.addEntity(self.trash, self)
+        self.trashEntity = TrashEntity(self, self.images, self.dimensions, onDelete = self.delete)
+        self.entities.addEntity(self.trashEntity, self)
 
         self.dragging = False
 
@@ -38,7 +40,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         self.path.deleteCustomCommand(self)
 
     def isOtherHovering(self) -> bool:
-        return self.trash.hover.isHovering
+        return self.trashEntity.hover.isHovering
     
     def onStartDrag(self, mouse: PointRef):
         self.dragging = True
@@ -53,8 +55,6 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     # not applicable for regular command blocks
     def isDragging(self):
         return self.dragging
-
-    
     
     def onDrag(self, mouse: PointRef):
         self.dragOffset = mouse.screenRef[1] - self.startMouseY
@@ -98,3 +98,17 @@ class CustomCommandBlockEntity(CommandBlockEntity):
                 oldAfter._prev = oldPrev
 
         self.path.recomputeY()
+
+    def drawDragDots(self, screen: pygame.Surface):
+
+        DY = 4
+        WIDTH = 17
+        HEIGHT = 2
+        COLOR = [200]*3
+
+        x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH - 43
+        y = self.getY() + 10
+
+        for i in range(3):
+            pygame.draw.rect(screen, COLOR, (x, y, WIDTH, HEIGHT), border_radius = 3)
+            y += DY

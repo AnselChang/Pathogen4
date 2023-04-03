@@ -203,6 +203,10 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
     
     def isOtherHovering(self) -> bool:
         return False
+    
+    # nothing to draw for regular commands
+    def drawDragDots(self, screen: pygame.Surface):
+        pass
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
@@ -234,6 +238,9 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         text = self.getDefinition().name + "()"
         x = self.dimensions.FIELD_WIDTH + 40
         drawText(screen, FONT20, text, (0,0,0), x, y, alignX = 0)
+
+        # draw drag dots, if exists
+        self.drawDragDots(screen)
 
     def toString(self) -> str:
         return "Command Block Entity"

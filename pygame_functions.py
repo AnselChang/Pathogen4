@@ -130,3 +130,32 @@ def getGradientSurface(width, height, color1, color2, vertical = True, invert = 
     gradient.set_alpha(color1[3])
     return gradient
 
+
+def drawDottedLine(screen, color, start_pos, end_pos, dot_length=4, dot_gap=4):
+    """
+    Draw a dotted line between two points on the screen.
+    :param screen: the Pygame screen surface to draw on
+    :param color: the color of the line as an RGB tuple
+    :param start_pos: the start position of the line as an (x, y) tuple
+    :param end_pos: the end position of the line as an (x, y) tuple
+    :param dot_length: the length of each dot in pixels (default: 4)
+    :param dot_gap: the gap between dots in pixels (default: 4)
+    """
+    # calculate the distance and angle between the two points
+    dx, dy = end_pos[0] - start_pos[0], end_pos[1] - start_pos[1]
+    distance = pygame.math.Vector2(dx, dy).length()
+    angle = pygame.math.Vector2(dx, dy).angle_to((1, 0))
+
+    # calculate the number of dots needed to fill the line
+    dot_count = int(distance / (dot_length + dot_gap))
+
+    # calculate the x and y distances between each dot
+    x_spacing = dx / dot_count
+    y_spacing = dy / dot_count
+
+    # draw the dotted line
+    current_pos = start_pos
+    for i in range(dot_count):
+        end_pos = (current_pos[0] + x_spacing, current_pos[1] + y_spacing)
+        pygame.draw.line(screen, color, current_pos, end_pos, dot_length)
+        current_pos = (end_pos[0] + x_spacing, end_pos[1] + y_spacing)

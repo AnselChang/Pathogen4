@@ -4,14 +4,17 @@ from reference_frame import PointRef, VectorRef
 from BaseEntity.EntityListeners.drag_listener import DragLambda
 from BaseEntity.EntityListeners.click_listener import ClickLambda
 from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
+from BaseEntity.EntityListeners.hover_listener import HoverLambda
 from SegmentEntities.path_segment_entity import PathSegmentEntity
 from draw_order import DrawOrder
 from EntityHandler.interactor import Interactor
+from EntityHandler.entity_manager import EntityManager
 
 from Adapters.path_adapter import AdapterInterface
 from Adapters.turn_adapter import TurnAdapter, TurnAttributeID
 
-from NodeEntities.constraint_manager import ConstraintManager
+from NodeEntities.constraints import Constraints
+from dimensions import Dimensions
 
 from image_manager import ImageID
 from linked_list import LinkedListNode
@@ -34,16 +37,18 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)
 
-    def __init__(self, interactor: Interactor, position: PointRef):
+    def __init__(self, entities: EntityManager, interactor: Interactor, dimensions: Dimensions, position: PointRef):
         Entity.__init__(self,
             drag = DragLambda(
                 self,
                 FonStartDrag = self.onStartDrag,
                 FcanDrag = self.canDrag,
-                FonDrag = self.onDrag
+                FonDrag = self.onDrag,
+                FonStopDrag = self.onStopDrag
             ),
             select = SelectLambda(self, "path node", FgetHitbox = self.getHitbox),
             click = ClickLambda(self, FonLeftClick = lambda : print("left click"), FonRightClick = lambda : print("right click")),
+            hover = HoverLambda(self, FonHoverOff = self.onHoverOff, FonHoverOn = self.onHoverOn),
             drawOrder = DrawOrder.NODE
             )
         
@@ -54,6 +59,11 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         self.interactor = interactor
         self.position = position
         self.adapter: TurnAdapter = TurnAdapter()
+
+        self.dragging = True
+        SNAPPING_POWER = 5 # in pixels
+        self.constraints = Constraints(SNAPPING_POWER, dimensions)
+        entities.addEntity(self.constraints, self)
 
     def getPosition(self) -> PointRef:
         return self.position
@@ -83,9 +93,20 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         direction = deltaInHeading(start, end)
         self.adapter.setIcon(ImageID.TURN_RIGHT if direction >= 0 else ImageID.TURN_LEFT)
 
+    def onHoverOff(self):
+        self.constraints.hide()
+
+    def onHoverOn(self):
+        self.constraints.show()
+
     def onStartDrag(self, mouse: PointRef):
         self.mouseStartDrag = mouse.copy()
         self.startPosition = self.getPosition().copy()
+        self.constraints.show()
+
+    def onStopDrag(self):
+        self.dragging = False
+        self.constraints.hide()
 
     def canDrag(self, mouse: PointRef) -> bool:
 
@@ -114,14 +135,14 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
 
     # "Snaps" to neighbors. Documentation in ConstraintManager
     def constrainPosition(self):
-        SNAPPING_POWER = 5 # in pixels
-        constraints = ConstraintManager(self.position, SNAPPING_POWER)
+
+        self.constraints.reset(self.position)
 
         # snap to previous
         if self.getPrevious() is not None:
             pNode: PathNodeEntity = self.getPrevious().getPrevious()
             if pNode.getPrevious() is not None:
-                constraints.addConstraint(
+                self.constraints.addConstraint(
                     other = pNode.getPosition(),
                     theta = pNode.getPrevious().getEndTheta()
                 )
@@ -130,7 +151,7 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         if self.getNext() is not None:
             nNode: PathNodeEntity = self.getNext().getNext()
             if nNode.getNext() is not None:
-                constraints.addConstraint(
+                self.constraints.addConstraint(
                     other = nNode.getPosition(),
                     theta = nNode.getNext().getStartTheta()
                 )
@@ -139,7 +160,7 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         if self.getPrevious() is not None and self.getNext() is not None:
             pNodePos = self.getPrevious().getPrevious().getPosition()
             nNodePos = self.getNext().getNext().getPosition()
-            constraints.addConstraint(
+            self.constraints.addConstraint(
                 other = pNodePos,
                 theta = (nNodePos - pNodePos).theta()
             )
@@ -148,14 +169,14 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         PI = 3.1415
         for theta in [0, PI/2]:
             if self.getPrevious() is not None:
-                constraints.addConstraint(
+                self.constraints.addConstraint(
                     other = self.getPrevious().getPrevious().getPosition(),
                     theta = theta
                 )
             if self.getNext() is not None:
-                constraints.addConstraint(
+                self.constraints.addConstraint(
                     other = self.getNext().getNext().getPosition(),
                     theta = theta
                 )
 
-        self.position = constraints.get()
+        self.position = self.constraints.get()
