@@ -32,6 +32,7 @@ class TextboxWidgetEntity(WidgetEntity):
         font: DynamicFont = parentCommand.fontManager.getDynamicFont(definition.fontID, definition.fontSize)
 
         self.textEditor = TextEditor(
+            parentCommand.dimensions,
             font,
             self.getX, self.getY, width, definition.rows,
             READ_COLOR, WRITE_COLOR,

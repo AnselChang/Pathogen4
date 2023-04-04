@@ -12,6 +12,8 @@ def drawTransparentRect(surface, x1, y1, x2, y2, color, alpha, radius = 0, width
     x = min(x1, x2)
     y = min(y1, y2)
 
+    alpha = math_functions.clamp(alpha, 0, 255)
+
     rect_surface = pygame.Surface((w, h), pygame.SRCALPHA)
     pygame.draw.rect(rect_surface, (*color, alpha), (0,0,w,h), border_radius = radius, width = width)
     surface.blit(rect_surface, (x, y))

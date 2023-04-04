@@ -11,6 +11,7 @@ from font_manager import DynamicFont
 from reference_frame import PointRef, Ref
 from math_functions import isInsideBox2
 from draw_order import DrawOrder
+from dimensions import Dimensions
 
 from enum import Enum, auto
 from abc import abstractmethod
@@ -45,7 +46,7 @@ class TextEditor(Observable):
 
     def updateHeight(self):
         charHeight = self.font.getCharHeight()
-        self.height = 2 * self.border.OUTER_Y_MARGIN + self.rows * (charHeight + self.border.INNER_Y_MARGIN) - self.border.INNER_Y_MARGIN
+        self.height = 2 * self.border._OUTER_Y_MARGIN + self.rows * (charHeight + self.border._INNER_Y_MARGIN) - self.border._INNER_Y_MARGIN
 
     def setRows(self, rows):
         self.rows = rows
@@ -58,8 +59,9 @@ class TextEditor(Observable):
     def removeRow(self):
         self.setRows(self.rows - 1)
 
-    def __init__(self, font: DynamicFont, xFunc: int, yFunc: int, widthFuncOrIntOrNone, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, defaultText: str = ""):
+    def __init__(self, dimensions: Dimensions, font: DynamicFont, xFunc: int, yFunc: int, widthFuncOrIntOrNone, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, defaultText: str = ""):
         
+        self.dimensions = dimensions
         self.font = font
 
         self.rawXFunc = xFunc
@@ -81,7 +83,7 @@ class TextEditor(Observable):
         self.dynamic = isDynamic
         self.numOnly = isNumOnly
 
-        self.border = TextBorder()
+        self.border = TextBorder(dimensions)
 
         self.rows = 1
         self.setRows(rows)
@@ -116,7 +118,7 @@ class TextEditor(Observable):
         return self.border.getTextWidth(self.getWidth())
     
     def getMaxTextLines(self) -> int:
-        return (self.getHeight() - 2*self.border.OUTER_Y_MARGIN + self.border.INNER_Y_MARGIN) // (self.charHeight + self.border.INNER_Y_MARGIN)
+        return (self.getHeight() - 2*self.border._OUTER_Y_MARGIN + self.border._INNER_Y_MARGIN) // (self.charHeight + self.border._INNER_Y_MARGIN)
 
     def getRect(self) -> tuple:
         return self.getX(), self.getY(), self.getWidth(), self.getHeight()
@@ -146,18 +148,18 @@ class TextEditor(Observable):
         surf.set_alpha(opacity * 255)
 
         # draw text
-        x = self.border.OUTER_X_MARGIN
-        y = self.border.OUTER_Y_MARGIN
+        x = self.border.getOuterXMargin()
+        y = self.border.getOuterYMargin()
         for surface in self.textHandler.getSurfaces():
             surf.blit(surface, (x,y))
-            y += self.font.getCharHeight() + self.border.INNER_Y_MARGIN
+            y += self.font.getCharHeight() + self.border.getInnerYMargin()
 
         # draw blinkingcursor
         if self.mode == TextEditorMode.WRITE and self.cursorBlink.get():
             cx, cy = self.textHandler.getCursor()
             charWidth, charHeight = self.font.getCharWidth(), self.font.getCharHeight()
-            x = self.border.OUTER_X_MARGIN + cx * charWidth
-            y = self.border.OUTER_Y_MARGIN + cy * (charHeight + self.border.INNER_Y_MARGIN)
+            x = self.border.getOuterXMargin() + cx * charWidth
+            y = self.border.getOuterYMargin() + cy * (charHeight + self.border.getInnerYMargin())
             pygame.draw.rect(surf, (0,0,0), (x, y, 1, charHeight))
 
         screen.blit(surf, (absoluteX, absoluteY))

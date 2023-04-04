@@ -81,10 +81,14 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.titleFont = self.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
 
         # Resize commands if resolution change
-        self.dimensions.addObserver(Observer(onNotify = self.path.recomputeY))
+        self.dimensions.addObserver(Observer(onNotify = self.onWindowResize))
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)
+    
+    def onWindowResize(self):
+        self.position.recomputeExpansion()
+        self.path.invokeEveryCommand(lambda command: command.position.expandMotion.forceToEndValue)
     
     # Given the command widgets, create the WidgetEntities and add to entity manager
     def manifestWidgets(self) -> list[WidgetEntity]:

@@ -159,3 +159,10 @@ class Path:
             inserter = inserter.getNext()
 
         return closestInserter
+    
+    def invokeEveryCommand(self, func = lambda command: None):
+        command: CommandBlockEntity = self.commandList.head
+        while command is not None:
+            if isinstance(command, CommandBlockEntity):
+                func(command)
+            command = command.getNext()

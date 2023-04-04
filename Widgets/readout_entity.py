@@ -18,7 +18,7 @@ class ReadoutEntity(Entity):
 
         super().__init__(drawOrder = DrawOrder.READOUT)
 
-        self.border = TextBorder()
+        self.border = TextBorder(parentCommand.dimensions)
 
         self.font: DynamicFont = parentCommand.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
 

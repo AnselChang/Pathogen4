@@ -42,7 +42,7 @@ class CommandBlockPosition:
         self.initialPositionNotSet = True
 
     def getDefinedHeight(self) -> int:
-        return self.command.getDefinition().fullHeight
+        return self.command.getDefinition().fullHeight * self.dimensions.RESOLUTION_RATIO
         
 
     def isFullyCollapsed(self) -> bool:
@@ -73,7 +73,7 @@ class CommandBlockPosition:
     def getHeight(self) -> float:
         if not self.command.isVisible():
             return 0
-        return self.expandMotion.get() * self.dimensions.RESOLUTION_RATIO
+        return self.expandMotion.get()
     
     def getCenterPosition(self) -> tuple:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH / 2
