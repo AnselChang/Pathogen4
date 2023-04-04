@@ -47,7 +47,7 @@ class Entity(ABC):
         self._parent = parent
         parent._children.append(self)
 
-    def distanceTo(self, position: PointRef) -> float:
+    def distanceTo(self, position: tuple) -> float:
         return (position - self.getPosition()).magnitude(Ref.SCREEN)
         
     @abstractmethod
@@ -59,15 +59,60 @@ class Entity(ABC):
         pass
 
     @abstractmethod
-    def getPosition(self) -> PointRef:
-        pass
-
-    @abstractmethod
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         pass
 
-    def toString(self) -> str:
-        "Generic entity"
+    
+    # THESE METHODS ARE IMPLEMENTED BY SUBCLASS TO SPECIFY RELATIVE POSITION
 
-    def __str__(self):
-        return f"Entity: {self.toString()}"
+    # impl EITHER getCenterX OR getLeftX
+    def getCenterX(self) -> float:
+        return self.getLeftX() + self.getWidth() / 2
+    def getLeftX(self) -> float:
+        return self.getCenterX() - self.getWidth() / 2
+
+    # impl EITHER getCenterY OR getTopY
+    def getCenterY(self) -> float:
+        return self.getTopY() + self.getHeight() / 2
+    def getTopY(self) -> float:
+        return self.getCenterY() + self.getHeight() / 2
+
+    # must impl both of these
+    @abstractmethod
+    def getWidth(self) -> float:
+        pass
+    @abstractmethod
+    def getHeight(self) -> float:
+        pass
+
+    # THESE ARE UTILITY METHODS THAT CAN BE USED TO SPECIFY RELATIVE POSITIONS ABOVE
+
+    # get relative x as a percent of parent horizontal span
+    def _px(self, px):
+        if self._parent is None:
+            raise Exception("No parent")
+        return self._parent.getLeftX() + self._parent.getWidth() / 2
+    
+    # get relative x as a percent of parent horizontal span
+    def _py(self, py):
+        if self._parent is None:
+            raise Exception("No parent")
+        return self._parent.getTopY() + self._parent.getHeight() / 2
+    
+    # get relative width as a percent of parent horizontal span
+    def _pwidth(self, pwidth):
+        if self._parent is None:
+            raise Exception("No parent")
+        return self._parent.getWidth() * pwidth
+    
+    # get relative height as a percent of parent vertical span
+    def _pheight(self, pheight):
+        if self._parent is None:
+            raise Exception("No parent")
+        return self._parent.getHeight() * pheight
+    
+    # Get width given a margin (on both sides) from parent horizontal span
+    def _mwidth(self, margin):
+        return self._parent.getWidth() - margin * 2
+
+    
