@@ -1,5 +1,7 @@
 About
 ===========
+(Note: this software started development on March 27, 2023! It's in very early phases of development, so expect tons of bugs and missing functionality!)
+
 Pathogen is the definitive visual auton maker for VEX and beyond.
 
 Through a combination of node-based path design and blockly-style sequence of commands, this software aims to support any game, programming language, robot, and codebase.
