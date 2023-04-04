@@ -73,7 +73,7 @@ class CommandBlockPosition:
     def getHeight(self) -> float:
         if not self.command.isVisible():
             return 0
-        return self.expandMotion.get()
+        return self.expandMotion.get() * self.dimensions.RESOLUTION_RATIO
     
     def getCenterPosition(self) -> tuple:
         x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH / 2

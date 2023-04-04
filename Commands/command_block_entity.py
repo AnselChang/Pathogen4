@@ -80,6 +80,9 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
         self.titleFont = self.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
 
+        # Resize commands if resolution change
+        self.dimensions.addObserver(Observer(onNotify = self.path.recomputeY))
+
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)
     
