@@ -5,6 +5,7 @@ from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorTyp
 from Observers.observer import Observable
 
 from TextEditor.text_handler import TextHandler
+from TextEditor.text_border import TextBorder
 
 from reference_frame import PointRef, Ref
 from pygame_functions import drawText, FONTCODE, drawTransparentRect
@@ -39,7 +40,7 @@ class CursorBlink:
 class TextEditor(Observable):
 
     def setRows(self, rows):
-        self.height = 2 * self.OUTER_Y_MARGIN + rows * (self.charHeight + self.INNER_Y_MARGIN) - self.INNER_Y_MARGIN
+        self.height = 2 * self.border.OUTER_Y_MARGIN + rows * (self.charHeight + self.border.INNER_Y_MARGIN) - self.border.INNER_Y_MARGIN
         self.rows = rows
         self.notify()
 
@@ -49,24 +50,31 @@ class TextEditor(Observable):
     def removeRow(self):
         self.setRows(self.rows - 1)
 
-    def __init__(self, xFunc: int, yFunc: int, widthFuncOrInt: float, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, isCentered: bool = False, defaultText: str = ""):
+    def __init__(self, font, xFunc: int, yFunc: int, widthFuncOrIntOrNone, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, defaultText: str = ""):
         
-        self.getX = xFunc
-        self.getY = yFunc
-        if type(widthFuncOrInt) == int:
-            self.getWidth = lambda widthFuncOrInt=widthFuncOrInt: widthFuncOrInt
+        self.rawXFunc = xFunc
+
+        self.noWidthRestriction = widthFuncOrIntOrNone is None
+
+        if self.noWidthRestriction:
+            self.getX = self.getDynamicX
         else:
-            self.getWidth = widthFuncOrInt
+            self.getX = xFunc
+
+        self.getY = yFunc
+        if type(widthFuncOrIntOrNone) == int:
+            self.getWidth = lambda widthFuncOrInt=widthFuncOrIntOrNone: widthFuncOrInt
+        elif self.noWidthRestriction:
+            self.getWidth = self.getDynamicWidth
+        else:
+            self.getWidth = widthFuncOrIntOrNone
         self.dynamic = isDynamic
         self.numOnly = isNumOnly
-        self.centered = isCentered
 
+        self.border = TextBorder()
 
-        self.OUTER_X_MARGIN = 6
-        self.OUTER_Y_MARGIN = 4
-        self.INNER_Y_MARGIN = 0
-
-        test = FONTCODE.render("T", True, (0,0,0))
+        self.font = font
+        test = self.font.render("T", True, (0,0,0))
         self.charWidth = test.get_width()
         self.charHeight = test.get_height()
 
@@ -82,15 +90,23 @@ class TextEditor(Observable):
             TextEditorMode.READ : readColor,
             TextEditorMode.WRITE : writeColor
         }
+
+    def getDynamicX(self) -> float:
+        # bruh why does this work
+        return self.rawXFunc()# - self.getDynamicWidth() / 2
+        
+    
+    def getDynamicWidth(self) -> float:
+        return self.border.getBorderWidth(self.textHandler.getSurfaceWidth())
     
     def getHeight(self) -> float:
         return self.height
 
     def getMaxTextWidth(self) -> float:
-        return self.getWidth() - self.OUTER_X_MARGIN * 2
+        return self.border.getTextWidth(self.getWidth())
     
     def getMaxTextLines(self) -> int:
-        return (self.getHeight() - 2*self.OUTER_Y_MARGIN + self.INNER_Y_MARGIN) // (self.charHeight + self.INNER_Y_MARGIN)
+        return (self.getHeight() - 2*self.border.OUTER_Y_MARGIN + self.border.INNER_Y_MARGIN) // (self.charHeight + self.border.INNER_Y_MARGIN)
 
     def getRect(self) -> tuple:
         return self.getX(), self.getY(), self.getWidth(), self.getHeight()
@@ -103,41 +119,34 @@ class TextEditor(Observable):
         return isInsideBox2(*position.screenRef, self.getX(), self.getY(), self.getWidth(), self.getHeight())
     
     def getPosition(self) -> PointRef:
-        x = self.getX() + self.getWidth() / 2
+        x = self.getDynamicX()
         y = self.getY() + self.getHeight() / 2
         return PointRef(Ref.SCREEN, (x,y))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool, opacity: float = 1) -> bool:
         
         # draw background
-        BORDER_RADIUS = 3
         rect = self.getRect()
         absoluteX, absoluteY, width, height = rect
 
         surf = pygame.Surface((width, height))
         
-        pygame.draw.rect(surf, self.backgroundColor[self.mode], [0,0,width,height], border_radius = BORDER_RADIUS)
-        pygame.draw.rect(surf, (0,0,0), [0,0,width,height], width = 2, border_radius = BORDER_RADIUS)
+        pygame.draw.rect(surf, self.backgroundColor[self.mode], [0,0,width,height], border_radius = self.border.BORDER_RADIUS)
+        pygame.draw.rect(surf, (0,0,0), [0,0,width,height], width = 2, border_radius = self.border.BORDER_RADIUS)
         surf.set_alpha(opacity * 255)
 
-        # if centered, calculate offset and shift text surfaces
-        if self.centered:
-            offset = self.getWidth() / 2 - self.textHandler.getSurfaceWidth() / 2 - self.OUTER_X_MARGIN
-        else:
-            offset = 0
-
         # draw text
-        x = self.OUTER_X_MARGIN
-        y = self.OUTER_Y_MARGIN
+        x = self.border.OUTER_X_MARGIN
+        y = self.border.OUTER_Y_MARGIN
         for surface in self.textHandler.getSurfaces():
-            surf.blit(surface, (x + offset,y))
-            y += self.charHeight + self.INNER_Y_MARGIN
+            surf.blit(surface, (x,y))
+            y += self.charHeight + self.border.INNER_Y_MARGIN
 
         # draw blinkingcursor
         if self.mode == TextEditorMode.WRITE and self.cursorBlink.get():
             cx, cy = self.textHandler.getCursor()
-            x = self.OUTER_X_MARGIN + cx * self.charWidth + offset
-            y = self.OUTER_Y_MARGIN + cy * (self.charHeight + self.INNER_Y_MARGIN)
+            x = self.border.OUTER_X_MARGIN + cx * self.charWidth
+            y = self.border.OUTER_Y_MARGIN + cy * (self.charHeight + self.border.INNER_Y_MARGIN)
             pygame.draw.rect(surf, (0,0,0), (x, y, 1, self.charHeight))
 
         screen.blit(surf, (absoluteX, absoluteY))

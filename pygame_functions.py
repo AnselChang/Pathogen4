@@ -5,15 +5,15 @@ def shade(color: tuple, scalar: float):
     return math_functions.intTuple(math_functions.clampTuple(math_functions.scaleTuple(color, scalar), 0, 255))
 
 # Draw a transparent rect on a Pygame surface
-def drawTransparentRect(surface, x1, y1, x2, y2, color, alpha, radius = 0):
+def drawTransparentRect(surface, x1, y1, x2, y2, color, alpha, radius = 0, width = 0):
     
-    width = abs(x2 - x1)
-    height = abs(y2 - y1)
+    w = abs(x2 - x1)
+    h = abs(y2 - y1)
     x = min(x1, x2)
     y = min(y1, y2)
 
-    rect_surface = pygame.Surface((width, height), pygame.SRCALPHA)
-    pygame.draw.rect(rect_surface, (*color, alpha), (0,0,width,height), border_radius = radius)
+    rect_surface = pygame.Surface((w, h), pygame.SRCALPHA)
+    pygame.draw.rect(rect_surface, (*color, alpha), (0,0,w,h), border_radius = radius, width = width)
     surface.blit(rect_surface, (x, y))
 
 # Draw a transparent circle on a Pygame surface
@@ -62,12 +62,19 @@ FONTCODE = pygame.font.Font('CascadiaMono.ttf', 10)
 # align = 0 -> align left/top
 # align = 0.5 -> align mid
 # align = 1 -> align right/bottom
-def drawText(surface: pygame.Surface, font: pygame.font, string: str, color: tuple, x: int, y: int, alignX: float = 0.5, alignY: float = 0.5, opacity = 1):
+# return text width
+def drawText(surface: pygame.Surface, font: pygame.font, string: str, color: tuple, x: int, y: int, alignX: float = 0.5, alignY: float = 0.5, opacity = 1) -> int:
     text = font.render(string, True, color)
     text.set_alpha(opacity * 255)
-    x -= text.get_width()*alignX
-    y -= text.get_height()*alignY
+
+    width = text.get_width()
+    height = text.get_height()
+
+    x -= width * alignX
+    y -= height * alignY
     surface.blit(text, (x,y))
+
+    return width, height
 
 # Return an image given a filename
 def getImage(filename: str, imageScale: float = 1) -> pygame.Surface:

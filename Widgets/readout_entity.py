@@ -1,9 +1,10 @@
 from BaseEntity.entity import Entity
 from Adapters.path_adapter import PathAdapter
 
+from TextEditor.text_border import TextBorder
 from reference_frame import PointRef, Ref
 from draw_order import DrawOrder
-from pygame_functions import drawText, FONT15
+from pygame_functions import drawText, FONT15, drawTransparentRect
 import pygame
 
 """
@@ -15,6 +16,8 @@ class ReadoutEntity(Entity):
     def __init__(self, parentCommand: Entity, pathAdapter: PathAdapter, definedReadout):
 
         super().__init__(drawOrder = DrawOrder.READOUT)
+
+        self.border = TextBorder()
 
         self.parentCommand = parentCommand
         self.definedReadout = definedReadout
@@ -36,9 +39,19 @@ class ReadoutEntity(Entity):
         return PointRef(Ref.SCREEN, (x, y))
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+
+        if self.parentCommand.isFullyCollapsed():
+            return
+
         # opacity: 1 = solid, 0 = invisible
         opacity = self.parentCommand.getAddonsOpacity()
-        drawText(screen, FONT15, self.getText(), (0,0,0), *self.getPosition().screenRef, opacity = opacity)
+
+        cx, cy = self.getPosition().screenRef
+        textWidth, textHeight = drawText(screen, FONT15, self.getText(), (0,0,0), cx, cy, opacity = opacity)
+
+        x, y, w, h = self.border.getRect(cx, cy, textWidth, textHeight)
+        alpha = int(round(opacity*255))
+        drawTransparentRect(screen, x, y, x+w, y+h, (0,0,0), alpha = alpha, radius = self.border.BORDER_RADIUS, width = 2)
 
     def toString(self) -> str:
         return "Readout entity"
