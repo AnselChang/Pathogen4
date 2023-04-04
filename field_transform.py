@@ -58,10 +58,13 @@ class FieldTransform:
 
     # mouse is a PointRef
     def changeZoom(self, mouse, deltaZoom: float):
-
         oldX, oldY = mouse.screenRef
 
-        self.zoom = clamp(self.zoom + deltaZoom, 0.5, 5) # limits to how much you can zoom in or out
+        #self.zoom = clamp(self.zoom + deltaZoom, 0.5, 5) # limits to how much you can zoom in or out
+        self.zoom = self.zoom + deltaZoom
+
+        MAX_ZOOM = 5 # can only do [MAX_ZOOM]x zoom from when the image is scaled to fit screen
+        self.zoom = min(self.zoom, MAX_ZOOM * self._dimensions.LARGER_FIELD_SIDE / self._dimensions.FIELD_SIZE_IN_PIXELS)
 
         # can't zoom more than the width of the screen
         if self._dimensions.LARGER_FIELD_SIDE > self.rawSize * self.zoom:
