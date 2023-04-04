@@ -50,16 +50,16 @@ class PointRef:
         normalizedScreenY = (pointS[1] - panY) / self.transform.zoom
 
         # convert to field reference frame
-        xf = (normalizedScreenX - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN * dimensions.FIELD_SIZE_IN_INCHES
-        yf = (normalizedScreenY - dimensions.PIXELS_TO_FIELD_CORNER) / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN * dimensions.FIELD_SIZE_IN_INCHES
+        xf = (normalizedScreenX - dimensions.FIELD_MARGIN_IN_PIXELS) / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN * dimensions.FIELD_SIZE_IN_INCHES
+        yf = (normalizedScreenY - dimensions.FIELD_MARGIN_IN_PIXELS) / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN * dimensions.FIELD_SIZE_IN_INCHES
 
         return xf, yf
 
     # Given we only store the point in the field reference frame, we need to convert it to return as screen reference frame
     def _fieldToScreen(self, pointF: tuple) -> tuple:
         # convert to normalized (pre-zoom and pre-panning) coordinates
-        normalizedScreenX = pointF[0] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN + dimensions.PIXELS_TO_FIELD_CORNER
-        normalizedScreenY = pointF[1] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN + dimensions.PIXELS_TO_FIELD_CORNER
+        normalizedScreenX = pointF[0] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN + dimensions.FIELD_MARGIN_IN_PIXELS
+        normalizedScreenY = pointF[1] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN + dimensions.FIELD_MARGIN_IN_PIXELS
 
         # convert to screen reference frame
         panX, panY = self.transform.getPan()

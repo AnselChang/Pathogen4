@@ -12,11 +12,11 @@ class Dimensions(Observable):
         self.RATIO = 0.7
 
         self.FIELD_SIZE_IN_INCHES = 144
+        self.FIELD_MARGIN_IN_PIXELS = 19 # the margin from image (0,0) to (0,0) of the field in pixels
 
-    def setFieldSizePixels(self, pixels: int, margin: int):
+    def setFieldSizePixels(self, pixels: int):
         self.FIELD_SIZE_IN_PIXELS = pixels
-        self.PIXELS_TO_FIELD_CORNER = margin
-        self.FIELD_SIZE_IN_PIXELS_NO_MARGIN = self.FIELD_SIZE_IN_PIXELS - 2 * margin
+        self.FIELD_SIZE_IN_PIXELS_NO_MARGIN = self.FIELD_SIZE_IN_PIXELS - 2 * self.FIELD_MARGIN_IN_PIXELS
 
     # Resize screen to (screenWidth, screenHeight) and return a new instance of the screen with updated dimensions
     def resizeScreen(self, screenWidth: int, screenHeight: int) -> pygame.Surface:

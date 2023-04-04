@@ -62,7 +62,7 @@ def main():
 
     images = ImageManager()
     imageSize = images.get(ImageID.FIELD).get_width()
-    dimensions.setFieldSizePixels(imageSize, 19)
+    dimensions.setFieldSizePixels(imageSize)
 
 
     fieldTransform: FieldTransform = FieldTransform(images, dimensions)
@@ -131,6 +131,7 @@ def main():
     # Main game loop
     while True:
         mouse.screenRef = pygame.mouse.get_pos()
+        print(mouse.fieldRef)
         interactor.setHoveredEntity(entities.getEntityAtPosition(mouse), mouse)
 
         # handle events and call callbacks
