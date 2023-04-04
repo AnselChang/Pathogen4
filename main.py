@@ -58,7 +58,7 @@ def main():
     
     # Initialize field
     dimensions = Dimensions()
-    screen = dimensions.resizeScreen(800, 600)
+    screen = dimensions.resizeScreen(dimensions.DEFAULT_SCREEN_WIDTH, dimensions.DEFAULT_SCREEN_HEIGHT)
 
     images = ImageManager()
     imageSize = images.get(ImageID.FIELD).get_width()

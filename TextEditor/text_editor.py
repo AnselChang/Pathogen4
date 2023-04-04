@@ -39,9 +39,12 @@ class CursorBlink:
 # notifies observers whenever resized from text (isDynamic)
 class TextEditor(Observable):
 
+    def updateHeight(self):
+        self.height = 2 * self.border.OUTER_Y_MARGIN + self.rows * (self.charHeight + self.border.INNER_Y_MARGIN) - self.border.INNER_Y_MARGIN
+
     def setRows(self, rows):
-        self.height = 2 * self.border.OUTER_Y_MARGIN + rows * (self.charHeight + self.border.INNER_Y_MARGIN) - self.border.INNER_Y_MARGIN
         self.rows = rows
+        self.updateHeight()
         self.notify()
 
     def addRow(self):
@@ -49,6 +52,13 @@ class TextEditor(Observable):
 
     def removeRow(self):
         self.setRows(self.rows - 1)
+
+    def setFont(self, font):
+        self.font = font
+        test = self.font.render("T", True, (0,0,0))
+        self.charWidth = test.get_width()
+        self.charHeight = test.get_height()
+        self.updateHeight()
 
     def __init__(self, font, xFunc: int, yFunc: int, widthFuncOrIntOrNone, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, defaultText: str = ""):
         
@@ -73,12 +83,11 @@ class TextEditor(Observable):
 
         self.border = TextBorder()
 
-        self.font = font
-        test = self.font.render("T", True, (0,0,0))
-        self.charWidth = test.get_width()
-        self.charHeight = test.get_height()
-
+        self.rows = 1
+        self.setFont(font)
         self.setRows(rows)
+        
+
         self.originalHeight = self.height # so that original position can be maintained if height changes
 
         self.textHandler = TextHandler(self, defaultText = defaultText)
