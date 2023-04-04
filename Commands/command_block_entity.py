@@ -127,7 +127,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     def getWidth(self) -> float:
         # 95% of the panel
-        return self._pwidth(0.95)
+        return self._pwidth(self.WIDTH_PERCENT_OF_PANEL)
     
     def getHeight(self) -> float:
         # current animated height
@@ -205,8 +205,8 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     def isDragging(self):
         return False
 
-    def isTouching(self, position: PointRef) -> bool:
-        return isInsideBox2(*position.screenRef, *self.RECT)
+    def isTouching(self, position: tuple) -> bool:
+        return isInsideBox2(*position, *self.RECT)
     
     # whether some widget of command block is hovering
     def isWidgetHovering(self) -> bool:

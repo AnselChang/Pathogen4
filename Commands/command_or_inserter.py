@@ -4,6 +4,8 @@ class CommandOrInserter(LinkedListNode['CommandOrInserter']):
 
     def __init__(self):
         super().__init__()
+
+        self.WIDTH_PERCENT_OF_PANEL = 0.95
     
     def onUpdateLinkedListPosition(self):
         self._parent = self.getPrevious()

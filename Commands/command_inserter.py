@@ -55,78 +55,45 @@ class CommandInserter(Entity, CommandOrInserter):
         self.THIN = 1 # cross thin radius
 
         self.currentY = self.START_Y
-        self.isHovered = False
+        self.isActive = False
+
+    def getTopLeft(self) -> tuple:
+        # right below the previous CommandOrInserter
+        return self._px(0), self._py(1)
+
+    def getWidth(self) -> float:
+        # 95% of the panel
+        return self._pwidth(self.WIDTH_PERCENT_OF_PANEL)
+    
+    def getHeight(self) -> float:
+        P_HEIGHT_MIN = 0.001
+        P_HEIGHT_MAX = 0.025
+        return self._pheight(P_HEIGHT_MAX if self.isActive else P_HEIGHT_MIN)
+
+    def setActive(self, isActive):
+        self.isActive = isActive
+        self.recomputePosition()
 
     def onHoverOn(self):
 
         if len(self.interactor.selected.entities) > 1 or self.interactor.leftDragging or self.interactor.rightDragging:
             return
 
-        self.isHovered = True
-        self.path.recomputeY()
+        self.setActive(True)
 
     def onHoverOff(self):
-        self.isHovered = False
-        self.path.recomputeY()
+        if self.isActive:
+            self.setActive(False)
 
-    def getHeight(self):
-        if not self.isVisible():
-            return 0
-        return self.Y_MAX if self.isHovered else self.Y_MIN
-    
-    def getY(self) -> int:
-        return self.currentY
+    def isTouching(self, position: tuple) -> bool:
+        return isInsideBox2(*position, *self.RECT)
 
-    # only call if this is first node
-    def setScrollbarOffset(self, scrollbarOffset):
-        self.setY(self.START_Y - scrollbarOffset)
-        self.updateNextY()
-    
-    def setY(self, y: int):
-        self.currentY = y
-
-    # based on this command's height, find next command's y
-    def updateNextY(self):
-
-        nextCommand = self.getNext()
-
-        if nextCommand is None:
-            return
-        
-        nextCommand.setY(self.currentY + self.getHeight())
-        nextCommand.updateNextY()
-        
-         
-    def isVisible(self) -> bool:
-        return True
-    
-    def getRect(self, big: bool = False) -> tuple:
-        x = self.dimensions.FIELD_WIDTH + self.X_MARGIN_LEFT
-        width = self.dimensions.PANEL_WIDTH - self.X_MARGIN_LEFT - self.X_MARGIN_RIGHT
-        y = self.currentY
-        height = self.getHeight()
-        
-        margin = (-self.MOUSE_MARGIN) if big else self.Y_MARGIN
-
-        y += margin
-        height -= margin*2
-        
-        return x, y, width, height
-
-    def isTouching(self, position: PointRef) -> bool:
-        return isInsideBox2(*position.screenRef, *self.getRect(True))
-
-
-    def getPosition(self) -> PointRef:
-        x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH / 2
-        y = self.currentY + self.getHeight() / 2
-        return PointRef(Ref.SCREEN, (x, y))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
-        isActive = isActive and self.interactor.leftDragging and self.isHovered
+        isActive = isActive and self.interactor.leftDragging and self.isActive
         
-        if isActive or self.isHovered:
+        if isActive or self.isActive:
             
             color = [140, 140, 140] if isActive else [160, 160, 160]
 
@@ -137,6 +104,3 @@ class CommandInserter(Entity, CommandOrInserter):
             x,y = self.getPosition().screenRef
             pygame.draw.rect(screen, [255,255,255], [x - self.THICK, y - self.THIN, self.THICK*2, self.THIN*2])
             pygame.draw.rect(screen, [255,255,255], [x - self.THIN, y - self.THICK, self.THIN*2, self.THICK*2])
-
-    def toString(self) -> str:
-        return "command inserter"
