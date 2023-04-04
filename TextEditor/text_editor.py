@@ -88,7 +88,7 @@ class TextEditor(Observable):
         self.rows = 1
         self.setRows(rows)
 
-        self.font.addObserver(Observer(onNotify = self.onFontResize))
+        self.font.subscribe(Observer(onNotify = self.onFontResize))
         
 
         self.originalHeight = self.height # so that original position can be maintained if height changes
@@ -130,10 +130,10 @@ class TextEditor(Observable):
     def isTouching(self, position: PointRef) -> bool:
         return isInsideBox2(*position.screenRef, self.getX(), self.getY(), self.getWidth(), self.getHeight())
     
-    def getPosition(self) -> PointRef:
+    def getCenter(self) -> tuple:
         x = self.getDynamicX()
         y = self.getY() + self.getHeight() / 2
-        return PointRef(Ref.SCREEN, (x,y))
+        return x, y
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool, opacity: float = 1) -> bool:
         

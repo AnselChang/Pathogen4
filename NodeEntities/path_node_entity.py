@@ -1,4 +1,4 @@
-from NodeEntities.circle_mixin import CircleMixin
+from NodeEntities.abstract_circle_entity import AbstractCircleEntity
 from BaseEntity.entity import Entity
 from reference_frame import PointRef, VectorRef
 from BaseEntity.EntityListeners.drag_listener import DragLambda
@@ -33,7 +33,7 @@ Neighbors PathSegmentEntities
 Referenced in PathSection
 """
 
-class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathSegmentEntity]):
+class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[PathSegmentEntity]):
 
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)
@@ -69,8 +69,9 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
 
         self.shiftKeyPressed = False
 
-    def getPosition(self) -> PointRef:
-        return self.position
+
+    def getCenter(self) -> tuple:
+        return self.position.screenRef
 
     def getColor(self) -> tuple:
         return self.FIRST_BLUE_COLOR if self.getPrevious() is None else self.BLUE_COLOR
@@ -105,7 +106,7 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
 
     def onStartDrag(self, mouse: PointRef):
         self.mouseStartDrag = mouse.copy()
-        self.startPosition = self.getPosition().copy()
+        self.startPosition = self.position.copy()
         self.constraints.show()
 
     def onStopDrag(self):
@@ -124,6 +125,7 @@ class PathNodeEntity(CircleMixin, Entity, AdapterInterface, LinkedListNode[PathS
         # if the only one being dragged and shift key not pressed, constrain with snapping
         if self.interactor.selected.hasOnly(self) and not self.shiftKeyPressed:
             self.constrainPosition()
+        self.notify()
 
         self.onNodeMove()
 

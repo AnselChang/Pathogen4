@@ -43,7 +43,7 @@ class TextboxWidgetEntity(WidgetEntity):
 
         # Sends notification when text height changes
         commandStretchObserver = Observer(onNotify = self.onCommandStretch)
-        self.textEditor.addObserver(commandStretchObserver)
+        self.textEditor.subscribe(commandStretchObserver)
 
         super().__init__(parentCommand, definition,
             key = KeyLambda(self,

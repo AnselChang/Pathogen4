@@ -2,66 +2,25 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from reference_frame import PointRef, Ref
 
-from BaseEntity.EntityListeners.click_listener import ClickListener
-from BaseEntity.EntityListeners.drag_listener import DragListener
-from BaseEntity.EntityListeners.select_listener import SelectListener
-from BaseEntity.EntityListeners.tick_listener import TickListener
-from BaseEntity.EntityListeners.hover_listener import HoverListener
-from BaseEntity.EntityListeners.key_listener import KeyListener
+from dimensions import Dimensions
 
-from Observers.observer import Observer,  Observable
+from BaseEntity.entity import Entity
+from draw_order import DrawOrder
 
 from math_functions import distance
 import pygame
 
 """
-Any graphical or interactable object should subclass Entity. By adding entities to
-EntityManager, it auto-handles all mouse interaction and drawing capabilities through Interactor.
-Optionally pass in drag, select, etc. listeners to recieve mouse interaction callbacks
-for your entity.
-DrawOrder, with enum defined in draw_order.py, specifies the layering of the drawn objects.
-Feel free to add to DrawOrder enum if you want to order a new entity type.
+An entity for the panel on the right side. Holds other entities inside
 """
 
-class Entity(ABC, Observable):
+class PanelEntity(Entity):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
-    def __init__(self, drag: DragListener = None,
-                 select: SelectListener = None,
-                 click: ClickListener = None,
-                 tick: TickListener = None,
-                 hover: HoverListener = None,
-                 key: KeyListener = None,
-                 drawOrder: int = 0) -> None:
-        
-        self.drawOrder = drawOrder
-        self.drag = drag
-        self.select = select
-        self.click = click
-        self.tick = tick
-        self.hover = hover
-        self.key = key
-        self._children: list[Entity] = []
-        self._parent: Entity = None
-
-        self.recomputePosition()
-
-        
-    # setting child will make sure that when parent is removed from manager, children will be too
-    # do not call this manually; handled by EntityManager
-    def _setParent(self, parent: 'Entity'):
-        self._parent = parent
-        parent._children.append(self)
-        self._parent.subscribe(Observer(
-            onNotify = self.recomputePosition
-        ))
-
-    def distanceTo(self, position: tuple) -> float:
-        return distance(*position, self.getCenterX(), self.getCenterY())
-        
-    # override
-    def isVisible(self) -> bool:
-        return True
+    def __init__(self, dimensions: Dimensions, color) -> None:
+        super().__init__(DrawOrder = DrawOrder.PANEL_BACKGROUND)
+        self.dimensions = dimensions
+        self.color = color
 
     # override
     def isTouching(self, position: tuple) -> bool:
@@ -69,7 +28,9 @@ class Entity(ABC, Observable):
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        pass
+        x, y = self.dimensions.FIELD_WIDTH, 0
+        width, height = self.dimensions.PANEL_WIDTH, self.dimensions.SCREEN_HEIGHT
+        pygame.draw.rect(screen, self.color, (x, y, width, height))
 
     # draw rect specified by x, y, width, height. For testing only probably
     def drawRect(self, screen: pygame.Surface):

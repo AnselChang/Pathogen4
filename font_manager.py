@@ -26,7 +26,7 @@ class DynamicFont(Observable):
         self._baseFontSize = baseFontSize
 
         # Subscribe to window changes
-        self._dimensions.addObserver(Observer(onNotify = self.update)) 
+        self._dimensions.subscribe(Observer(onNotify = self.update)) 
 
         # Calculate initial font size
         self.update()

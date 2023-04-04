@@ -23,7 +23,7 @@ class Tooltip:
     def __init__(self, messages: str | list[str]):
 
         self.font = _tooltipFont
-        self.font.addObserver(Observer(onNotify = self.recalculateTooltipSurface))
+        self.font.subscribe(Observer(onNotify = self.recalculateTooltipSurface))
         
         if type(messages) == str:
             messages = [messages]

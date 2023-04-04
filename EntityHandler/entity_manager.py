@@ -45,7 +45,7 @@ class EntityManager:
         if entity in self.keyEntities:
             self.keyEntities.remove(entity)
 
-    def getEntityAtPosition(self, position: PointRef) -> Entity:
+    def getEntityAtPosition(self, position: tuple) -> Entity:
 
         drawOrder: DrawOrder = None
         self.touching: list[Entity] = []

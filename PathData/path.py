@@ -41,7 +41,7 @@ class Path:
 
         # initialize scrollbar
         self.scrollbar = CommandScrollbarEntity(dimensions)
-        self.scrollbar.addObserver(Observer(onNotify = self.recomputeY))
+        self.scrollbar.subscribe(Observer(onNotify = self.recomputeY))
         entities.addEntity(self.scrollbar)
 
         # initialize first node

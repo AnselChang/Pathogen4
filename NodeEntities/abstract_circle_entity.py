@@ -8,7 +8,7 @@ from pygame_functions import drawTransparentCircle
 from math_functions import scaleTuple, clampTuple, intTuple
 import pygame, math
 
-class CircleMixin(Entity):
+class AbstractCircleEntity(Entity):
 
     def __init__(self, radius: int, hoveredRadius: int):
         self.radius = radius
@@ -22,11 +22,8 @@ class CircleMixin(Entity):
     def getHitbox(self) -> pygame.Rect:
 
         hitbox = pygame.Rect(0, 0, self.radius * 1.5, self.radius * 1.5)
-        hitbox.center = self.getPosition().screenRef
+        hitbox.center = self.CENTER_X, self.CENTER_Y
         return hitbox
-
-    def isVisible(self) -> bool:
-        return True
 
     def isTouching(self, position: PointRef) -> bool:
         MARGIN = 4
@@ -34,7 +31,7 @@ class CircleMixin(Entity):
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         r = self.radiusH if isHovered else self.radius
-        pos = self.getPosition().screenRef
+        pos = self.CENTER_X, self.CENTER_Y
 
         # draw circle
         pygame.draw.circle(screen, self.getColor(), pos, r)
@@ -42,6 +39,3 @@ class CircleMixin(Entity):
         # draw border if active
         if isActive:
             pygame.draw.circle(screen, (0,0,0), pos, r, 2)
-
-    def toString(self) -> str:
-        return "Circle"

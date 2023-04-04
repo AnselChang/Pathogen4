@@ -1,6 +1,6 @@
 from EntityHandler.entity_manager import EntityManager
 from UIEntities.image_radio_entity import ImageRadioEntity
-from UIEntities.radio_group import RadioGroup
+from UIEntities.radio_group import RadioGroupEntity
 from image_manager import ImageManager, ImageID
 from Observers.observer import Observable
 from dimensions import Dimensions
@@ -23,7 +23,7 @@ class CommandExpansion(Observable):
 
     def __init__(self, entities: EntityManager, images: ImageManager, dimensions: Dimensions):
 
-        self.buttons: RadioGroup = RadioGroup(entities, True)
+        self.buttons: RadioGroupEntity = RadioGroupEntity(entities, True)
         y = lambda: dimensions.SCREEN_HEIGHT - self.buttons.options[0].height * 0.8
 
         info = [

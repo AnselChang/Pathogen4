@@ -24,7 +24,7 @@ class CommandScrollbarEntity(Entity, Observable):
         )
 
         self.dimensions = dimensions
-        self.dimensions.addObserver(Observer(onNotify = self.update))
+        self.dimensions.subscribe(Observer(onNotify = self.update))
 
         self.UPPER_MARGIN = 35
         self.LOWER_MARGIN = 3

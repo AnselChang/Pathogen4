@@ -4,7 +4,6 @@ from UIEntities.radio_entity import RadioEntity
 
 from math_functions import isInsideBox2
 from pygame_functions import drawText
-from dimensions import Dimensions
 from draw_order import DrawOrder
 from font_manager import DynamicFont
 import pygame
@@ -13,14 +12,10 @@ import pygame
 class TabEntity(RadioEntity):
 
     # id is used to distinguish between radio entities
-    def __init__(self, dimensions: Dimensions, font: DynamicFont, text: str, tabID: int, numTabs: int):
+    def __init__(self, font: DynamicFont, text: str):
         super().__init__(text, DrawOrder.TAB)
 
-        self.dimensions = dimensions
         self.font = font
-
-        self.tabID = tabID
-        self.numTabs = numTabs
 
         self.y = 2
         self.height = 30
@@ -28,13 +23,14 @@ class TabEntity(RadioEntity):
         self.text = text
         self.r = 5
 
-    # override
-    def getPosition(self) -> PointRef:
-        x = self.dimensions.FIELD_WIDTH + (self.dimensions.PANEL_WIDTH) / (self.numTabs) * (self.tabID + 0.5)
-        return PointRef(Ref.SCREEN, (x,self.y + self.height/2))
-    
-    def getWidth(self) -> int:
-        return (self.dimensions.PANEL_WIDTH) / (self.numTabs) - 1
+    def getCenter(self) -> tuple:
+        return self.dimensions.FIELD_WIDTH, 0
+
+    # must impl both of these if want to contain other entity
+    def getWidth(self) -> float:
+        return self.dimensions.PANEL_WIDTH
+    def getHeight(self) -> float:
+        return self.dimensions.SCREEN_HEIGHT
 
     def isVisible(self) -> bool:
         return True

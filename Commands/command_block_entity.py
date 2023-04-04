@@ -81,7 +81,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.titleFont = self.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
 
         # Resize commands if resolution change
-        self.dimensions.addObserver(Observer(onNotify = self.onWindowResize))
+        self.dimensions.subscribe(Observer(onNotify = self.onWindowResize))
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)
@@ -98,7 +98,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         entities = []
         for widget in self.getDefinition().widgets:
             entity = widget.make(self)
-            entity.addObserver(commandStretchObserver)
+            entity.subscribe(commandStretchObserver)
             self.entities.addEntity(entity, self)
             entities.append(entity)
         return entities

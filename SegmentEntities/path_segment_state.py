@@ -36,11 +36,7 @@ class PathSegmentState(ABC):
         pass
 
     @abstractmethod
-    def distanceTo(self, position: PointRef) -> float:
-        pass
-
-    @abstractmethod
-    def getPosition(self) -> PointRef:
+    def getCenter(self) -> tuple:
         pass
 
     @abstractmethod

@@ -55,14 +55,13 @@ class StraightSegmentState(PathSegmentState):
         x2, y2 = self.segment.getNext().getPosition().screenRef
         return pointTouchingLine(mx, my, x1, y1, x2, y2, self.segment.hitboxThickness)
 
-    def distanceTo(self, position: PointRef) -> float:
-        return (self.getPosition() - position).magnitude(Ref.SCREEN)
 
-    def getPosition(self) -> PointRef:
+    def getCenter(self) -> tuple:
         fpos = self.segment.getPrevious().getPosition()
         spos = self.segment.getNext().getPosition()
 
-        return fpos + (spos - fpos) / 2
+        return (fpos + (spos - fpos) / 2).screenRef
+
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         

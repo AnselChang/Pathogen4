@@ -38,8 +38,8 @@ class TextEditorEntity(Entity):
         self.textEditor.isTouching(position)
 
 
-    def getPosition(self) -> PointRef:
-        return self.textEditor.getPosition()
+    def getCenter(self) -> PointRef:
+        return self.textEditor.getCenter()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         

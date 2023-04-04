@@ -1,11 +1,16 @@
+from BaseEntity.entity import Entity
 from UIEntities.radio_entity import RadioEntity
+from EntityHandler.entity_manager import EntityManager
 
 """a group of radio_entities, where only one is selected at a time
 If allowNoSelect is True, then no option being selected is allowed
+Child of Panel Entity
 """
-class RadioGroup:
+class RadioGroupEntity(Entity):
 
-    def __init__(self, entityManager, allowNoSelect: bool = False):
+    def __init__(self, entityManager: EntityManager, allowNoSelect: bool = False):
+        
+        super().__init__()
 
         self.entityManager = entityManager
 
@@ -13,13 +18,17 @@ class RadioGroup:
         self.active: RadioEntity = None
         self.allowNoSelect = allowNoSelect
 
+        self.N = 0
+
     def add(self, option: RadioEntity):
         self.options.append(option)
-        option.setRadioGroup(self)
-        self.entityManager.addEntity(option)
+        option.setRadioGroup(self, self.N)
+        self.entityManager.addEntity(option, self)
 
         if not self.allowNoSelect and self.active is None:
             self.active = option
+
+        self.N += 1
 
     def onClick(self, option: RadioEntity):
         

@@ -86,9 +86,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
                 return self.colorForwardH
             else:
                 return self.colorForward
-        
-    def isVisible(self) -> bool:
-        return True
+
     
     def getStartTheta(self) -> float:
         return self.state.getStartTheta()
@@ -99,11 +97,8 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
     def isTouching(self, position: PointRef) -> bool:
         return self.state.isTouching(position)
 
-    def distanceTo(self, position: PointRef) -> float:
-        return self.state.distanceTo(position)
-
-    def getPosition(self) -> PointRef:
-        return self.state.getPosition()
+    def getCenter(self) -> tuple:
+        return self.state.getCenter()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         return self.state.draw(screen, isActive, isHovered)

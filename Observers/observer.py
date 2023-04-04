@@ -1,28 +1,23 @@
+from typing import Callable
+
 # observer design pattern
 
 class Observer:
 
-    def __init__(self, onNotify = lambda : None):
+    def __init__(self, id = None, onNotify: Callable = lambda : None):
+        self.id = id
         self.onNotify = onNotify
-
-    def notify(self):
-        self.onNotify()
 
 class Observable:
 
-    def addObserver(self, observer: Observer):
+    def subscribe(self, id = None, onNotify: Callable = lambda : None):
         if "observers" not in self.__dict__:
-            self.observers: list[Observer] = []
-        self.observers.append(observer)
+            self.observers: list[Observable] = []
+        self.observers.append(Observer(id, onNotify))
         return True
 
-    def removeObserver(self, observer: Observer):
-        if "observers" in self.__dict__ and observer in self.observers:
-            self.observers.remove(observer)
-            return True
-        return False
-
-    def notify(self):
+    def notify(self, id = None):
         if "observers" in self.__dict__:
             for observer in self.observers:
-                observer.notify()
+                if id == observer.id:
+                    observer.onNotify()

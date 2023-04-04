@@ -3,7 +3,7 @@ from BaseEntity.static_entity import StaticEntity
 from NodeEntities.path_node_entity import PathNodeEntity
 from SegmentEntities.path_segment_entity import PathSegmentEntity
 
-from UIEntities.radio_group import RadioGroup
+from UIEntities.tab_group_entity import TabGroupEntity
 from UIEntities.tab_entity import TabEntity
 
 from EntityHandler.entity_manager import EntityManager
@@ -18,6 +18,7 @@ from Commands.command_expansion import CommandExpansion
 
 from TextEditor.static_text_editor_entity import StaticTextEditorEntity
 
+from UIEntities.panel_entity import PanelEntity
 from Tooltips import tooltip
 from font_manager import FontManager, FontID
 from image_manager import ImageManager, ImageID
@@ -39,21 +40,6 @@ pygame.key.set_repeat(400, 70)
 RED = [255,0,0]
 GREEN = [0,255,0]
 BLUE = [0,0,255]
-
-def initTabs(dimensions, entities, fontManager: FontManager) -> RadioGroup:
-    tabs = RadioGroup(entities)
-    tabNames = ["A", "B", "C"]
-
-    N = len(tabNames)
-    for i, text in enumerate(tabNames):
-        tabs.add(TabEntity(dimensions, fontManager.getDynamicFont(FontID.FONT_NORMAL, 15), text, i, N))
-    return tabs
-
-def drawPanelBackground(screen, dimensions, panelColor):
-    # draw panel
-        x, y = dimensions.FIELD_WIDTH, 0
-        width, height = dimensions.PANEL_WIDTH, dimensions.SCREEN_HEIGHT
-        pygame.draw.rect(screen, panelColor, (x, y, width, height))
 
 def main():
 
@@ -77,6 +63,14 @@ def main():
     interactor = Interactor(dimensions, fieldTransform)
     entities = EntityManager()
 
+    # Add permanent static entities
+    panelColor = (100,100,100)
+    panel = PanelEntity(dimensions, panelColor)
+    entities.addEntity(panel)
+    entities.addEntity(StaticEntity(lambda: screen.fill((255,255,255)), drawOrder = DrawOrder.BACKGROUND))
+    entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
+    entities.addEntity(StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX))
+
     # initialize commands
     database = CommandDefinitionDatabase(entities, interactor, images, dimensions)
     commandExpansion = CommandExpansion(entities, images, dimensions)
@@ -85,17 +79,11 @@ def main():
     # Create path
     path = Path(database, entities, interactor, commandEntityFactory, commandExpansion, dimensions, PointRef(Ref.FIELD, (24,24)))
 
-
     # Create tabs
-    tabs = initTabs(dimensions, entities, fontManager)
-
-
-    # Add permanent static entities
-    panelColor = (100,100,100)
-    entities.addEntity(StaticEntity(lambda: screen.fill((255,255,255)), drawOrder = DrawOrder.BACKGROUND))
-    entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
-    entities.addEntity(StaticEntity(lambda: drawPanelBackground(screen, dimensions, panelColor), drawOrder = DrawOrder.PANEL_BACKGROUND))
-    entities.addEntity(StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX))
+    tabs = TabGroupEntity(entities, dimensions)
+    entities.addEntity(tabs, panel)
+    for text in ["A", "B", "C"]:
+        tabs.add(TabEntity(dimensions, fontManager.getDynamicFont(FontID.FONT_NORMAL, 15), text))
 
     # Add the gradient at the bottom of the commands
     c1 = (*panelColor, 255)
@@ -130,7 +118,7 @@ def main():
     # Main game loop
     while True:
         mouse.screenRef = pygame.mouse.get_pos()
-        interactor.setHoveredEntity(entities.getEntityAtPosition(mouse), mouse)
+        interactor.setHoveredEntity(entities.getEntityAtPosition(mouse.screenRef), mouse)
 
         # handle events and call callbacks
         for event in pygame.event.get():

@@ -23,7 +23,7 @@ class CommandBlockPosition:
         self.dimensions = dimensions
 
         # whenever a global expansion flag is changed, recompute each individual command expansion
-        self.commandExpansion.addObserver(Observer(onNotify = self.recomputeExpansion))
+        self.commandExpansion.subscribe(Observer(onNotify = self.recomputeExpansion))
 
         self.X_MARGIN_LEFT = 6
         self.X_MARGIN_RIGHT = 18
