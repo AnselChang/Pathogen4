@@ -11,6 +11,7 @@ from Commands.command_inserter import CommandInserter
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
+from font_manager import FontManager
 from reference_frame import PointRef, Ref
 from image_manager import ImageManager
 from dimensions import Dimensions
@@ -24,9 +25,9 @@ CustomCommands have two additonal features compared to regular commands
 
 class CustomCommandBlockEntity(CommandBlockEntity):
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, dimensions: Dimensions):
+    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, fontManager: FontManager, dimensions: Dimensions):
         
-        super().__init__(path, pathAdapter, database, entities, interactor, commandExpansion, images, dimensions,
+        super().__init__(path, pathAdapter, database, entities, interactor, commandExpansion, images, fontManager, dimensions,
                          drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
                          defaultExpand = True
                          )

@@ -48,22 +48,11 @@ def drawLine(screen: pygame.Surface, color: tuple, x1: int, y1: int, x2: int, y2
         pygame.gfxdraw.aapolygon(screen, (UL, UR, BR, BL), borderColor)
     
 
-pygame.font.init()
-FONT_PATH = 'CascadiaCode.ttf'
-FONT15 = pygame.font.Font(FONT_PATH, 15)
-FONT20 = pygame.font.Font(FONT_PATH, 20)
-FONT25 = pygame.font.Font(FONT_PATH, 25)
-FONT30 = pygame.font.Font(FONT_PATH, 30)
-FONT40 = pygame.font.Font(FONT_PATH, 40)
-
-FONTCODE = pygame.font.Font('CascadiaMono.ttf', 10)
-#FONTCODE = pygame.font.SysFont("arial", 8)
-
 # align = 0 -> align left/top
 # align = 0.5 -> align mid
 # align = 1 -> align right/bottom
 # return text width
-def drawText(surface: pygame.Surface, font: pygame.font, string: str, color: tuple, x: int, y: int, alignX: float = 0.5, alignY: float = 0.5, opacity = 1) -> int:
+def drawText(surface: pygame.Surface, font: pygame.font.Font, string: str, color: tuple, x: int, y: int, alignX: float = 0.5, alignY: float = 0.5, opacity = 1) -> int:
     text = font.render(string, True, color)
     text.set_alpha(opacity * 255)
 

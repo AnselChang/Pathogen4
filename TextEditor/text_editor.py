@@ -2,13 +2,13 @@ from BaseEntity.entity import Entity
 from BaseEntity.EntityListeners.key_listener import KeyLambda
 from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
 
-from Observers.observer import Observable
+from Observers.observer import Observable, Observer
 
 from TextEditor.text_handler import TextHandler
 from TextEditor.text_border import TextBorder
 
+from font_manager import DynamicFont
 from reference_frame import PointRef, Ref
-from pygame_functions import drawText, FONTCODE, drawTransparentRect
 from math_functions import isInsideBox2
 from draw_order import DrawOrder
 
@@ -40,7 +40,8 @@ class CursorBlink:
 class TextEditor(Observable):
 
     def updateHeight(self):
-        self.height = 2 * self.border.OUTER_Y_MARGIN + self.rows * (self.charHeight + self.border.INNER_Y_MARGIN) - self.border.INNER_Y_MARGIN
+        charHeight = self.font.getCharHeight()
+        self.height = 2 * self.border.OUTER_Y_MARGIN + self.rows * (charHeight + self.border.INNER_Y_MARGIN) - self.border.INNER_Y_MARGIN
 
     def setRows(self, rows):
         self.rows = rows
@@ -53,15 +54,10 @@ class TextEditor(Observable):
     def removeRow(self):
         self.setRows(self.rows - 1)
 
-    def setFont(self, font):
-        self.font = font
-        test = self.font.render("T", True, (0,0,0))
-        self.charWidth = test.get_width()
-        self.charHeight = test.get_height()
-        self.updateHeight()
-
-    def __init__(self, font, xFunc: int, yFunc: int, widthFuncOrIntOrNone, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, defaultText: str = ""):
+    def __init__(self, font: DynamicFont, xFunc: int, yFunc: int, widthFuncOrIntOrNone, rows: int, readColor: tuple, writeColor: tuple, isDynamic: bool = False, isNumOnly: bool = False, defaultText: str = ""):
         
+        self.font = font
+
         self.rawXFunc = xFunc
 
         self.noWidthRestriction = widthFuncOrIntOrNone is None
@@ -84,8 +80,9 @@ class TextEditor(Observable):
         self.border = TextBorder()
 
         self.rows = 1
-        self.setFont(font)
         self.setRows(rows)
+
+        self.font.addObserver(Observer(onNotify = self.updateHeight))
         
 
         self.originalHeight = self.height # so that original position can be maintained if height changes
@@ -149,7 +146,7 @@ class TextEditor(Observable):
         y = self.border.OUTER_Y_MARGIN
         for surface in self.textHandler.getSurfaces():
             surf.blit(surface, (x,y))
-            y += self.charHeight + self.border.INNER_Y_MARGIN
+            y += self.font.getCharHeight() + self.border.INNER_Y_MARGIN
 
         # draw blinkingcursor
         if self.mode == TextEditorMode.WRITE and self.cursorBlink.get():

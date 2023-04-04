@@ -18,6 +18,8 @@ from Commands.command_expansion import CommandExpansion
 
 from TextEditor.static_text_editor_entity import StaticTextEditorEntity
 
+from Tooltips import tooltip
+from font_manager import FontManager, FontID
 from image_manager import ImageManager, ImageID
 from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from field_transform import FieldTransform
@@ -38,13 +40,13 @@ RED = [255,0,0]
 GREEN = [0,255,0]
 BLUE = [0,0,255]
 
-def initTabs(dimensions, entities) -> RadioGroup:
+def initTabs(dimensions, entities, fontManager: FontManager) -> RadioGroup:
     tabs = RadioGroup(entities)
     tabNames = ["A", "B", "C"]
 
     N = len(tabNames)
     for i, text in enumerate(tabNames):
-        tabs.add(TabEntity(dimensions, text, i, N))
+        tabs.add(TabEntity(dimensions, fontManager.getDynamicFont(FontID.FONT_NORMAL, 15), text, i, N))
     return tabs
 
 def drawPanelBackground(screen, dimensions, panelColor):
@@ -55,9 +57,9 @@ def drawPanelBackground(screen, dimensions, panelColor):
 
 def main():
 
-    
     # Initialize field
     dimensions = Dimensions()
+    fontManager = FontManager(dimensions)
     screen = dimensions.resizeScreen(dimensions.DEFAULT_SCREEN_WIDTH, dimensions.DEFAULT_SCREEN_HEIGHT)
 
     images = ImageManager()
@@ -69,6 +71,7 @@ def main():
     initReferenceframe(dimensions, fieldTransform)
     mouse: PointRef = PointRef()
     
+    tooltip.setTooltipFont(fontManager.getDynamicFont(FontID.FONT_NORMAL, 15))
     
     # Initialize entities
     interactor = Interactor(dimensions, fieldTransform)
@@ -77,15 +80,14 @@ def main():
     # initialize commands
     database = CommandDefinitionDatabase(entities, interactor, images, dimensions)
     commandExpansion = CommandExpansion(entities, images, dimensions)
-    commandEntityFactory = CommandBlockEntityFactory(database, entities, interactor, commandExpansion, images, dimensions)
+    commandEntityFactory = CommandBlockEntityFactory(database, entities, interactor, commandExpansion, images, fontManager, dimensions)
 
     # Create path
-    
     path = Path(database, entities, interactor, commandEntityFactory, commandExpansion, dimensions, PointRef(Ref.FIELD, (24,24)))
 
 
     # Create tabs
-    tabs = initTabs(dimensions, entities)
+    tabs = initTabs(dimensions, entities, fontManager)
 
 
     # Add permanent static entities

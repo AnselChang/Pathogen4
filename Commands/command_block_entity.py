@@ -20,12 +20,13 @@ from EntityHandler.interactor import Interactor
 
 from Observers.observer import Observer
 
+from font_manager import FontManager, FontID
 from linked_list import LinkedListNode
 from image_manager import ImageManager
 from draw_order import DrawOrder
 from dimensions import Dimensions
 from reference_frame import PointRef, Ref
-from pygame_functions import shade, drawText, FONT20, drawSurface, drawTransparentRect
+from pygame_functions import shade, drawText, drawSurface, drawTransparentRect
 from math_functions import isInsideBox2
 import pygame, re
 
@@ -41,7 +42,7 @@ Position calculation is offloaded to CommandBlockPosition
 class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
 
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, dimensions: Dimensions, drag: DragListener = None,
+    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, fontManager: FontManager, dimensions: Dimensions, drag: DragListener = None,
                  defaultExpand: bool = False
                  ):
         super().__init__(
@@ -64,6 +65,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.entities = entities
         self.interactor = interactor
         self.images = images
+        self.fontManager = fontManager
         self.dimensions = dimensions
 
         self.DRAG_OPACITY = 0.7
@@ -75,6 +77,8 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         self.readoutEntities = self.manifestReadouts()
 
         self.position.recomputeExpansion()
+
+        self.titleFont = self.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)
@@ -237,7 +241,7 @@ class CommandBlockEntity(Entity, LinkedListNode['CommandBlockEntity']):
         # draw function name
         text = self.getDefinition().name + "()"
         x = self.dimensions.FIELD_WIDTH + 40
-        drawText(screen, FONT20, text, (0,0,0), x, y, alignX = 0)
+        drawText(screen, self.titleFont.get(), text, (0,0,0), x, y, alignX = 0)
 
         # draw drag dots, if exists
         self.drawDragDots(screen)

@@ -4,7 +4,8 @@ from Adapters.path_adapter import PathAdapter
 from TextEditor.text_border import TextBorder
 from reference_frame import PointRef, Ref
 from draw_order import DrawOrder
-from pygame_functions import drawText, FONT15, drawTransparentRect
+from pygame_functions import drawText, drawTransparentRect
+from font_manager import DynamicFont, FontID
 import pygame
 
 """
@@ -18,6 +19,8 @@ class ReadoutEntity(Entity):
         super().__init__(drawOrder = DrawOrder.READOUT)
 
         self.border = TextBorder()
+
+        self.font: DynamicFont = parentCommand.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
 
         self.parentCommand = parentCommand
         self.definedReadout = definedReadout
@@ -47,7 +50,7 @@ class ReadoutEntity(Entity):
         opacity = self.parentCommand.getAddonsOpacity()
 
         cx, cy = self.getPosition().screenRef
-        textWidth, textHeight = drawText(screen, FONT15, self.getText(), (0,0,0), cx, cy, opacity = opacity)
+        textWidth, textHeight = drawText(screen, self.font.get(), self.getText(), (0,0,0), cx, cy, opacity = opacity)
 
         x, y, w, h = self.border.getRect(cx, cy, textWidth, textHeight)
         alpha = int(round(opacity*255))

@@ -6,7 +6,6 @@ from TextEditor.text_handler import TextHandler
 from TextEditor.text_editor import TextEditor
 
 from reference_frame import PointRef, Ref
-from pygame_functions import drawText, FONTCODE, drawTransparentRect
 from math_functions import isInsideBox2
 from draw_order import DrawOrder
 

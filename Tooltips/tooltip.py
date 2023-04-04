@@ -1,7 +1,14 @@
-from pygame_functions import FONT15
+#from pygame_functions import FONT15
+from Observers.observer import Observer
+from font_manager import DynamicFont
 from dimensions import Dimensions
 import pygame
 from abc import ABC, abstractmethod
+
+_tooltipFont: DynamicFont = None
+def setTooltipFont(tooltipFont: DynamicFont):
+    global _tooltipFont
+    _tooltipFont = tooltipFont
 
 """
 Classes that have a self.tooltip instance variable storing a Tooltip object will have a tooltip displayed
@@ -14,16 +21,21 @@ TEXT_COLOR = [0,0,0]
 class Tooltip:
 
     def __init__(self, messages: str | list[str]):
+
+        self.font = _tooltipFont
+        self.font.addObserver(Observer(onNotify = self.recalculateTooltipSurface))
         
         if type(messages) == str:
             messages = [messages]
-        self.tooltip = self.getTooltipSurface(messages)
+
+        self.messages = messages
+        self.recalculateTooltipSurface()
 
     # Return a tooltip surface based on message parameter(s). Each parameter is a new line
-    def getTooltipSurface(self, messages):
+    def recalculateTooltipSurface(self):
 
         # generate temporary text surfaces for each line to figure out width and height of text
-        texts = [FONT15.render(message, True, TEXT_COLOR) for message in messages]
+        texts = [self.font.get().render(message, True, TEXT_COLOR) for message in self.messages]
 
         OUTSIDE_MARGIN_VERTICAL = 3 # margin between text and tooltip surface
         OUTSIDE_MARGIN_HORIZONTAL = 6
@@ -50,7 +62,7 @@ class Tooltip:
             tooltipSurface.blit(text, [OUTSIDE_MARGIN_HORIZONTAL, y])
             y += INSIDE_MARGIN + textHeight
 
-        return tooltipSurface
+        self.tooltip = tooltipSurface
 
     # Draw the tooltip approximately where the mouse position is
     def draw(self, screen: pygame.Surface, mousePosition: tuple, dimensions: Dimensions):

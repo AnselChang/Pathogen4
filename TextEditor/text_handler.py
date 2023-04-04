@@ -1,4 +1,3 @@
-from pygame_functions import drawText, FONTCODE
 import pygame
 
 
@@ -36,7 +35,7 @@ class TextHandler:
         return self.cursorX, self.cursorY
 
     def isTextTooLong(self, text):
-        width = FONTCODE.render(text, True, (0,0,0)).get_width()
+        width = self.textEditor.font.getCharWidth()
         return not self.textEditor.noWidthRestriction and width > self.textEditor.getMaxTextWidth()
     
     def currentLineLength(self):
@@ -186,7 +185,8 @@ class TextHandler:
         self.update()
 
     def update(self):
-        self.textSurfaces = [self.textEditor.font.render(textLine, True, (0,0,0)) for textLine in self.text]
+        font = self.textEditor.font.get()
+        self.textSurfaces = [font.render(textLine, True, (0,0,0)) for textLine in self.text]
         self.fullText = ""
         for textLine in self.text:
             self.fullText += textLine + "\n"

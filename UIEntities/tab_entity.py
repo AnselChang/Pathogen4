@@ -3,19 +3,21 @@ from BaseEntity.EntityListeners.click_listener import ClickLambda
 from UIEntities.radio_entity import RadioEntity
 
 from math_functions import isInsideBox2
-from pygame_functions import drawText, FONT15
+from pygame_functions import drawText
 from dimensions import Dimensions
 from draw_order import DrawOrder
+from font_manager import DynamicFont
 import pygame
 
 # Subclasses implement: isTouching, distanceTo, draw
 class TabEntity(RadioEntity):
 
     # id is used to distinguish between radio entities
-    def __init__(self, dimensions: Dimensions, text: str, tabID: int, numTabs: int):
+    def __init__(self, dimensions: Dimensions, font: DynamicFont, text: str, tabID: int, numTabs: int):
         super().__init__(text, DrawOrder.TAB)
 
         self.dimensions = dimensions
+        self.font = font
 
         self.tabID = tabID
         self.numTabs = numTabs
@@ -63,4 +65,4 @@ class TabEntity(RadioEntity):
         pygame.draw.rect(screen, color, rect,
                          border_top_left_radius = self.r, border_top_right_radius = self.r, width = 1)
         
-        drawText(screen, FONT15, self.text, (0,0,0), *self.getPosition().screenRef)
+        drawText(screen, self.font.get(), self.text, (0,0,0), *self.getPosition().screenRef)

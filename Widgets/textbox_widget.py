@@ -9,11 +9,12 @@ from TextEditor.text_editor import TextEditor, TextEditorMode
 
 from Observers.observer import Observer
 
+from font_manager import FontID, DynamicFont
 from image_manager import ImageID
 from draw_order import DrawOrder
 from reference_frame import PointRef, Ref
-from pygame_functions import drawSurface, FONT15, FONTCODE
 import pygame
+
 
 
 class TextboxWidgetEntity(WidgetEntity):
@@ -28,8 +29,10 @@ class TextboxWidgetEntity(WidgetEntity):
         else:
             width = lambda: parentCommand.dimensions.PANEL_WIDTH * definition.pwidth
 
+        font: DynamicFont = parentCommand.fontManager.getDynamicFont(definition.fontID, definition.fontSize)
+
         self.textEditor = TextEditor(
-            definition.font,
+            font,
             self.getX, self.getY, width, definition.rows,
             READ_COLOR, WRITE_COLOR,
             isDynamic = definition.isDynamic,
@@ -88,12 +91,13 @@ class TextboxWidgetEntity(WidgetEntity):
 
 class TextboxWidgetDefinition(WidgetDefinition):
 
-    def __init__(self, name: str, px: int, py: int, pwidth: float, rows: int, font, defaultText: str, isDynamic: bool, isNumOnly: bool):
+    def __init__(self, name: str, px: int, py: int, pwidth: float, rows: int, fontID: FontID, fontSize: float, defaultText: str, isDynamic: bool, isNumOnly: bool):
         super().__init__(name, px, py)
 
         self.pwidth = pwidth
         self.rows = rows
-        self.font = font
+        self.fontID = fontID
+        self.fontSize = fontSize
         self.defaultText = defaultText
         self.isDynamic = isDynamic
         self.isNumOnly = isNumOnly
@@ -104,11 +108,11 @@ class TextboxWidgetDefinition(WidgetDefinition):
 # dynamic, no text restrictions
 class CodeTextboxWidgetDefinition(TextboxWidgetDefinition):
     def __init__(self, name: str, px: int, py: int, pwidth: float):
-        super().__init__(name, px, py, pwidth, 1, font = FONTCODE, defaultText = "", isDynamic = True, isNumOnly = False)
+        super().__init__(name, px, py, pwidth, 1, fontID = FontID.FONT_CODE, fontSize = 10, defaultText = "", isDynamic = True, isNumOnly = False)
 
 # numbers only, static
 class ValueTextboxWidgetDefinition(TextboxWidgetDefinition):
 
     def __init__(self, name: str, px: int, py: int, defaultValue: float):
         defaultText = str(round(defaultValue, 3))
-        super().__init__(name, px, py, None, 1, font = FONT15, defaultText = defaultText, isDynamic = False, isNumOnly = True)
+        super().__init__(name, px, py, None, 1, fontID = FontID.FONT_NORMAL, fontSize = 15, defaultText = defaultText, isDynamic = False, isNumOnly = True)
