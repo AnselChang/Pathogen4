@@ -122,8 +122,7 @@ class Path:
         node: CommandBlockEntity = self.commandList.head
         while node is not None:
             if isinstance(node, CommandBlockEntity):
-                node.position._isExpanded = isExpand
-                node.position.recomputeExpansion()
+                node.setLocalExpansion(isExpand)
             node = node.getNext()
 
     # get the height of all the commands + inserters, etc. useful for scrollbar

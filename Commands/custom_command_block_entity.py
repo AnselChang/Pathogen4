@@ -40,8 +40,8 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     def delete(self):
         self.path.deleteCustomCommand(self)
 
-    def isOtherHovering(self) -> bool:
-        return self.trashEntity.hover.isHovering
+    def isWidgetHovering(self) -> bool:
+        return super().isWidgetHovering() or self.trashEntity.hover.isHovering
     
     def onStartDrag(self, mouse: PointRef):
         self.dragging = True
@@ -100,7 +100,10 @@ class CustomCommandBlockEntity(CommandBlockEntity):
 
         self.path.recomputeY()
 
-    def drawDragDots(self, screen: pygame.Surface):
+    # draw drag dots
+    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
+
+        super().draw(screen, isActive, isHovered)
 
         DY = 4
         WIDTH = 17

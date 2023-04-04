@@ -4,6 +4,7 @@ from BaseEntity.EntityListeners.click_listener import ClickLambda
 from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
 
 from Commands.command_block_entity import CommandBlockEntity
+from Commands.command_or_inserter import CommandOrInserter
 
 from EntityHandler.interactor import Interactor
 
@@ -21,7 +22,7 @@ Appears between each command
 A "plus" button that, when clicked, inserts a custom command there
 """
 
-class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
+class CommandInserter(Entity, CommandOrInserter):
 
     def __init__(self, path, interactor: Interactor, dimensions: Dimensions, onInsert = lambda: None):
 
@@ -30,7 +31,7 @@ class CommandInserter(Entity, LinkedListNode[CommandBlockEntity]):
             click = ClickLambda(self, FonLeftClick = lambda: onInsert(self)),
             select = SelectLambda(self, "inserter", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMAND_INSERTER)
-        LinkedListNode.__init__(self)
+        CommandOrInserter.__init__(self)
 
         self.path = path
         self.interactor = interactor
