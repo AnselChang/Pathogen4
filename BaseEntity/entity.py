@@ -76,12 +76,14 @@ class Entity(ABC, Observable):
         pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT])
 
     
-    # THESE METHODS ARE IMPLEMENTED BY SUBCLASS TO SPECIFY RELATIVE POSITION
+    # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self):
         self.WIDTH = self.getWidth()
         self.HEIGHT = self.getHeight()
         self.CENTER_X, self.CENTER_Y = self.getCenter()
         self.LEFT_X, self.TOP_Y = self.getTopLeft()
+
+        self.RECT = [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT]
 
         # Now that this entity position is recomputed, make sure children recompute too
         self.notify()
@@ -108,25 +110,25 @@ class Entity(ABC, Observable):
     def _px(self, px):
         if self._parent is None:
             raise Exception("No parent")
-        return self._parent.LEFT_X + self._parent.WIDTH / 2
+        return int(self._parent.LEFT_X + px * self._parent.WIDTH)
     
     # get relative x as a percent of parent horizontal span
     def _py(self, py):
         if self._parent is None:
             raise Exception("No parent")
-        return self._parent.TOP_Y + self._parent.HEIGHT / 2
+        return int(self._parent.TOP_Y + py * self._parent.HEIGHT)
     
     # get relative width as a percent of parent horizontal span
     def _pwidth(self, pwidth):
         if self._parent is None:
             raise Exception("No parent")
-        return self._parent.WIDTH * pwidth
+        return int(self._parent.WIDTH * pwidth)
     
     # get relative height as a percent of parent vertical span
     def _pheight(self, pheight):
         if self._parent is None:
             raise Exception("No parent")
-        return self._parent.HEIGHT * pheight
+        return int(self._parent.HEIGHT * pheight)
     
     # Get width given a margin (on both sides) from parent horizontal span
     def _mwidth(self, margin):

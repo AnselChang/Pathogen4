@@ -7,15 +7,10 @@ Child of Panel Entity
 """
 class TabGroupEntity(RadioGroupEntity):
 
-    def __init__(self, entityManager, dimensions: Dimensions):
-
-        super().__init__(entityManager)
-        self.dimensions = dimensions
-
     def getTopLeft(self) -> tuple:
-        return self._parent.LEFT_X, self._parent.TOP_Y
+        return self._px(0), self._py(0)
 
     def getWidth(self) -> float:
-        return self._parent.WIDTH
+        return self._pwidth(0)
     def getHeight(self) -> float:
-        return 30
+        return self._pheight(0.05)

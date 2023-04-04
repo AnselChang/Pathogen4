@@ -24,28 +24,17 @@ class TabEntity(RadioEntity):
         self.r = 5
 
     def getCenter(self) -> tuple:
-        return self.dimensions.FIELD_WIDTH, 0
+        return self._px(0), self._py(0.5)
 
-    # must impl both of these if want to contain other entity
     def getWidth(self) -> float:
-        return self.dimensions.PANEL_WIDTH
+        return self._pwidth(1) / self.group.N
     def getHeight(self) -> float:
-        return self.dimensions.SCREEN_HEIGHT
+        return self._pheight(1)
 
-    def isVisible(self) -> bool:
-        return True
-    
-    def getRect(self) -> tuple:
-        x,y = self.getPosition().screenRef
-        width = self.getWidth()
-        return (x - width/2, y - self.height/2, width, self.height)
-
-    def isTouching(self, position: PointRef) -> bool:
-        return isInsideBox2(*position.screenRef, *self.getRect())
+    def isTouching(self, position: tuple) -> bool:
+        return isInsideBox2(*position, *self.RECT)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-
-        rect = self.getRect()
 
         if self is self.group.getActiveEntity():
             color = (150, 150, 150)
@@ -53,12 +42,12 @@ class TabEntity(RadioEntity):
             color = (180, 180, 180)
         else:
             color = (200, 200, 200)
-        pygame.draw.rect(screen, color, rect,
+        pygame.draw.rect(screen, color, self.RECT,
                          border_top_left_radius = self.r, border_top_right_radius = self.r)
         
         # draw border. black if selected
         color = (0,0,0) if self.isActive() else (100,100,100)
-        pygame.draw.rect(screen, color, rect,
+        pygame.draw.rect(screen, color, self.RECT,
                          border_top_left_radius = self.r, border_top_right_radius = self.r, width = 1)
         
-        drawText(screen, self.font.get(), self.text, (0,0,0), *self.getPosition().screenRef)
+        drawText(screen, self.font.get(), self.text, (0,0,0), self.CENTER_X, self.CENTER_Y)
