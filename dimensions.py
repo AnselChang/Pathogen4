@@ -11,7 +11,7 @@ class Dimensions(Observable):
 
         self.RATIO = 0.7
 
-        self.FIELD_SIZE_IN_INCHES = 144
+        self.FIELD_SIZE_IN_INCHES = 147.8377757
 
     def setFieldSizePixels(self, pixels: int, margin: int):
         self.FIELD_SIZE_IN_PIXELS = pixels
