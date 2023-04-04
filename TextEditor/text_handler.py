@@ -52,7 +52,6 @@ class TextHandler:
         return True
 
     def countLeadingSpaces(self, string):
-        print(len(string) - len(string.lstrip()))
         return len(string) - len(string.lstrip())
     
     def hasPeriod(self) -> bool:

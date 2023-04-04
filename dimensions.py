@@ -33,7 +33,6 @@ class Dimensions(Observable):
         ratioSquared = (self.SCREEN_WIDTH * self.SCREEN_HEIGHT) / (self.DEFAULT_SCREEN_HEIGHT * self.DEFAULT_SCREEN_WIDTH)
         self.RESOLUTION_RATIO = math.sqrt(ratioSquared)
 
-        print(self.RESOLUTION_RATIO)
 
         larger = max(self.SCREEN_HEIGHT, self.FIELD_WIDTH)
         self.LARGER_FIELD_SIDE = larger

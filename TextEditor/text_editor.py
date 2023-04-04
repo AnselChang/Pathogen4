@@ -39,6 +39,10 @@ class CursorBlink:
 # notifies observers whenever resized from text (isDynamic)
 class TextEditor(Observable):
 
+    def onFontResize(self):
+        self.updateHeight()
+        self.textHandler.update()
+
     def updateHeight(self):
         charHeight = self.font.getCharHeight()
         self.height = 2 * self.border.OUTER_Y_MARGIN + self.rows * (charHeight + self.border.INNER_Y_MARGIN) - self.border.INNER_Y_MARGIN
@@ -82,7 +86,7 @@ class TextEditor(Observable):
         self.rows = 1
         self.setRows(rows)
 
-        self.font.addObserver(Observer(onNotify = self.updateHeight))
+        self.font.addObserver(Observer(onNotify = self.onFontResize))
         
 
         self.originalHeight = self.height # so that original position can be maintained if height changes
@@ -151,9 +155,10 @@ class TextEditor(Observable):
         # draw blinkingcursor
         if self.mode == TextEditorMode.WRITE and self.cursorBlink.get():
             cx, cy = self.textHandler.getCursor()
-            x = self.border.OUTER_X_MARGIN + cx * self.charWidth
-            y = self.border.OUTER_Y_MARGIN + cy * (self.charHeight + self.border.INNER_Y_MARGIN)
-            pygame.draw.rect(surf, (0,0,0), (x, y, 1, self.charHeight))
+            charWidth, charHeight = self.font.getCharWidth(), self.font.getCharHeight()
+            x = self.border.OUTER_X_MARGIN + cx * charWidth
+            y = self.border.OUTER_Y_MARGIN + cy * (charHeight + self.border.INNER_Y_MARGIN)
+            pygame.draw.rect(surf, (0,0,0), (x, y, 1, charHeight))
 
         screen.blit(surf, (absoluteX, absoluteY))
 
