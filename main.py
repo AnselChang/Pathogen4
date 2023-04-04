@@ -131,7 +131,6 @@ def main():
     # Main game loop
     while True:
         mouse.screenRef = pygame.mouse.get_pos()
-        #print(mouse.fieldRef)
         interactor.setHoveredEntity(entities.getEntityAtPosition(mouse), mouse)
 
         # handle events and call callbacks
