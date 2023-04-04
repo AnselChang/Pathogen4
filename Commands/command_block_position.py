@@ -25,18 +25,16 @@ class CommandBlockPosition:
         # whenever a global expansion flag is changed, recompute each individual command expansion
         self.commandExpansion.addObserver(Observer(onNotify = self.recomputeExpansion))
 
-        self.Y_BETWEEN_COMMANDS_MIN = 30
         self.X_MARGIN_LEFT = 6
         self.X_MARGIN_RIGHT = 18
 
         # the height of the command is updated through a motion profile animation based on goal height (minimized/maximized)
         self._isExpanded = defaultExpand
-        self.expandMotion = MotionProfile(self.Y_BETWEEN_COMMANDS_MIN, self.Y_BETWEEN_COMMANDS_MIN,
-                                          speed = 0.4)
+        self.expandMotion = MotionProfile(self.getMinHeight(), speed = 0.4)
         
         self.widgetStretch = 0
 
-        self.animatedDragPosition = MotionProfile(0,0, speed = 0.3)
+        self.animatedDragPosition = MotionProfile(0, speed = 0.3)
         self.initialPositionNotSet = True
         self.setY(0)
         self.initialPositionNotSet = True
@@ -44,6 +42,9 @@ class CommandBlockPosition:
     def getDefinedHeight(self) -> int:
         return self.command.getDefinition().fullHeight * self.dimensions.RESOLUTION_RATIO
         
+    def getMinHeight(self):
+        Y_BETWEEN_COMMANDS_MIN = 30
+        return Y_BETWEEN_COMMANDS_MIN * self.dimensions.RESOLUTION_RATIO
 
     def isFullyCollapsed(self) -> bool:
         return self.expandMotion.isDone() and not self.isExpanded()
@@ -82,16 +83,16 @@ class CommandBlockPosition:
     
     # the center y position of the title header on the top of the command
     def getCenterHeadingY(self) -> float:
-        return self.getY() + self.Y_BETWEEN_COMMANDS_MIN / 2
+        return self.getY() + self.getMinHeight() / 2
     
     # return 1 if expanded, 0 if not, and in between
     def getExpandedRatio(self) -> float:
-        return (self.getHeight() - self.Y_BETWEEN_COMMANDS_MIN) / (self.getDefinedHeight() - self.Y_BETWEEN_COMMANDS_MIN)
+        return (self.getHeight() - self.getMinHeight()) / (self.getDefinedHeight() - self.getMinHeight())
     
     def getAddonPosition(self, px: float, py: float) -> tuple:
         x = self.getX() + px * self.getWidth()
-        y = self.Y_BETWEEN_COMMANDS_MIN
-        y += self.getY() + py * (self.getHeight() - self.Y_BETWEEN_COMMANDS_MIN - self.widgetStretch)
+        y = self.getMinHeight()
+        y += self.getY() + py * (self.getHeight() - self.getMinHeight() - self.widgetStretch)
         return x,y
 
     # every tick, update animation if exists
@@ -152,7 +153,7 @@ class CommandBlockPosition:
         if expanded:
             x = self.getDefinedHeight() + self.widgetStretch
         else:
-            x = self.Y_BETWEEN_COMMANDS_MIN
+            x = self.getMinHeight()
 
         # If there is a change, then send callbacks to widgets
         if self.expandMotion.get() != x:

@@ -10,9 +10,9 @@ after each update.
 """
 
 class MotionProfile:
-    def __init__(self, startValue, endValue, speed):
+    def __init__(self, endValue, speed):
         self._speed = speed
-        self._currentValue = startValue
+        self._currentValue = endValue
 
         self.setEndValue(endValue)
 
