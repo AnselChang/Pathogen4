@@ -12,7 +12,7 @@ from Observers.observer import Observer
 from image_manager import ImageID
 from draw_order import DrawOrder
 from reference_frame import PointRef, Ref
-from pygame_functions import drawSurface
+from pygame_functions import drawSurface, FONT15, FONTCODE
 import pygame
 
 
@@ -23,14 +23,17 @@ class TextboxWidgetEntity(WidgetEntity):
         READ_COLOR = (239, 226, 174)
         WRITE_COLOR = (174, 198, 239)
 
-        width = lambda: parentCommand.dimensions.PANEL_WIDTH * definition.pwidth
+        if definition.pwidth is None:
+            width = None
+        else:
+            width = lambda: parentCommand.dimensions.PANEL_WIDTH * definition.pwidth
 
         self.textEditor = TextEditor(
+            definition.font,
             self.getX, self.getY, width, definition.rows,
             READ_COLOR, WRITE_COLOR,
             isDynamic = definition.isDynamic,
             isNumOnly = definition.isNumOnly,
-            isCentered = definition.isCentered,
             defaultText = definition.defaultText
         )
 
@@ -85,15 +88,15 @@ class TextboxWidgetEntity(WidgetEntity):
 
 class TextboxWidgetDefinition(WidgetDefinition):
 
-    def __init__(self, name: str, px: int, py: int, pwidth: float, rows: int, defaultText: str, isDynamic: bool, isNumOnly: bool, isCentered: bool):
+    def __init__(self, name: str, px: int, py: int, pwidth: float, rows: int, font, defaultText: str, isDynamic: bool, isNumOnly: bool):
         super().__init__(name, px, py)
 
         self.pwidth = pwidth
         self.rows = rows
+        self.font = font
         self.defaultText = defaultText
         self.isDynamic = isDynamic
         self.isNumOnly = isNumOnly
-        self.isCentered = isCentered
 
     def make(self, parentCommand) -> TextboxWidgetEntity:
         return TextboxWidgetEntity(parentCommand, self)
@@ -101,11 +104,11 @@ class TextboxWidgetDefinition(WidgetDefinition):
 # dynamic, no text restrictions
 class CodeTextboxWidgetDefinition(TextboxWidgetDefinition):
     def __init__(self, name: str, px: int, py: int, pwidth: float):
-        super().__init__(name, px, py, pwidth, 1, defaultText = "", isDynamic = True, isNumOnly = False, isCentered = False)
+        super().__init__(name, px, py, pwidth, 1, font = FONTCODE, defaultText = "", isDynamic = True, isNumOnly = False)
 
 # numbers only, static
 class ValueTextboxWidgetDefinition(TextboxWidgetDefinition):
 
-    def __init__(self, name: str, px: int, py: int, pwidth: float, defaultValue: float):
+    def __init__(self, name: str, px: int, py: int, defaultValue: float):
         defaultText = str(round(defaultValue, 3))
-        super().__init__(name, px, py, pwidth, 1, defaultText = defaultText, isDynamic = False, isNumOnly = True, isCentered = True)
+        super().__init__(name, px, py, None, 1, font = FONT15, defaultText = defaultText, isDynamic = False, isNumOnly = True)

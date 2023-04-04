@@ -37,7 +37,7 @@ class TextHandler:
 
     def isTextTooLong(self, text):
         width = FONTCODE.render(text, True, (0,0,0)).get_width()
-        return width > self.textEditor.getMaxTextWidth()
+        return not self.textEditor.noWidthRestriction and width > self.textEditor.getMaxTextWidth()
     
     def currentLineLength(self):
         return len(self.text[self.cursorY])
@@ -186,7 +186,7 @@ class TextHandler:
         self.update()
 
     def update(self):
-        self.textSurfaces = [FONTCODE.render(textLine, True, (0,0,0)) for textLine in self.text]
+        self.textSurfaces = [self.textEditor.font.render(textLine, True, (0,0,0)) for textLine in self.text]
         self.fullText = ""
         for textLine in self.text:
             self.fullText += textLine + "\n"
