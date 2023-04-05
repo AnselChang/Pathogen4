@@ -21,17 +21,12 @@ Construct CommandBlockEntity objects
 
 class CommandBlockEntityFactory:
 
-    def __init__(self, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, fontManager: FontManager, dimensions: Dimensions):
+    def __init__(self, database: CommandDefinitionDatabase, commandExpansion: CommandExpansion):
         self.database = database
-        self.entities = entities
-        self.interactor = interactor
         self.expansion = commandExpansion
-        self.images = images
-        self.fontManager = fontManager
-        self.dimensions = dimensions
 
     def create(self, path, adapter: PathAdapter) -> CommandBlockEntity:
         if adapter.type == CommandType.CUSTOM:
-            return CustomCommandBlockEntity(path, adapter, self.database, self.entities, self.interactor, self.expansion, self.images, self.fontManager, self.dimensions)
+            return CustomCommandBlockEntity(path, adapter, self.database, self.expansion)
         else:
-            return CommandBlockEntity(path, adapter, self.database, self.entities, self.interactor, self.expansion, self.images, self.fontManager, self.dimensions)
+            return CommandBlockEntity(path, adapter, self.database, self.expansion)

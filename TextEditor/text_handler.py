@@ -33,11 +33,7 @@ class TextHandler:
 
     def getCursor(self) -> tuple:
         return self.cursorX, self.cursorY
-
-    def isTextTooLong(self, text):
-        width = self.textEditor.font.getCharWidth()
-        return not self.textEditor.noWidthRestriction and width > self.textEditor.getMaxTextWidth()
-    
+ 
     def currentLineLength(self):
         return len(self.text[self.cursorY])
     
@@ -67,7 +63,7 @@ class TextHandler:
         # insert new line if there is room
         if key == pygame.K_RETURN:
             # can't add anymore lines
-            if len(self.text) == self.textEditor.getMaxTextLines() and not self.textEditor.dynamic:
+            if not self.textEditor.dynamic:
                 return
             
             remainingText = line[self.cursorX:]
@@ -88,10 +84,9 @@ class TextHandler:
             self.textEditor.addRow()
 
             # add closing brace }
-            if len(self.text) < self.textEditor.getMaxTextLines() or self.textEditor.dynamic:
-                if lastChar == "{":
-                    self.text.insert(self.cursorY + 1, " " * prevLeadingSpaces + "}")
-                    self.textEditor.addRow()
+            if lastChar == "{":
+                self.text.insert(self.cursorY + 1, " " * prevLeadingSpaces + "}")
+                self.textEditor.addRow()
 
         # Delete the current char, or delete the line if it is empty
         elif key == pygame.K_BACKSPACE:
@@ -168,10 +163,6 @@ class TextHandler:
                     return
 
             inserted = line[:self.cursorX] + char + self.getMirror(char) + line[self.cursorX:]
-
-            # abort if exceeds max text width
-            if self.isTextTooLong(inserted):
-                return
             
             # update text list and surface
             self.text[self.cursorY] = inserted

@@ -49,15 +49,18 @@ def drawLine(screen: pygame.Surface, color: tuple, x1: int, y1: int, x2: int, y2
     if borderColor is not None:
         pygame.gfxdraw.aapolygon(screen, (UL, UR, BR, BL), borderColor)
     
+def getText(font: pygame.font.Font, string: str, color: tuple, opacity: float = 1) -> pygame.Surface:
+    text = font.render(string, True, color)
+    text.set_alpha(opacity * 255)
+    return text
 
 # align = 0 -> align left/top
 # align = 0.5 -> align mid
 # align = 1 -> align right/bottom
 # return text width
 def drawText(surface: pygame.Surface, font: pygame.font.Font, string: str, color: tuple, x: int, y: int, alignX: float = 0.5, alignY: float = 0.5, opacity = 1) -> int:
-    text = font.render(string, True, color)
-    text.set_alpha(opacity * 255)
-
+    
+    text = getText(font, string, color, opacity)
     width = text.get_width()
     height = text.get_height()
 

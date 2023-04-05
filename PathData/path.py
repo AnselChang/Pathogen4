@@ -12,8 +12,7 @@ from SegmentEntities.path_segment_entity import PathSegmentEntity
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
-from PathData.command_scrollbar_entity import CommandScrollbarEntity
-from Observers.observer import Observer
+from PathData.scrollbar_container_entity import CommandScrollbarEntity
 
 from Adapters.path_adapter import NullPathAdapter
 
@@ -41,7 +40,7 @@ class Path:
 
         # initialize scrollbar
         self.scrollbar = CommandScrollbarEntity(dimensions)
-        self.scrollbar.subscribe(Observer(onNotify = self.recomputeY))
+        self.scrollbar.subscribe(onNotify = self.recomputeY)
         entities.addEntity(self.scrollbar)
 
         # initialize first node
@@ -58,7 +57,7 @@ class Path:
 
     def _addInserter(self, func):
 
-        inserter = CommandInserter(self, self.interactor, self.dimensions, self.addCustomCommand)
+        inserter = CommandInserter(self, self.addCustomCommand)
         func(inserter)
         self.entities.addEntity(inserter)
 
@@ -77,7 +76,7 @@ class Path:
     def _addRawSegment(self):
 
         # create segment and add entity
-        self.segment: PathSegmentEntity = PathSegmentEntity(self.interactor)
+        self.segment: PathSegmentEntity = PathSegmentEntity()
         self.pathList.addToEnd(self.segment)
         self.entities.addEntity(self.segment)
 

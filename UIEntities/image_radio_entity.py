@@ -17,10 +17,9 @@ or pass in functions for getters of x and y
 class ImageRadioEntity(RadioEntity, TooltipOwner):
 
     # id is used to distinguish between radio entities
-    def __init__(self, id: str, imageOn: pygame.Surface, imageOff: pygame.Surface, xIntOrCallback: int, yIntOrCallback: int, tooltip: str | list[str] = None, onUpdate = lambda isOn: None):
+    def __init__(self, id: str, imageOn: pygame.Surface, imageOff: pygame.Surface, tooltip: str | list[str] = None, onUpdate = lambda isOn: None):
         super().__init__(id, DrawOrder.UI_BUTTON, onUpdate = onUpdate)
 
-        self.xIntOrCallback, self.yIntOrCallback = xIntOrCallback, yIntOrCallback
         self.width = imageOn.get_width()
         self.height = imageOn.get_height()
 
@@ -35,19 +34,6 @@ class ImageRadioEntity(RadioEntity, TooltipOwner):
 
     def getTooltip(self) -> Tooltip | None:
         return self.tooltip
-
-    def getPositionRaw(self) -> tuple:
-        x = self.xIntOrCallback if type(self.xIntOrCallback) == int else self.xIntOrCallback()
-        y = self.yIntOrCallback if type(self.yIntOrCallback) == int else self.yIntOrCallback() 
-        return x, y 
-
-    # override
-    def getPosition(self) -> PointRef:
-        x,y = self.getPositionRaw()
-        return PointRef(Ref.SCREEN, (x, y))
-
-    def isVisible(self) -> bool:
-        return True
 
     def isTouching(self, position: PointRef) -> bool:
         x,y = self.getPositionRaw()

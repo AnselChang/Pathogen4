@@ -24,7 +24,7 @@ We also define the constants that apply across all segment types here, like colo
 """
 
 class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
-    def __init__(self, interactor) -> None:
+    def __init__(self) -> None:
         
         super().__init__(select = SelectLambda(self, "segment"),
                          click = ClickLambda(self,FOnDoubleClick = self.onDoubleClick),
@@ -32,7 +32,6 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
         
         LinkedListNode.__init__(self)
 
-        self.interactor = interactor
         self.state: PathSegmentState = StraightSegmentState(self)
         self.isReversed = False
 

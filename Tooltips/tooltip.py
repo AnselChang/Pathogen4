@@ -1,5 +1,4 @@
 #from pygame_functions import FONT15
-from Observers.observer import Observer
 from font_manager import DynamicFont
 from dimensions import Dimensions
 import pygame
@@ -23,7 +22,7 @@ class Tooltip:
     def __init__(self, messages: str | list[str]):
 
         self.font = _tooltipFont
-        self.font.subscribe(Observer(onNotify = self.recalculateTooltipSurface))
+        self.font.subscribe(onNotify = self.recalculateTooltipSurface)
         
         if type(messages) == str:
             messages = [messages]

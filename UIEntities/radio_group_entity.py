@@ -8,11 +8,9 @@ Child of Panel Entity
 """
 class RadioGroupEntity(Entity):
 
-    def __init__(self, entityManager: EntityManager, allowNoSelect: bool = False):
+    def __init__(self, allowNoSelect: bool = False):
         
         super().__init__()
-
-        self.entityManager = entityManager
 
         self.options: list[RadioEntity] = []
         self.active: RadioEntity = None
@@ -23,7 +21,7 @@ class RadioGroupEntity(Entity):
     def add(self, option: RadioEntity):
         self.options.append(option)
         option.setRadioGroup(self, self.N)
-        self.entityManager.addEntity(option, self)
+        self.entities.addEntity(option, self)
 
         if not self.allowNoSelect and self.active is None:
             self.active = option

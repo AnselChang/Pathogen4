@@ -55,5 +55,6 @@ class SelectorBox:
 
         if not self.active:
             return
-        
-        drawTransparentRect(screen, *self.start, *self.end, (173, 216, 230), 100)
+        x, y = self.start
+        x2, y2 = self.end
+        drawTransparentRect(screen, x, y, x2 - x, y2 - y, (173, 216, 230), 100)

@@ -1,4 +1,5 @@
 from BaseEntity.static_entity import StaticEntity
+from BaseEntity.entity import initEntityClass
 
 from NodeEntities.path_node_entity import PathNodeEntity
 from SegmentEntities.path_segment_entity import PathSegmentEntity
@@ -62,25 +63,26 @@ def main():
     # Initialize entities
     interactor = Interactor(dimensions, fieldTransform)
     entities = EntityManager()
+    initEntityClass(entities, interactor, images, fontManager, dimensions)
 
     # Add permanent static entities
     panelColor = (100,100,100)
-    panel = PanelEntity(dimensions, panelColor)
+    panel = PanelEntity(panelColor)
     entities.addEntity(panel)
     entities.addEntity(StaticEntity(lambda: screen.fill((255,255,255)), drawOrder = DrawOrder.BACKGROUND))
     entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
     entities.addEntity(StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX))
 
     # initialize commands
-    database = CommandDefinitionDatabase(entities, interactor, images, dimensions)
+    database = CommandDefinitionDatabase()
     commandExpansion = CommandExpansion(entities, images, dimensions)
-    commandEntityFactory = CommandBlockEntityFactory(database, entities, interactor, commandExpansion, images, fontManager, dimensions)
+    commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
 
     # Create path
     path = Path(database, entities, interactor, commandEntityFactory, commandExpansion, dimensions, PointRef(Ref.FIELD, (24,24)))
 
     # Create tabs
-    tabs = TabGroupEntity(entities, dimensions)
+    tabs = TabGroupEntity()
     entities.addEntity(tabs, panel)
     for text in ["A", "B", "C"]:
         tabs.add(TabEntity(dimensions, fontManager.getDynamicFont(FontID.FONT_NORMAL, 15), text))

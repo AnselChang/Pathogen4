@@ -17,9 +17,8 @@ An entity for the panel on the right side. Holds other entities inside
 class PanelEntity(Entity):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
-    def __init__(self, dimensions: Dimensions, color) -> None:
+    def __init__(self, color) -> None:
         super().__init__(DrawOrder = DrawOrder.PANEL_BACKGROUND)
-        self.dimensions = dimensions
         self.color = color
 
     # override

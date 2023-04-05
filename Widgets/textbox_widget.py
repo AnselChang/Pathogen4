@@ -5,9 +5,7 @@ from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorTyp
 from Widgets.widget_entity import WidgetEntity
 from Widgets.widget_definition import WidgetDefinition
 
-from TextEditor.text_editor import TextEditor, TextEditorMode
-
-from Observers.observer import Observer
+from TextEditor.text_editor_entity import TextEditorEntity, TextEditorMode
 
 from font_manager import FontID, DynamicFont
 from image_manager import ImageID
@@ -21,9 +19,6 @@ class TextboxWidgetEntity(WidgetEntity):
 
     def __init__(self, parentCommand, definition: 'TextboxWidgetDefinition'):
 
-        READ_COLOR = (239, 226, 174)
-        WRITE_COLOR = (174, 198, 239)
-
         if definition.pwidth is None:
             width = None
         else:
@@ -31,19 +26,18 @@ class TextboxWidgetEntity(WidgetEntity):
 
         font: DynamicFont = parentCommand.fontManager.getDynamicFont(definition.fontID, definition.fontSize)
 
-        self.textEditor = TextEditor(
-            parentCommand.dimensions,
+        self.textEditor = TextEditorEntity(
             font,
-            self.getX, self.getY, width, definition.rows,
-            READ_COLOR, WRITE_COLOR,
+            parentCommand.dimensions.px, parentCommand.dimensions.py,
+            getOpacity = self.getOpacity,
             isDynamic = definition.isDynamic,
             isNumOnly = definition.isNumOnly,
             defaultText = definition.defaultText
         )
+        self.parentCommand.entities.addEntity(self.textEditor, self)
 
         # Sends notification when text height changes
-        commandStretchObserver = Observer(onNotify = self.onCommandStretch)
-        self.textEditor.subscribe(commandStretchObserver)
+        self.textEditor.subscribe(onNotify = self._parent.updateTargetHeight)
 
         super().__init__(parentCommand, definition,
             key = KeyLambda(self,
@@ -74,20 +68,15 @@ class TextboxWidgetEntity(WidgetEntity):
     
     # for dynamic widgets. how much to stretch command height by
     def getCommandStretch(self) -> int:
-        return max(0, self.textEditor.getHeight() - self.textEditor.originalHeight)
+        return self.textEditor.getHeightOffset()
     
-    def onCommandStretch(self):
-        #print("widget stretch")
-        self.notify()
     
     def getValue(self) -> bool:
         return self.textEditor.getText()
 
     def isTouchingWidget(self, position: PointRef) -> bool:
         return self.textEditor.isTouching(position)
-    
-    def drawWidget(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        self.textEditor.draw(screen, isActive, isHovered, self.getOpacity())
+
 
 
 class TextboxWidgetDefinition(WidgetDefinition):

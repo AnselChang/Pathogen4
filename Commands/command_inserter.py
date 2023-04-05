@@ -24,7 +24,7 @@ A "plus" button that, when clicked, inserts a custom command there
 
 class CommandInserter(Entity, CommandOrInserter):
 
-    def __init__(self, path, interactor: Interactor, dimensions: Dimensions, onInsert = lambda: None):
+    def __init__(self, path, onInsert = lambda: None):
 
         super().__init__(
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
@@ -34,8 +34,6 @@ class CommandInserter(Entity, CommandOrInserter):
         CommandOrInserter.__init__(self)
 
         self.path = path
-        self.interactor = interactor
-        self.dimensions = dimensions
 
         self.START_Y = 43
         self.Y_MIN = 6
@@ -85,10 +83,6 @@ class CommandInserter(Entity, CommandOrInserter):
         if self.isActive:
             self.setActive(False)
 
-    def isTouching(self, position: tuple) -> bool:
-        return isInsideBox2(*position, *self.RECT)
-
-
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
         isActive = isActive and self.interactor.leftDragging and self.isActive
@@ -98,9 +92,9 @@ class CommandInserter(Entity, CommandOrInserter):
             color = [140, 140, 140] if isActive else [160, 160, 160]
 
             # draw shaded area
-            pygame.draw.rect(screen, color, self.getRect(), border_radius = self.CORNER_RADIUS)
+            pygame.draw.rect(screen, color, self.RECT, border_radius = self.CORNER_RADIUS)
 
             # draw cross
-            x,y = self.getPosition().screenRef
+            x,y = self.CENTER_X, self.CENTER_Y
             pygame.draw.rect(screen, [255,255,255], [x - self.THICK, y - self.THIN, self.THICK*2, self.THIN*2])
             pygame.draw.rect(screen, [255,255,255], [x - self.THIN, y - self.THICK, self.THIN*2, self.THICK*2])

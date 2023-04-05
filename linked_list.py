@@ -1,10 +1,11 @@
 from typing import TypeVar, Generic
+from BaseEntity.entity import Entity
 
 T = TypeVar('T')
 class LinkedListNode(Generic[T]):
     def __init__(self):
-        self._next: T | LinkedListNode = None
-        self._prev: T | LinkedListNode = None
+        self._next: T | LinkedListNode | Entity = None
+        self._prev: T | LinkedListNode | Entity = None
 
     def getPrevious(self) -> T | 'LinkedListNode':
         return self._prev

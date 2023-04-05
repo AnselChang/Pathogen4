@@ -8,12 +8,13 @@ from dimensions import Dimensions
 from draw_order import DrawOrder
 from reference_frame import PointRef, Ref
 from pygame_functions import drawSurface
+from math_functions import distance
 import pygame
 
 # trash button for custom commands
 class TrashEntity(Entity):
 
-    def __init__(self, parentCommand: Entity, images: ImageManager, dimensions: Dimensions, onDelete = lambda: None):
+    def __init__(self, parentCommand: Entity, onDelete = lambda: None):
         
         super().__init__(
             click = ClickLambda(self, FonLeftClick = onDelete),
@@ -22,26 +23,16 @@ class TrashEntity(Entity):
         )
         
         self.parentCommand = parentCommand
-        self.images = images
-        self.dimensions = dimensions
-
-    
-    def isVisible(self) -> bool:
-        return True
+        self.recomputePosition()
 
     def isTouching(self, position: PointRef) -> bool:
-        return (position - self.getPosition()).magnitude(Ref.SCREEN) < 12
+        return self.distanceTo(position) < 12
+    
+    def getCenter(self) -> tuple:
+        return self._px(1) - self._ax(60), self._py(0.5)
 
-    def getPosition(self) -> PointRef:
-        x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH - 60
-        y = self.parentCommand.getY() + self.parentCommand.position.Y_BETWEEN_COMMANDS_MIN / 2
-        return PointRef(Ref.SCREEN, (x,y))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
-        x,y = self.getPosition().screenRef
         image = self.images.get(ImageID.TRASH_ON if isHovered else ImageID.TRASH_OFF)
-        drawSurface(screen, image, x, y)
-
-    def toString(self) -> str:
-        return "trash"
+        drawSurface(screen, image, self.CENTER_X, self.CENTER_Y)

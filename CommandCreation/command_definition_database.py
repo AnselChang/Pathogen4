@@ -16,12 +16,7 @@ Stores all the different CommandDefinitions
 
 class CommandDefinitionDatabase:
 
-    def __init__(self, entities: EntityManager, interactor: Interactor, images: ImageManager, dimensions: Dimensions):
-
-        self.entities = entities
-        self.interactor = interactor
-        self.images = images
-        self.dimensions = dimensions
+    def __init__(self):
 
         # initialize empty list for each command type
         self.definitions : dict[CommandType, list[CommandDefinition]] = {}

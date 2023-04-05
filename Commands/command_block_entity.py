@@ -9,7 +9,7 @@ from Adapters.path_adapter import PathAdapter
 from CommandCreation.command_type import COMMAND_INFO
 from CommandCreation.command_definition import CommandDefinition
 
-from Commands.command_block_position import CommandBlockPosition
+from Commands.command_block_header import CommandBlockHeader
 from Commands.command_expansion import CommandExpansion
 from Commands.command_or_inserter import CommandOrInserter
 from Commands.command_expansion import CommandExpansion
@@ -19,8 +19,6 @@ from Widgets.readout_entity import ReadoutEntity
 
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
-
-from Observers.observer import Observer
 
 from font_manager import FontManager, FontID
 from linked_list import LinkedListNode
@@ -45,9 +43,7 @@ Position calculation is offloaded to CommandBlockPosition
 class CommandBlockEntity(Entity, CommandOrInserter):
 
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, fontManager: FontManager, dimensions: Dimensions, drag: DragListener = None,
-                 defaultExpand: bool = False
-                 ):
+    def __init__(self, path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansion, drag: DragListener = None, defaultExpand: bool = False):
         
         self.animatedHeight = MotionProfile(self.HEIGHT, speed = 0.4)
         self.animatedPosition = MotionProfile(0, speed = 0.3)
@@ -66,17 +62,15 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         CommandOrInserter.__init__(self)
         self.definitionIndex: int = 0
 
+        self.headerEntity = CommandBlockHeader(pathAdapter)
+        self.entities.addEntity(self.headerEntity, self)
+
         self.path = path
 
         self.pathAdapter = pathAdapter
         
         self.type = self.pathAdapter.type
         self.database = database
-        self.entities = entities
-        self.interactor = interactor
-        self.images = images
-        self.fontManager = fontManager
-        self.dimensions = dimensions
 
         self.dragOffset = 0
 
@@ -85,7 +79,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         # whenever a global expansion flag is changed, recompute each individual command expansion
         self.commandExpansion = commandExpansion
-        self.commandExpansion.subscribe(Observer(onNotify = self.updateTargetHeight))
+        self.commandExpansion.subscribe(onNotify = self.updateTargetHeight)
 
         self.titleFont = self.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
 
@@ -113,9 +107,10 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             return True
         return self.localExpansion
     
+    # Call this whenever there might be a change to target height
     def updateTargetHeight(self):
 
-        self.EXPANDED_HEIGHT = self._pheight(self.getDefinition().fullHeight + self.getWidgetStretch())
+        self.EXPANDED_HEIGHT = self._pheight(self.getDefinition().fullHeight) + self.getWidgetStretch()
         self.COLLAPSED_HEIGHT = self._pheight(0.0375)
         
         height = self.EXPANDED_HEIGHT if self.isActuallyExpanded() else self.COLLAPSED_HEIGHT        
@@ -138,16 +133,17 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         
     def isFullyCollapsed(self) -> bool:
         return self.HEIGHT == self.COLLAPSED_HEIGHT
+    
+    def isFullyExpanded(self) -> bool:
+        return self.HEIGHT == self.EXPANDED_HEIGHT
 
     # Given the command widgets, create the WidgetEntities and add to entity manager
     def manifestWidgets(self) -> list[WidgetEntity]:
 
-        widgetResizeObserver = Observer(onNotify = self.recomputePosition())
-
         entities = []
         for widget in self.getDefinition().widgets:
             entity = widget.make(self)
-            entity.subscribe(widgetResizeObserver)
+            entity.subscribe(onNotify = self.recomputePosition())
             self.entities.addEntity(entity, self)
             entities.append(entity)
         return entities
@@ -190,23 +186,25 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.localExpansion = not self.localExpansion
         self.updateTargetHeight()
+
+    def getOpacity(self) -> float:
+        if self.isDragging():
+            return 0.7 # drag opacity
+        else:
+            return 1
     
     # return 0 if minimized, 1 if maximized, and in between
     def getAddonsOpacity(self) -> float:
-        DRAG_OPACITY = 0.7
         if self.isDragging():
-            return DRAG_OPACITY
-
-        ratio = self.getPercentExpanded()
-        return ratio * ratio # square for steeper opacity animation
+            return self.getOpacity()
+        else:
+            ratio = self.getPercentExpanded()
+            return ratio * ratio # square for steeper opacity animation
     
     # return 1 if not dragging, and dragged opacity if dragging
     # not applicable for regular command blocks
     def isDragging(self):
         return False
-
-    def isTouching(self, position: tuple) -> bool:
-        return isInsideBox2(*position, *self.RECT)
     
     # whether some widget of command block is hovering
     def isWidgetHovering(self) -> bool:
@@ -219,8 +217,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         
         CORNER_RADIUS = 3
 
-        x, y, width, height = self.getRect()
-
         # draw rounded rect
         color = COMMAND_INFO[self.type].color
         if isActive and isHovered and self.interactor.leftDragging:
@@ -231,15 +227,9 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             color = shade(color, 1.1)
 
         if self.isDragging():
-            drawTransparentRect(screen, x, y, x+width, y+height, color, alpha = self.DRAG_OPACITY*255, radius = CORNER_RADIUS)
+            drawTransparentRect(screen, *self.RECT, color, alpha = self.DRAG_OPACITY*255, radius = CORNER_RADIUS)
         else:
-            pygame.draw.rect(screen, color, (x, y, width, height), border_radius = CORNER_RADIUS)
-
-        # draw icon
-        iconImage = self.images.get(self.pathAdapter.getIcon())
-        x = self.dimensions.FIELD_WIDTH + 20
-        y = self.position.getCenterHeadingY()
-        drawSurface(screen, iconImage, x, y)
+            pygame.draw.rect(screen, color, self.RECT, border_radius = CORNER_RADIUS)
 
         # draw function name
         text = self.getDefinition().name + "()"

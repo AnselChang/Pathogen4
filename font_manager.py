@@ -1,4 +1,4 @@
-from Observers.observer import Observer, Observable
+from Observers.observer import Observable
 from dimensions import Dimensions
 from math_functions import clamp
 import pygame
@@ -26,26 +26,19 @@ class DynamicFont(Observable):
         self._baseFontSize = baseFontSize
 
         # Subscribe to window changes
-        self._dimensions.subscribe(Observer(onNotify = self.update)) 
+        self._dimensions.subscribe(onNotify = self.notify)
 
-        # Calculate initial font size
-        self.update()
 
     # Get the font for the given window resolution ratio
     def get(self) -> pygame.font.Font:
-        return self._currentFont
+        self.size = int(round(self._baseFontSize * self._dimensions.RESOLUTION_RATIO))
+        return self._getFontFromSize(self.size)
     
     def getCharWidth(self) -> float:
         return self._widths[self.size]
     
     def getCharHeight(self) -> float:
         return self._heights[self.size]
-
-    # update font size based from dimensions resolution
-    def update(self):
-        self.size = int(round(self._baseFontSize * self._dimensions.RESOLUTION_RATIO))
-        self._currentFont = self._getFontFromSize(self.size)
-        self.notify()
     
     def _getFontFromSize(self, fontSize: int) -> pygame.font.Font:
         fontSize = clamp(fontSize, self._smallest, self._largest)

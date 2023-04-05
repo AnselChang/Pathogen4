@@ -38,7 +38,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)
 
-    def __init__(self, entities: EntityManager, interactor: Interactor, dimensions: Dimensions, position: PointRef):
+    def __init__(self, position: PointRef):
         Entity.__init__(self,
             drag = DragLambda(
                 self,
@@ -55,17 +55,16 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
             )
         
         LinkedListNode.__init__(self)
-                
-        super().__init__(10, 12)
 
-        self.interactor = interactor
+        super().__init__(radius = 10, hoveredRadius = 12)
+
         self.position = position
         self.adapter: TurnAdapter = TurnAdapter()
 
         self.dragging = True
         SNAPPING_POWER = 5 # in pixels
-        self.constraints = Constraints(SNAPPING_POWER, dimensions)
-        entities.addEntity(self.constraints, self)
+        self.constraints = Constraints(SNAPPING_POWER, self.dimensions)
+        self.entities.addEntity(self.constraints, self)
 
         self.shiftKeyPressed = False
 
@@ -98,6 +97,8 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         direction = deltaInHeading(start, end)
         self.adapter.setIcon(ImageID.TURN_RIGHT if direction >= 0 else ImageID.TURN_LEFT)
 
+        self.recomputePosition()
+
     def onHoverOff(self):
         self.constraints.hide()
 
@@ -125,7 +126,6 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         # if the only one being dragged and shift key not pressed, constrain with snapping
         if self.interactor.selected.hasOnly(self) and not self.shiftKeyPressed:
             self.constrainPosition()
-        self.notify()
 
         self.onNodeMove()
 
@@ -135,6 +135,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         if not self.getNext() is None:
             self.getNext().onNodeMove(self)
         self.updateAdapter()
+        self.recomputePosition()
 
     def onAngleChange(self):
         self.updateAdapter()

@@ -7,6 +7,7 @@ class DrawOrder(IntEnum):
     TAB = auto()
     UI_BUTTON = auto()
     SCROLLBAR = auto()
+    SCROLLBAR_BACKGROUND = auto()
     GRADIENT_PANEL = auto()
     COMMAND_INSERTER = auto()
     READOUT = auto()

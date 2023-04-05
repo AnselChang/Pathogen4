@@ -28,6 +28,7 @@ class PathAdapter(ABC, Observable):
     def set(self, attribute: Enum, value: float, string: str):
         self._dictValue[attribute] = round(value, 3)
         self._dictStr[attribute] = string
+        self.notify()
     
     def getValue(self, attribute: Enum) -> float:
         if attribute in self._dictValue:

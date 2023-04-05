@@ -44,6 +44,10 @@ class WidgetEntity(Entity, Observable):
         self.parentCommand = parentCommand
         self.definition = definition
         self.images = parentCommand.images
+    
+
+    def getCenter(self) -> tuple:
+        return self._px(self.definition.px), self._py(self.definition.py)
 
     # for dynamic widgets. how much to stretch command height by
     def getCommandStretch(self) -> int:
@@ -58,41 +62,17 @@ class WidgetEntity(Entity, Observable):
         pass
 
     @abstractmethod
-    def isTouchingWidget(self, position: PointRef) -> bool:
+    def isTouchingWidget(self, position: tuple) -> bool:
         pass
-
-    # override this
-    def onCommandExpand(self):
-        pass
-
-    # override this
-    def onCommandCollapse(self):
-        pass
-
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        if not self.parentCommand.isFullyCollapsed():
-            self.drawWidget(screen, isActive, isHovered)
-
-    @abstractmethod
-    def drawWidget(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        pass
-
-    def getPosition(self) -> PointRef:
-        px, py = self.definition.getPositionRatio()
-        x,y = self.parentCommand.getAddonPosition(px, py)
-        return PointRef(Ref.SCREEN, (x, y))
-    
-    def getOpacity(self) -> float:
-        return self.parentCommand.getAddonsOpacity()
 
     def getName(self) -> str:
         return self.definition.getName()
     
     def isVisible(self) -> bool:
-        return self.parentCommand.isVisible()
+        return not self.parentCommand.isFullyCollapsed()
 
-    def isTouching(self, position: PointRef) -> bool:
-        return self.parentCommand.isExpanded() and self.isTouchingWidget(position)
+    def isTouching(self, position: tuple) -> bool:
+        return self.parentCommand.isFullyExpanded() and self.isTouchingWidget(position)
 
-    def toString(self) -> str:
-        return "widget"
+    def getOpacity(self) -> float:
+        return self.parentCommand.getAddonsOpacity()

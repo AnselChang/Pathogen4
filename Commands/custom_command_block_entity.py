@@ -25,15 +25,15 @@ CustomCommands have two additonal features compared to regular commands
 
 class CustomCommandBlockEntity(CommandBlockEntity):
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, entities: EntityManager, interactor: Interactor, commandExpansion: CommandExpansion, images: ImageManager, fontManager: FontManager, dimensions: Dimensions):
+    def __init__(self, path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansion):
         
-        super().__init__(path, pathAdapter, database, entities, interactor, commandExpansion, images, fontManager, dimensions,
+        super().__init__(path, pathAdapter, database, commandExpansion,
                          drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
                          defaultExpand = True
                          )
 
-        self.trashEntity = TrashEntity(self, self.images, self.dimensions, onDelete = self.delete)
-        self.entities.addEntity(self.trashEntity, self)
+        self.trashEntity = TrashEntity(self, onDelete = self.delete)
+        self.entities.addEntity(self.trashEntity, self.headerEntity)
 
         self.dragging = False
 
@@ -45,7 +45,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     
     def onStartDrag(self, mouse: PointRef):
         self.dragging = True
-        self.startDragY = self.position.animatedDragPosition.get()
+        self.startDragY = self.CENTER_Y
         self.startMouseY = mouse.screenRef[1]
 
     def onStopDrag(self):
@@ -80,6 +80,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
             self._next._next = None
             self._prev = oldTail
             oldTail._next = self
+
         else:
 
             if self._next is self.path.commandList.tail:
@@ -97,22 +98,15 @@ class CustomCommandBlockEntity(CommandBlockEntity):
             oldPrev._next = oldAfter
             if oldAfter is not None:
                 oldAfter._prev = oldPrev
+                oldAfter.onUpdateLinkedListPosition()
 
-        self.path.recomputeY()
+        oldPrev.onUpdateLinkedListPosition()
+        oldNext.onUpdateLinkedListPosition()
+        inserter.onUpdateLinkedListPosition()
+        self.onUpdateLinkedListPosition()
+
+        oldPrev.recomputePosition()
 
     # draw drag dots
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
-
-        super().draw(screen, isActive, isHovered)
-
-        DY = 4
-        WIDTH = 17
-        HEIGHT = 2
-        COLOR = [200]*3
-
-        x = self.dimensions.FIELD_WIDTH + self.dimensions.PANEL_WIDTH - 43
-        y = self.getY() + 10
-
-        for i in range(3):
-            pygame.draw.rect(screen, COLOR, (x, y, WIDTH, HEIGHT), border_radius = 3)
-            y += DY
+        pass

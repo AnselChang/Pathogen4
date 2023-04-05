@@ -5,6 +5,7 @@ from Widgets.widget_definition import WidgetDefinition
 from image_manager import ImageID
 from reference_frame import PointRef, Ref
 from pygame_functions import drawSurface
+from math_functions import distance
 from Tooltips.tooltip import Tooltip, TooltipOwner
 import pygame
 
@@ -36,12 +37,10 @@ class CheckboxWidgetEntity(WidgetEntity, TooltipOwner):
         else:
             self.tooltipOff = Tooltip(self.definition.tooltipOff)
 
-    def isTouchingWidget(self, position: PointRef) -> bool:
-         distance = (self.getPosition() - position).magnitude(Ref.SCREEN)
-         return distance < 12
+    def isTouchingWidget(self, position: tuple) -> bool:
+         return self.distanceTo(position) < 12
 
     def drawWidget(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        x, y = self.getPosition().screenRef
 
         if self.getValue():
             id = ImageID.CHECKBOX_ON_H if isHovered else ImageID.CHECKBOX_ON
@@ -49,7 +48,7 @@ class CheckboxWidgetEntity(WidgetEntity, TooltipOwner):
             id = ImageID.CHECKBOX_OFF_H if isHovered else ImageID.CHECKBOX_OFF
 
         image = self.images.get(id, self.getOpacity())
-        drawSurface(screen, image, x, y)
+        drawSurface(screen, image, self.CENTER_X, self.CENTER_Y)
 
     def getTooltip(self) -> Tooltip | None:
         return self.tooltipOn if self.getValue() else self.tooltipOff
