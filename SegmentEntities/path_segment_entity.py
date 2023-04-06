@@ -96,7 +96,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
     def isTouching(self, position: PointRef) -> bool:
         return self.state.isTouching(position)
 
-    def getCenter(self) -> tuple:
+    def defineCenter(self) -> tuple:
         return self.state.getCenter()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

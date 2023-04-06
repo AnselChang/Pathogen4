@@ -116,15 +116,15 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         height = self.EXPANDED_HEIGHT if self.isActuallyExpanded() else self.COLLAPSED_HEIGHT        
         self.animatedHeight.setEndValue(height)
 
-    def getTopLeft(self) -> tuple:
+    def defineTopLeft(self) -> tuple:
         # right below the previous CommandOrInserter
         return self._px(0), self._py(1)
 
-    def getWidth(self) -> float:
+    def defineWidth(self) -> float:
         # 95% of the panel
         return self._pwidth(self.WIDTH_PERCENT_OF_PANEL)
     
-    def getHeight(self) -> float:
+    def defineHeight(self) -> float:
         # current animated height
         return self._pheight(self.animatedHeight.get())
     

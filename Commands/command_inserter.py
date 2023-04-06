@@ -55,15 +55,15 @@ class CommandInserter(Entity, CommandOrInserter):
         self.currentY = self.START_Y
         self.isActive = False
 
-    def getTopLeft(self) -> tuple:
+    def defineTopLeft(self) -> tuple:
         # right below the previous CommandOrInserter
         return self._px(0), self._py(1)
 
-    def getWidth(self) -> float:
+    def defineWidth(self) -> float:
         # 95% of the panel
         return self._pwidth(self.WIDTH_PERCENT_OF_PANEL)
     
-    def getHeight(self) -> float:
+    def defineHeight(self) -> float:
         P_HEIGHT_MIN = 0.001
         P_HEIGHT_MAX = 0.025
         return self._pheight(P_HEIGHT_MAX if self.isActive else P_HEIGHT_MIN)

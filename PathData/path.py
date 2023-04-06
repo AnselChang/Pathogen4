@@ -12,7 +12,7 @@ from SegmentEntities.path_segment_entity import PathSegmentEntity
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
 
-from PathData.scrollbar_container_entity import CommandScrollbarEntity
+from PathData.scrollbar_container_entity import ScrollbarContainerEntity
 
 from Adapters.path_adapter import NullPathAdapter
 
@@ -39,7 +39,7 @@ class Path:
         self.commandList = LinkedList() # linked list of CommandEntities
 
         # initialize scrollbar
-        self.scrollbar = CommandScrollbarEntity(dimensions)
+        self.scrollbar = ScrollbarContainerEntity()
         self.scrollbar.subscribe(onNotify = self.recomputeY)
         entities.addEntity(self.scrollbar)
 
@@ -130,7 +130,7 @@ class Path:
         node: CommandBlockEntity | CommandInserter = self.commandList.head
 
         while node is not None:
-            height += node.getHeight()
+            height += node.defineHeight()
             node = node.getNext()
         
         return height

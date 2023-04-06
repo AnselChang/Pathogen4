@@ -28,7 +28,7 @@ class TrashEntity(Entity):
     def isTouching(self, position: PointRef) -> bool:
         return self.distanceTo(position) < 12
     
-    def getCenter(self) -> tuple:
+    def defineCenter(self) -> tuple:
         return self._px(1) - self._ax(60), self._py(0.5)
 
 

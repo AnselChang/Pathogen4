@@ -46,7 +46,7 @@ class WidgetEntity(Entity, Observable):
         self.images = parentCommand.images
     
 
-    def getCenter(self) -> tuple:
+    def defineCenter(self) -> tuple:
         return self._px(self.definition.px), self._py(self.definition.py)
 
     # for dynamic widgets. how much to stretch command height by

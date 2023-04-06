@@ -17,8 +17,6 @@ from CommandCreation.command_block_entity_factory import CommandBlockEntityFacto
 
 from Commands.command_expansion import CommandExpansion
 
-from TextEditor.static_text_editor_entity import StaticTextEditorEntity
-
 from UIEntities.panel_entity import PanelEntity
 from Tooltips import tooltip
 from font_manager import FontManager, FontID
@@ -75,7 +73,7 @@ def main():
 
     # initialize commands
     database = CommandDefinitionDatabase()
-    commandExpansion = CommandExpansion(entities, images, dimensions)
+    commandExpansion = CommandExpansion(images, dimensions)
     commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
 
     # Create path

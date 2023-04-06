@@ -88,13 +88,13 @@ class TextEditorEntity(Entity, Observable):
     def removeRow(self):
         self.setRows(self.rows - 1)
 
-    def getCenter(self) -> tuple:
+    def defineCenter(self) -> tuple:
         return self._px(self.px), self._py(self.py)
 
-    def getWidth(self) -> float:
+    def defineWidth(self) -> float:
         return self._awidth(self.textHandler.getSurfaceWidth() + self.border.OUTER_X_MARGIN * 2)
     
-    def getHeight(self) -> float:
+    def defineHeight(self) -> float:
         return self.getHeightForNumRows(self.rows)
     
     def getHeightForNumRows(self, rows: int):

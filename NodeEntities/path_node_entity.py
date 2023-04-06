@@ -69,7 +69,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         self.shiftKeyPressed = False
 
 
-    def getCenter(self) -> tuple:
+    def defineCenter(self) -> tuple:
         return self.position.screenRef
 
     def getColor(self) -> tuple:

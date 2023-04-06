@@ -28,14 +28,14 @@ class ScrollbarEntity(Entity, Observable):
         self.barYOffset = 0
         self.recomputePosition()
 
-    def getTopLeft(self) -> tuple:
+    def defineTopLeft(self) -> tuple:
         return max(0, min(self.barYOffset, self._parent.HEIGHT - self.HEIGHT))
 
     # must impl both of these if want to contain other entity
-    def getWidth(self) -> float:
+    def defineWidth(self) -> float:
         return self._mwidth(1)
     
-    def getHeight(self) -> float:
+    def defineHeight(self) -> float:
         if self.contentHeight == 0:
             ratio = 1
         else:

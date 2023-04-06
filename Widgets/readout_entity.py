@@ -43,13 +43,13 @@ class ReadoutEntity(Entity):
     def isTouching(self, position: PointRef) -> bool:
         return False
     
-    def getCenter(self) -> tuple:
+    def defineCenter(self) -> tuple:
         return self._px(self.definition.px), self._py(self.definition.py)
     
-    def getWidth(self) -> float:
+    def defineWidth(self) -> float:
         return self._awidth(self.textWidth * self.border.OUTER_X_MARGIN*2)
     
-    def getHeight(self) -> float:
+    def defineHeight(self) -> float:
         return self._awidth(self.textHeight * self.border.OUTER_Y_MARGIN*2)
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

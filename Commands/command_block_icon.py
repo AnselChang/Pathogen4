@@ -11,13 +11,13 @@ class CommandBlockIcon(Entity):
         super().__init__(drawOrder = DrawOrder.WIDGET)
         self.pathAdapter = pathAdapter
 
-    def getCenter(self) -> tuple:
+    def defineCenter(self) -> tuple:
         return self._ax(20), self._py(0.5)
 
     # must impl both of these if want to contain other entity
-    def getWidth(self) -> float:
+    def defineWidth(self) -> float:
         return 0
-    def getHeight(self) -> float:
+    def defineHeight(self) -> float:
         return 0
 
     # override

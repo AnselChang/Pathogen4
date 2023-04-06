@@ -22,14 +22,14 @@ class ScrollbarContainerEntity(Entity):
 
         self.recomputePosition()
 
-    def getTopLeft(self) -> tuple:
+    def defineTopLeft(self) -> tuple:
         x = self.dimensions.SCREEN_HEIGHT - self._ax(self.WIDTH + self.RIGHT_MARGIN)
         return x, self._ay(self.y)
 
     # must impl both of these if want to contain other entity
-    def getWidth(self) -> float:
+    def defineWidth(self) -> float:
         WIDTH = 10
         return self._awidth(WIDTH)
     
-    def getHeight(self) -> float:
+    def defineHeight(self) -> float:
         return self.dimensions.SCREEN_HEIGHT - self.UPPER_MARGIN - self.LOWER_MARGIN

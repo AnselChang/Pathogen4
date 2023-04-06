@@ -60,7 +60,7 @@ class TextboxWidgetEntity(WidgetEntity):
 
     # top left corner, screen ref
     def getX(self) -> float:
-        return self.getPosition().screenRef[0] - self.textEditor.getWidth() / 2
+        return self.getPosition().screenRef[0] - self.textEditor.defineWidth() / 2
     
     # top left corner, screen ref
     def getY(self) -> float:

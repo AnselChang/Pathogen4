@@ -1,3 +1,12 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from EntityHandler.entity_manager import EntityManager
+    from EntityHandler.interactor import Interactor
+    from font_manager import FontManager
+    from image_manager import ImageManager
+    from dimensions import Dimensions
+
 from abc import ABC, abstractmethod
 from enum import Enum
 from reference_frame import PointRef, Ref
@@ -15,13 +24,7 @@ from Observers.observer import  Observable
 from math_functions import distance, isInsideBox2
 import pygame
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from EntityHandler.entity_manager import EntityManager
-    from EntityHandler.interactor import Interactor
-    from font_manager import FontManager
-    from image_manager import ImageManager
-    from dimensions import Dimensions
+
 
 
 
@@ -88,20 +91,37 @@ class Entity(ABC, Observable):
     def distanceTo(self, position: tuple) -> float:
         return distance(*position, self.CENTER_X, self.CENTER_Y)
     
-    # impl EITHER getCenter OR getTopLeft
-    def getCenter(self) -> tuple:
-        lx, ty = self.getTopLeft()
-        return lx + self.WIDTH / 2, ty + self.HEIGHT / 2
+    # MUST define x and y ONCE each through combination of below functions
+    def defineCenter(self) -> tuple:
+        return self.defineCenterX(), self.defineCenterY()
 
-    def getTopLeft(self) -> tuple:
-        cx, cy = self.getCenter()
-        return cx - self.WIDTH / 2, cy - self.HEIGHT / 2
+    def defineTopLeft(self) -> tuple:
+        return self.defineLeftX(), self.defineTopY()
+    
+    def defineCenterX(self) -> float:
+        return None
+    
+    def defineLeftX(self) -> float:
+        return None
+    
+    def defineRightX(self) -> float:
+        return None
+    
+    def defineCenterY(self) -> float:
+        return None
+    
+    def defineTopY(self) -> float:
+        return None
+    
+    def defineBottomY(self) -> float:
+        return None
 
     # must impl both of these if want to contain other entity
-    def getWidth(self) -> float:
-        return 0
-    def getHeight(self) -> float:
-        return 0
+    # by default, set to the parent width and height
+    def defineWidth(self) -> float:
+        return self._pwidth(1)
+    def defineHeight(self) -> float:
+        return self._pheight(1)
         
     # override
     def isVisible(self) -> bool:
@@ -129,10 +149,50 @@ class Entity(ABC, Observable):
     
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self):
-        self.WIDTH = self.getWidth()
-        self.HEIGHT = self.getHeight()
-        self.CENTER_X, self.CENTER_Y = self.getCenter()
-        self.LEFT_X, self.TOP_Y = self.getTopLeft()
+        self.WIDTH = self.defineWidth()
+        self.HEIGHT = self.defineHeight()
+        self.CENTER_X, self.CENTER_Y = self.defineCenter()
+        self.LEFT_X, self.TOP_Y = self.defineTopLeft()
+        self.RIGHT_X = self.defineRightX()
+        self.BOTTOM_Y = self.defineBottomY()
+
+        if self.LEFT_X is not None:
+            self.CENTER_X = self.LEFT_X + self.WIDTH / 2
+            self.RIGHT_X = self.LEFT_X + self.WIDTH
+        elif self.CENTER_X is not None:
+            self.LEFT_X = self.CENTER_X - self.WIDTH / 2
+            self.RIGHT_X = self.LEFT_X + self.WIDTH
+        elif self.RIGHT_X is not None:
+            self.LEFT_X = self.RIGHT_X - self.WIDTH
+            self.CENTER_X = self.LEFT_X + self.WIDTH / 2
+        else: # if no position defined, entity rect is set to parent entity rect
+            self.LEFT_X = self._px(0)
+            self.CENTER_X = self._px(0.5)
+            self.RIGHT_X = self._px(1)
+        
+        if self.TOP_Y is not None:
+            self.CENTER_Y = self.TOP_Y + self.HEIGHT / 2
+            self.BOTTOM_Y = self.TOP_Y + self.HEIGHT
+        elif self.CENTER_Y is not None:
+            self.TOP_Y = self.CENTER_Y - self.HEIGHT / 2
+            self.BOTTOM_Y = self.TOP_Y + self.HEIGHT
+        elif self.BOTTOM_Y is not None:
+            self.TOP_Y = self.BOTTOM_Y - self.HEIGHT
+            self.CENTER_Y = self.TOP_Y + self.HEIGHT / 2
+        else: # if no position defined, entity rect is set to parent entity rect
+            self.TOP_Y = self._px(0)
+            self.CENTER_Y = self._px(0.5)
+            self.BOTTOM_Y = self._px(1)
+
+        self.WIDTH = int(round(self.WIDTH))
+        self.HEIGHT = int(round(self.HEIGHT))
+        self.LEFT_X = int(round(self.LEFT_X))
+        self.CENTER_X = int(round(self.CENTER_X))
+        self.RIGHT_X = int(round(self.RIGHT_X))
+        self.TOP_Y = int(round(self.TOP_Y))
+        self.CENTER_Y = int(round(self.CENTER_Y))
+        self.BOTTOM_Y = int(round(self.BOTTOM_Y))
+
 
         self.RECT = [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT]
 
@@ -144,48 +204,40 @@ class Entity(ABC, Observable):
 
     # get relative x as a percent of parent horizontal span
     def _px(self, px):
-        parentX = 0 if self._parent is None else self._parent.LEFT_X
-        return int(round(parentX + px * self._parent.WIDTH))
+        return self._parent.LEFT_X + px * self._parent.WIDTH
     
     # get relative x as a percent of parent horizontal span
     def _py(self, py):
-        parentY = 0 if self._parent is None else self._parent.TOP_Y
-        return int(round(parentY + py * self._parent.HEIGHT))
+        return self._parent.TOP_Y + py * self._parent.HEIGHT
     
     # get relative x in "pixels". One "pixel" is accurate for default resolution
     def _ax(self, pixels):
-        parentX = 0 if self._parent is None else self._parent.LEFT_X
-        return int(round(parentX + pixels * self.dimensions.RESOLUTION_RATIO))
+        return self._parent.LEFT_X + pixels * self.dimensions.RESOLUTION_RATIO
     
     # get relative y in "pixels". One "pixel" is accurate for default resolution
     def _ay(self, pixels):
-        parentY = 0 if self._parent is None else self._parent.TOP_Y
-        return int(round(parentY + pixels * self.dimensions.RESOLUTION_RATIO))
+        return self._parent.TOP_Y + pixels * self.dimensions.RESOLUTION_RATIO
     
     # get relative width as a percent of parent horizontal span
     def _pwidth(self, pwidth):
-        parentWidth = self.dimensions.SCREEN_WIDTH if self._parent is None else self._parent.WIDTH
-        return int(round(parentWidth * pwidth))
+        return self._parent.WIDTH * pwidth
     
     # get relative height as a percent of parent vertical span
     def _pheight(self, pheight):
-        parentHeight = self.dimensions.SCREEN_HEIGHT if self._parent is None else self._parent.HEIGHT
-        return int(round(parentHeight * pheight))
+        return self._parent.HEIGHT * pheight
     
     # Get width given a margin (on both sides) from parent horizontal span
     def _mwidth(self, margin):
-        parentWidth = self.dimensions.SCREEN_WIDTH if self._parent is None else self._parent.WIDTH
-        return int(round(parentWidth - self.dimensions.RESOLUTION_RATIO * margin * 2))
+        return self._parent.WIDTH - self.dimensions.RESOLUTION_RATIO * margin * 2
 
     # Get height given a margin (on both sides) from parent vertical span
     def _mheight(self, margin):
-        parentHeight = self.dimensions.SCREEN_HEIGHT if self._parent is None else self._parent.HEIGHT
-        return int(round(parentHeight - self.dimensions.RESOLUTION_RATIO * margin * 2))
+        return self._parent.HEIGHT - self.dimensions.RESOLUTION_RATIO * margin * 2
     
     # Get "absolute" width in "pixels". One "pixel" is accurate for default resolution
     def _awidth(self, pixels):
-        return int(round(pixels * self.dimensions.RESOLUTION_RATIO))
+        return pixels * self.dimensions.RESOLUTION_RATIO
 
     # Get "absolute" height in "pixels". One "pixel" is accurate for default resolution
     def _aheight(self, pixels):
-        return int(round(pixels * self.dimensions.RESOLUTION_RATIO))
+        return pixels * self.dimensions.RESOLUTION_RATIO

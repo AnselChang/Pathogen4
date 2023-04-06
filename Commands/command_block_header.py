@@ -10,11 +10,11 @@ class CommandBlockHeader(Entity):
 
         self.entities.addEntity(CommandBlockIcon(pathAdapter), self)
 
-    def getTopLeft(self) -> tuple:
+    def defineTopLeft(self) -> tuple:
         return self._px(0), self._py(0)
 
     # must impl both of these if want to contain other entity
-    def getWidth(self) -> float:
+    def defineWidth(self) -> float:
         return self._pwidth(1)
-    def getHeight(self) -> float:
+    def defineHeight(self) -> float:
         return self._parent.COLLAPSED_HEIGHT

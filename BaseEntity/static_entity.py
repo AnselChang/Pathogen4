@@ -33,3 +33,7 @@ class StaticEntity(Entity):
 
     def toString(self) -> str:
         return self.name
+    
+    # doesn't matter, just here to avoid infinite recursion
+    def defineTopLeft(self) -> tuple:
+        return self._px(0), self._py(0)

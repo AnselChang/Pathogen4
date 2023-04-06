@@ -1,6 +1,6 @@
 from EntityHandler.entity_manager import EntityManager
 from UIEntities.image_radio_entity import ImageRadioEntity
-from UIEntities.radio_group import RadioGroupEntity
+from UIEntities.radio_group_entity import RadioGroupEntity
 from image_manager import ImageManager, ImageID
 from Observers.observer import Observable
 from dimensions import Dimensions
@@ -21,31 +21,32 @@ class CommandExpansion(Observable):
     def partition(self, dimensions: Dimensions, i, n):
         return dimensions.FIELD_WIDTH + (i+1) * dimensions.PANEL_WIDTH / (n+1)
 
-    def __init__(self, entities: EntityManager, images: ImageManager, dimensions: Dimensions):
+    def __init__(self, images: ImageManager, dimensions: Dimensions):
 
-        self.buttons: RadioGroupEntity = RadioGroupEntity(entities, True)
+        self.buttons: RadioGroupEntity = RadioGroupEntity(True)
         y = lambda: dimensions.SCREEN_HEIGHT - self.buttons.options[0].height * 0.8
 
         info = [
             {
-                "id" : ButtonID.COLLAPSE,
+                "px" : 0.333,
                 "imageOn" : ImageID.MIN_ON,
                 "imageOff" : ImageID.MIN_OFF,
                 "tooltip" : "Collapse all commands"
             },
             {
-                "id" : ButtonID.EXPAND,
+                "px" : 0.667,
                 "imageOn" : ImageID.MAX_ON,
                 "imageOff" : ImageID.MAX_OFF,
                 "tooltip" : "Expand all commands"
             }
         ]
 
+        py = 0.9
         for i, dict in enumerate(info):
             minOn = images.get(dict["imageOn"])
             minOff = images.get(dict["imageOff"])
             x = lambda i=i: self.partition(dimensions, i, self.buttons.N()) 
-            button = ImageRadioEntity(dict["id"], minOn, minOff, x, y, onUpdate = lambda isOn: self.notify(), tooltip = dict["tooltip"]) 
+            button = ImageRadioEntity(dict["px"], py, minOn, minOff, x, y, onUpdate = lambda isOn: self.notify(), tooltip = dict["tooltip"]) 
             self.buttons.add(button)
 
     def setForceCollapse(self, isCollapse: bool):
