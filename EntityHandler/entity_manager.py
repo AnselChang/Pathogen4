@@ -1,4 +1,5 @@
 from BaseEntity.entity import Entity
+from BaseEntity.root_entity import RootEntity
 from reference_frame import PointRef
 from Tooltips.tooltip import TooltipOwner
 from dimensions import Dimensions
@@ -14,17 +15,16 @@ class EntityManager:
     def __init__(self):
 
         self.entities: list[Entity] = []
+        self.rootEntity = RootEntity()
 
         # entities that own Tick (must call onTick() every tick)
         self.tickEntities: list[Entity] = []
         self.keyEntities: list[Entity] = []
 
     # by setting a parent, it will be removed when parent is removed
-    def addEntity(self, entity: Entity, parent: Entity = None):
+    # SHOULD ONLY BE CALLED WITHIN BASE ENTITY CLASS
+    def _addEntity(self, entity: Entity):
         
-        if parent is not None:
-            entity._setParent(parent)
-
         self.entities.append(entity)
         self.entities.sort(key = lambda entity: entity.drawOrder, reverse = True)
 
@@ -38,6 +38,7 @@ class EntityManager:
         for child in entity._children:
             self.entities.remove(child)
 
+        entity._parent._children.remove(entity)
         self.entities.remove(entity)
 
         if entity in self.tickEntities:

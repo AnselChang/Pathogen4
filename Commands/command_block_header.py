@@ -1,14 +1,20 @@
-from BaseEntity.entity import Entity
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from Commands.command_block_entity import CommandBlockEntity
+
+from BaseEntity.container_entity import ContainerEntity
 from Commands.command_block_icon import CommandBlockIcon
 from Adapters.path_adapter import PathAdapter
 from draw_order import DrawOrder
 
-class CommandBlockHeader(Entity):
+class CommandBlockHeader(ContainerEntity):
 
-    def __init__(self, pathAdapter: PathAdapter):
-        super().__init__(drawOrder = DrawOrder.WIDGET)
+    def __init__(self, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter):
+        super().__init__(parentCommand, drawOrder = DrawOrder.WIDGET)
 
-        self.entities.addEntity(CommandBlockIcon(pathAdapter), self)
+        self.parentCommand = parentCommand
+        CommandBlockIcon(self, pathAdapter)
 
     def defineTopLeft(self) -> tuple:
         return self._px(0), self._py(0)
@@ -17,4 +23,5 @@ class CommandBlockHeader(Entity):
     def defineWidth(self) -> float:
         return self._pwidth(1)
     def defineHeight(self) -> float:
-        return self._parent.COLLAPSED_HEIGHT
+        return self.parentCommand.COLLAPSED_HEIGHT
+    

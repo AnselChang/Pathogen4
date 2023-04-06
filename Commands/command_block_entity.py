@@ -10,9 +10,8 @@ from CommandCreation.command_type import COMMAND_INFO
 from CommandCreation.command_definition import CommandDefinition
 
 from Commands.command_block_header import CommandBlockHeader
-from Commands.command_expansion import CommandExpansion
+from Commands.command_expansion_handler import CommandExpansionHandler
 from Commands.command_or_inserter import CommandOrInserter
-from Commands.command_expansion import CommandExpansion
 
 from Widgets.widget_entity import WidgetEntity
 from Widgets.readout_entity import ReadoutEntity
@@ -43,7 +42,7 @@ Position calculation is offloaded to CommandBlockPosition
 class CommandBlockEntity(Entity, CommandOrInserter):
 
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansion, drag: DragListener = None, defaultExpand: bool = False):
+    def __init__(self, path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False):
         
         self.animatedHeight = MotionProfile(self.HEIGHT, speed = 0.4)
         self.animatedPosition = MotionProfile(0, speed = 0.3)
@@ -52,6 +51,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         
         # This recomputes position at Entity constructor
         super().__init__(
+            parent = "#TODO",
             click = ClickLambda(self, FonLeftClick = self.onClick),
             tick = TickLambda(self, FonTick = self.onTick),
             drag = drag,
@@ -62,8 +62,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         CommandOrInserter.__init__(self)
         self.definitionIndex: int = 0
 
-        self.headerEntity = CommandBlockHeader(pathAdapter)
-        self.entities.addEntity(self.headerEntity, self)
+        self.headerEntity = CommandBlockHeader(self, pathAdapter)
 
         self.path = path
 
@@ -140,20 +139,18 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     # Given the command widgets, create the WidgetEntities and add to entity manager
     def manifestWidgets(self) -> list[WidgetEntity]:
 
-        entities = []
+        widgets: list[WidgetEntity] = []
         for widget in self.getDefinition().widgets:
-            entity = widget.make(self)
-            entity.subscribe(onNotify = self.recomputePosition())
-            self.entities.addEntity(entity, self)
-            entities.append(entity)
-        return entities
+            widgetEntity = widget.make(self)
+            widgetEntity.subscribe(onNotify = self.recomputePosition())
+            widgets.append(widgetEntity)
+        return widgets
     
     # Given the command widgets, create the ReadoutEntities and add to entity manager
     def manifestReadouts(self) -> list[ReadoutEntity]:
-        readouts = []
+        readouts: list[ReadoutEntity] = []
         for readout in self.getDefinition().readouts:
             readout = readout.make(self, self.pathAdapter)
-            self.entities.addEntity(readout, self)
             readouts.append(readout)
         return readouts
     

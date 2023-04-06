@@ -1,7 +1,7 @@
-from EntityHandler.entity_manager import EntityManager
-from UIEntities.image_radio_entity import ImageRadioEntity
-from UIEntities.radio_group_entity import RadioGroupEntity
-from image_manager import ImageManager, ImageID
+from UIEntities.Generic.toggle_image_entity import ToggleImageEntity
+from UIEntities.Generic.radio_entity import RadioEntity
+from UIEntities.Concrete.expansion_group_entity import ExpansionGroupEntity
+from image_manager import ImageID
 from Observers.observer import Observable
 from dimensions import Dimensions
 from pygame_functions import brightenSurface
@@ -16,38 +16,36 @@ class ButtonID(Enum):
     COLLAPSE = auto()
     EXPAND = auto()
 
-class CommandExpansion(Observable):
+class CommandExpansionHandler(Observable):
 
     def partition(self, dimensions: Dimensions, i, n):
         return dimensions.FIELD_WIDTH + (i+1) * dimensions.PANEL_WIDTH / (n+1)
 
-    def __init__(self, images: ImageManager, dimensions: Dimensions):
-
-        self.buttons: RadioGroupEntity = RadioGroupEntity(True)
-        y = lambda: dimensions.SCREEN_HEIGHT - self.buttons.options[0].height * 0.8
+    def __init__(self, panelEntity):
 
         info = [
             {
-                "px" : 0.333,
+                "id" : "collapse",
                 "imageOn" : ImageID.MIN_ON,
                 "imageOff" : ImageID.MIN_OFF,
                 "tooltip" : "Collapse all commands"
             },
             {
-                "px" : 0.667,
+                "id" : "expand",
                 "imageOn" : ImageID.MAX_ON,
                 "imageOff" : ImageID.MAX_OFF,
                 "tooltip" : "Expand all commands"
             }
         ]
 
-        py = 0.9
-        for i, dict in enumerate(info):
-            minOn = images.get(dict["imageOn"])
-            minOff = images.get(dict["imageOff"])
-            x = lambda i=i: self.partition(dimensions, i, self.buttons.N()) 
-            button = ImageRadioEntity(dict["px"], py, minOn, minOff, x, y, onUpdate = lambda isOn: self.notify(), tooltip = dict["tooltip"]) 
-            self.buttons.add(button)
+        self.buttons = ExpansionGroupEntity(panelEntity)
+        for dict in info:
+            radio = RadioEntity(self.buttons, dict["id"])
+            ToggleImageEntity(radio, dict["imageOn"], dict["imageOff"], dict["tooltip"],
+                        onClick = radio.onClick,
+                        isOn = radio.group.isOn
+            )
+            
 
     def setForceCollapse(self, isCollapse: bool):
 

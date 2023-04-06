@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from reference_frame import PointRef, Ref
 
-from dimensions import Dimensions
-
 from BaseEntity.entity import Entity
 from draw_order import DrawOrder
 
@@ -20,8 +18,6 @@ class PanelEntity(Entity):
     def __init__(self, color) -> None:
         super().__init__(drawOrder = DrawOrder.PANEL_BACKGROUND)
         self.color = color
-
-        self.dimensions.subscribe(onNotify = self.recomputePosition)
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

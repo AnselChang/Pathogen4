@@ -7,6 +7,9 @@ Child of Panel Entity
 """
 class ExpansionGroupEntity(RadioGroupEntity):
 
+    def __init__(self, panelEntity):
+        super().__init__(panelEntity, isHorizontal = True, allowNoSelect = True)
+
     def defineCenterX(self) -> float:
         return self._px(0.5)
     

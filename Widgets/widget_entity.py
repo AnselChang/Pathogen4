@@ -39,7 +39,9 @@ class WidgetEntity(Entity, Observable):
         if hover is None:
             hover = HoverLambda(self)
             
-        super().__init__(click = click, drag = drag, hover = hover, tick = tick, select = select, key = key, drawOrder = DrawOrder.WIDGET)
+        super().__init__(parent = parentCommand,
+                         click = click, drag = drag, hover = hover, tick = tick, select = select, key = key,
+                         drawOrder = DrawOrder.WIDGET)
 
         self.parentCommand = parentCommand
         self.definition = definition

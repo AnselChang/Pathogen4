@@ -160,3 +160,37 @@ def drawDottedLine(screen, color, start_pos, end_pos, dot_length=4, dot_gap=4):
         end_pos = (current_pos[0] + x_spacing, current_pos[1] + y_spacing)
         pygame.draw.line(screen, color, current_pos, end_pos, dot_length)
         current_pos = (end_pos[0] + x_spacing, end_pos[1] + y_spacing)
+
+
+def scaleImageToRect(image: pygame.Surface, width, height):
+    """
+    Scale an image so that it fits entirely inside a given rectangle while preserving its aspect ratio.
+
+    Args:
+        image (pygame.Surface): The image surface to scale.
+        rect (pygame.Rect): The rectangle where the image should fit.
+
+    Returns:
+        pygame.Surface: The scaled image surface.
+
+    """
+
+    rect = pygame.Rect(0, 0, width, height)
+
+    # Get the dimensions of the image and the rectangle
+    imgWidth, imgHeight = image.get_size()
+    rectWidth, rectHeight = rect.size
+
+    # Calculate the aspect ratios of the image and the rectangle
+    imgAspectRatio = imgWidth / imgHeight
+    rectAspectRatio = rectWidth / rectHeight
+
+    # Calculate the scaling factor to fit the image inside the rectangle
+    if imgAspectRatio > rectAspectRatio:
+        scaleFactor = rectWidth / imgWidth
+    else:
+        scaleFactor = rectHeight / imgHeight
+
+    # Scale the image and return the new surface
+    scaledSize = (round(imgWidth * scaleFactor), round(imgHeight * scaleFactor))
+    return pygame.transform.smoothscale(image, scaledSize)

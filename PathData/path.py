@@ -2,7 +2,7 @@ from CommandCreation.command_definition_database import CommandDefinitionDatabas
 from Commands.command_block_entity import CommandBlockEntity
 from Commands.custom_command_block_entity import CustomCommandBlockEntity
 from Commands.command_inserter import CommandInserter
-from Commands.command_expansion import CommandExpansion
+from Commands.command_expansion import CommandExpansionHandler
 
 from CommandCreation.command_block_entity_factory import CommandBlockEntityFactory
 
@@ -26,7 +26,7 @@ Also stores the relevant commands, and facilitates their interface through Adapt
 """
 class Path:
 
-    def __init__(self, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, commandFactory: CommandBlockEntityFactory, commandExpansion: CommandExpansion, dimensions: Dimensions, startPosition: PointRef):
+    def __init__(self, database: CommandDefinitionDatabase, entities: EntityManager, interactor: Interactor, commandFactory: CommandBlockEntityFactory, commandExpansion: CommandExpansionHandler, dimensions: Dimensions, startPosition: PointRef):
             
         self.database = database
         self.entities = entities

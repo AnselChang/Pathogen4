@@ -5,31 +5,29 @@ from EntityHandler.entity_manager import EntityManager
 
 """a group of radio_entities, where only one is selected at a time
 If allowNoSelect is True, then no option being selected is allowed
-Child of Panel Entity
 """
 class RadioGroupEntity(LinearGroupEntity):
 
-    def __init__(self, allowNoSelect: bool = False):
+    def __init__(self, parent: Entity, isHorizontal: bool, allowNoSelect: bool = False):
         
-        super().__init__()
+        super().__init__(parent, isHorizontal)
 
         self.active: RadioEntity = None
         self.allowNoSelect = allowNoSelect
 
 
-    def add(self, option: RadioEntity):
-        self.options.append(option)
-        option.setRadioGroup(self, self.N)
-        self.entities.addEntity(option, self)
+    def add(self, entity: RadioEntity):
 
+        assert(isinstance(entity, RadioEntity))
+
+        super().add(entity)
         if not self.allowNoSelect and self.active is None:
-            self.active = option
+            self.active = entity
 
-        self.N += 1
 
     def onOptionClick(self, option: RadioEntity):
         
-        if option not in self.options:
+        if option not in self.groupEntities:
             raise Exception("given RadioEntity object is not a part of this RadioGroup object")
         
         # toggle off, is no selection allowed
@@ -39,31 +37,20 @@ class RadioGroupEntity(LinearGroupEntity):
             self.active = option
 
     # get the active option
-    def getActiveEntity(self) -> RadioEntity:
+    def getActiveOption(self) -> RadioEntity:
         return self.active
     
-    def getActiveID(self) -> str:
-        return self.getActiveEntity().id
-    
-    def getOptionFromID(self, id) -> RadioEntity:
-        for option in self.options:
-            if option.id == id:
-                return option
-        raise Exception("No option with id found")
+    def isOptionOn(self, optionAsEntityOrID: str | RadioEntity):
 
-    def N(self) -> int:
-        return len(self.options)
+        if not isinstance(optionAsEntityOrID, RadioEntity):
+            optionAsEntityOrID = self.getFromID(optionAsEntityOrID)
+
+        return self.active is optionAsEntityOrID
     
-    def isOptionOn(self, id):
-        if isinstance(id, RadioEntity):
-            return id.isActive()
-        else:
-            return self.getOptionFromID(id).isActive()
-    
-    def setOption(self, id: int | RadioEntity | None):
+    def setOption(self, id: str | RadioEntity | None):
         if id is None:
             self.active = None
         elif isinstance(id, RadioEntity):
             self.active = id
         else:
-            self.active = self.getOptionFromID(id)
+            self.active = self.getFromID(id)

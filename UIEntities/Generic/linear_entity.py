@@ -13,10 +13,11 @@ A single option object for a RadioGroup
 class LinearEntity(Entity):
 
     # id is used to distinguish between radio entities
-    def __init__(self, group: LinearGroupEntity):
-        super().__init__()
+    def __init__(self, group: LinearGroupEntity, id: str):
+        super().__init__(group)
 
         self.group = group
+        self.id = id
         self.i = group.add(self)
 
     def defineCenter(self) -> tuple:

@@ -4,8 +4,8 @@ from BaseEntity.entity import initEntityClass
 from NodeEntities.path_node_entity import PathNodeEntity
 from SegmentEntities.path_segment_entity import PathSegmentEntity
 
-from UIEntities.tab_group_entity import TabGroupEntity
-from UIEntities.tab_entity import TabEntity
+from UIEntities.Concrete.tab_group_entity import TabGroupEntity
+from UIEntities.Concrete.tab_entity import TabEntity
 
 from EntityHandler.entity_manager import EntityManager
 from EntityHandler.interactor import Interactor
@@ -15,9 +15,9 @@ from PathData.path import Path
 from CommandCreation.command_definition_database import CommandDefinitionDatabase
 from CommandCreation.command_block_entity_factory import CommandBlockEntityFactory
 
-from Commands.command_expansion import CommandExpansion
+from Commands.command_expansion_handler import CommandExpansionHandler
 
-from UIEntities.panel_entity import PanelEntity
+from UIEntities.Concrete.panel_entity import PanelEntity
 from Tooltips import tooltip
 from font_manager import FontManager, FontID
 from image_manager import ImageManager, ImageID
@@ -66,14 +66,12 @@ def main():
     # Add permanent static entities
     panelColor = (100,100,100)
     panel = PanelEntity(panelColor)
-    entities.addEntity(panel)
-    entities.addEntity(StaticEntity(lambda: screen.fill((255,255,255)), drawOrder = DrawOrder.BACKGROUND))
     entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
     entities.addEntity(StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX))
 
     # initialize commands
     database = CommandDefinitionDatabase()
-    commandExpansion = CommandExpansion(images, dimensions)
+    commandExpansion = CommandExpansionHandler(panel)
     commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
 
     # Create path

@@ -50,11 +50,14 @@ def initEntityClass(entityManager: EntityManager, interactor: Interactor, images
     _fonts = fonts
     _dimensions = dimensions
 
+# top-level entities like panel should set this as parent
+ROOT_ENTITY = _entities.rootEntity
 
 class Entity(ABC, Observable):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
-    def __init__(self, drag: DragListener = None,
+    def __init__(self, parent: 'Entity' | None,
+                 drag: DragListener = None,
                  select: SelectListener = None,
                  click: ClickListener = None,
                  tick: TickListener = None,
@@ -69,8 +72,6 @@ class Entity(ABC, Observable):
         self.tick = tick
         self.hover = hover
         self.key = key
-        self._children: list[Entity] = []
-        self._parent: Entity = None
 
         self.entities = _entities
         self.interactor = _interactor
@@ -78,15 +79,16 @@ class Entity(ABC, Observable):
         self.fonts = _fonts
         self.dimensions = _dimensions
 
+        self._children: list[Entity] = []
+        self._parent: Entity = parent
+
+        if self._parent is not None:
+            self._parent._children.append(self)
+
+        self.entities._addEntity(self)
+
         self.recomputePosition()
 
-        
-    # setting child will make sure that when parent is removed from manager, children will be too
-    # do not call this manually; handled by EntityManager
-    def _setParent(self, parent: 'Entity'):
-        self._parent = parent
-        parent._children.append(self)
-        self._parent.subscribe(onNotify = self.recomputePosition)
 
     def distanceTo(self, position: tuple) -> float:
         return distance(*position, self.CENTER_X, self.CENTER_Y)
@@ -122,12 +124,14 @@ class Entity(ABC, Observable):
         return self._pwidth(1)
     def defineHeight(self) -> float:
         return self._pheight(1)
+    
+    # override this to define anything else after the position is recomputed
+    def defineOther(self) -> None:
+        return
         
     # override
     def isVisible(self) -> bool:
-        if self._parent is not None:
-            return self._parent.isVisible()
-        return True
+        return self._parent.isVisible()
     
     def getOpacity(self) -> float:
         if self._parent is not None:
@@ -195,6 +199,8 @@ class Entity(ABC, Observable):
 
 
         self.RECT = [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT]
+
+        self.defineOther()
 
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:
