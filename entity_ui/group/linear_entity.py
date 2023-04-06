@@ -4,19 +4,22 @@ if TYPE_CHECKING:
     from entity_ui.group.linear_group_entity import LinearGroupEntity
 
 from entity_base.entity import Entity
+from typing import TypeVar, Generic
 
 """
 A single option object for a RadioGroup
 """
-class LinearEntity(Entity):
+T = TypeVar('T')
+class LinearEntity(Entity, Generic[T]):
 
     # id is used to distinguish between radio entities
     def __init__(self, group: LinearGroupEntity, id: str):
-        super().__init__(group)
+        super().__init__(parent = group)
 
-        self.group = group
+        self.group: LinearGroupEntity | T = group
         self.id = id
         self.i = group.add(self)
+        self.group.recomputePosition()
 
     def defineCenter(self) -> tuple:
         if self.group.isHorizontal:

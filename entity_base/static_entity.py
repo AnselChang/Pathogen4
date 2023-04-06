@@ -1,6 +1,6 @@
 from common.reference_frame import PointRef
 
-from entity_base.entity import Entity
+from entity_base.entity import Entity, ROOT_CONTAINER
 
 import pygame
 
@@ -14,7 +14,7 @@ class StaticEntity(Entity):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
     def __init__(self, Fdraw = lambda: None, drawOrder: int = 0) -> None:
-        super().__init__(drawOrder = drawOrder)
+        super().__init__(parent = ROOT_CONTAINER, drawOrder = drawOrder)
         self.Fdraw = Fdraw
         
     def isVisible(self) -> bool:

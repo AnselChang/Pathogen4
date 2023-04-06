@@ -4,6 +4,7 @@ from root_container.panel_container.command_expansion.expansion_group_entity imp
 from common.image_manager import ImageID
 from data_structures.observer import Observable
 from common.dimensions import Dimensions
+from common.draw_order import DrawOrder
 from enum import Enum, auto
 
 """
@@ -39,10 +40,13 @@ class CommandExpansionHandler(Observable):
 
         self.buttons = ExpansionGroupEntity(panelEntity)
         for dict in info:
-            radio = RadioEntity(self.buttons, dict["id"])
-            ToggleImageEntity(radio, dict["imageOn"], dict["imageOff"], dict["tooltip"],
+            id = dict["id"]
+            radio = RadioEntity(self.buttons, id)
+            ToggleImageEntity(radio, dict["imageOn"], dict["imageOff"],
+                        drawOrder = DrawOrder.UI_BUTTON,
+                        tooltip = dict["tooltip"],
                         onClick = radio.onClick,
-                        isOn = radio.group.isOn
+                        isOn = lambda id=id: radio.group.isOptionOn(id)
             )
             
 

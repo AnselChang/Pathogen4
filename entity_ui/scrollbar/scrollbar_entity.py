@@ -13,6 +13,7 @@ import pygame
 
 class ScrollbarEntity(Entity, Observable):
 
+    # parent should be of ScrollbarContainerEntity type
     def __init__(self, parent):
 
         super().__init__(
@@ -25,6 +26,7 @@ class ScrollbarEntity(Entity, Observable):
         )
 
         self.percent = 0
+        self.setContentHeight(0)
         self.recomputePosition()
 
     # How much the scrollbar offsets the scrolling container in negative y direction

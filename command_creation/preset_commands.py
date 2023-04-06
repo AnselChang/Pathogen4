@@ -22,7 +22,7 @@ class CommandDefinitionPresets:
         ]
 
     def getStraightPreset(self) -> CommandDefinition:
-        from Adapters.straight_adapter import StraightAttributeID
+        from adapter.straight_adapter import StraightAttributeID
         builder = CommandDefinitionBuilder(CommandType.STRAIGHT)
         builder.setName("goForward")
         builder.addReadout(StraightAttributeID.DISTANCE, 0.5, 0.25)
@@ -31,7 +31,7 @@ class CommandDefinitionPresets:
         return builder.build()
 
     def getTurnPreset(self) -> CommandDefinition:
-        from Adapters.turn_adapter import TurnAttributeID
+        from adapter.turn_adapter import TurnAttributeID
         builder = CommandDefinitionBuilder(CommandType.TURN)
         builder.setName("goTurn")
         builder.addReadout(TurnAttributeID.THETA2, 0.5, 0.3)

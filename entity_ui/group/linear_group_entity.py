@@ -1,19 +1,23 @@
 from entity_base.entity import Entity
 from entity_ui.group.linear_entity import LinearEntity
+from typing import TypeVar, Generic
 
 """
 A group of linear entities, arranged either horizontally or vertically
 """
-class LinearGroupEntity(Entity):
+T = TypeVar('T')
+class LinearGroupEntity(Entity, Generic[T]):
 
     def __init__(self, parent: Entity, isHorizontal: bool):
         
         super().__init__(parent)
 
-        self.groupEntities: list[LinearEntity] = []
+        self.groupEntities: list[LinearEntity | T] = []
         self.isHorizontal = isHorizontal
 
         self.N = 0
+
+        self.recomputePosition()
 
     # add linear entity to group. returns the linear entity's location
     def add(self, entity: LinearEntity):

@@ -19,3 +19,6 @@ class ScrollingContainer(Container):
     
     def defineHeight(self) -> float:
         return self._pheight(1)
+    
+    def setContentHeight(self, contentHeight: int):
+        self.scrollbar.setContentHeight(contentHeight)

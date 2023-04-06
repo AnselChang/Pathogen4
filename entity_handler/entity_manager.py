@@ -1,5 +1,5 @@
 from entity_base.entity import Entity
-from root_container.root_container import RootEntity
+from root_container.root_container import RootContainer
 from entity_ui.tooltip import TooltipOwner
 from common.dimensions import Dimensions
 from common.draw_order import DrawOrder
@@ -14,11 +14,14 @@ class EntityManager:
     def __init__(self):
 
         self.entities: list[Entity] = []
-        self.rootEntity = RootEntity()
 
         # entities that own Tick (must call onTick() every tick)
         self.tickEntities: list[Entity] = []
-        self.keyEntities: list[Entity] = []
+        self.keyEntities: list[Entity] = []        
+
+    def initRootContainer(self):
+        self.rootContainer = RootContainer()
+        return self.rootContainer
 
     # by setting a parent, it will be removed when parent is removed
     # SHOULD ONLY BE CALLED WITHIN BASE ENTITY CLASS

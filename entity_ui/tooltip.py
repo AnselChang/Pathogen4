@@ -5,7 +5,7 @@ import pygame
 from abc import ABC, abstractmethod
 
 _tooltipFont: DynamicFont = None
-def setTooltipFont(tooltipFont: DynamicFont):
+def initTooltipFont(tooltipFont: DynamicFont):
     global _tooltipFont
     _tooltipFont = tooltipFont
 

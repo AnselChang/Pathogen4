@@ -12,7 +12,7 @@ from root_container.field_container.segment.path_segment_entity import PathSegme
 from entity_handler.entity_manager import EntityManager
 from entity_handler.interactor import Interactor
 
-from entity_ui.scrollbar.scrollbar_container_entity import ScrollbarContainerEntity
+from root_container.panel_container.command_scrollbar import CommandScrollbar
 
 from adapter.path_adapter import NullPathAdapter
 
@@ -32,7 +32,7 @@ class Path:
                  interactor: Interactor,
                  commandFactory: CommandBlockEntityFactory,
                  commandExpansion: CommandExpansionHandler,
-                 scrollbar: ScrollbarContainerEntity,
+                 scrollbar: CommandScrollbar,
                  dimensions: Dimensions,
                  startPosition: PointRef):
             
@@ -47,9 +47,8 @@ class Path:
         self.commandList = LinkedList() # linked list of CommandEntities
 
         # initialize scrollbar
-        self.scrollbar = ScrollbarContainerEntity()
+        self.scrollbar = scrollbar
         self.scrollbar.subscribe(onNotify = self.recomputeY)
-        entities.addEntity(self.scrollbar)
 
         # initialize first node
         self._addInserter(self.commandList.addToEnd) # add initial CommandInserter

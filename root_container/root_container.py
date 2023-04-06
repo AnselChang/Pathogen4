@@ -4,7 +4,7 @@ from common.reference_frame import PointRef, Ref
 
 from common.dimensions import Dimensions
 
-from entity_base.entity import Entity
+from entity_base.container_entity import Container
 from common.draw_order import DrawOrder
 
 from utility.math_functions import distance
@@ -15,7 +15,7 @@ The entity that holds all other entities. Set to dimensions size, and recomputes
 children when dimensions change
 """
 
-class RootEntity(Entity):
+class RootContainer(Container):
 
     def __init__(self):
         super().__init__(None, drawOrder = DrawOrder.BACKGROUND)
@@ -31,7 +31,7 @@ class RootEntity(Entity):
         return self.dimensions.SCREEN_HEIGHT
 
     def isVisible(self) -> bool:
-        return False
+        return True
 
     # Draw screen background
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

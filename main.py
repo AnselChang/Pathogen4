@@ -1,3 +1,4 @@
+from entity_base.entity import Entity
 from entity_base.static_entity import StaticEntity
 from entity_base.entity import initEntityClass
 
@@ -18,7 +19,11 @@ from command_creation.command_block_entity_factory import CommandBlockEntityFact
 from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
 
 from root_container.panel_container.panel_container import PanelContainer
-from entity_ui import tooltip
+from root_container.field_container.field_container import FieldContainer
+from root_container.panel_container.command_scrollbar import CommandScrollbar
+
+from entity_ui.tooltip import initTooltipFont
+
 from common.font_manager import FontManager, FontID
 from common.image_manager import ImageManager, ImageID
 from common.reference_frame import PointRef, Ref, initReferenceframe, VectorRef
@@ -56,30 +61,33 @@ def main():
     initReferenceframe(dimensions, fieldTransform)
     mouse: PointRef = PointRef()
     
-    tooltip.setTooltipFont(fontManager.getDynamicFont(FontID.FONT_NORMAL, 15))
+    initTooltipFont(fontManager.getDynamicFont(FontID.FONT_NORMAL, 15))
     
     # Initialize entities
     interactor = Interactor(dimensions, fieldTransform)
     entities = EntityManager()
     initEntityClass(entities, interactor, images, fontManager, dimensions)
+    Entity.ROOT_CONTAINER = entities.initRootContainer()
 
     # Add permanent static entities
     panelColor = (100,100,100)
-    panel = PanelContainer(panelColor)
-    entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
-    entities.addEntity(StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX))
+    panelContainer = PanelContainer(panelColor)
+    fieldContainer = FieldContainer(fieldTransform)
+
+    StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX)
 
     # initialize commands
     database = CommandDefinitionDatabase()
-    commandExpansion = CommandExpansionHandler(panel)
+    commandExpansion = CommandExpansionHandler(panelContainer)
     commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
 
     # Create path
-    path = Path(database, entities, interactor, commandEntityFactory, commandExpansion, dimensions, PointRef(Ref.FIELD, (24,24)))
+    commandScrollbar = CommandScrollbar(panelContainer)
+    path = Path(database, entities, interactor, commandEntityFactory, commandExpansion, commandScrollbar, dimensions, PointRef(Ref.FIELD, (24,24)))
 
     # Create tabs
     tabs = TabGroupEntity()
-    entities.addEntity(tabs, panel)
+    entities.addEntity(tabs, panelContainer)
     for text in ["A", "B", "C"]:
         tabs.add(TabEntity(dimensions, fontManager.getDynamicFont(FontID.FONT_NORMAL, 15), text))
 
@@ -88,25 +96,25 @@ def main():
     c2 = (*panelColor, 0)
     height = 30
     offset = 35
-    entities.addEntity(StaticEntity(
+    StaticEntity(
         lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height, c1, c2, invert=True), (dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - height - offset)),
         Ftouching = lambda position: isInsideBox2(*position.screenRef, dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset - height/2, dimensions.PANEL_WIDTH, offset + height/2),
         drawOrder = DrawOrder.GRADIENT_PANEL,
-    ))
-    entities.addEntity(StaticEntity(lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset, dimensions.PANEL_WIDTH, offset]), drawOrder = DrawOrder.GRADIENT_PANEL))
+    )
+    StaticEntity(lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset, dimensions.PANEL_WIDTH, offset]), drawOrder = DrawOrder.GRADIENT_PANEL)
     
     # add grey rect at top to prevent commands from bleeding into panel
     height = 30
     height2 = 20
-    entities.addEntity(StaticEntity(
+    StaticEntity(
         lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, 0, dimensions.PANEL_WIDTH, height]),
         Ftouching = lambda position: isInsideBox2(*position.screenRef, dimensions.FIELD_WIDTH, 0, dimensions.PANEL_WIDTH, height + height2/2),
         drawOrder = DrawOrder.GRADIENT_PANEL
-    ))
-    entities.addEntity(StaticEntity(
+    )
+    StaticEntity(
         lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height2, c1, c2), (dimensions.FIELD_WIDTH, height)),
         drawOrder = DrawOrder.GRADIENT_PANEL,
-    ))
+    )
 
 
     # initialize pygame artifacts

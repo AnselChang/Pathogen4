@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from common.reference_frame import PointRef, Ref
 
-from entity_base.entity import Entity
+from entity_base.entity import Entity, ROOT_CONTAINER
 from common.draw_order import DrawOrder
 
 from utility.math_functions import distance
@@ -16,8 +16,9 @@ class PanelContainer(Entity):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
     def __init__(self, color) -> None:
-        super().__init__(drawOrder = DrawOrder.PANEL_BACKGROUND)
+        super().__init__(parent = ROOT_CONTAINER, drawOrder = DrawOrder.PANEL_BACKGROUND)
         self.color = color
+        self.recomputePosition()
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

@@ -6,7 +6,7 @@ from entity_handler.entity_manager import EntityManager
 """a group of radio_entities, where only one is selected at a time
 If allowNoSelect is True, then no option being selected is allowed
 """
-class RadioGroupEntity(LinearGroupEntity):
+class RadioGroupEntity(LinearGroupEntity[RadioEntity]):
 
     def __init__(self, parent: Entity, isHorizontal: bool, allowNoSelect: bool = False):
         

@@ -42,17 +42,14 @@ _interactor: Interactor = None
 _images: ImageManager = None
 _fonts: FontManager = None
 _dimensions: Dimensions = None
-ROOT_ENTITY = None
+ROOT_CONTAINER = None
 def initEntityClass(entityManager: EntityManager, interactor: Interactor, images: ImageManager, fonts: FontManager, dimensions: Dimensions):
-    global _entities, _interactor, _images, _fonts, _dimensions, ROOT_ENTITY
+    global _entities, _interactor, _images, _fonts, _dimensions
     _entities = entityManager
     _interactor = interactor
     _images = images
     _fonts = fonts
     _dimensions = dimensions
-
-    # top-level entities like panel should set this as parent
-    ROOT_ENTITY = _entities.rootEntity
 
 class Entity(ABC, Observable):
 
@@ -88,8 +85,6 @@ class Entity(ABC, Observable):
 
         self.entities._addEntity(self)
 
-        self.recomputePosition()
-
 
     def distanceTo(self, position: tuple) -> float:
         return distance(*position, self.CENTER_X, self.CENTER_Y)
@@ -122,9 +117,9 @@ class Entity(ABC, Observable):
     # must impl both of these if want to contain other entity
     # by default, set to the parent width and height
     def defineWidth(self) -> float:
-        return self._pwidth(1)
+        return self.dimensions.SCREEN_WIDTH if self._parent is None else self._pwidth(1)
     def defineHeight(self) -> float:
-        return self._pheight(1)
+        return self.dimensions.SCREEN_HEIGHT if self._parent is None else self._pheight(1)
     
     # override this to define anything else after the position is recomputed
     def defineOther(self) -> None:
@@ -172,9 +167,9 @@ class Entity(ABC, Observable):
             self.LEFT_X = self.RIGHT_X - self.WIDTH
             self.CENTER_X = self.LEFT_X + self.WIDTH / 2
         else: # if no position defined, entity rect is set to parent entity rect
-            self.LEFT_X = self._px(0)
-            self.CENTER_X = self._px(0.5)
-            self.RIGHT_X = self._px(1)
+            self.LEFT_X = 0 if self._parent is None else self._px(0)
+            self.CENTER_X = self.dimensions.SCREEN_WIDTH/2 if self._parent is None else self._px(0.5)
+            self.RIGHT_X = self.dimensions.SCREEN_WIDTH if self._parent is None else self._px(1)
         
         if self.TOP_Y is not None:
             self.CENTER_Y = self.TOP_Y + self.HEIGHT / 2
@@ -186,9 +181,9 @@ class Entity(ABC, Observable):
             self.TOP_Y = self.BOTTOM_Y - self.HEIGHT
             self.CENTER_Y = self.TOP_Y + self.HEIGHT / 2
         else: # if no position defined, entity rect is set to parent entity rect
-            self.TOP_Y = self._px(0)
-            self.CENTER_Y = self._px(0.5)
-            self.BOTTOM_Y = self._px(1)
+            self.TOP_Y = 0 if self._parent is None else self._py(0)
+            self.CENTER_Y = self.dimensions.SCREEN_HEIGHT/2 if self._parent is None else self._py(0.5)
+            self.BOTTOM_Y = self.dimensions.SCREEN_HEIGHT if self._parent is None else self._py(1)
 
         self.WIDTH = int(round(self.WIDTH))
         self.HEIGHT = int(round(self.HEIGHT))

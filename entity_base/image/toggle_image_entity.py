@@ -16,10 +16,14 @@ class ToggleImageEntity(ImageEntity):
     # px, py, pwidth, pheight set by default to the dimensions of the parent
     def __init__(self, parent, imageOnID: ImageID, imageOffID: ImageID, drawOrder: DrawOrder, tooltip: str | list[str] = None, onClick = lambda: None, isOn: bool = False, center_px = 0.5, center_py = 0.5, pwidth = 1, pheight = 1):
         
-        super().__init__(parent, imageOnID, drawOrder, tooltip, onClick, center_px, center_py, pwidth, pheight)
-
         self.imageOffID = imageOffID
         self.isOn = isOn
+        
+        super().__init__(parent, imageOnID, drawOrder, tooltip, onClick, center_px, center_py, pwidth, pheight)
+
+        
+
+        self.recomputePosition()
 
 
     # define the scaled image surfaces given the parent rect
@@ -27,7 +31,7 @@ class ToggleImageEntity(ImageEntity):
 
         super().defineOther()
 
-        self.imageOffScaled = pygame.transform.smoothscale(self.images.get(self.imageOffID), self.imageWidth, self.imageHeight)
+        self.imageOffScaled = pygame.transform.smoothscale(self.images.get(self.imageOffID), (self.imageWidth, self.imageHeight))
         self.imageOffScaledH = brightenSurface(self.imageOffScaled, self.HOVER_DELTA)
 
     
