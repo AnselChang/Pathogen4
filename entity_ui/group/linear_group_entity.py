@@ -1,6 +1,5 @@
-from BaseEntity.entity import Entity
-from UIEntities.Generic.linear_entity import LinearEntity
-from EntityHandler.entity_manager import EntityManager
+from entity_base.entity import Entity
+from entity_ui.group.linear_entity import LinearEntity
 
 """
 A group of linear entities, arranged either horizontally or vertically

@@ -1,7 +1,7 @@
-from image_manager import ImageID, ImageManager
-from dimensions import Dimensions
-from math_functions import clamp
-from pygame_functions import scaleSurface
+from common.image_manager import ImageID, ImageManager
+from common.dimensions import Dimensions
+from utility.math_functions import clamp
+from utility.pygame_functions import scaleSurface
 import pygame
 import weakref
 
@@ -30,8 +30,7 @@ class FieldTransform:
         self.resizeScreen()
 
     def recalculatePointsAndVectors(self):
-        for obj in self.pointsAndVectors:
-            obj.recalculate()
+        pass
 
     def resizeScreen(self):
 

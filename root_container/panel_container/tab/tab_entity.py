@@ -1,11 +1,11 @@
-from reference_frame import PointRef, Ref
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from UIEntities.Generic.radio_entity import RadioEntity
+from common.reference_frame import PointRef, Ref
+from entity_base.listeners.click_listener import ClickLambda
+from entity_ui.group.radio_entity import RadioEntity
 
-from math_functions import isInsideBox2
-from pygame_functions import drawText
-from draw_order import DrawOrder
-from font_manager import DynamicFont
+from utility.math_functions import isInsideBox2
+from utility.pygame_functions import drawText
+from common.draw_order import DrawOrder
+from common.font_manager import DynamicFont
 import pygame
 
 # Subclasses implement: isTouching, distanceTo, draw

@@ -1,7 +1,7 @@
-from BaseEntity.entity import Entity
-from UIEntities.Generic.radio_entity import RadioEntity
-from UIEntities.Generic.linear_group_entity import LinearGroupEntity
-from EntityHandler.entity_manager import EntityManager
+from entity_base.entity import Entity
+from entity_ui.group.radio_entity import RadioEntity
+from entity_ui.group.linear_group_entity import LinearGroupEntity
+from entity_handler.entity_manager import EntityManager
 
 """a group of radio_entities, where only one is selected at a time
 If allowNoSelect is True, then no option being selected is allowed

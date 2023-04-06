@@ -1,5 +1,5 @@
 from typing import TypeVar, Generic
-from BaseEntity.entity import Entity
+from entity_base.entity import Entity
 
 T = TypeVar('T')
 class LinkedListNode(Generic[T]):

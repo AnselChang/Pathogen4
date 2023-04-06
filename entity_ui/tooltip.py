@@ -1,6 +1,6 @@
 #from pygame_functions import FONT15
-from font_manager import DynamicFont
-from dimensions import Dimensions
+from common.font_manager import DynamicFont
+from common.dimensions import Dimensions
 import pygame
 from abc import ABC, abstractmethod
 

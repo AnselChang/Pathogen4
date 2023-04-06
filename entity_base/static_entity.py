@@ -1,6 +1,6 @@
-from reference_frame import PointRef
+from common.reference_frame import PointRef
 
-from BaseEntity.entity import Entity
+from entity_base.entity import Entity
 
 import pygame
 

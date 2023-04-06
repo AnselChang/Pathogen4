@@ -1,7 +1,7 @@
-from BaseEntity.entity import Entity
-from EntityHandler.entity_manager import EntityManager
-from pygame_functions import drawTransparentRect
-from math_functions import isInsideBox
+from entity_base.entity import Entity
+from entity_handler.entity_manager import EntityManager
+from utility.pygame_functions import drawTransparentRect
+from utility.math_functions import isInsideBox
 
 import pygame
 

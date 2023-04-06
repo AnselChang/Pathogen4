@@ -1,14 +1,14 @@
-from reference_frame import PointRef, Ref
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from UIEntities.Generic.radio_entity import RadioEntity
-from BaseEntity.entity import Entity
+from common.reference_frame import PointRef, Ref
+from entity_base.listeners.click_listener import ClickLambda
+from entity_ui.group.radio_entity import RadioEntity
+from entity_base.entity import Entity
 
-from math_functions import isInsideBox2
-from pygame_functions import drawSurface, brightenSurface, scaleImageToRect
-from dimensions import Dimensions
-from draw_order import DrawOrder
-from Tooltips.tooltip import TooltipOwner, Tooltip
-from image_manager import ImageID
+from utility.math_functions import isInsideBox2
+from utility.pygame_functions import drawSurface, brightenSurface, scaleImageToRect
+from common.dimensions import Dimensions
+from common.draw_order import DrawOrder
+from entity_ui.tooltip import TooltipOwner, Tooltip
+from common.image_manager import ImageID
 import pygame
 
 """

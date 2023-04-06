@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from reference_frame import PointRef, Ref
+from common.reference_frame import PointRef, Ref
 
-from BaseEntity.entity import Entity
-from draw_order import DrawOrder
+from entity_base.entity import Entity
+from common.draw_order import DrawOrder
 
-from math_functions import distance
+from utility.math_functions import distance
 import pygame
 
 """

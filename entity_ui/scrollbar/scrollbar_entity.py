@@ -1,13 +1,13 @@
-from BaseEntity.entity import Entity
-from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
-from BaseEntity.EntityListeners.drag_listener import DragLambda
+from entity_base.entity import Entity
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
+from entity_base.listeners.drag_listener import DragLambda
 
-from reference_frame import PointRef, Ref
-from dimensions import Dimensions
-from draw_order import DrawOrder
+from common.reference_frame import PointRef, Ref
+from common.dimensions import Dimensions
+from common.draw_order import DrawOrder
 
-from Observers.observer import Observable
-from math_functions import isInsideBox2, clamp
+from data_structures.observer import Observable
+from utility.math_functions import isInsideBox2, clamp
 
 import pygame
 

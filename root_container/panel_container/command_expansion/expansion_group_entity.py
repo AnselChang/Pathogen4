@@ -1,5 +1,5 @@
-from UIEntities.Generic.radio_group_entity import RadioGroupEntity
-from dimensions import Dimensions
+from entity_ui.group.radio_group_entity import RadioGroupEntity
+from common.dimensions import Dimensions
 
 """
 The expand and collapse buttons on the bottom of the panel

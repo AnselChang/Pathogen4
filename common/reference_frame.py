@@ -1,6 +1,6 @@
-from field_transform import FieldTransform
-from dimensions import Dimensions
-import math, math_functions
+from common.field_transform import FieldTransform
+from common.dimensions import Dimensions
+import math, utility.math_functions as math_functions
 from enum import Enum
 
 transform: FieldTransform = None

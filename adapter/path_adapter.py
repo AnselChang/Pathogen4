@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from Observers.observer import Observable
-from CommandCreation.command_type import CommandType
-from image_manager import ImageID
+from data_structures.observer import Observable
+from command_creation.command_type import CommandType
+from common.image_manager import ImageID
 
 """
 Abstract class that facilitates communication between Commands and Path entities

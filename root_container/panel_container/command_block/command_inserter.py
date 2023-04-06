@@ -1,19 +1,19 @@
-from BaseEntity.entity import Entity
-from BaseEntity.EntityListeners.hover_listener import HoverLambda
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
+from entity_base.entity import Entity
+from entity_base.listeners.hover_listener import HoverLambda
+from entity_base.listeners.click_listener import ClickLambda
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
-from Commands.command_block_entity import CommandBlockEntity
-from Commands.command_or_inserter import CommandOrInserter
+from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
 
-from EntityHandler.interactor import Interactor
+from entity_handler.interactor import Interactor
 
-from dimensions import Dimensions
-from linked_list import LinkedListNode
-from reference_frame import PointRef, Ref
-from draw_order import DrawOrder
+from global.dimensions import Dimensions
+from data_structures.linked_list import LinkedListNode
+from global.reference_frame import PointRef, Ref
+from global.draw_order import DrawOrder
 
-from math_functions import isInsideBox2
+from utility.math_functions import isInsideBox2
 
 import pygame
 

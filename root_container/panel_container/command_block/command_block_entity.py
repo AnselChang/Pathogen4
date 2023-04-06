@@ -1,33 +1,25 @@
-from BaseEntity.entity import Entity
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from BaseEntity.EntityListeners.tick_listener import TickLambda
-from BaseEntity.EntityListeners.drag_listener import DragListener
-from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
+from entity_base.entity import Entity
+from entity_base.listeners.click_listener import ClickLambda
+from entity_base.listeners.tick_listener import TickLambda
+from entity_base.listeners.drag_listener import DragListener
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
-from Adapters.path_adapter import PathAdapter
+from adapter.path_adapter import PathAdapter
 
-from CommandCreation.command_type import COMMAND_INFO
-from CommandCreation.command_definition import CommandDefinition
+from command_creation.command_type import COMMAND_INFO
+from command_creation.command_definition import CommandDefinition
 
-from Commands.command_block_header import CommandBlockHeader
-from Commands.command_expansion_handler import CommandExpansionHandler
-from Commands.command_or_inserter import CommandOrInserter
+from root_container.panel_container.command_block.command_block_header import CommandBlockHeader
+from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
+from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
 
-from Widgets.widget_entity import WidgetEntity
-from Widgets.readout_entity import ReadoutEntity
+from root_container.panel_container.element.widget.widget_entity import WidgetEntity
+from root_container.panel_container.element.readout.readout_entity import ReadoutEntity
 
-from EntityHandler.entity_manager import EntityManager
-from EntityHandler.interactor import Interactor
-
-from font_manager import FontManager, FontID
-from linked_list import LinkedListNode
-from image_manager import ImageManager
-from draw_order import DrawOrder
-from dimensions import Dimensions
-from reference_frame import PointRef, Ref
-from pygame_functions import shade, drawText, drawSurface, drawTransparentRect
-from math_functions import isInsideBox2
-from Animation.motion_profile import MotionProfile
+from common.font_manager import FontID
+from common.draw_order import DrawOrder
+from utility.pygame_functions import shade, drawText, drawTransparentRect
+from utility.motion_profile import MotionProfile
 import pygame, re
 
 """

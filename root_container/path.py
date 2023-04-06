@@ -1,24 +1,24 @@
-from CommandCreation.command_definition_database import CommandDefinitionDatabase
-from Commands.command_block_entity import CommandBlockEntity
-from Commands.custom_command_block_entity import CustomCommandBlockEntity
-from Commands.command_inserter import CommandInserter
-from Commands.command_expansion_handler import CommandExpansionHandler
+from command_creation.command_definition_database import CommandDefinitionDatabase
+from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
+from root_container.panel_container.command_block.command_inserter import CommandInserter
+from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
 
-from CommandCreation.command_block_entity_factory import CommandBlockEntityFactory
+from command_creation.command_block_entity_factory import CommandBlockEntityFactory
 
-from RootContainer.FieldContainer.path_node_entity import PathNodeEntity
-from SegmentEntities.path_segment_entity import PathSegmentEntity
+from root_container.field_container.node.path_node_entity import PathNodeEntity
+from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 
-from EntityHandler.entity_manager import EntityManager
-from EntityHandler.interactor import Interactor
+from entity_handler.entity_manager import EntityManager
+from entity_handler.interactor import Interactor
 
-from PathData.scrollbar_container_entity import ScrollbarContainerEntity
+from entity_ui.scrollbar.scrollbar_container_entity import ScrollbarContainerEntity
 
-from Adapters.path_adapter import NullPathAdapter
+from adapter.path_adapter import NullPathAdapter
 
-from linked_list import LinkedList
-from dimensions import Dimensions
-from reference_frame import PointRef
+from data_structures.linked_list import LinkedList
+from common.dimensions import Dimensions
+from common.reference_frame import PointRef
 
 """
 A class storing state for a segment and the node after it.

@@ -1,20 +1,15 @@
-from BaseEntity.entity import Entity
-from BaseEntity.EntityListeners.key_listener import KeyLambda
-from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
+from entity_base.entity import Entity
 
-from Observers.observer import Observable
+from data_structures.observer import Observable
 
-from TextEditor.text_handler import TextHandler
-from TextEditor.text_border import TextBorder
+from entity_ui.text.text_handler import TextHandler
+from entity_ui.text.text_border import TextBorder
 
-from font_manager import DynamicFont
-from reference_frame import PointRef, Ref
-from math_functions import isInsideBox2
-from draw_order import DrawOrder
-from dimensions import Dimensions
+from common.font_manager import DynamicFont
+from utility.math_functions import isInsideBox2
+from common.draw_order import DrawOrder
 
 from enum import Enum, auto
-from abc import abstractmethod
 import pygame
 
 """

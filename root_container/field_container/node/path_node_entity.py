@@ -1,29 +1,29 @@
-from NodeEntities.circle_mixin import CircleMixin
-from BaseEntity.entity import Entity
-from reference_frame import PointRef, VectorRef
-from BaseEntity.EntityListeners.drag_listener import DragLambda
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
-from BaseEntity.EntityListeners.key_listener import KeyLambda
-from BaseEntity.EntityListeners.hover_listener import HoverLambda
-from SegmentEntities.path_segment_entity import PathSegmentEntity
-from draw_order import DrawOrder
-from EntityHandler.interactor import Interactor
-from EntityHandler.entity_manager import EntityManager
+from entity_base.circle_mixin import CircleMixin
+from entity_base.entity import Entity
+from common.reference_frame import PointRef, VectorRef
+from entity_base.listeners.drag_listener import DragLambda
+from entity_base.listeners.click_listener import ClickLambda
+from entity_base.listeners.select_listener import SelectListener, SelectLambda
+from entity_base.listeners.key_listener import KeyLambda
+from entity_base.listeners.hover_listener import HoverLambda
+from field_container.segment.path_segment_entity import PathSegmentEntity
+from common.draw_order import DrawOrder
+from entity_handler.interactor import Interactor
+from entity_handler.entity_manager import EntityManager
 
-from Adapters.path_adapter import AdapterInterface
-from Adapters.turn_adapter import TurnAdapter, TurnAttributeID
+from adapter.path_adapter import AdapterInterface
+from adapter.turn_adapter import TurnAdapter, TurnAttributeID
 
-from NodeEntities.constraints import Constraints
-from dimensions import Dimensions
+from root_container.field_container.node.constraints import Constraints
+from common.dimensions import Dimensions
 
-from image_manager import ImageID
-from linked_list import LinkedListNode
+from common.image_manager import ImageID
+from data_structures.linked_list import LinkedListNode
 
-from math_functions import isInsideBox
-from pygame_functions import shade
-from angle_functions import deltaInHeading
-from format_functions import formatDegrees
+from utility.math_functions import isInsideBox
+from utility.pygame_functions import shade
+from utility.angle_functions import deltaInHeading
+from utility.format_functions import formatDegrees
 
 import pygame
 

@@ -1,14 +1,8 @@
-from reference_frame import PointRef, Ref
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from UIEntities.Generic.image_entity import ImageEntity
-from BaseEntity.entity import Entity
+from entity_base.image.image_entity import ImageEntity
 
-from math_functions import isInsideBox2
-from pygame_functions import drawSurface, brightenSurface, scaleImageToRect
-from dimensions import Dimensions
-from draw_order import DrawOrder
-from Tooltips.tooltip import TooltipOwner, Tooltip
-from image_manager import ImageID
+from utility.pygame_functions import brightenSurface
+from common.draw_order import DrawOrder
+from common.image_manager import ImageID
 import pygame
 
 """

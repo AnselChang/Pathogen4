@@ -1,23 +1,28 @@
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from BaseEntity.EntityListeners.key_listener import KeyLambda
-from BaseEntity.EntityListeners.select_listener import SelectLambda, SelectorType
-
-from Widgets.widget_entity import WidgetEntity
-from Widgets.widget_definition import WidgetDefinition
-
-from TextEditor.text_editor_entity import TextEditorEntity, TextEditorMode
-
-from font_manager import FontID, DynamicFont
-from image_manager import ImageID
-from draw_order import DrawOrder
-from reference_frame import PointRef, Ref
-import pygame
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
 
+from entity_base.listeners.click_listener import ClickLambda
+from entity_base.listeners.key_listener import KeyLambda
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
-class TextboxWidgetEntity(WidgetEntity):
+from root_container.panel_container.element.widget.widget_entity import WidgetEntity
+from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
 
-    def __init__(self, parentCommand, definition: 'TextboxWidgetDefinition'):
+from entity_ui.text.text_editor_entity import TextEditorEntity, TextEditorMode
+
+from common.font_manager import FontID, DynamicFont
+from common.image_manager import ImageID
+from common.draw_order import DrawOrder
+from common.reference_frame import PointRef, Ref
+
+
+
+class TextboxWidgetEntity(WidgetEntity['TextboxWidgetDefinition']):
+
+    def __init__(self, parentCommand: CommandBlockEntity, definition: 'TextboxWidgetDefinition'):
 
         if definition.pwidth is None:
             width = None

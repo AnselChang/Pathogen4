@@ -1,11 +1,11 @@
-from BaseEntity.entity import Entity
-from EntityHandler.entity_manager import EntityManager
-from EntityHandler.select_handler import SelectHandler
-from EntityHandler.selector_box import SelectorBox
-from reference_frame import PointRef, VectorRef
-from dimensions import Dimensions
-from field_transform import FieldTransform
-from math_functions import isInsideBox
+from entity_base.entity import Entity
+from entity_handler.entity_manager import EntityManager
+from entity_handler.select_handler import SelectHandler
+from entity_handler.selector_box import SelectorBox
+from common.reference_frame import PointRef, VectorRef
+from common.dimensions import Dimensions
+from common.field_transform import FieldTransform
+from utility.math_functions import isInsideBox
 
 import pygame, time
 

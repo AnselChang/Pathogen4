@@ -1,4 +1,4 @@
-from AbstractEntity.entity import Entity
+from entity_base.entity import Entity
 
 """
 Means that the entity itself is not interactable or drawable.

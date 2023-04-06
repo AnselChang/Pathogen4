@@ -1,10 +1,9 @@
-from UIEntities.Generic.toggle_image_entity import ToggleImageEntity
-from UIEntities.Generic.radio_entity import RadioEntity
-from UIEntities.Concrete.expansion_group_entity import ExpansionGroupEntity
-from image_manager import ImageID
-from Observers.observer import Observable
-from dimensions import Dimensions
-from pygame_functions import brightenSurface
+from entity_base.image.toggle_image_entity import ToggleImageEntity
+from entity_ui.group.radio_entity import RadioEntity
+from root_container.panel_container.command_expansion.expansion_group_entity import ExpansionGroupEntity
+from common.image_manager import ImageID
+from data_structures.observer import Observable
+from common.dimensions import Dimensions
 from enum import Enum, auto
 
 """

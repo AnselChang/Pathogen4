@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from reference_frame import PointRef
-from BaseEntity.entity import Entity
-from linked_list import LinkedListNode
-from Adapters.path_adapter import PathAdapter
+from common.reference_frame import PointRef
+from entity_base.entity import Entity
+from data_structures.linked_list import LinkedListNode
+from adapter.path_adapter import PathAdapter
 import pygame
 
 """

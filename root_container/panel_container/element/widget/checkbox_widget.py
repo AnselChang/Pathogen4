@@ -1,18 +1,24 @@
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from Widgets.widget_entity import WidgetEntity
-from Widgets.widget_definition import WidgetDefinition
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
-from image_manager import ImageID
-from reference_frame import PointRef, Ref
-from pygame_functions import drawSurface
-from math_functions import distance
-from Tooltips.tooltip import Tooltip, TooltipOwner
+
+from entity_base.listeners.click_listener import ClickLambda
+from root_container.panel_container.element.widget.widget_entity import WidgetEntity
+from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
+
+from common.image_manager import ImageID
+from common.reference_frame import PointRef, Ref
+from utility.pygame_functions import drawSurface
+from utility.math_functions import distance
+from entity_ui.tooltip import Tooltip, TooltipOwner
 import pygame
 
 
-class CheckboxWidgetEntity(WidgetEntity, TooltipOwner):
+class CheckboxWidgetEntity(WidgetEntity['CheckboxWidgetDefinition'], TooltipOwner):
 
-    def __init__(self, parentCommand, definition: 'CheckboxWidgetDefinition'):
+    def __init__(self, parentCommand: CommandBlockEntity, definition: 'CheckboxWidgetDefinition'):
 
         super().__init__(parentCommand, definition,
                          click = ClickLambda(self, FonLeftClick = self.onLeftClick)

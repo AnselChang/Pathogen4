@@ -1,12 +1,12 @@
-from BaseEntity.entity import Entity
+from entity_base.entity import Entity
 
-from dimensions import Dimensions
-from draw_order import DrawOrder
+from common.dimensions import Dimensions
+from common.draw_order import DrawOrder
 
-from Geometry.line import Line
-from reference_frame import PointRef, Ref, ScalarRef
-from math_functions import distanceTuples, clipLineToBox, distanceTuples, hypo
-from pygame_functions import drawDottedLine
+from utility.line import Line
+from common.reference_frame import PointRef, Ref, ScalarRef
+from utility.math_functions import distanceTuples, clipLineToBox, distanceTuples, hypo
+from utility.pygame_functions import drawDottedLine
 import pygame, math
 
 """

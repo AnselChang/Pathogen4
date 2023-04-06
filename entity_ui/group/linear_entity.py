@@ -1,11 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from UIEntities.Generic.linear_group_entity import LinearGroupEntity
+    from entity_ui.group.linear_group_entity import LinearGroupEntity
 
-from BaseEntity.entity import Entity
-from reference_frame import PointRef
-from BaseEntity.EntityListeners.click_listener import ClickLambda
+from entity_base.entity import Entity
 
 """
 A single option object for a RadioGroup

@@ -1,10 +1,10 @@
-from BaseEntity.entity import Entity
-from UIEntities.Scrollbar.scrollbar_entity import ScrollbarEntity
+from entity_base.entity import Entity
+from entity_ui.scrollbar.scrollbar_entity import ScrollbarEntity
 
-from draw_order import DrawOrder
+from global.draw_order import DrawOrder
 
-from Observers.observer import Observable
-from math_functions import isInsideBox2
+from data_structures.observer import Observable
+from utility.math_functions import isInsideBox2
 
 import pygame
 

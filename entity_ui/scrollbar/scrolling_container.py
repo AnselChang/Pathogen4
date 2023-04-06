@@ -1,6 +1,6 @@
-from AbstractEntity.container_entity import Container
-from UIEntities.Scrollbar.scrollbar_entity import ScrollbarEntity
-from UIEntities.Scrollbar.scrollbar_container_entity import ScrollbarContainerEntity
+from entity_base.container_entity import Container
+from entity_ui.scrollbar.scrollbar_entity import ScrollbarEntity
+from entity_ui.scrollbar.scrollbar_container_entity import ScrollbarContainerEntity
 
 class ScrollingContainer(Container):
 

@@ -1,22 +1,24 @@
-from BaseEntity.EntityListeners.click_listener import ClickListener, ClickLambda
-from BaseEntity.EntityListeners.drag_listener import DragListener, DragLambda
-from BaseEntity.EntityListeners.select_listener import SelectListener, SelectLambda
-from BaseEntity.EntityListeners.tick_listener import TickListener, TickLambda
-from BaseEntity.EntityListeners.hover_listener import HoverListener, HoverLambda
-from BaseEntity.EntityListeners.key_listener import KeyListener
-
-from BaseEntity.entity import Entity
-from BaseEntity.EntityListeners.hover_listener import HoverLambda
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
+    from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
 
-from Tooltips.tooltip import TooltipOwner, Tooltip
+from entity_base.listeners.click_listener import ClickListener, ClickLambda
+from entity_base.listeners.drag_listener import DragListener, DragLambda
+from entity_base.listeners.select_listener import SelectListener, SelectLambda
+from entity_base.listeners.tick_listener import TickListener, TickLambda
+from entity_base.listeners.hover_listener import HoverListener, HoverLambda
+from entity_base.listeners.key_listener import KeyListener
+from entity_base.listeners.hover_listener import HoverLambda
 
-from Observers.observer import Observable
+from entity_base.entity import Entity
 
-from image_manager import ImageID
-from draw_order import DrawOrder
-from reference_frame import PointRef, Ref
-import pygame
+from data_structures.observer import Observable
+
+from common.draw_order import DrawOrder
+from typing import TypeVar, Generic
 from abc import abstractmethod
 
 """
@@ -25,9 +27,10 @@ Owns a DefinedWidget which stores information about the widget's context for all
 Stores the actual value of the widget
 """
 # notifies observers when getCommandStretch() changes
-class WidgetEntity(Entity, Observable):
+T = TypeVar('T')
+class WidgetEntity(Entity, Observable, Generic[T]):
 
-    def __init__(self, parentCommand: Entity, definition,
+    def __init__(self, parentCommand: CommandBlockEntity, definition: WidgetDefinition,
                  click: ClickListener = None,
                  drag: DragListener = None,
                  hover: HoverListener = None,
@@ -44,7 +47,7 @@ class WidgetEntity(Entity, Observable):
                          drawOrder = DrawOrder.WIDGET)
 
         self.parentCommand = parentCommand
-        self.definition = definition
+        self.definition: WidgetDefinition | T = definition
     
 
     def defineCenter(self) -> tuple:

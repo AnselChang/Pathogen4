@@ -1,14 +1,14 @@
-from CommandCreation.command_definition import CommandType, CommandDefinition
-from CommandCreation.preset_commands import CommandDefinitionPresets
-from Commands.command_block_entity import CommandBlockEntity
-from Commands.custom_command_block_entity import CustomCommandBlockEntity
+from command_creation.command_definition import CommandType, CommandDefinition
+from command_creation.preset_commands import CommandDefinitionPresets
+from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 
-from EntityHandler.interactor import Interactor
-from EntityHandler.entity_manager import EntityManager
+from entity_handler.interactor import Interactor
+from entity_handler.entity_manager import EntityManager
 
-from Adapters.path_adapter import PathAdapter, NullPathAdapter
-from image_manager import ImageManager
-from dimensions import Dimensions
+from adapter.path_adapter import PathAdapter, NullPathAdapter
+from common.image_manager import ImageManager
+from common.dimensions import Dimensions
 
 """
 Stores all the different CommandDefinitions

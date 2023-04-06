@@ -1,5 +1,5 @@
 
-from Widgets.widget_entity import WidgetEntity
+from root_container.panel_container.element.widget.widget_entity import WidgetEntity
 from abc import abstractmethod
 
 """
@@ -22,3 +22,6 @@ class WidgetDefinition:
     @abstractmethod
     def make(self, parentCommand) -> WidgetEntity:
         return
+    
+    def getName(self) -> str:
+        return self._name

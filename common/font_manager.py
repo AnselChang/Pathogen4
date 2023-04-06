@@ -1,6 +1,6 @@
-from Observers.observer import Observable
-from dimensions import Dimensions
-from math_functions import clamp
+from data_structures.observer import Observable
+from common.dimensions import Dimensions
+from utility.math_functions import clamp
 import pygame
 from enum import Enum, auto
 

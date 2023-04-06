@@ -1,5 +1,5 @@
-from Adapters.path_adapter import PathAdapter
-from CommandCreation.command_type import CommandType
+from adapter.path_adapter import PathAdapter
+from command_creation.command_type import CommandType
 
 from enum import Enum, auto
 

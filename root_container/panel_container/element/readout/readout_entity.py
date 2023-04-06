@@ -1,12 +1,18 @@
-from BaseEntity.entity import Entity
-from Adapters.path_adapter import PathAdapter
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
+    from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
-from TextEditor.text_border import TextBorder
+from entity_base.entity import Entity
+from adapter.path_adapter import PathAdapter
 
-from reference_frame import PointRef, Ref
-from draw_order import DrawOrder
-from pygame_functions import drawText, drawTransparentRect, getText
-from font_manager import DynamicFont, FontID
+from entity_ui.text.text_border import TextBorder
+
+from common.reference_frame import PointRef, Ref
+from common.draw_order import DrawOrder
+from utility.pygame_functions import drawText, drawTransparentRect, getText
+from common.font_manager import DynamicFont, FontID
 import pygame
 
 """
@@ -15,7 +21,7 @@ Owns a DefinedReadout which stores information about the widget's context for al
 """
 
 class ReadoutEntity(Entity):
-    def __init__(self, parentCommand: Entity, pathAdapter: PathAdapter, definedReadout):
+    def __init__(self, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter, readoutDefinition: ReadoutDefinition):
 
         super().__init__(drawOrder = DrawOrder.READOUT)
 
@@ -25,12 +31,12 @@ class ReadoutEntity(Entity):
         self.font.subscribe(onNotify = self.recomputePosition)
 
         self.parentCommand = parentCommand
-        self.definedReadout = definedReadout
+        self.definition = readoutDefinition
         self.pathAdapter = pathAdapter
         self.pathAdapter.subscribe(onNotify = self.updateText)
 
     def updateText(self) -> str:
-        self.textString = str(self.pathAdapter.getString(self.definedReadout.getAttribute()))
+        self.textString = str(self.pathAdapter.getString(self.definition.getAttribute()))
         textSurface = getText(self.font.get(), self.textString, (0,0,0), 1)
         self.textWidth = textSurface.get_width()
         self.textHeight = textSurface.get_height()

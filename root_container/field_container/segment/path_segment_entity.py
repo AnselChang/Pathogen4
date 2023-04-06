@@ -1,20 +1,20 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from reference_frame import PointRef, Ref
+from global.reference_frame import PointRef, Ref
 
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from BaseEntity.EntityListeners.select_listener import SelectLambda
-from BaseEntity.entity import Entity
+from entity_base.listeners.click_listener import ClickLambda
+from entity_base.listeners.select_listener import SelectLambda
+from entity_base.entity import Entity
 
-from SegmentEntities.path_segment_state import PathSegmentState
-from SegmentEntities.PathSegmentStates.straight_segment_state import StraightSegmentState
+from root_container.field_container.segment.path_segment_state import PathSegmentState
+from root_container.field_container.segment.PathSegmentStates.straight_segment_state import StraightSegmentState
 
-from Adapters.path_adapter import PathAdapter, AdapterInterface
+from adapter.path_adapter import PathAdapter, AdapterInterface
 
-from linked_list import LinkedListNode
+from data_structures.linked_list import LinkedListNode
 
-from draw_order import DrawOrder
-from pygame_functions import shade
+from common.draw_order import DrawOrder
+from utility.pygame_functions import shade
 import pygame
 
 """

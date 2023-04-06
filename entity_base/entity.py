@@ -1,27 +1,27 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from EntityHandler.entity_manager import EntityManager
-    from EntityHandler.interactor import Interactor
-    from font_manager import FontManager
-    from image_manager import ImageManager
-    from dimensions import Dimensions
+    from entity_handler.entity_manager import EntityManager
+    from entity_handler.interactor import Interactor
+    from common.font_manager import FontManager
+    from common.image_manager import ImageManager
+    from common.dimensions import Dimensions
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from reference_frame import PointRef, Ref
+from common.reference_frame import PointRef, Ref
 
-from BaseEntity.EntityListeners.click_listener import ClickListener
-from BaseEntity.EntityListeners.drag_listener import DragListener
-from BaseEntity.EntityListeners.select_listener import SelectListener
-from BaseEntity.EntityListeners.tick_listener import TickListener
-from BaseEntity.EntityListeners.hover_listener import HoverListener
-from BaseEntity.EntityListeners.key_listener import KeyListener
+from entity_base.listeners.click_listener import ClickListener
+from entity_base.listeners.drag_listener import DragListener
+from entity_base.listeners.select_listener import SelectListener
+from entity_base.listeners.tick_listener import TickListener
+from entity_base.listeners.hover_listener import HoverListener
+from entity_base.listeners.key_listener import KeyListener
 
-from dimensions import Dimensions
+from common.dimensions import Dimensions
 
-from Observers.observer import  Observable
-from math_functions import distance, isInsideBox2
+from data_structures.observer import  Observable
+from utility.math_functions import distance, isInsideBox2
 import pygame
 
 

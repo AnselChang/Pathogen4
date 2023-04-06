@@ -1,8 +1,8 @@
-from CommandCreation.command_definition import CommandDefinition
-from CommandCreation.command_definition_builder import CommandDefinitionBuilder
-from CommandCreation.command_type import CommandType
-from Widgets.checkbox_widget import CheckboxWidgetDefinition
-from Widgets.textbox_widget import CodeTextboxWidgetDefinition, ValueTextboxWidgetDefinition
+from command_creation.command_definition import CommandDefinition
+from command_creation.command_definition_builder import CommandDefinitionBuilder
+from command_creation.command_type import CommandType
+from root_container.panel_container.widget.checkbox_widget import CheckboxWidgetDefinition
+from root_container.panel_container.widget.textbox_widget import CodeTextboxWidgetDefinition, ValueTextboxWidgetDefinition
 
 """
 The default set of command definitions at the start of the program

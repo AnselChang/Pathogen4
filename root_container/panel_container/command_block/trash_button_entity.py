@@ -1,25 +1,25 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from Commands.command_block_entity import CommandBlockEntity
+    from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
-from BaseEntity.container_entity import ContainerEntity
-from BaseEntity.EntityListeners.click_listener import ClickLambda
-from BaseEntity.EntityListeners.hover_listener import HoverLambda
+from entity_base.container_entity import Container
+from entity_base.listeners.click_listener import ClickLambda
+from entity_base.listeners.hover_listener import HoverLambda
 
-from UIEntities.Generic.image_entity import ImageEntity
+from entity_base.image.image_entity import ImageEntity
 
-from image_manager import ImageManager, ImageID
-from dimensions import Dimensions
+from common.image_manager import ImageManager, ImageID
+from common.dimensions import Dimensions
 
-from draw_order import DrawOrder
-from reference_frame import PointRef, Ref
-from pygame_functions import drawSurface
-from math_functions import distance
+from common.draw_order import DrawOrder
+from common.reference_frame import PointRef, Ref
+from utility.pygame_functions import drawSurface
+from utility.math_functions import distance
 import pygame
 
 # trash button for custom commands
-class TrashEntity(ContainerEntity):
+class TrashEntity(Container):
 
     def __init__(self, parentCommand: CommandBlockEntity, onDelete = lambda: None):
         

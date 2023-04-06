@@ -1,9 +1,8 @@
-from BaseEntity.entity import Entity
-from BaseEntity.root_entity import RootEntity
-from reference_frame import PointRef
-from Tooltips.tooltip import TooltipOwner
-from dimensions import Dimensions
-from draw_order import DrawOrder
+from entity_base.entity import Entity
+from root_container.root_container import RootEntity
+from entity_ui.tooltip import TooltipOwner
+from common.dimensions import Dimensions
+from common.draw_order import DrawOrder
 import pygame
 
 """

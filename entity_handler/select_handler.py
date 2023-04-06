@@ -1,5 +1,5 @@
-from BaseEntity.entity import Entity
-from BaseEntity.EntityListeners.select_listener import SelectorType
+from entity_base.entity import Entity
+from entity_base.listeners.select_listener import SelectorType
 
 
 """

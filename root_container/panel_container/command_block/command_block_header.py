@@ -1,16 +1,16 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from Commands.command_block_entity import CommandBlockEntity
+    from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
-from Commands.custom_command_block_entity import CustomCommandBlockEntity
-from BaseEntity.container_entity import ContainerEntity
-from Commands.icon_entity import CommandBlockIcon
-from Commands.trash_button_entity import TrashEntity
-from Adapters.path_adapter import PathAdapter
-from draw_order import DrawOrder
+from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
+from entity_base.container_entity import Container
+from root_container.panel_container.command_block.icon_entity import CommandBlockIcon
+from root_container.panel_container.command_block.trash_button_entity import TrashEntity
+from adapter.path_adapter import PathAdapter
+from common.draw_order import DrawOrder
 
-class CommandBlockHeader(ContainerEntity):
+class CommandBlockHeader(Container):
 
     def __init__(self, parentCommand: CommandBlockEntity | CustomCommandBlockEntity, pathAdapter: PathAdapter):
         super().__init__(parentCommand, drawOrder = DrawOrder.WIDGET)

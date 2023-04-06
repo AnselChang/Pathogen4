@@ -1,18 +1,18 @@
-from Adapters.path_adapter import PathAdapter
+from adapter.path_adapter import PathAdapter
 
-from Commands.command_block_entity import CommandBlockEntity
-from Commands.custom_command_block_entity import CustomCommandBlockEntity
-from Commands.command_expansion import CommandExpansionHandler
+from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
+from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
 
-from CommandCreation.command_definition_database import CommandDefinitionDatabase
-from CommandCreation.command_type import CommandType
+from command_creation.command_definition_database import CommandDefinitionDatabase
+from command_creation.command_type import CommandType
 
-from EntityHandler.entity_manager import EntityManager
-from EntityHandler.interactor import Interactor
+from entity_handler.entity_manager import EntityManager
+from entity_handler.interactor import Interactor
 
-from font_manager import FontManager
-from image_manager import ImageManager
-from dimensions import Dimensions
+from common.font_manager import FontManager
+from common.image_manager import ImageManager
+from common.dimensions import Dimensions
 
 
 """

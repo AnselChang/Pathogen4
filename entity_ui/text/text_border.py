@@ -1,5 +1,3 @@
-from dimensions import Dimensions
-
 """
 Handles drawing the border around text
 Defines the standardized constants for margins

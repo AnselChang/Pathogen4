@@ -1,20 +1,20 @@
-from BaseEntity.EntityListeners.drag_listener import DragLambda
-from BaseEntity.static_entity import StaticEntity
+from entity_base.listeners.drag_listener import DragLambda
+from entity_base.static_entity import StaticEntity
 
-from Adapters.path_adapter import PathAdapter
+from adapter.path_adapter import PathAdapter
 
-from Commands.trash_entity import TrashEntity
-from Commands.command_block_entity import CommandBlockEntity
-from Commands.command_expansion import CommandExpansionHandler
-from Commands.command_inserter import CommandInserter
+from root_container.panel_container.command_block.trash_button_entity import TrashEntity
+from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
+from root_container.panel_container.command_block.command_inserter import CommandInserter
 
-from EntityHandler.entity_manager import EntityManager
-from EntityHandler.interactor import Interactor
+from entity_handler.entity_manager import EntityManager
+from entity_handler.interactor import Interactor
 
-from font_manager import FontManager
-from reference_frame import PointRef, Ref
-from image_manager import ImageManager
-from dimensions import Dimensions
+from common.font_manager import FontManager
+from common.reference_frame import PointRef, Ref
+from common.image_manager import ImageManager
+from common.dimensions import Dimensions
 import pygame
 
 """

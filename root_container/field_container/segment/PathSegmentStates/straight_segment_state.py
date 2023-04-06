@@ -1,19 +1,19 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from reference_frame import PointRef, Ref
+from common.reference_frame import PointRef, Ref
 
 from SegmentEntities.path_segment_state import PathSegmentState
 from BaseEntity.entity import Entity
 
-from linked_list import LinkedListNode
+from data_structures.linked_list import LinkedListNode
 
-from Adapters.path_adapter import PathAdapter
-from Adapters.straight_adapter import StraightAdapter, StraightAttributeID
+from adapter.path_adapter import PathAdapter
+from adapter.straight_adapter import StraightAdapter, StraightAttributeID
 
-from image_manager import ImageID
+from common.image_manager import ImageID
 
-from pygame_functions import drawLine
-from math_functions import pointTouchingLine
+from utility.pygame_functions import drawLine
+from utility.math_functions import pointTouchingLine
 
 import pygame
 

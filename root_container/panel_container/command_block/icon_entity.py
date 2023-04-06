@@ -1,15 +1,15 @@
-from BaseEntity.container_entity import ContainerEntity
-from UIEntities.Generic.image_entity import ImageEntity
+from entity_base.container_entity import Container
+from entity_base.image.image_entity import ImageEntity
 
-from draw_order import DrawOrder
-from Adapters.path_adapter import PathAdapter
-from pygame_functions import drawSurface
+from common.draw_order import DrawOrder
+from adapter.path_adapter import PathAdapter
+from utility.pygame_functions import drawSurface
 import pygame
 
 """
 The command block icon should be placed at the left side of the command header
 """
-class CommandBlockIcon(ContainerEntity):
+class CommandBlockIcon(Container):
 
     def __init__(self, parentHeader, pathAdapter: PathAdapter):
         super().__init__(parent = parentHeader)

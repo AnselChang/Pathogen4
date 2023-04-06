@@ -1,9 +1,9 @@
-from CommandCreation.command_definition import CommandDefinition
+from command_creation.command_definition import CommandDefinition
 
-from Widgets.widget_definition import WidgetDefinition
-from Widgets.readout_definition import ReadoutDefinition
+from root_container.panel_container.widget.widget_definition import WidgetDefinition
+from root_container.panel_container.widget.readout_definition import ReadoutDefinition
 
-from CommandCreation.command_type import CommandType
+from command_creation.command_type import CommandType
 
 from enum import Enum
 
