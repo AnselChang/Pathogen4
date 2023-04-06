@@ -1,5 +1,5 @@
 import pygame, pygame.gfxdraw, math
-import math_functions
+import utility.math_functions as math_functions
 
 def shade(color: tuple, scalar: float):
     return math_functions.intTuple(math_functions.clampTuple(math_functions.scaleTuple(color, scalar), 0, 255))

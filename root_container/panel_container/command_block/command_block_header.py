@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
-from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 from entity_base.container_entity import Container
 from root_container.panel_container.command_block.icon_entity import CommandBlockIcon
 from root_container.panel_container.command_block.trash_button_entity import TrashEntity
@@ -12,7 +11,7 @@ from common.draw_order import DrawOrder
 
 class CommandBlockHeader(Container):
 
-    def __init__(self, parentCommand: CommandBlockEntity | CustomCommandBlockEntity, pathAdapter: PathAdapter):
+    def __init__(self, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter, hasTrashCan: bool):
         super().__init__(parentCommand, drawOrder = DrawOrder.WIDGET)
 
         self.parentCommand = parentCommand
@@ -20,7 +19,7 @@ class CommandBlockHeader(Container):
         CommandBlockIcon(self, pathAdapter)
 
         # Only create trash can for custom command blocks
-        if isinstance(self.parentCommand, CustomCommandBlockEntity):
+        if hasTrashCan:
             TrashEntity(parentCommand, onDelete = parentCommand.delete)
 
     def defineTopLeft(self) -> tuple:

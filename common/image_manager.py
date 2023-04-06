@@ -1,8 +1,8 @@
-from pygame_functions import getImage, brightenSurface
+from utility.pygame_functions import getImage, brightenSurface
 import pygame
 from enum import Enum, auto
 
-from surface_opacity_cache import SurfaceOpacityCache
+from utility.surface_opacity_cache import SurfaceOpacityCache
 
 
 """
@@ -31,7 +31,7 @@ class ImageID(Enum):
 class Image:
 
     def __init__(self, path: str, imageScale: float = 1, brighten: int = 0, opacityNum = None):
-        self.image = getImage("Images/" + path, imageScale)
+        self.image = getImage("images/" + path, imageScale)
 
         if brighten != 0:
             self.image = brightenSurface(self.image, brighten)

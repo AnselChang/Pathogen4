@@ -42,16 +42,17 @@ _interactor: Interactor = None
 _images: ImageManager = None
 _fonts: FontManager = None
 _dimensions: Dimensions = None
+ROOT_ENTITY = None
 def initEntityClass(entityManager: EntityManager, interactor: Interactor, images: ImageManager, fonts: FontManager, dimensions: Dimensions):
-    global _entities, _interactor, _images, _fonts, _dimensions
+    global _entities, _interactor, _images, _fonts, _dimensions, ROOT_ENTITY
     _entities = entityManager
     _interactor = interactor
     _images = images
     _fonts = fonts
     _dimensions = dimensions
 
-# top-level entities like panel should set this as parent
-ROOT_ENTITY = _entities.rootEntity
+    # top-level entities like panel should set this as parent
+    ROOT_ENTITY = _entities.rootEntity
 
 class Entity(ABC, Observable):
 

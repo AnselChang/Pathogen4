@@ -1,7 +1,7 @@
 from entity_base.entity import Entity
 from entity_ui.scrollbar.scrollbar_entity import ScrollbarEntity
 
-from global.draw_order import DrawOrder
+from common.draw_order import DrawOrder
 
 from data_structures.observer import Observable
 from utility.math_functions import isInsideBox2

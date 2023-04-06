@@ -29,7 +29,8 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         
         super().__init__(path, pathAdapter, database, commandExpansion,
                          drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
-                         defaultExpand = True
+                         defaultExpand = True,
+                         hasTrashCan = True
                          )
 
         self.trashEntity = TrashEntity(self, onDelete = self.delete)

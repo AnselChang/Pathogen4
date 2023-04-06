@@ -1,4 +1,4 @@
-from Observers.observer import Observable
+from data_structures.observer import Observable
 import pygame, math
 
 """

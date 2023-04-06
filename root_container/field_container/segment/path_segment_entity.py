@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from global.reference_frame import PointRef, Ref
+from common.reference_frame import PointRef, Ref
 
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.select_listener import SelectLambda

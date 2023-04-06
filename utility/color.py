@@ -1,4 +1,4 @@
-from format_functions import hsvToRgb
+from utility.format_functions import hsvToRgb
 
 class ColorTheme:
 

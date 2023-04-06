@@ -34,7 +34,7 @@ Position calculation is offloaded to CommandBlockPosition
 class CommandBlockEntity(Entity, CommandOrInserter):
 
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False):
+    def __init__(self, path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
         self.animatedHeight = MotionProfile(self.HEIGHT, speed = 0.4)
         self.animatedPosition = MotionProfile(0, speed = 0.3)
@@ -54,7 +54,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         CommandOrInserter.__init__(self)
         self.definitionIndex: int = 0
 
-        self.headerEntity = CommandBlockHeader(self, pathAdapter)
+        self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
 
         self.path = path
 

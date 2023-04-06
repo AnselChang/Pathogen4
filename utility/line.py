@@ -1,4 +1,4 @@
-from math_functions import deltaInHeading, pointOnLineClosestToPoint
+from utility.math_functions import deltaInHeading, pointOnLineClosestToPoint
 import math
 
 class Line:

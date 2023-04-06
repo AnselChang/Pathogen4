@@ -1,4 +1,4 @@
-from linked_list import LinkedListNode
+from data_structures.linked_list import LinkedListNode
 
 class CommandOrInserter(LinkedListNode['CommandOrInserter']):
 

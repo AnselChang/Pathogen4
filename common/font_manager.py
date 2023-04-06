@@ -9,8 +9,8 @@ class FontID(Enum):
     FONT_CODE = auto()
 
 _fontPaths: dict[FontID, str] = {
-    FontID.FONT_NORMAL : 'CascadiaCode.ttf',
-    FontID.FONT_CODE : 'CascadiaMono.ttf'
+    FontID.FONT_NORMAL : 'fonts/CascadiaCode.ttf',
+    FontID.FONT_CODE : 'fonts/CascadiaMono.ttf'
 }
 
 # A font class which changes size based on the window resolution

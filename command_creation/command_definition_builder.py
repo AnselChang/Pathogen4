@@ -1,7 +1,7 @@
 from command_creation.command_definition import CommandDefinition
 
-from root_container.panel_container.widget.widget_definition import WidgetDefinition
-from root_container.panel_container.widget.readout_definition import ReadoutDefinition
+from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
+from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
 
 from command_creation.command_type import CommandType
 

@@ -1,32 +1,32 @@
-from BaseEntity.static_entity import StaticEntity
-from BaseEntity.entity import initEntityClass
+from entity_base.static_entity import StaticEntity
+from entity_base.entity import initEntityClass
 
-from NodeEntities.path_node_entity import PathNodeEntity
-from SegmentEntities.path_segment_entity import PathSegmentEntity
+from root_container.field_container.node.path_node_entity import PathNodeEntity
+from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 
-from UIEntities.Concrete.tab_group_entity import TabGroupEntity
-from UIEntities.Concrete.tab_entity import TabEntity
+from root_container.panel_container.tab.tab_group_entity import TabGroupEntity
+from root_container.panel_container.tab.tab_entity import TabEntity
 
-from EntityHandler.entity_manager import EntityManager
-from EntityHandler.interactor import Interactor
+from entity_handler.entity_manager import EntityManager
+from entity_handler.interactor import Interactor
 
-from PathData.path import Path
+from root_container.path import Path
 
-from CommandCreation.command_definition_database import CommandDefinitionDatabase
-from CommandCreation.command_block_entity_factory import CommandBlockEntityFactory
+from command_creation.command_definition_database import CommandDefinitionDatabase
+from command_creation.command_block_entity_factory import CommandBlockEntityFactory
 
-from Commands.command_expansion_handler import CommandExpansionHandler
+from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
 
-from RootContainer.PanelContainer.panel_container import PanelContainer
-from Tooltips import tooltip
-from font_manager import FontManager, FontID
-from image_manager import ImageManager, ImageID
-from reference_frame import PointRef, Ref, initReferenceframe, VectorRef
-from field_transform import FieldTransform
-from dimensions import Dimensions
-from draw_order import DrawOrder
-from pygame_functions import getGradientSurface
-from math_functions import isInsideBox2
+from root_container.panel_container.panel_container import PanelContainer
+from entity_ui import tooltip
+from common.font_manager import FontManager, FontID
+from common.image_manager import ImageManager, ImageID
+from common.reference_frame import PointRef, Ref, initReferenceframe, VectorRef
+from common.field_transform import FieldTransform
+from common.dimensions import Dimensions
+from common.draw_order import DrawOrder
+from utility.pygame_functions import getGradientSurface
+from utility.math_functions import isInsideBox2
 import pygame, random
 import sys
 

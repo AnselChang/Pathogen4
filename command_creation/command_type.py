@@ -1,6 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
-from color import ColorTheme
+from utility.color import ColorTheme
 
 
 class CommandType(Enum):

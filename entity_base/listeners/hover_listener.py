@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from reference_frame import PointRef
+from common.reference_frame import PointRef
 
 class HoverListener(ABC):
 

@@ -8,10 +8,10 @@ from root_container.panel_container.command_block.command_or_inserter import Com
 
 from entity_handler.interactor import Interactor
 
-from global.dimensions import Dimensions
+from common.dimensions import Dimensions
 from data_structures.linked_list import LinkedListNode
-from global.reference_frame import PointRef, Ref
-from global.draw_order import DrawOrder
+from common.reference_frame import PointRef, Ref
+from common.draw_order import DrawOrder
 
 from utility.math_functions import isInsideBox2
 

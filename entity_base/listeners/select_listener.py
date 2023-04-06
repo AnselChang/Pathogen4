@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 import pygame
 
-from reference_frame import PointRef
+from common.reference_frame import PointRef
 
 class SelectorType(Enum):
     FREE = auto() # no restriction on selecting

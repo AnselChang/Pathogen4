@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from common.reference_frame import PointRef, Ref
 
-from SegmentEntities.path_segment_state import PathSegmentState
-from BaseEntity.entity import Entity
+from root_container.field_container.segment.path_segment_state import PathSegmentState
+from entity_base.entity import Entity
 
 from data_structures.linked_list import LinkedListNode
 
