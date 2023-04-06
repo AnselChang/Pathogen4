@@ -17,7 +17,7 @@ from CommandCreation.command_block_entity_factory import CommandBlockEntityFacto
 
 from Commands.command_expansion_handler import CommandExpansionHandler
 
-from UIEntities.Concrete.panel_entity import PanelEntity
+from RootContainer.PanelContainer.panel_container import PanelContainer
 from Tooltips import tooltip
 from font_manager import FontManager, FontID
 from image_manager import ImageManager, ImageID
@@ -65,7 +65,7 @@ def main():
 
     # Add permanent static entities
     panelColor = (100,100,100)
-    panel = PanelEntity(panelColor)
+    panel = PanelContainer(panelColor)
     entities.addEntity(StaticEntity(lambda: fieldTransform.draw(screen), drawOrder = DrawOrder.FIELD_BACKGROUND))
     entities.addEntity(StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX))
 
