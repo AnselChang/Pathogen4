@@ -29,17 +29,18 @@ A "plus" button that, when clicked, inserts a custom command there
 
 class CommandInserter(Entity, CommandOrInserter):
 
-    def __init__(self, parent: CommandOrInserter, path: Path, onInsert = lambda: None):
+    def __init__(self, parent: CommandOrInserter, path: Path, onInsert = lambda: None, isFirst: bool = False):
 
         super().__init__(
             parent = parent,
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
-            click = ClickLambda(self, FonLeftClick = lambda: onInsert(self)),
+            click = ClickLambda(self, FonLeftClick = lambda mouse: onInsert(self)),
             select = SelectLambda(self, "inserter", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMAND_INSERTER)
         CommandOrInserter.__init__(self)
 
         self.path = path
+        self.isFirst = isFirst
 
         self.START_Y = 43
         self.Y_MIN = 6
@@ -49,7 +50,6 @@ class CommandInserter(Entity, CommandOrInserter):
         self.X_MARGIN_LEFT = 6
         self.X_MARGIN_RIGHT = 18
         self.Y_MARGIN = 3
-        self.CORNER_RADIUS = 3
         self.MOUSE_MARGIN = 0
 
         # cross specs
@@ -65,16 +65,16 @@ class CommandInserter(Entity, CommandOrInserter):
 
     def defineTopLeft(self) -> tuple:
         # right below the previous CommandOrInserter
-        return self._px(0), self._py(1)
+        return self._px(0), self._py(0 if self.isFirst else 1)
 
     def defineWidth(self) -> float:
         # 95% of the panel
-        return self._pwidth(self.WIDTH_PERCENT_OF_PANEL)
+        return self._pwidth(1)
     
     def defineHeight(self) -> float:
-        P_HEIGHT_MIN = 0.001
-        P_HEIGHT_MAX = 0.025
-        return self._pheight(P_HEIGHT_MAX if self.isActive else P_HEIGHT_MIN)
+        HEIGHT_MIN = 5
+        HEIGHT_MAX = 12
+        return self._aheight(HEIGHT_MAX if self.isActive else HEIGHT_MIN)
 
     def setActive(self, isActive):
         self.isActive = isActive

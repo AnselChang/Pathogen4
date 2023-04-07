@@ -50,7 +50,6 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
                 FonStopDrag = self.onStopDrag
             ),
             select = SelectLambda(self, "path node", FgetHitbox = self.getHitbox),
-            click = ClickLambda(self, FonLeftClick = lambda : print("left click"), FonRightClick = lambda : print("right click")),
             hover = HoverLambda(self, FonHoverOff = self.onHoverOff, FonHoverOn = self.onHoverOn),
             key = KeyLambda(self, FonKeyDown = self.onKeyDown, FonKeyUp = self.onKeyUp),
             drawOrder = DrawOrder.NODE
@@ -73,8 +72,11 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
     def defineCenter(self) -> tuple:
         return self.position.screenRef
 
-    def getColor(self) -> tuple:
-        return self.FIRST_BLUE_COLOR if self.getPrevious() is None else self.BLUE_COLOR
+    def getColor(self, isHovered: bool) -> tuple:
+        color = self.FIRST_BLUE_COLOR if self.getPrevious() is None else self.BLUE_COLOR
+        if isHovered:
+            return shade(color, 0.9)
+        return color
 
     def getRadius(self, isHovered: bool = False) -> float:
         return 12 if isHovered else 10

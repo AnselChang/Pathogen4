@@ -43,9 +43,6 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     def delete(self):
         self.path.deleteCustomCommand(self)
 
-    def isWidgetHovering(self) -> bool:
-        return super().isWidgetHovering() or self.trashEntity.hover.isHovering
-    
     def onStartDrag(self, mouse: PointRef):
         self.dragging = True
         self.startDragY = self.CENTER_Y

@@ -111,12 +111,11 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     
     # Call this whenever there might be a change to target height
     def updateTargetHeight(self, isFirst: bool = False):
-
-        self.COLLAPSED_HEIGHT = self._aheight(30)
-        self.EXPANDED_HEIGHT = self._aheight(self.getDefinition().fullHeight) + self.getWidgetStretch()
-        
+        self.COLLAPSED_HEIGHT = 30
+        self.EXPANDED_HEIGHT = self.getDefinition().fullHeight + self.getWidgetStretch()
         
         height = self.EXPANDED_HEIGHT if self.isActuallyExpanded() else self.COLLAPSED_HEIGHT        
+        print(height)
         self.animatedHeight.setEndValue(height)
         if isFirst:
             self.animatedHeight.forceToEndValue()
@@ -126,12 +125,11 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         return self._px(0), self._py(1)
 
     def defineWidth(self) -> float:
-        # 95% of the panel
         return self._pwidth(1)
     
     def defineHeight(self) -> float:
         # current animated height
-        return self._pheight(self.animatedHeight.get())
+        return self._aheight(self.animatedHeight.get())
     
     def getPercentExpanded(self) -> float:
         return (self.HEIGHT - self.COLLAPSED_HEIGHT) / (self.EXPANDED_HEIGHT - self.COLLAPSED_HEIGHT)
@@ -174,7 +172,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.updateTargetHeight()
 
     # Toggle command expansion. Modify global expansion flags if needed
-    def onClick(self):
+    def onClick(self, mouse: tuple):
 
         if self.localExpansion:
             # If all are being forced to contract right now, disable forceContract, but 
@@ -208,23 +206,15 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     # not applicable for regular command blocks
     def isDragging(self):
         return False
-    
-    # whether some widget of command block is hovering
-    def isWidgetHovering(self) -> bool:
-        for widget in self.widgetEntities:
-            if widget.hover is not None and widget.hover.isHovering:
-                return True
-        return False
+
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
-        CORNER_RADIUS = 3
-
         # draw rounded rect
         color = COMMAND_INFO[self.type].color
         if isActive and isHovered and self.interactor.leftDragging:
             color = shade(color, 1.15)
-        elif isHovered or self.isWidgetHovering():
+        elif isHovered or self.isTouching(self.interactor.CURRENT_MOUSE_POSITION):
             color = shade(color, 1.2)
         else:
             color = shade(color, 1.1)
@@ -232,7 +222,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         if self.isDragging():
             drawTransparentRect(screen, *self.RECT, color, alpha = self.DRAG_OPACITY*255, radius = CORNER_RADIUS)
         else:
-            pygame.draw.rect(screen, color, self.RECT, border_radius = CORNER_RADIUS)
+            pygame.draw.rect(screen, color, self.RECT, border_radius = self.CORNER_RADIUS)
 
         # draw function name
         text = self.getDefinition().name + "()"

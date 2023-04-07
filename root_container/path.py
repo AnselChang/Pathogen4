@@ -1,4 +1,5 @@
 from command_creation.command_definition_database import CommandDefinitionDatabase
+from common.draw_order import DrawOrder
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
@@ -14,6 +15,8 @@ from root_container.panel_container.command_scrolling.command_scrolling_handler 
 
 from entity_handler.entity_manager import EntityManager
 from entity_handler.interactor import Interactor
+
+from entity_base.tick_entity import TickEntity
 
 from adapter.path_adapter import NullPathAdapter
 
@@ -60,6 +63,8 @@ class Path:
         self.node.updateAdapter()
 
         self.shouldRecomputeY = True
+        # register onTick() to be called at end of every tick
+        TickEntity(self.onTick, drawOrder=DrawOrder.FRONT)
 
     # called every tick, specifically AFTER all the target heights for commands/inserters are computed
     def onTick(self):
@@ -71,6 +76,7 @@ class Path:
     # Instead, call onChangeInCommandPositionOrHeight(), which sets the recompute flag to true
     # This way, recomputation only happens a maximum of once per tick
     def _recomputeY(self):
+        print("recompute")
         self.scrollHandler.setContentHeight(self.getTotalCommandHeight())
         self.commandList.head.recomputePosition()
 
@@ -82,9 +88,11 @@ class Path:
 
         if self.commandList.tail is None:
             parent = self.scrollHandler.getScrollingContainer()
+            isFirst = True
         else:
             parent = self.commandList.tail
-        inserter = CommandInserter(parent, self, self.addCustomCommand)
+            isFirst = False
+        inserter = CommandInserter(parent, self, self.addCustomCommand, isFirst)
         self.commandList.addToEnd(inserter)
 
     def _addRawNode(self, nodePosition: PointRef):
@@ -125,7 +133,7 @@ class Path:
 
         # insert another inserter after that new command
         inserter = CommandInserter(command, self, self.addCustomCommand)
-        self.commandList.insertAfter(command)
+        self.commandList.insertAfter(command, inserter)
 
         self.onChangeInCommandPositionOrHeight()
 

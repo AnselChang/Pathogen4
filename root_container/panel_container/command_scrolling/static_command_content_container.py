@@ -7,14 +7,14 @@ class StaticCommandContentContainer(Container):
         super().__init__(parent)
         self.recomputePosition()
 
-    def defineCenterX(self) -> float:
-        return self._px(0.5)
+    def defineLeftX(self) -> float:
+        return self._px(0.025)
+    
+    def defineRightX(self) -> float:
+        return self._px(0.921)
     
     def defineTopY(self) -> float:
-        return self._ay(30)
+        return self._py(0.06)
     
     def defineBottomY(self) -> float:
-        return self._ay(50)
-    
-    def defineWidth(self) -> float:
-        return self._pwidth(0.9)
+        return self._py(0.9)

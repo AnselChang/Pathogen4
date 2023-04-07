@@ -71,7 +71,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     def updateAdapter(self) -> None:
         self.state.updateAdapter()
 
-    def onDoubleClick(self):
+    def onDoubleClick(self, mouse: tuple):
         entities = [self, self.getPrevious(), self.getNext()]
         self.interactor.setSelectedEntities(entities)
 

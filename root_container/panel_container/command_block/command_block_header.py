@@ -25,7 +25,9 @@ class CommandBlockHeader(Container):
 
         # Only create trash can for custom command blocks
         if hasTrashCan:
-            TrashEntity(self, onDelete = parentCommand.delete)
+            self.trashEntity = TrashEntity(self, onDelete = parentCommand.delete)
+        else:
+            self.trashEntity = None
 
     def defineTopLeft(self) -> tuple:
         return self._px(0), self._py(0)

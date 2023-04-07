@@ -14,7 +14,7 @@ class ClickListener(ABC):
         pass
 
     @abstractmethod
-    def onDoubleLeftClick(self):
+    def onDoubleLeftClick(self, mouse: tuple):
         pass
 
 class ClickLambda(ClickListener):

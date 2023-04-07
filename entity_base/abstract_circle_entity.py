@@ -7,7 +7,7 @@ class AbstractCircleEntity(Entity):
     # NO CONSTRUCTOR. FOR SUBCLASSES, WORKAROUND IS TO CALL ENTITY CONSTRUCTOR DIRECTLY
     # PYTHON IS CURSED
 
-    def getColor(self) -> tuple:
+    def getColor(self, isHovered: bool = False) -> tuple:
         pass
 
     def getRadius(self, isHovered: bool = False) -> float:
@@ -39,7 +39,7 @@ class AbstractCircleEntity(Entity):
         pos = (self.CENTER_X, self.CENTER_Y)
 
         # draw circle
-        pygame.draw.circle(screen, self.getColor(), pos, r)
+        pygame.draw.circle(screen, self.getColor(isHovered), pos, r)
 
         # draw border if active
         if isActive:

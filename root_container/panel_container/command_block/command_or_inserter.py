@@ -5,7 +5,7 @@ class CommandOrInserter(LinkedListNode['CommandOrInserter']):
     def __init__(self):
         super().__init__()
 
-        self.WIDTH_PERCENT_OF_PANEL = 0.95
+        self.CORNER_RADIUS = 5
     
     # Called when linked list position changes. Update parent and children entity relationships
     def onUpdateLinkedListPosition(self):

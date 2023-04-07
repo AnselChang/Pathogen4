@@ -14,3 +14,6 @@ class TickEntity(Entity):
                          tick = TickLambda(self, FonTick = functionToRun),
                          drawOrder = drawOrder
                          )
+        
+    def isVisible(self) -> bool:
+        return False

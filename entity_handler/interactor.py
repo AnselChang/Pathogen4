@@ -72,8 +72,10 @@ class Interactor:
     def isMultiselect(self) -> bool:
         return self.box.active
     
-    def setHoveredEntity(self, entity: Entity, mouse: PointRef):
-        print(entity)
+    def setHoveredEntity(self, entity: Entity, mouse: tuple):
+        #print(entity)
+
+        self.CURRENT_MOUSE_POSITION = mouse
 
         self.rawHoveredEntity = entity
 

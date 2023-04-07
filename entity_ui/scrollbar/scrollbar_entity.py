@@ -40,7 +40,7 @@ class ScrollbarEntity(Entity, Observable):
         return self._px(0.5)
 
     def defineWidth(self) -> float:
-        return self._mwidth(1)
+        return self._pwidth(0.7)
     
     def defineHeight(self) -> float:
         if self.contentHeight == 0:
@@ -56,14 +56,19 @@ class ScrollbarEntity(Entity, Observable):
         self.recomputePosition()
 
 
-    def onStartDrag(self, mouse: PointRef):
-        self.mouseStartY = mouse.screenRef[1]
+    def onStartDrag(self, mouse: tuple):
+        self.mouseStartY = mouse[1]
         self.startDragY = self.TOP_Y
 
-    def onDrag(self, mouse: PointRef):
-        absoluteDragY = self.startDragY + mouse.screenRef[1] - self.mouseStartY
-        self.percent = (absoluteDragY - self._py(0)) / (self._pheight(1) - self.HEIGHT)
-        self.percent = clamp(self.percent, 0, 1)
+    def onDrag(self, mouse: tuple):
+        absoluteDragY = self.startDragY + mouse[1] - self.mouseStartY
+
+        moveableDistance = (self._pheight(1) - self.HEIGHT)
+        if moveableDistance == 0:
+            self.percent = 0
+        else:
+            self.percent = (absoluteDragY - self._py(0)) / moveableDistance
+            self.percent = clamp(self.percent, 0, 1)
         self.recomputePosition()
         self.notify()
 
