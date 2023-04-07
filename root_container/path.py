@@ -8,11 +8,11 @@ from command_creation.command_block_entity_factory import CommandBlockEntityFact
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.panel_container.panel_container import PanelContainer
+from root_container.panel_container.command_scrolling.command_scrolling_handler import CommandScrollingHandler
 
 from entity_handler.entity_manager import EntityManager
 from entity_handler.interactor import Interactor
-
-from root_container.panel_container.command_scrollbar import CommandScrollbar
 
 from adapter.path_adapter import NullPathAdapter
 
@@ -27,12 +27,12 @@ Also stores the relevant commands, and facilitates their interface through Adapt
 class Path:
 
     def __init__(self,
+                 panel: PanelContainer,
                  database: CommandDefinitionDatabase,
                  entities: EntityManager,
                  interactor: Interactor,
                  commandFactory: CommandBlockEntityFactory,
                  commandExpansion: CommandExpansionHandler,
-                 scrollbar: CommandScrollbar,
                  dimensions: Dimensions,
                  startPosition: PointRef):
             
@@ -43,29 +43,45 @@ class Path:
         self.commandExpansion = commandExpansion
         self.dimensions = dimensions
 
-        self.pathList = LinkedList() # linked list of nodes and segments
-        self.commandList = LinkedList() # linked list of CommandEntities
+        self.pathList = LinkedList[PathNodeEntity | PathSegmentEntity]() # linked list of nodes and segments
+        self.commandList = LinkedList[CommandBlockEntity | CommandInserter]() # linked list of CommandEntities
 
-        # initialize scrollbar
-        self.scrollbar = scrollbar
-        self.scrollbar.subscribe(onNotify = self.recomputeY)
+        self.scrollHandler = CommandScrollingHandler(panel)
 
         # initialize first node
         self._addInserter(self.commandList.addToEnd) # add initial CommandInserter
         self._addRawNode(startPosition, self.commandList.addToEnd) # add start node
         self._addInserter(self.commandList.addToEnd) # add final CommandInserter
-        self.recomputeY()
+
         self.node.updateAdapter()
 
-    def recomputeY(self):
-        self.scrollbar.setContentHeight(self.getTotalCommandHeight())
-        self.scrollbar.update()
-        self.commandList.head.setScrollbarOffset(self.getScrollbarOffset())
+        self.shouldRecomputeY = True
 
-    def _addInserter(self, func):
+    # called every tick, specifically AFTER all the target heights for commands/inserters are computed
+    def onTick(self):
+        if self.shouldRecomputeY:
+            self._recomputeY()
+            self.shouldRecomputeY = False
 
-        inserter = CommandInserter(self, self.addCustomCommand)
-        func(inserter)
+    # Should not be directly called by commands / inserters
+    # Instead, call onChangeInCommandPositionOrHeight(), which sets the recompute flag to true
+    # This way, recomputation only happens a maximum of once per tick
+    def _recomputeY(self):
+        self.scrollHandler.setContentHeight(self.getTotalCommandHeight())
+        self.commandList.head.recomputePosition()
+
+    # call this every time position or height changes. O(1), call as many time as you want
+    def onChangeInCommandPositionOrHeight(self):
+        self.shouldRecomputeY = True
+
+    def _addInserter(self):
+
+        if self.commandList.tail is None:
+            parent = self.scrollHandler.getScrollingContainer()
+        else:
+            parent = self.commandList.tail
+        inserter = CommandInserter(parent, self, self.addCustomCommand)
+        self.commandList.addToEnd(inserter)
 
     def _addRawNode(self, nodePosition: PointRef, func):
 
@@ -75,7 +91,7 @@ class Path:
 
         # create turn command and add entity
         self.turnCommand = self.commandFactory.create(self, self.node.getAdapter())
-        func(self.turnCommand)
+        self.commandList.addToEnd(self.turnCommand)
 
     def _addRawSegment(self):
 

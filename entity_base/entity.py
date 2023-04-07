@@ -157,6 +157,12 @@ class Entity(ABC, Observable):
         self.RIGHT_X = self.defineRightX()
         self.BOTTOM_Y = self.defineBottomY()
 
+        # able to define two points instead of width/height
+        if self.LEFT_X is not None and self.RIGHT_X is not None:
+            self.WIDTH = self.RIGHT_X - self.LEFT_X
+        if self.TOP_Y is not None and self.BOTTOM_Y is not None:
+            self.HEIGHT = self.BOTTOM_Y - self.TOP_Y
+
         if self.LEFT_X is not None:
             self.CENTER_X = self.LEFT_X + self.WIDTH / 2
             self.RIGHT_X = self.LEFT_X + self.WIDTH

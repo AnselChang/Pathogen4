@@ -1,5 +1,10 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.path import Path
+
 from entity_base.listeners.drag_listener import DragLambda
-from entity_base.static_entity import StaticEntity
+from entity_base.entity import Entity
 
 from adapter.path_adapter import PathAdapter
 
@@ -25,16 +30,13 @@ CustomCommands have two additonal features compared to regular commands
 
 class CustomCommandBlockEntity(CommandBlockEntity):
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler):
+    def __init__(self, parent: Entity, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler):
         
-        super().__init__(path, pathAdapter, database, commandExpansion,
+        super().__init__(parent, path, pathAdapter, database, commandExpansion,
                          drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
                          defaultExpand = True,
                          hasTrashCan = True
                          )
-
-        self.trashEntity = TrashEntity(self, onDelete = self.delete)
-        self.entities.addEntity(self.trashEntity, self.headerEntity)
 
         self.dragging = False
 
@@ -107,7 +109,3 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         self.onUpdateLinkedListPosition()
 
         oldPrev.recomputePosition()
-
-    # draw drag dots
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
-        pass

@@ -2,6 +2,9 @@ from entity_ui.scrollbar.abstract_scrollbar_container import AbstractScrollbarCo
 
 import pygame
 
+"""
+The specific scrollbar defined to be located at the right of the panel
+"""
 class CommandScrollbar(AbstractScrollbarContainer):
 
     def __init__(self, parent):
@@ -11,9 +14,7 @@ class CommandScrollbar(AbstractScrollbarContainer):
         self.RIGHT_MARGIN = 2
         self.WIDTH = 10
         
-        super().__init__(parent)
-
-        
+        super().__init__(parent)   
 
     def defineRightX(self) -> float:
         return self._px(1) - self._ax(self.RIGHT_MARGIN)

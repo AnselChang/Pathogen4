@@ -10,8 +10,9 @@ import pygame
 
 """
 Subclass this with define[Position] functions for concrete scroller containers
+Subscribers will be notified when scrollbar position changes
 """
-class AbstractScrollbarContainer(Container):
+class AbstractScrollbarContainer(Container, Observable):
 
     def __init__(self, parent):
 
@@ -20,4 +21,7 @@ class AbstractScrollbarContainer(Container):
 
         # after position of container has been computed, add scrollbar entity
         self.scrollbar = ScrollbarEntity(self)
+
+        # anyone who subscribes to scrollbar container is essentially subscribed to scrollbar entity
+        self.scrollbar.subscribe(onNotify = self.notify)
         

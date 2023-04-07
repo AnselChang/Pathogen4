@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.path import Path
+
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.tick_listener import TickLambda
@@ -34,7 +39,7 @@ Position calculation is offloaded to CommandBlockPosition
 class CommandBlockEntity(Entity, CommandOrInserter):
 
 
-    def __init__(self, path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
+    def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
         self.animatedHeight = MotionProfile(self.HEIGHT, speed = 0.4)
         self.animatedPosition = MotionProfile(0, speed = 0.3)
@@ -43,7 +48,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         
         # This recomputes position at Entity constructor
         super().__init__(
-            parent = "#TODO",
+            parent = parent,
             click = ClickLambda(self, FonLeftClick = self.onClick),
             tick = TickLambda(self, FonTick = self.onTick),
             drag = drag,
@@ -79,7 +84,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         if not self.animatedPosition.isDone() or not self.animatedHeight.isDone():
             self.animatedPosition.tick()
             self.animatedHeight.tick()
-            self.recomputePosition()
+            self.path.onChangeInCommandPositionOrHeight()
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)
@@ -113,7 +118,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     def defineWidth(self) -> float:
         # 95% of the panel
-        return self._pwidth(self.WIDTH_PERCENT_OF_PANEL)
+        return self._pwidth(1)
     
     def defineHeight(self) -> float:
         # current animated height

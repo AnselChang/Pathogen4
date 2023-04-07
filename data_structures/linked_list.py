@@ -17,10 +17,10 @@ class LinkedListNode(Generic[T]):
     def onUpdateLinkedListPosition(self):
         pass
 
-class LinkedList:
+class LinkedList(Generic[T]):
     def __init__(self):
-        self.head: LinkedListNode = None
-        self.tail: LinkedListNode = None
+        self.head: LinkedListNode | T = None
+        self.tail: LinkedListNode | T = None
 
     def addToBeginning(self, node: LinkedListNode):
         

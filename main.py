@@ -20,7 +20,7 @@ from root_container.panel_container.command_expansion.command_expansion_handler 
 
 from root_container.panel_container.panel_container import PanelContainer
 from root_container.field_container.field_container import FieldContainer
-from root_container.panel_container.command_scrollbar import CommandScrollbar
+from root_container.panel_container.command_scrolling.command_scrollbar import CommandScrollbar
 
 from entity_ui.tooltip import initTooltipFont
 
@@ -82,8 +82,7 @@ def main():
     commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
 
     # Create path
-    commandScrollbar = CommandScrollbar(panelContainer)
-    path = Path(database, entities, interactor, commandEntityFactory, commandExpansion, commandScrollbar, dimensions, PointRef(Ref.FIELD, (24,24)))
+    path = Path(panelContainer, database, entities, interactor, commandEntityFactory, commandExpansion, dimensions, PointRef(Ref.FIELD, (24,24)))
 
     # Create tabs
     tabs = TabGroupEntity()

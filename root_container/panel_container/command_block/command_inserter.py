@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.path import Path
+
 from entity_base.entity import Entity
 from entity_base.listeners.hover_listener import HoverLambda
 from entity_base.listeners.click_listener import ClickLambda
@@ -24,9 +29,10 @@ A "plus" button that, when clicked, inserts a custom command there
 
 class CommandInserter(Entity, CommandOrInserter):
 
-    def __init__(self, path, onInsert = lambda: None):
+    def __init__(self, parent: CommandOrInserter, path: Path, onInsert = lambda: None):
 
         super().__init__(
+            parent = parent,
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
             click = ClickLambda(self, FonLeftClick = lambda: onInsert(self)),
             select = SelectLambda(self, "inserter", type = SelectorType.SOLO),
@@ -70,7 +76,7 @@ class CommandInserter(Entity, CommandOrInserter):
 
     def setActive(self, isActive):
         self.isActive = isActive
-        self.recomputePosition()
+        self.path.onChangeInCommandPositionOrHeight()
 
     def onHoverOn(self):
 

@@ -1,3 +1,9 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.path import Path
+
+from entity_base.entity import Entity
 from adapter.path_adapter import PathAdapter
 
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
@@ -25,8 +31,8 @@ class CommandBlockEntityFactory:
         self.database = database
         self.expansion = commandExpansion
 
-    def create(self, path, adapter: PathAdapter) -> CommandBlockEntity:
+    def create(self, parent: Entity, path: Path, adapter: PathAdapter) -> CommandBlockEntity:
         if adapter.type == CommandType.CUSTOM:
-            return CustomCommandBlockEntity(path, adapter, self.database, self.expansion)
+            return CustomCommandBlockEntity(parent, path, adapter, self.database, self.expansion)
         else:
-            return CommandBlockEntity(path, adapter, self.database, self.expansion)
+            return CommandBlockEntity(parent, path, adapter, self.database, self.expansion)

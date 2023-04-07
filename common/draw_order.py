@@ -19,3 +19,4 @@ class DrawOrder(IntEnum):
     SEGMENT = auto()
     FIELD_BACKGROUND = auto()
     BACKGROUND = auto()
+    BACK = auto()
