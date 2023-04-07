@@ -65,9 +65,7 @@ class Entity(ABC, Observable):
                  hover: HoverListener = None,
                  key: KeyListener = None,
                  drawOrder: int = 0) -> None:
-        
-        print("init", self, "Parent:", parent)
-        
+                
         self.drawOrder = drawOrder
         self.drag = drag
         self.select = select
@@ -211,8 +209,6 @@ class Entity(ABC, Observable):
         self.RECT = [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT]
 
         self.defineOther()
-
-        print("recompute", self)
 
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:

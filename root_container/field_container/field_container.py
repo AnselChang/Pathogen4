@@ -18,7 +18,8 @@ from utility.math_functions import distance
 import pygame
 
 """
-An entity for the panel on the right side. Holds other entities inside
+An entity for the field.
+Passes events to fieldTransform, and subscribes to it to update entities on field
 """
 
 class FieldContainer(entity.Entity):
@@ -37,6 +38,9 @@ class FieldContainer(entity.Entity):
             drawOrder = DrawOrder.FIELD_BACKGROUND)
         self.fieldTransform = fieldTransform
         self.recomputePosition()
+
+        # Whenever field is dragged, update entities on field
+        self.fieldTransform.subscribe(onNotify = self.recomputePosition)
 
     def initPath(self, path: Path):
         self.path = path

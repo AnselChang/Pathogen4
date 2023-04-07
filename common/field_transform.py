@@ -2,6 +2,7 @@ from common.image_manager import ImageID, ImageManager
 from common.dimensions import Dimensions
 from utility.math_functions import clamp
 from utility.pygame_functions import scaleSurface
+from data_structures.observer import Observable
 import pygame
 import weakref
 
@@ -14,7 +15,7 @@ change the panning or zooming values through automatic getters and setters.
 It is expected only to have a single instance of this class to represent the screen transformation state, and this
 object would be used in cases like for PointRef objects to figure out their field and screen reference frame conversions
 """
-class FieldTransform:
+class FieldTransform(Observable):
 
     def __init__(self, images: ImageManager, dimensions: Dimensions, fieldZoom: float = 1, xyFieldPanInPixels: tuple = (0,0)):
 
@@ -60,6 +61,8 @@ class FieldTransform:
         minPan = min(minPanX, minPanY)
         self._panX = clamp(self._panX, minPanX - MARGIN, maxPanX + MARGIN)
         self._panY = clamp(self._panY, minPanY - MARGIN, maxPanY + MARGIN)
+
+        self.notify()
 
     # mouse is a PointRef
     def changeZoom(self, mouse, deltaZoom: float):

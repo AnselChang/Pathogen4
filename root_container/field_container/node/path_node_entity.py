@@ -190,18 +190,32 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
                 theta = (nNodePos - pNodePos).theta()
             )
 
-        # The four cardinal directions
+        # Snap to the four cardinal directions for the current node, as well as previous and next
+        self.addCardinalConstraints(self)
+        if self.getPrevious() is not None:
+            self.addCardinalConstraints(self.getPrevious().getPrevious())
+        if self.getNext() is not None:
+            self.addCardinalConstraints(self.getNext().getNext())
+
+        self.position = self.constraints.get()
+        
+    
+    def addCardinalConstraints(self, current: 'PathNodeEntity'):
+
+        if current is None:
+            return
+
         PI = 3.1415
         for theta in [0, PI/2]:
-            if self.getPrevious() is not None:
+            if current.getPrevious() is not None:
                 self.constraints.addConstraint(
-                    other = self.getPrevious().getPrevious().getPositionRef(),
+                    other = current.getPrevious().getPrevious().getPositionRef(),
                     theta = theta
                 )
-            if self.getNext() is not None:
+            if current.getNext() is not None:
                 self.constraints.addConstraint(
-                    other = self.getNext().getNext().getPositionRef(),
+                    other = current.getNext().getNext().getPositionRef(),
                     theta = theta
                 )
 
-        self.position = self.constraints.get()
+        
