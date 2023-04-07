@@ -50,7 +50,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.type = self.pathAdapter.type
 
         self.animatedHeight = MotionProfile(self.getDefinition().fullHeight, speed = 0.4)
-        self.animatedPosition = MotionProfile(0, speed = 0.00001)
+        self.animatedPosition = MotionProfile(0, speed = 0.4)
 
         self.localExpansion = False
         
@@ -74,6 +74,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.readoutEntities = []
         self.updateTargetHeight(True)
         self.recomputePosition()
+        self.updateTargetY(True)
         self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
 
         self.path = path
@@ -116,14 +117,22 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.EXPANDED_HEIGHT = self.getDefinition().fullHeight + self.getWidgetStretch()
         
         height = self.EXPANDED_HEIGHT if self.isActuallyExpanded() else self.COLLAPSED_HEIGHT        
-        print(height)
         self.animatedHeight.setEndValue(height)
         if isFirst:
             self.animatedHeight.forceToEndValue()
 
+    def updateTargetY(self, force: bool = False):
+        self.targetY = self._py(1) - self._parent.dragOffset + self.dragOffset
+        self.animatedPosition.setEndValue(self.targetY)
+        if force:
+            self.animatedPosition.forceToEndValue()
+
     def defineTopLeft(self) -> tuple:
+
+        self.updateTargetY()
+
         # right below the previous CommandOrInserter
-        return self._px(0), self._py(1) - self._parent.dragOffset + self.dragOffset
+        return self._px(0), self.animatedPosition.get()
 
     def defineWidth(self) -> float:
         return self._pwidth(1)
