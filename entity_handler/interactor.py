@@ -37,8 +37,6 @@ class Interactor:
         self.previousClickTime = None
         self.DOUBLE_CLICK_TIME = 0.3 # second
 
-        self.panning = False
-
         # Deselecting entities with this flag enabled blocks selection/click actions
         # immediately after deslect. set this to true when that happens
         self.greedyEntity: Entity = None
@@ -100,22 +98,22 @@ class Interactor:
         self.hoveredEntity = entity
         
 
-    def onMouseDown(self, entities: EntityManager, mouse: PointRef, isRight: bool, shiftKey: bool):
+    def onMouseDown(self, entities: EntityManager, mouse: tuple, isRight: bool, shiftKey: bool):
 
         # prevent double clicks
         if self.leftDragging or self.rightDragging:
             return
 
         self.didMove = False
-        self.mouseStartDrag = mouse.screenRef
-        self.mousePrevious = mouse.copy()
+        self.mouseStartDrag = mouse
+        self.mousePrevious = mouse
 
         if isRight:
             self.onRightMouseDown(entities, mouse)
         else:
             self.onLeftMouseDown(entities, mouse, shiftKey)
 
-    def onLeftMouseDown(self, entities: EntityManager, mouse: PointRef, shiftKey: bool):
+    def onLeftMouseDown(self, entities: EntityManager, mouse: tuple, shiftKey: bool):
 
         # handle double-click logic
         if self.hoveredEntity is not None and self.hoveredEntity.click is not None:
@@ -162,35 +160,33 @@ class Interactor:
                 entity.drag.onStartDrag(mouse)
 
 
-        # start panning
-        mx, my = mouse.screenRef
-        if self.hoveredEntity is None and mx < self.dimensions.FIELD_WIDTH:
-            self.panning = True
-            self.fieldTransform.startPan()
-
-    def onRightMouseDown(self, entities: EntityManager, mouse: PointRef):
+    def onRightMouseDown(self, entities: EntityManager, mouse: tuple):
         self.rightDragging = True
 
         # start multiselect
         self.box.disable()
         if self.hoveredEntity is None:
             self.box.enable(self.mouseStartDrag)
-            self.box.update(mouse.screenRef, entities)
+            self.box.update(mouse, entities)
 
-    def onMouseUp(self, entities: EntityManager, mouse: PointRef, path):
+    def onMouseUp(self, entities: EntityManager, mouse: tuple, path):
         isRight = self.rightDragging
         self.leftDragging = False
         self.rightDragging = False
 
+        toRemove = []
         for selected in self.selected.entities:
             if selected.drag is not None:
                 selected.drag.onStopDrag()
+            if selected.select.deselectOnMouseUp:
+                toRemove.append(selected)
+        for entity in toRemove:
+            self.removeEntity(entity)
 
         if not self.didMove:
             self.onMouseClick(entities, mouse, isRight, path)
 
         self.box.disable()
-        self.panning = False
 
         # release the mouse elsewhere from the greedy entity, so release greedy entity
         if self.greedyEntity is not None and self.rawHoveredEntity is not self.greedyEntity:
@@ -206,7 +202,7 @@ class Interactor:
         return True
 
 
-    def onMouseMove(self, entities: EntityManager, mouse: PointRef):
+    def onMouseMove(self, entities: EntityManager, mouse: tuple):
         self.didMove = True
 
         # after this point, mouse movement was dragging and not just moving around
@@ -215,7 +211,7 @@ class Interactor:
         
         # Update multiselect
         if self.box.isEnabled():
-            self.setSelectedEntities(self.box.update(mouse.screenRef, entities))
+            self.setSelectedEntities(self.box.update(mouse, entities))
 
 
         # Drag selection
@@ -223,16 +219,9 @@ class Interactor:
             for selected in self.selected.entities:
                 if selected.drag is not None:
                     selected.drag.onDrag(mouse)
-        
-
-        # pan field
-        if self.leftDragging and self.panning:
-            mx, my = mouse.screenRef
-
-            self.fieldTransform.updatePan(mx - self.mouseStartDrag[0], my - self.mouseStartDrag[1])
-
+    
     # It is guaranteed that onMouseMove() was not called if this function is called
-    def onMouseClick(self, entities: EntityManager, mouse: PointRef, isRight: bool, path):
+    def onMouseClick(self, entities: EntityManager, mouse: tuple, isRight: bool, path):
         if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:
                 self.hoveredEntity.click.onRightClick()
@@ -241,7 +230,7 @@ class Interactor:
 
         # create new node if right click field
         elif isRight and self.hoveredEntity is None:
-            if isInsideBox(*mouse.screenRef, 0, 0, self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT):
+            if isInsideBox(*mouse, 0, 0, self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT):
                 path.addNode(mouse.copy())
 
     def drawSelectBox(self, screen: pygame.Surface):

@@ -34,8 +34,8 @@ class Dimensions(Observable):
         self.RESOLUTION_RATIO = math.sqrt(ratioSquared)
 
 
-        larger = max(self.SCREEN_HEIGHT, self.FIELD_WIDTH)
-        self.LARGER_FIELD_SIDE = larger
+        self.LARGER_FIELD_SIDE = max(self.SCREEN_HEIGHT, self.FIELD_WIDTH)
+        self.SMALLER_FIELD_SIDE = min(self.SCREEN_HEIGHT, self.FIELD_WIDTH)
 
         screen = pygame.display.set_mode((screenWidth,screenHeight), pygame.RESIZABLE)
         self.notify()

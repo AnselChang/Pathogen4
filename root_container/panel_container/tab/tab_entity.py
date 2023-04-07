@@ -25,7 +25,6 @@ class TabEntity(Entity):
             click = ClickLambda(self, FonLeftClick = onClickFunction),
             drawOrder = DrawOrder.TAB)
         
-
         self.isOn = isOnFunction
         self.r = 5
 
@@ -39,7 +38,6 @@ class TabEntity(Entity):
     
     def isVisible(self) -> bool:
         return True
-
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         isActive = self.isOn()

@@ -1,6 +1,6 @@
 from entity_base.abstract_circle_entity import AbstractCircleEntity
 from entity_base.entity import Entity
-from common.reference_frame import PointRef, VectorRef
+from common.reference_frame import PointRef, Ref, VectorRef
 from entity_base.listeners.drag_listener import DragLambda
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.select_listener import SelectListener, SelectLambda
@@ -109,8 +109,8 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
     def onHoverOn(self):
         self.constraints.show()
 
-    def onStartDrag(self, mouse: PointRef):
-        self.mouseStartDrag = mouse.copy()
+    def onStartDrag(self, mouse: tuple):
+        self.mouseStartDrag = PointRef(Ref.SCREEN, mouse)
         self.startPosition = self.position.copy()
         self.constraints.show()
 
@@ -118,13 +118,13 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         self.dragging = False
         self.constraints.hide()
 
-    def canDrag(self, mouse: PointRef) -> bool:
-
+    def canDrag(self, mouseTuple: tuple) -> bool:
+        mouse = PointRef(Ref.SCREEN, mouseTuple)
         pos = self.startPosition + (mouse - self.mouseStartDrag)
         return isInsideBox(*pos.fieldRef, 0, 0, 144, 144)
 
-    def onDrag(self, mouse: PointRef):
-
+    def onDrag(self, mouseTuple: PointRef):
+        mouse = PointRef(Ref.SCREEN, mouseTuple)
         self.position = self.startPosition + (mouse - self.mouseStartDrag)
 
         # if the only one being dragged and shift key not pressed, constrain with snapping

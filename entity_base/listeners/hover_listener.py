@@ -13,7 +13,7 @@ class HoverListener(ABC):
     def onHoverOff(self):
         self.isHovering = False
 
-    def whileHovering(self, mouse: PointRef):
+    def whileHovering(self, mouse: tuple):
         pass
 
 class HoverLambda(HoverListener):
@@ -33,6 +33,6 @@ class HoverLambda(HoverListener):
         super().onHoverOff()
         self.FonHoverOff()
 
-    def whileHovering(self, mouse: PointRef):
+    def whileHovering(self, mouse: tuple):
         super().whileHovering(mouse)
         self.FWhileHovering(mouse)

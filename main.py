@@ -58,7 +58,6 @@ def main():
 
     fieldTransform: FieldTransform = FieldTransform(images, dimensions)
     initReferenceframe(dimensions, fieldTransform)
-    mouse: PointRef = PointRef()
     
     initTooltipFont(fontManager.getDynamicFont(FontID.FONT_NORMAL, 15))
     
@@ -117,8 +116,9 @@ def main():
 
     # Main game loop
     while True:
-        mouse.screenRef = pygame.mouse.get_pos()
-        interactor.setHoveredEntity(entities.getEntityAtPosition(mouse.screenRef), mouse)
+        mouse = pygame.mouse.get_pos()
+        mouseRef = PointRef(Ref.SCREEN, mouse)
+        interactor.setHoveredEntity(entities.getEntityAtPosition(mouse), mouse)
 
         # handle events and call callbacks
         for event in pygame.event.get():
@@ -128,8 +128,8 @@ def main():
             elif event.type == pygame.VIDEORESIZE:
                 screen = dimensions.resizeScreen(*event.size)
                 fieldTransform.resizeScreen()
-            elif event.type == pygame.MOUSEWHEEL and mouse.screenRef[0] < dimensions.FIELD_WIDTH:
-                fieldTransform.changeZoom(mouse, event.y * 0.1)
+            elif event.type == pygame.MOUSEWHEEL and mouse[0] < dimensions.FIELD_WIDTH:
+                fieldTransform.changeZoom(mouseRef, event.y * 0.1)
             elif event.type == pygame.MOUSEBUTTONDOWN and (event.button == 1 or event.button == 3):
                 ctrlKey = pygame.key.get_pressed()[pygame.K_LCTRL]
                 shiftKey = pygame.key.get_pressed()[pygame.K_LSHIFT]
@@ -152,7 +152,7 @@ def main():
         entities.tick()
 
         # Draw everything
-        entities.drawEntities(interactor, screen, mouse.screenRef, dimensions)
+        entities.drawEntities(interactor, screen, mouse, dimensions)
 
         # Update display and maintain frame rate
         pygame.display.flip()

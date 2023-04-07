@@ -34,7 +34,7 @@ class FieldTransform:
 
     def resizeScreen(self):
 
-        self.zoom = self._dimensions.LARGER_FIELD_SIDE / self.rawSize
+        self.zoom = self._dimensions.SMALLER_FIELD_SIDE / self.rawSize
         self.updateScaledSurface()
         self._boundFieldPan()
         self.recalculatePointsAndVectors()
@@ -63,11 +63,11 @@ class FieldTransform:
         self.zoom = self.zoom + deltaZoom
 
         MAX_ZOOM = 5 # can only do [MAX_ZOOM]x zoom from when the image is scaled to fit screen
-        self.zoom = min(self.zoom, MAX_ZOOM * self._dimensions.LARGER_FIELD_SIDE / self._dimensions.FIELD_SIZE_IN_PIXELS)
+        self.zoom = min(self.zoom, MAX_ZOOM * self._dimensions.SMALLER_FIELD_SIDE / self._dimensions.FIELD_SIZE_IN_PIXELS)
 
         # can't zoom more than the width of the screen
         if self._dimensions.LARGER_FIELD_SIDE > self.rawSize * self.zoom:
-            self.zoom = self._dimensions.LARGER_FIELD_SIDE / self.rawSize
+            self.zoom = self._dimensions.SMALLER_FIELD_SIDE / self.rawSize
 
         newX, newY = mouse.screenRef
 

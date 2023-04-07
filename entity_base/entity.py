@@ -143,7 +143,8 @@ class Entity(ABC, Observable):
 
     # override. By default, is set to mouse inside the entity rect
     def isTouching(self, mouse: tuple) -> float:
-        return isInsideBox2(*mouse, *self.RECT)
+        self._isTouching = isInsideBox2(*mouse, *self.RECT)
+        return self._isTouching
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
