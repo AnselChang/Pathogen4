@@ -1,4 +1,4 @@
-from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
+from root_container.panel_container.element.row.element_definition import ElementDefinition
 from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
 from command_creation.command_type import CommandType
 
@@ -15,11 +15,9 @@ This object holds DefinedWidget and DefinedReadout which store relative location
 
 class CommandDefinition:
 
-    def __init__(self, type: CommandType, name: str, fullHeight: int, widgets: list[WidgetDefinition] = [], readouts: list[ReadoutDefinition] = [], templateText: str = "// [default text]"):
+    def __init__(self, type: CommandType, name: str, elements: list[ElementDefinition] = [], templateText: str = "// [default text]"):
 
         self.type = type
         self.name = name
-        self.fullHeight = fullHeight
-        self.widgets = widgets
-        self.readouts = readouts
+        self.elements = elements
         self.templateText = templateText # text template

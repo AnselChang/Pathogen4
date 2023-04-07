@@ -9,7 +9,7 @@ A defined readout holds information for position relative to command
 
 class ReadoutDefinition(ElementDefinition):
 
-    def __init__(self, attributeID: Enum, variableName: str, px: int, py: int):
+    def __init__(self, attributeID: Enum, variableName: str):
         self._attribute = attributeID
 
         super().__init__(variableName)

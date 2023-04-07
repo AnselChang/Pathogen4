@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.panel_container.element.row.element_entity import ElementEntity
+
 from enum import Enum
 from root_container.panel_container.element.readout.readout_entity import ReadoutEntity
 from root_container.panel_container.element.row.label_entity import LabelEntity
@@ -22,11 +27,11 @@ class ElementDefinition(ABC):
         self.LABEL_SIZE = 15
 
     @abstractmethod
-    def makeElement(self, parent, parentCommand, pathAdapter) -> ReadoutEntity | WidgetEntity:
-        return
+    def makeElement(self, parent, parentCommand, pathAdapter) -> ElementEntity:
+        pass
     
     def makeLabel(self, parent) -> LabelEntity:
-        LabelEntity(parent, self.LABEL_FONT, self.LABEL_SIZE, staticText = self.variableName)
+        return LabelEntity(parent, self.LABEL_FONT, self.LABEL_SIZE, staticText = self.variableName)
 
     def getName(self) -> str:
         return self.variableName

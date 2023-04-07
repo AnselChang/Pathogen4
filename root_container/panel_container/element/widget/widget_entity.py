@@ -64,19 +64,9 @@ class WidgetEntity(Entity, Observable, Generic[T]):
     @abstractmethod
     def getValue(self) -> str | float:
         pass
-
-    @abstractmethod
-    def isTouchingWidget(self, position: tuple) -> bool:
-        pass
-
-    def getName(self) -> str:
-        return self.definition.getName()
     
     def isVisible(self) -> bool:
         return not self.parentCommand.isFullyCollapsed()
-
-    def isTouching(self, position: tuple) -> bool:
-        return self.parentCommand.isFullyExpanded() and self.isTouchingWidget(position)
 
     def getOpacity(self) -> float:
         return self.parentCommand.getAddonsOpacity()

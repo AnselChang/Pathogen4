@@ -12,3 +12,11 @@ class LabelEntity(TextEntity):
 
     def defineCenter(self) -> tuple:
         return self._px(0.3), self._py(0.5)
+
+    # widgets and readouts should not use ElementEntity width
+    # because they are dynamic
+    def defineWidth(self) -> float:
+        return self._pwidth(0)
+    
+    def defineHeight(self) -> float:
+        return self._pheight(1)

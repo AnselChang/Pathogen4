@@ -14,13 +14,16 @@ T = TypeVar('T')
 class LinearContainer(Container, Generic[T]):
 
     # id is used to distinguish between radio entities
-    def __init__(self, group: LinearGroupContainer, id: str):
+    def __init__(self, group: LinearGroupContainer, id: str, percent: float = 1):
         super().__init__(parent = group)
 
         self.group: LinearGroupContainer | T = group
         self.id = id
         self.i = group.add(self)
         self.group.recomputePosition()
+
+        # how much to "fill out" the group. 1 is packed
+        self.percent = percent
 
     def defineCenter(self) -> tuple:
         if self.group.isHorizontal:
@@ -30,7 +33,7 @@ class LinearContainer(Container, Generic[T]):
         
     def defineWidth(self) -> float:
         if self.group.isHorizontal:
-            return self._pwidth(1) / self.group.N
+            return self._pwidth(self.percent) / self.group.N
         else:
             return self._pwidth(1)
         
@@ -38,5 +41,5 @@ class LinearContainer(Container, Generic[T]):
         if self.group.isHorizontal:
             return self._pheight(1)
         else:
-            return self._pheight(1) / self.group.N
+            return self._pheight(self.percent) / self.group.N
         

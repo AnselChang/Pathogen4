@@ -12,5 +12,5 @@ Does not hold the widget value itself (set and get that from widgetEntity)
 
 class WidgetDefinition(ElementDefinition):
 
-    def __init__(self, variableName: str, px: float, py: float):
+    def __init__(self, variableName: str):
         super().__init__(variableName)

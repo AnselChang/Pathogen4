@@ -41,22 +41,19 @@ class ReadoutEntity(Entity):
         self.textWidth = textSurface.get_width()
         self.textHeight = textSurface.get_height()
         self.recomputePosition()
-    
-    def isVisible(self) -> bool:
-        return not self.parentCommand.isFullyCollapsed()
 
     # not interactable
     def isTouching(self, position: PointRef) -> bool:
         return False
     
     def defineCenter(self) -> tuple:
-        return self._px(self.definition.px), self._py(self.definition.py)
+        return self._px(0.5), self._py(0.5)
     
     def defineWidth(self) -> float:
-        return self._awidth(self.textWidth * self.border.OUTER_X_MARGIN*2)
+        return self.textWidth + self._awidth(self.border.OUTER_X_MARGIN*2)
     
     def defineHeight(self) -> float:
-        return self._awidth(self.textHeight * self.border.OUTER_Y_MARGIN*2)
+        return self.textHeight + self._awidth(self.border.OUTER_Y_MARGIN*2)
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
