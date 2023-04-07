@@ -44,6 +44,7 @@ class PathAdapter(ABC, Observable):
         
     def setIcon(self, icon: ImageID):
         self.icon = icon
+        self.notify()
 
     def getIcon(self) -> ImageID:
         return self.icon

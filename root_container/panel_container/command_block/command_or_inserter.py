@@ -10,8 +10,8 @@ class CommandOrInserter(LinkedListNode['CommandOrInserter']):
     
     # Called when linked list position changes. Update parent and children entity relationships
     def onUpdateLinkedListPosition(self):
-        print("update linked list position", self)
-        print("before:", self._parent, self._children)
+        #print("update linked list position", self)
+        #print("before:", self._parent, self._children)
 
         # only replace parent if not the first inserter
         # first inserter has special parent ScrollingContentContainer
@@ -23,6 +23,6 @@ class CommandOrInserter(LinkedListNode['CommandOrInserter']):
         if self.getNext() is not None:
             self._children.append(self.getNext())
 
-        print("after:", "parent:", self._parent, "children:", self._children)
+        #print("after:", "parent:", self._parent, "children:", self._children)
 
     

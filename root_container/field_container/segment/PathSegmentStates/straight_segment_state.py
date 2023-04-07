@@ -35,6 +35,7 @@ class StraightSegmentState(PathSegmentState):
 
     def updateAdapter(self) -> None:
 
+
         # not properly initialized (yet)
         if self.segment.getPrevious() is None or self.segment.getNext() is None:
             return

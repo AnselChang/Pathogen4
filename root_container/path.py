@@ -82,7 +82,6 @@ class Path:
     def onWindowResize(self):
         self.commandList.head.recomputePosition()
         self.scrollHandler.setContentHeight(self.getTotalCommandHeight())
-        print("window resize")
 
     # call this every time position or height changes. O(1), call as many time as you want
     def onChangeInCommandPositionOrHeight(self):
