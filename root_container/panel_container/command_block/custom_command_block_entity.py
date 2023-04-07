@@ -51,6 +51,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     def onStopDrag(self):
         self.dragging = False
         self.dragOffset = 0
+        self.path.onChangeInCommandPositionOrHeight()
 
     # return 1 if not dragging, and dragged opacity if dragging
     # not applicable for regular command blocks
@@ -63,9 +64,11 @@ class CustomCommandBlockEntity(CommandBlockEntity):
 
         # no change in position if dragging to immediate neighbor inserter
         if self.getNext() is inserter or self.getPrevious() is inserter:
+            self.path.onChangeInCommandPositionOrHeight()
             return
         
         self.moveAfter(inserter)
+        self.startMouseY = mouse[1] # reset start mouse y at new position
 
     def moveAfter(self, inserter: CommandInserter):
 

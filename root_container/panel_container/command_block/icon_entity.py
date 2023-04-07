@@ -19,7 +19,7 @@ class CommandBlockIcon(Container):
         self.recomputePosition()
 
         # ImageEntity is bounded exactly by the rect defined in this class
-        self.image = ImageEntity(self, pathAdapter.getIcon(), drawOrder = DrawOrder.WIDGET)
+        self.image = ImageEntity(self, pathAdapter.getIcon(), drawOrder = DrawOrder.WIDGET, dimOnHover = False)
 
         # whenever path adapter updates, update icon
         pathAdapter.subscribe(onNotify = lambda: self.image.setImage(pathAdapter.getIcon()))

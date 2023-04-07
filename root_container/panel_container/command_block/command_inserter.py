@@ -65,7 +65,7 @@ class CommandInserter(Entity, CommandOrInserter):
 
     def defineTopLeft(self) -> tuple:
         # right below the previous CommandOrInserter
-        return self._px(0), self._py(0 if self.isFirst else 1)
+        return self._px(0), self._py(0) if self.isFirst else (self._py(1) - self._parent.dragOffset)
 
     def defineWidth(self) -> float:
         # 95% of the panel

@@ -18,7 +18,11 @@ Is drawn to fit inside parent entity's rect
 class ImageEntity(Entity, TooltipOwner):
 
     # px, py, pwidth, pheight set by default to the dimensions of the parent
-    def __init__(self, parent, imageID: ImageID, drawOrder: DrawOrder, tooltip: str | list[str] = None, onClick = lambda: None, center_px = 0.5, center_py = 0.5, pwidth = 1, pheight = 1, imageIDHovered: ImageID = None):
+    def __init__(self, parent, imageID: ImageID, drawOrder: DrawOrder,
+                 tooltip: str | list[str] = None, onClick = lambda mouse: None,
+                 center_px = 0.5, center_py = 0.5, pwidth = 1, pheight = 1,
+                 imageIDHovered: ImageID = None, dimOnHover: bool = True
+                ):
         super().__init__(
             parent = parent,
             click = ClickLambda(self, FonLeftClick = onClick),
@@ -29,6 +33,7 @@ class ImageEntity(Entity, TooltipOwner):
 
         self.imageID = imageID
         self.imageIDHovered = imageIDHovered
+        self.dimOnHover = dimOnHover
 
         self.HOVER_DELTA = 50
         
@@ -85,5 +90,5 @@ class ImageEntity(Entity, TooltipOwner):
         if self.noImage:
             return
 
-        drawSurface(screen, self._getImage(isHovered), self.CENTER_X, self.CENTER_Y)
+        drawSurface(screen, self._getImage(isHovered and self.dimOnHover), self.CENTER_X, self.CENTER_Y)
             

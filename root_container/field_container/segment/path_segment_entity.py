@@ -43,7 +43,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
         self.thickness = 3
         self.hitboxThickness = 5
-        self.colorForward = [122, 191, 118]
+        self.colorForward = [122, 210, 118]
         self.colorForwardH = shade(self.colorForward, 0.9)
         self.colorForwardA = shade(self.colorForward, 0.4)
         self.colorReversed = [191, 118, 118]

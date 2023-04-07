@@ -50,7 +50,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.type = self.pathAdapter.type
 
         self.animatedHeight = MotionProfile(self.getDefinition().fullHeight, speed = 0.4)
-        self.animatedPosition = MotionProfile(0, speed = 0.3)
+        self.animatedPosition = MotionProfile(0, speed = 0.001)
 
         self.localExpansion = False
         
@@ -123,7 +123,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     def defineTopLeft(self) -> tuple:
         # right below the previous CommandOrInserter
-        return self._px(0), self._py(1)
+        return self._px(0), self._py(1) - self._parent.dragOffset + self.dragOffset
 
     def defineWidth(self) -> float:
         return self._pwidth(1)

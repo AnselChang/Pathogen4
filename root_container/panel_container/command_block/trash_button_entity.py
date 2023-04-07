@@ -28,10 +28,10 @@ class TrashEntity(Container):
         ImageEntity(self, imageID = ImageID.TRASH_OFF, imageIDHovered = ImageID.TRASH_ON, drawOrder = DrawOrder.WIDGET, onClick = onDelete)
 
     def defineCenter(self) -> tuple:
-        return self._px(1) - self._ax(60), self._py(0.5)
+        return self._px(1) - self._awidth(20), self._py(0.5)
 
     # must impl both of these if want to contain other entity
     def defineWidth(self) -> float:
-        return self._pheight(0.8) # yes, this is height not width. square icon
+        return self._pheight(0.6) # yes, this is height not width. square trash can
     def defineHeight(self) -> float:
-        return self._pheight(0.8)
+        return self._pheight(0.6)
