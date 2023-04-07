@@ -26,6 +26,8 @@ class TextEntity(Entity):
         self.font: DynamicFont = self.fonts.getDynamicFont(fontID, fontSize)
         self.font.subscribe(onNotify = self.recomputePosition)
 
+        self.recomputePosition()
+
     def defineCenter(self) -> tuple:
         return self._px(0.5), self._py(0.5)
     

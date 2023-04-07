@@ -66,7 +66,7 @@ class Entity(ABC, Observable):
                  key: KeyListener = None,
                  drawOrder: int = 0) -> None:
         
-        print("init", self.__class__.__name__, parent.__class__.__name__ if parent is not None else None)
+        print("init", self, "Parent:", parent)
         
         self.drawOrder = drawOrder
         self.drag = drag
@@ -132,7 +132,7 @@ class Entity(ABC, Observable):
         
     # override
     def isVisible(self) -> bool:
-        print(self, self._parent)
+        print("isVisible", self, self._parent)
         return self._parent.isVisible()
     
     # override
@@ -141,9 +141,9 @@ class Entity(ABC, Observable):
             return self._parent.getOpacity()
         return 1 
 
-    # override for non-rect behavior
-    def isTouching(self, position: tuple) -> bool:
-        return isInsideBox2(*position, *self.RECT)
+    # override. By default, is set to mouse inside the entity rect
+    def isTouching(self, mouse: tuple) -> float:
+        return isInsideBox2(*mouse, *self.RECT)
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
@@ -156,7 +156,7 @@ class Entity(ABC, Observable):
     
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self):
-        print("recompute", self.__class__.__name__)
+        print("recompute", self)
         self.WIDTH = self.defineWidth()
         self.HEIGHT = self.defineHeight()
         self.CENTER_X, self.CENTER_Y = self.defineCenter()
@@ -257,3 +257,9 @@ class Entity(ABC, Observable):
     # Get "absolute" height in "pixels". One "pixel" is accurate for default resolution
     def _aheight(self, pixels):
         return pixels * self.dimensions.RESOLUTION_RATIO
+    
+    def __repr__(self):
+        try:
+            return f"{self.__class__.__name__} ({int(self.CENTER_X)}, {int(self.CENTER_Y)})"
+        except:
+            return f"{self.__class__.__name__} (Undefined)"

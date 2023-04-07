@@ -76,5 +76,5 @@ class ImageEntity(Entity, TooltipOwner):
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
-        drawSurface(screen, self._getImage(), self.CENTER_X, self.CENTER_Y)
+        drawSurface(screen, self._getImage(isHovered), self.CENTER_X, self.CENTER_Y)
             

@@ -22,7 +22,7 @@ class PanelContainer(entity.Entity):
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        pygame.draw.rect(screen, self.color, *self.RECT)
+        pygame.draw.rect(screen, self.color, self.RECT)
 
 
     def defineTopLeft(self) -> tuple:
