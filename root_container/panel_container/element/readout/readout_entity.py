@@ -21,9 +21,9 @@ Owns a DefinedReadout which stores information about the widget's context for al
 """
 
 class ReadoutEntity(Entity):
-    def __init__(self, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter, readoutDefinition: ReadoutDefinition):
+    def __init__(self, parent, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter, readoutDefinition: ReadoutDefinition):
 
-        super().__init__(drawOrder = DrawOrder.READOUT)
+        super().__init__(parent, drawOrder = DrawOrder.READOUT)
 
         self.border = TextBorder()
 

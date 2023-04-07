@@ -3,11 +3,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
-
-from entity_base.listeners.click_listener import ClickLambda
-from entity_base.listeners.key_listener import KeyLambda
-from entity_base.listeners.select_listener import SelectLambda, SelectorType
-
 from root_container.panel_container.element.widget.widget_entity import WidgetEntity
 from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
 
@@ -22,40 +17,25 @@ from common.reference_frame import PointRef, Ref
 
 class TextboxWidgetEntity(WidgetEntity['TextboxWidgetDefinition']):
 
-    def __init__(self, parentCommand: CommandBlockEntity, definition: 'TextboxWidgetDefinition'):
+    def __init__(self, parent, parentCommand: CommandBlockEntity, definition: 'TextboxWidgetDefinition'):
 
-        if definition.pwidth is None:
-            width = None
-        else:
-            width = lambda: parentCommand.dimensions.PANEL_WIDTH * definition.pwidth
 
         font: DynamicFont = parentCommand.fonts.getDynamicFont(definition.fontID, definition.fontSize)
 
+        super().__init__(parent, parentCommand, definition)
+        self.recomputePosition()
+
         self.textEditor = TextEditorEntity(
+            self,
             font,
-            parentCommand.dimensions.px, parentCommand.dimensions.py,
             getOpacity = self.getOpacity,
             isDynamic = definition.isDynamic,
             isNumOnly = definition.isNumOnly,
             defaultText = definition.defaultText
         )
-        self.parentCommand.entities.addEntity(self.textEditor, self)
 
         # Sends notification when text height changes
-        self.textEditor.subscribe(onNotify = self._parent.updateTargetHeight)
-
-        super().__init__(parentCommand, definition,
-            key = KeyLambda(self,
-                            FonKeyDown = self.textEditor.onKeyDown,
-                            FonKeyUp = self.textEditor.onKeyUp
-                            ),
-            select = SelectLambda(self, "text editor", type = SelectorType.SOLO, greedy = True,
-                                  FonSelect = self.textEditor.onSelect,
-                                  FonDeselect = self.textEditor.onDeselect
-                            )
-        )
-
-        self.onModifyDefinition()
+        self.textEditor.subscribe(onNotify = parentCommand.updateTargetHeight)
 
 
     def onModifyDefinition(self):
@@ -97,8 +77,8 @@ class TextboxWidgetDefinition(WidgetDefinition):
         self.isDynamic = isDynamic
         self.isNumOnly = isNumOnly
 
-    def make(self, parentCommand) -> TextboxWidgetEntity:
-        return TextboxWidgetEntity(parentCommand, self)
+    def makeElement(self, parent, parentCommand, pathAdapter) -> TextboxWidgetEntity:
+        return TextboxWidgetEntity(parent, parentCommand, self)
     
 # dynamic, no text restrictions
 class CodeTextboxWidgetDefinition(TextboxWidgetDefinition):

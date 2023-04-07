@@ -5,6 +5,10 @@ from data_structures.observer import Observable
 from entity_ui.text.text_handler import TextHandler
 from entity_ui.text.text_border import TextBorder
 
+from entity_base.listeners.click_listener import ClickLambda
+from entity_base.listeners.key_listener import KeyLambda
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
+
 from common.font_manager import DynamicFont
 from utility.math_functions import isInsideBox2
 from common.draw_order import DrawOrder
@@ -35,23 +39,28 @@ class CursorBlink:
 # notifies observers whenever resized from text (isDynamic)
 class TextEditorEntity(Entity, Observable):
 
-    def __init__(self, font: DynamicFont, px: float, py: float, getOpacity = lambda: 1, isDynamic: bool = False, isNumOnly: bool = False, defaultText: str = ""):
+    def __init__(self, parent: Entity, font: DynamicFont, isDynamic: bool = False, isNumOnly: bool = False, defaultText: str = ""):
         
-        super().__init__(drawOrder = DrawOrder.WIDGET)
+        super().__init__(parent, 
+            key = KeyLambda(self,
+                FonKeyDown = self.onKeyDown,
+                FonKeyUp = self.onKeyUp
+            ),
+            select = SelectLambda(self, "text editor", type = SelectorType.SOLO, greedy = True,
+                FonSelect = self.onSelect,
+                FonDeselect = self.onDeselect
+            ),
+            drawOrder = DrawOrder.WIDGET)
 
         self.font = font
-        self.px, self.py = px, py
         
-        self.getOpacity = getOpacity
-
         self.dynamic = isDynamic
         self.numOnly = isNumOnly
 
         self.border = TextBorder()
 
         self.rows = 1
-        self.font.subscribe(Observable(onNotify = self.onFontUpdate))
-        self.dimensions.subscribe(onNotify = self.recomputePosition)
+        self.font.subscribe(onNotify = self.onFontUpdate)
 
         self.textHandler = TextHandler(self, defaultText = defaultText)
         self.cursorBlink = CursorBlink(35, 33)
@@ -84,7 +93,7 @@ class TextEditorEntity(Entity, Observable):
         self.setRows(self.rows - 1)
 
     def defineCenter(self) -> tuple:
-        return self._px(self.px), self._py(self.py)
+        return self._px(0.5), self._py(0.5)
 
     def defineWidth(self) -> float:
         return self._awidth(self.textHandler.getSurfaceWidth() + self.border.OUTER_X_MARGIN * 2)

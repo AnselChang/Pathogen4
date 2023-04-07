@@ -30,7 +30,7 @@ Stores the actual value of the widget
 T = TypeVar('T')
 class WidgetEntity(Entity, Observable, Generic[T]):
 
-    def __init__(self, parentCommand: CommandBlockEntity, definition: WidgetDefinition,
+    def __init__(self, parent, parentCommand: CommandBlockEntity, definition: WidgetDefinition,
                  click: ClickListener = None,
                  drag: DragListener = None,
                  hover: HoverListener = None,
@@ -42,7 +42,7 @@ class WidgetEntity(Entity, Observable, Generic[T]):
         if hover is None:
             hover = HoverLambda(self)
             
-        super().__init__(parent = parentCommand,
+        super().__init__(parent = parent,
                          click = click, drag = drag, hover = hover, tick = tick, select = select, key = key,
                          drawOrder = DrawOrder.WIDGET)
 

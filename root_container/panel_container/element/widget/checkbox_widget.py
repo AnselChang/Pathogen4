@@ -18,9 +18,9 @@ import pygame
 
 class CheckboxWidgetEntity(WidgetEntity['CheckboxWidgetDefinition'], TooltipOwner):
 
-    def __init__(self, parentCommand: CommandBlockEntity, definition: 'CheckboxWidgetDefinition'):
+    def __init__(self, parent, parentCommand: CommandBlockEntity, definition: 'CheckboxWidgetDefinition'):
 
-        super().__init__(parentCommand, definition,
+        super().__init__(parent, parentCommand, definition,
                          click = ClickLambda(self, FonLeftClick = self.onLeftClick)
                          )
 
@@ -70,5 +70,5 @@ class CheckboxWidgetDefinition(WidgetDefinition):
         self.tooltipOn = tooltipOn
         self.tooltipOff = tooltipOff
 
-    def make(self, parentCommand) -> CheckboxWidgetEntity:
-        return CheckboxWidgetEntity(parentCommand, self)
+    def makeElement(self, parent, parentCommand, pathAdapter) -> CheckboxWidgetEntity:
+        return CheckboxWidgetEntity(parent, parentCommand, self)
