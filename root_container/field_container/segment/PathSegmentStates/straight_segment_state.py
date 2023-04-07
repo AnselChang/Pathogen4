@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+
 from abc import ABC, abstractmethod
 from enum import Enum
 from common.reference_frame import PointRef, Ref
@@ -21,7 +26,7 @@ import pygame
 # only purpose is to connect two points. 
 
 class StraightSegmentState(PathSegmentState):
-    def __init__(self, segment: Entity) -> None:
+    def __init__(self, segment: PathSegmentEntity) -> None:
         super().__init__(segment)
         self.adapter = StraightAdapter()
 
@@ -29,8 +34,13 @@ class StraightSegmentState(PathSegmentState):
         return self.adapter
 
     def updateAdapter(self) -> None:
-        posA = self.segment.getPrevious().getPosition()
-        posB = self.segment.getNext().getPosition()
+
+        # not properly initialized (yet)
+        if self.segment.getPrevious() is None or self.segment.getNext() is None:
+            return
+
+        posA = self.segment.getPrevious().getPositionRef()
+        posB = self.segment.getNext().getPositionRef()
 
         self.adapter.set(StraightAttributeID.X1, posA.fieldRef[0], f"{posA.fieldRef[0]:.1f})")
         self.adapter.set(StraightAttributeID.Y1, posA.fieldRef[1], f"{posA.fieldRef[1]:.1f})")
@@ -43,30 +53,33 @@ class StraightSegmentState(PathSegmentState):
         self.adapter.setIcon(ImageID.STRAIGHT_REVERSE if self.segment.isReversed else ImageID.STRAIGHT_FORWARD)
 
     def getStartTheta(self) -> float:
-        theta = (self.segment.getNext().getPosition() - self.segment.getPrevious().getPosition()).theta()
+        theta = (self.segment.getNext().getPositionRef() - self.segment.getPrevious().getPositionRef()).theta()
         return theta
 
     def getEndTheta(self) -> float:
         return self.getStartTheta()
 
-    def isTouching(self, position: PointRef) -> bool:
-        mx, my = position.screenRef
-        x1, y1 = self.segment.getPrevious().getPosition().screenRef
-        x2, y2 = self.segment.getNext().getPosition().screenRef
-        return pointTouchingLine(mx, my, x1, y1, x2, y2, self.segment.hitboxThickness)
+    def isTouching(self, position: tuple) -> bool:
+        x1, y1 = self.segment.getPrevious().getPositionRef().screenRef
+        x2, y2 = self.segment.getNext().getPositionRef().screenRef
+        return pointTouchingLine(*position, x1, y1, x2, y2, self.segment.hitboxThickness)
 
 
     def getCenter(self) -> tuple:
-        fpos = self.segment.getPrevious().getPosition()
-        spos = self.segment.getNext().getPosition()
+
+        if self.segment.getPrevious() is None or self.segment.getNext() is None:
+            return (0, 0)
+
+        fpos = self.segment.getPrevious().getPositionRef()
+        spos = self.segment.getNext().getPositionRef()
 
         return (fpos + (spos - fpos) / 2).screenRef
 
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
-        x1, y1 = self.segment.getPrevious().getPosition().screenRef
-        x2, y2 = self.segment.getNext().getPosition().screenRef
+        x1, y1 = self.segment.getPrevious().getPositionRef().screenRef
+        x2, y2 = self.segment.getNext().getPositionRef().screenRef
 
         drawLine(screen, self.segment.getColor(isActive, isHovered), x1, y1, x2, y2, self.segment.thickness, None)
 

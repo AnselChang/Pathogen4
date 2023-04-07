@@ -24,19 +24,19 @@ Also draws the constraints
 class Constraints(Entity):
 
     # if distance to line is less than pixel threshold, snap to line
-    def __init__(self, parent, pixelThreshold: int, dimensions: Dimensions):
+    def __init__(self, parent, pixelThreshold: int):
 
         super().__init__(
             parent,
             drawOrder = DrawOrder.CONSTRAINT_LINES
         )
-
-        self.dimensions = dimensions
         
         self.constraints: list[Line] = []
         self.PIXEL_THRESHOLD = pixelThreshold
 
         self.visible = False
+
+        self.recomputePosition()
 
     def show(self):
         self.visible = True
@@ -99,9 +99,6 @@ class Constraints(Entity):
 
     def isTouching(self, position: PointRef) -> bool:
         return False
-
-    def getPosition(self) -> PointRef:
-        return PointRef()
 
     # draw all constraint lines
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

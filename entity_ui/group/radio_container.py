@@ -18,7 +18,7 @@ class RadioContainer(Generic[T], LinearContainer['RadioGroupEntity' | T]):
     def __init__(self, group: RadioGroupContainer | T, id: str):
         super().__init__(group, id)
 
-    def onClick(self):
+    def onClick(self, mouse: tuple):
         self.group.onOptionClick(self)
 
     def isOn(self):

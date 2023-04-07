@@ -50,10 +50,16 @@ class FieldTransform:
 
         MARGIN = 0
 
-        minPanX = self._dimensions.FIELD_WIDTH - self.size
-        minPanY = self._dimensions.SCREEN_HEIGHT - self.size
-        self._panX = clamp(self._panX, minPanX - MARGIN, MARGIN)
-        self._panY = clamp(self._panY, minPanY - MARGIN, MARGIN)
+        minPanX = min(self._dimensions.FIELD_WIDTH - self.size, 0)
+        minPanY = min(self._dimensions.SCREEN_HEIGHT - self.size, 0)
+
+
+        maxPanX = max(self._dimensions.FIELD_WIDTH - self.size, 0)
+        maxPanY = max(self._dimensions.SCREEN_HEIGHT - self.size, 0)
+
+        minPan = min(minPanX, minPanY)
+        self._panX = clamp(self._panX, minPanX - MARGIN, maxPanX + MARGIN)
+        self._panY = clamp(self._panY, minPanY - MARGIN, maxPanY + MARGIN)
 
     # mouse is a PointRef
     def changeZoom(self, mouse, deltaZoom: float):
@@ -63,10 +69,10 @@ class FieldTransform:
         self.zoom = self.zoom + deltaZoom
 
         MAX_ZOOM = 5 # can only do [MAX_ZOOM]x zoom from when the image is scaled to fit screen
-        self.zoom = min(self.zoom, MAX_ZOOM * self._dimensions.SMALLER_FIELD_SIDE / self._dimensions.FIELD_SIZE_IN_PIXELS)
-
+        self.zoom = min(self.zoom, MAX_ZOOM * self._dimensions.LARGER_FIELD_SIDE / self._dimensions.FIELD_SIZE_IN_PIXELS)
+        print(self.zoom)
         # can't zoom more than the width of the screen
-        if self._dimensions.LARGER_FIELD_SIDE > self.rawSize * self.zoom:
+        if self._dimensions.SMALLER_FIELD_SIDE > self.rawSize * self.zoom:
             self.zoom = self._dimensions.SMALLER_FIELD_SIDE / self.rawSize
 
         newX, newY = mouse.screenRef

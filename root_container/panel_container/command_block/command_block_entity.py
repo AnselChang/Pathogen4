@@ -69,7 +69,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.widgetEntities = []
         self.readoutEntities = []
-        self.updateTargetHeight()
+        self.updateTargetHeight(True)
         self.recomputePosition()
         self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
 
@@ -110,13 +110,16 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         return self.localExpansion
     
     # Call this whenever there might be a change to target height
-    def updateTargetHeight(self):
+    def updateTargetHeight(self, isFirst: bool = False):
 
-        self.EXPANDED_HEIGHT = self._pheight(self.getDefinition().fullHeight) + self.getWidgetStretch()
-        self.COLLAPSED_HEIGHT = self._pheight(0.0375)
+        self.COLLAPSED_HEIGHT = self._aheight(30)
+        self.EXPANDED_HEIGHT = self._aheight(self.getDefinition().fullHeight) + self.getWidgetStretch()
+        
         
         height = self.EXPANDED_HEIGHT if self.isActuallyExpanded() else self.COLLAPSED_HEIGHT        
         self.animatedHeight.setEndValue(height)
+        if isFirst:
+            self.animatedHeight.forceToEndValue()
 
     def defineTopLeft(self) -> tuple:
         # right below the previous CommandOrInserter

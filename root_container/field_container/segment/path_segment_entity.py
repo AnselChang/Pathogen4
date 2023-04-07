@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.field_container.node.path_node_entity import PathNodeEntity
+
 from abc import ABC, abstractmethod
 from enum import Enum
 from common.reference_frame import PointRef, Ref
@@ -23,7 +28,7 @@ that define behavior for straight/arc/bezier shapes. Easy to switch between stat
 We also define the constants that apply across all segment types here, like color and thickness
 """
 
-class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
+class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity']):
     def __init__(self, parent: Entity) -> None:
         
         super().__init__(parent = parent,
@@ -46,6 +51,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
         self.colorReversedA = shade(self.colorReversed, 0.4)
 
         self.updateAdapter()
+        self.recomputePosition()
 
 
     def changeSegmentShape(self, newStateClass: type[PathSegmentState]):

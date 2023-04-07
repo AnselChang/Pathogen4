@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.path import Path
+
 from abc import ABC, abstractmethod
 from enum import Enum
 from common.reference_frame import PointRef, Ref
@@ -5,6 +10,7 @@ from common.reference_frame import PointRef, Ref
 import entity_base.entity as entity
 from common.draw_order import DrawOrder
 from common.field_transform import FieldTransform
+from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.drag_listener import DragLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
@@ -27,9 +33,13 @@ class FieldContainer(entity.Entity):
                               FonDrag = self.onDrag,
                               FonStopDrag = self.onStopDrag
                               ),
+            click = ClickLambda(self, FonRightClick = self.onRightClick),
             drawOrder = DrawOrder.FIELD_BACKGROUND)
         self.fieldTransform = fieldTransform
         self.recomputePosition()
+
+    def initPath(self, path: Path):
+        self.path = path
 
     def defineTopLeft(self) -> tuple:
         return 0, 0
@@ -39,6 +49,10 @@ class FieldContainer(entity.Entity):
         return self.dimensions.SCREEN_HEIGHT
     def defineHeight(self) -> float:
         return self.dimensions.SCREEN_HEIGHT
+    
+    # Add a new node at location
+    def onRightClick(self, mousePos: tuple):
+        self.path.addNode(PointRef(Ref.SCREEN, mousePos))
     
     def onStartDrag(self, mousePos: tuple):
         self.startX, self.startY = mousePos

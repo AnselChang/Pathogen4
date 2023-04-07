@@ -157,7 +157,6 @@ class Entity(ABC, Observable):
     
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self):
-        print("recompute", self)
         self.WIDTH = self.defineWidth()
         self.HEIGHT = self.defineHeight()
         self.CENTER_X, self.CENTER_Y = self.defineCenter()
@@ -212,6 +211,8 @@ class Entity(ABC, Observable):
         self.RECT = [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT]
 
         self.defineOther()
+
+        print("recompute", self)
 
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:

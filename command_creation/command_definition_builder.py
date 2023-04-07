@@ -17,7 +17,7 @@ class CommandDefinitionBuilder:
 
         self.type = type
         self.name = "untitledFunction()"
-        self.fullHeight = 0.15
+        self.fullHeight = 100
         self.widgets: list[WidgetDefinition] = []
         self.readouts: list[ReadoutDefinition] = []
         self.templateText = "// [default text]"

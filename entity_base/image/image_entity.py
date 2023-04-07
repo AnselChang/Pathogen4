@@ -56,7 +56,15 @@ class ImageEntity(Entity, TooltipOwner):
 
     # define the scaled image surfaces given the parent rect
     def defineOther(self) -> None:
-        self.imageScaled = scaleImageToRect(self.images.get(self.imageID), self.WIDTH, self.HEIGHT)
+        image = self.images.get(self.imageID)
+
+        if image is None:
+            self.noImage = True
+            return
+        else:
+            self.noImage = False
+
+        self.imageScaled = scaleImageToRect(image, self.WIDTH, self.HEIGHT)
         
         self.imageWidth = self.imageScaled.get_width()
         self.imageHeight = self.imageScaled.get_height()
@@ -75,6 +83,9 @@ class ImageEntity(Entity, TooltipOwner):
         return self.imageScaledH if isHovered else self.imageScaled
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+
+        if self.noImage:
+            return
 
         drawSurface(screen, self._getImage(isHovered), self.CENTER_X, self.CENTER_Y)
             

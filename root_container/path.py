@@ -94,7 +94,7 @@ class Path:
         self.pathList.addToEnd(self.node)
 
         # create turn command and add entity
-        self.turnCommand = self.commandFactory.create(self.fieldContainer, self, self.node.getAdapter())
+        self.turnCommand = self.commandFactory.create(self.commandList.tail, self, self.node.getAdapter())
         self.commandList.addToEnd(self.turnCommand)
 
     def _addRawSegment(self):
@@ -104,8 +104,8 @@ class Path:
         self.pathList.addToEnd(self.segment)
 
         # create segment command and add entity
-        self.segmentCommand = self.commandFactory.create(self, self.segment.getAdapter())
-        self.commandList.insertBeforeEnd(self.segmentCommand)
+        self.segmentCommand = self.commandFactory.create(self.commandList.tail, self, self.segment.getAdapter())
+        self.commandList.addToEnd(self.segmentCommand)
 
     def addNode(self, nodePosition: PointRef):
         self._addRawSegment()
@@ -120,7 +120,7 @@ class Path:
     # add custom command where inserter is
     def addCustomCommand(self, inserter: CommandInserter):
         # add the custom command after the inserter
-        command = self.commandFactory.create(self, NullPathAdapter())
+        command = self.commandFactory.create(self.commandList.tail, self, NullPathAdapter())
         self.commandList.insertAfter(inserter, command)
 
         # insert another inserter after that new command

@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+
 from abc import ABC, abstractmethod
 from enum import Enum
 from common.reference_frame import PointRef
@@ -12,7 +17,7 @@ Also provides an interface for getting thetas at both sides, and holding referen
 """
 
 class PathSegmentState(ABC):
-    def __init__(self, segment: Entity | LinkedListNode) -> None:
+    def __init__(self, segment: PathSegmentEntity | LinkedListNode) -> None:
         self.segment = segment # type PathSegmentEntity (the parent)
 
     @abstractmethod

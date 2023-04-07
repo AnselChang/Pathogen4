@@ -6,11 +6,11 @@ class ClickListener(ABC):
         self.entity = entity
 
     @abstractmethod
-    def onLeftClick(self):
+    def onLeftClick(self, mouse: tuple):
         pass
 
     @abstractmethod
-    def onRightClick(self):
+    def onRightClick(self, mouse: tuple):
         pass
 
     @abstractmethod
@@ -19,18 +19,20 @@ class ClickListener(ABC):
 
 class ClickLambda(ClickListener):
 
-    def __init__(self, entity, FonLeftClick = lambda: None, FonRightClick = lambda: None, FOnDoubleClick = lambda: None):
+    def __init__(self, entity, FonLeftClick = lambda mouse: None,
+                 FonRightClick = lambda mouse: None,
+                 FOnDoubleClick = lambda mouse: None):
         super().__init__(entity)
 
         self.FonLeftClick = FonLeftClick
         self.FonRightClick = FonRightClick
         self.FOnDoubleClick = FOnDoubleClick
 
-    def onLeftClick(self):
-        self.FonLeftClick()
+    def onLeftClick(self, mouse: tuple):
+        self.FonLeftClick(mouse)
 
-    def onRightClick(self):
-        self.FonRightClick()
+    def onRightClick(self, mouse: tuple):
+        self.FonRightClick(mouse)
 
-    def onDoubleLeftClick(self):
-        self.FOnDoubleClick()
+    def onDoubleLeftClick(self, mouse: tuple):
+        self.FOnDoubleClick(mouse)

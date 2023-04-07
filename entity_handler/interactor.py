@@ -111,14 +111,14 @@ class Interactor:
         if isRight:
             self.onRightMouseDown(entities, mouse)
         else:
-            self.onLeftMouseDown(entities, mouse, shiftKey)
+            self.onLeftMouseDown(mouse, shiftKey)
 
-    def onLeftMouseDown(self, entities: EntityManager, mouse: tuple, shiftKey: bool):
+    def onLeftMouseDown(self, mouse: tuple, shiftKey: bool):
 
         # handle double-click logic
         if self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if self.previousClickEntity is self.hoveredEntity and time.time() - self.previousClickTime < self.DOUBLE_CLICK_TIME:
-                self.hoveredEntity.click.onDoubleLeftClick()
+                self.hoveredEntity.click.onDoubleLeftClick(mouse)
                 self.previousClickEntity = None
             else: # single click logic
                 self.previousClickEntity = self.hoveredEntity
@@ -169,7 +169,7 @@ class Interactor:
             self.box.enable(self.mouseStartDrag)
             self.box.update(mouse, entities)
 
-    def onMouseUp(self, entities: EntityManager, mouse: tuple, path):
+    def onMouseUp(self, entities: EntityManager, mouse: tuple):
         isRight = self.rightDragging
         self.leftDragging = False
         self.rightDragging = False
@@ -184,7 +184,7 @@ class Interactor:
             self.removeEntity(entity)
 
         if not self.didMove:
-            self.onMouseClick(entities, mouse, isRight, path)
+            self.onMouseClick(mouse, isRight)
 
         self.box.disable()
 
@@ -221,17 +221,12 @@ class Interactor:
                     selected.drag.onDrag(mouse)
     
     # It is guaranteed that onMouseMove() was not called if this function is called
-    def onMouseClick(self, entities: EntityManager, mouse: tuple, isRight: bool, path):
+    def onMouseClick(self, mouse: tuple, isRight: bool):
         if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:
-                self.hoveredEntity.click.onRightClick()
+                self.hoveredEntity.click.onRightClick(mouse)
             else:
-                self.hoveredEntity.click.onLeftClick()
-
-        # create new node if right click field
-        elif isRight and self.hoveredEntity is None:
-            if isInsideBox(*mouse, 0, 0, self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT):
-                path.addNode(mouse.copy())
+                self.hoveredEntity.click.onLeftClick(mouse)
 
     def drawSelectBox(self, screen: pygame.Surface):
 

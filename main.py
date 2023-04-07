@@ -85,6 +85,7 @@ def main():
 
     # Create path
     path = Path(fieldContainer, panelContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
+    fieldContainer.initPath(path)
 
     # Add the gradient at the bottom of the commands
     c1 = (*panelColor, 255)
@@ -129,7 +130,7 @@ def main():
                 screen = dimensions.resizeScreen(*event.size)
                 fieldTransform.resizeScreen()
             elif event.type == pygame.MOUSEWHEEL and mouse[0] < dimensions.FIELD_WIDTH:
-                fieldTransform.changeZoom(mouseRef, event.y * 0.1)
+                fieldTransform.changeZoom(mouseRef, event.y * 0.01)
             elif event.type == pygame.MOUSEBUTTONDOWN and (event.button == 1 or event.button == 3):
                 ctrlKey = pygame.key.get_pressed()[pygame.K_LCTRL]
                 shiftKey = pygame.key.get_pressed()[pygame.K_LSHIFT]
@@ -137,7 +138,7 @@ def main():
                 interactor.onMouseDown(entities, mouse, right, shiftKey)
 
             elif event.type == pygame.MOUSEBUTTONUP:
-                interactor.onMouseUp(entities, mouse, path)
+                interactor.onMouseUp(entities, mouse)
 
             elif event.type == pygame.MOUSEMOTION:
                 interactor.onMouseMove(entities, mouse)
