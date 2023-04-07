@@ -111,6 +111,9 @@ def scaleSurface(surface, scale):
 
 def getGradientSurface(width, height, color1, color2, vertical = True, invert = False):
 
+    width = int(width)
+    height = int(height)
+
     """Draws a rectangle with a gradient from color1 to color2"""
     gradient = pygame.Surface((width, height))
     if vertical:

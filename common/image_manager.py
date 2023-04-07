@@ -31,7 +31,7 @@ class ImageID(Enum):
 class Image:
 
     def __init__(self, path: str, imageScale: float = 1, brighten: int = 0, opacityNum = None):
-        self.image = getImage("images/" + path, imageScale)
+        self.image = getImage("images/" + path, 1)
 
         if brighten != 0:
             self.image = brightenSurface(self.image, brighten)

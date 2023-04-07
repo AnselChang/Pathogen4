@@ -74,5 +74,5 @@ class ScrollbarEntity(Entity, Observable):
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
-        color = [150,150,150] if isHovered else [170,170,170]
-        pygame.draw.rect(screen, color, self.RECT, 1)
+        color = [140,140,140] if isHovered else [160,160,160]
+        pygame.draw.rect(screen, color, self.RECT)

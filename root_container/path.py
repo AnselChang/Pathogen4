@@ -24,7 +24,7 @@ from data_structures.linked_list import LinkedList
 from common.dimensions import Dimensions
 from common.reference_frame import PointRef
 
-from entity_base.entity import _entities, _interactor, _dimensions
+import entity_base.entity as entity
 
 """
 A class storing state for a segment and the node after it.
@@ -40,9 +40,8 @@ class Path:
                  commandExpansion: CommandExpansionHandler,
                  startPosition: PointRef):
             
-        self.entities = _entities
-        self.interactor = _interactor
-        self.dimensions = _dimensions
+        self.entities = entity._entities
+        self.dimensions = entity._dimensions
 
         self.database = database
         self.commandFactory = commandFactory
@@ -54,6 +53,7 @@ class Path:
         self.commandList = LinkedList[CommandBlockEntity | CommandInserter]() # linked list of CommandEntities
 
         self.scrollHandler = CommandScrollingHandler(panel)
+        self.dimensions.subscribe(onNotify = self.onWindowResize)
 
         # initialize first node
         self._addInserter() # add initial CommandInserter
@@ -76,9 +76,13 @@ class Path:
     # Instead, call onChangeInCommandPositionOrHeight(), which sets the recompute flag to true
     # This way, recomputation only happens a maximum of once per tick
     def _recomputeY(self):
-        print("recompute")
         self.scrollHandler.setContentHeight(self.getTotalCommandHeight())
         self.commandList.head.recomputePosition()
+
+    def onWindowResize(self):
+        self.commandList.head.recomputePosition()
+        self.scrollHandler.setContentHeight(self.getTotalCommandHeight())
+        print("window resize")
 
     # call this every time position or height changes. O(1), call as many time as you want
     def onChangeInCommandPositionOrHeight(self):
@@ -168,18 +172,18 @@ class Path:
         return height
     
     # When dragging a custom command. Gets the closest inserter object to the mouse
-    def getClosestInserter(self, mouse: PointRef) -> CommandInserter | None:
+    def getClosestInserter(self, mouse: tuple) -> CommandInserter | None:
 
-        mx, my = mouse.screenRef
+        mx, my = mouse
 
         closestInserter: CommandInserter = self.commandList.head
-        closestDistance = abs(closestInserter.getY() - my)
+        closestDistance = abs(closestInserter.CENTER_Y - my)
 
         inserter: CommandInserter = self.commandList.head
         while inserter is not None:
             if isinstance(inserter, CommandInserter):
 
-                distance = abs(inserter.getY() - my)
+                distance = abs(inserter.CENTER_Y - my)
                 if distance < closestDistance:
                     closestDistance = distance
                     closestInserter = inserter

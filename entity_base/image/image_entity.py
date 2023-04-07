@@ -72,9 +72,7 @@ class ImageEntity(Entity, TooltipOwner):
         if self.imageIDHovered is not None:
             self.imageScaledH = pygame.transform.smoothscale(self.images.get(self.imageIDHovered), (self.imageWidth, self.imageHeight))
         else:
-            self.imageScaledH = brightenSurface(self.imageScaled, self.HOVER_DELTA)
-
-        
+            self.imageScaledH = brightenSurface(self.imageScaled, self.HOVER_DELTA)        
 
     def getTooltip(self) -> Tooltip | None:
         return self.tooltip

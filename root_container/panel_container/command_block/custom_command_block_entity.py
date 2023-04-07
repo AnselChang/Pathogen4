@@ -43,10 +43,10 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     def delete(self):
         self.path.deleteCustomCommand(self)
 
-    def onStartDrag(self, mouse: PointRef):
+    def onStartDrag(self, mouse: tuple):
         self.dragging = True
         self.startDragY = self.CENTER_Y
-        self.startMouseY = mouse.screenRef[1]
+        self.startMouseY = mouse[1]
 
     def onStopDrag(self):
         self.dragging = False
@@ -57,8 +57,8 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     def isDragging(self):
         return self.dragging
     
-    def onDrag(self, mouse: PointRef):
-        self.dragOffset = mouse.screenRef[1] - self.startMouseY
+    def onDrag(self, mouse: tuple):
+        self.dragOffset = mouse[1] - self.startMouseY
         inserter: CommandInserter = self.path.getClosestInserter(mouse)
 
         # no change in position if dragging to immediate neighbor inserter
@@ -87,7 +87,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
                 self.path.commandList.tail = self._prev
 
             oldPrev = self._prev
-            oldAfter = self._next._next
+            oldNext = self._next._next
 
             newNext = inserter._next
             self._prev = inserter
@@ -95,14 +95,15 @@ class CustomCommandBlockEntity(CommandBlockEntity):
             self._next._next = newNext
             newNext._prev = self._next
 
-            oldPrev._next = oldAfter
-            if oldAfter is not None:
-                oldAfter._prev = oldPrev
-                oldAfter.onUpdateLinkedListPosition()
+            oldPrev._next = oldNext
+            if oldNext is not None:
+                oldNext._prev = oldPrev
 
         oldPrev.onUpdateLinkedListPosition()
-        oldNext.onUpdateLinkedListPosition()
         inserter.onUpdateLinkedListPosition()
         self.onUpdateLinkedListPosition()
 
-        oldPrev.recomputePosition()
+        if oldNext is not None:
+            oldNext.onUpdateLinkedListPosition()
+
+        self.path.onChangeInCommandPositionOrHeight()

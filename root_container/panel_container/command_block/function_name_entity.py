@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 
 from entity_base.entity import Entity
 from entity_base.text_entity import TextEntity
+from common.draw_order import DrawOrder
 
 
 # trash button for custom commands
@@ -16,11 +17,17 @@ class FunctionNameEntity(Entity):
         super().__init__(parent = parentHeader)
         self.recomputePosition()
 
-        TextEntity(self, fontID = FontID.FONT_NORMAL, fontSize = 15, textFunction = parentCommand.getFunctionName, isAlignCenter = False)
+        TextEntity(self,
+                   fontID = FontID.FONT_NORMAL,
+                   fontSize = 19,
+                   textFunction = lambda: parentCommand.getFunctionName() + "()",
+                   isAlignCenter = False,
+                   drawOrder = DrawOrder.WIDGET
+                   )
 
 
     def defineLeftX(self) -> tuple:
-        return self._ax(30)
+        return self._ax(37)
     
     def defineCenterY(self) -> float:
         return self._py(0.5)

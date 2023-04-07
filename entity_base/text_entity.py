@@ -13,10 +13,10 @@ class TextEntity(Entity):
     
     # if align center, then center of text will be aligned with center of parent
     # if not align center, then left of text will be aligned with left of parent
-    def __init__(self, parent, fontID: FontID, fontSize: int, staticText: str = None, textFunction = None, isAlignCenter = True):
+    def __init__(self, parent, fontID: FontID, fontSize: int, staticText: str = None, textFunction = None, isAlignCenter = True, drawOrder = DrawOrder.FRONT):
 
         # for now, always draw text in the front. can easily make flexible if needed
-        super().__init__(parent, drawOrder = DrawOrder.FRONT)
+        super().__init__(parent, drawOrder = drawOrder)
 
         self.isAlignCenter = isAlignCenter
 

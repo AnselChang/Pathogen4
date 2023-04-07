@@ -5,7 +5,7 @@ class CommandOrInserter(LinkedListNode['CommandOrInserter']):
     def __init__(self):
         super().__init__()
 
-        self.CORNER_RADIUS = 5
+        self.CORNER_RADIUS = 3
     
     # Called when linked list position changes. Update parent and children entity relationships
     def onUpdateLinkedListPosition(self):

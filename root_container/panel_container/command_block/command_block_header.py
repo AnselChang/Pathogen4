@@ -36,5 +36,5 @@ class CommandBlockHeader(Container):
     def defineWidth(self) -> float:
         return self._pwidth(1)
     def defineHeight(self) -> float:
-        return self.parentCommand.COLLAPSED_HEIGHT
+        return self._aheight(self.parentCommand.COLLAPSED_HEIGHT)
     

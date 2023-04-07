@@ -87,30 +87,6 @@ def main():
     path = Path(fieldContainer, panelContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)
 
-    # Add the gradient at the bottom of the commands
-    c1 = (*panelColor, 255)
-    c2 = (*panelColor, 0)
-    height = 30
-    offset = 35
-    StaticEntity(
-        lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height, c1, c2, invert=True), (dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - height - offset)),
-        drawOrder = DrawOrder.GRADIENT_PANEL,
-    )
-    StaticEntity(lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset, dimensions.PANEL_WIDTH, offset]), drawOrder = DrawOrder.GRADIENT_PANEL)
-    
-    # add grey rect at top to prevent commands from bleeding into panel
-    height = 30
-    height2 = 20
-    StaticEntity(
-        lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, 0, dimensions.PANEL_WIDTH, height]),
-        drawOrder = DrawOrder.GRADIENT_PANEL
-    )
-    StaticEntity(
-        lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height2, c1, c2), (dimensions.FIELD_WIDTH, height)),
-        drawOrder = DrawOrder.GRADIENT_PANEL,
-    )
-
-
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
     clock = pygame.time.Clock()

@@ -41,6 +41,9 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
+        self.DRAG_OPACITY = 0.7
+        self.dragOffset = 0
+
         self.definitionIndex: int = 0
         self.database = database
         self.pathAdapter = pathAdapter
@@ -74,8 +77,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
 
         self.path = path
-
-        self.dragOffset = 0
 
         #self.widgetEntities = self.manifestWidgets()
         #self.readoutEntities = self.manifestReadouts()
@@ -220,7 +221,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             color = shade(color, 1.1)
 
         if self.isDragging():
-            drawTransparentRect(screen, *self.RECT, color, alpha = self.DRAG_OPACITY*255, radius = CORNER_RADIUS)
+            drawTransparentRect(screen, *self.RECT, color, alpha = self.DRAG_OPACITY*255, radius = self.CORNER_RADIUS)
         else:
             pygame.draw.rect(screen, color, self.RECT, border_radius = self.CORNER_RADIUS)
 

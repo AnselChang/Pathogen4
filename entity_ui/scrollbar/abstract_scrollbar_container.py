@@ -16,7 +16,7 @@ class AbstractScrollbarContainer(Container, Observable):
 
     def __init__(self, parent):
 
-        super().__init__(parent = parent, drawOrder = DrawOrder.SCROLLBAR_BACKGROUND)
+        super().__init__(parent = parent, drawOrder = DrawOrder.SCROLLBAR_BORDER)
         self.recomputePosition()
 
         # after position of container has been computed, add scrollbar entity
@@ -25,3 +25,7 @@ class AbstractScrollbarContainer(Container, Observable):
         # anyone who subscribes to scrollbar container is essentially subscribed to scrollbar entity
         self.scrollbar.subscribe(onNotify = self.notify)
         
+    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+
+        color = [0,0,0]
+        pygame.draw.rect(screen, color, self.RECT, 1)

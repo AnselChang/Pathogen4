@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from common.reference_frame import PointRef, Ref
 
+from root_container.panel_container.gradient_separator.gradient_separator import TabsCommandsSeparator
+
 import entity_base.entity as entity
 from common.draw_order import DrawOrder
 
@@ -19,6 +21,9 @@ class PanelContainer(entity.Entity):
         super().__init__(parent = entity.ROOT_CONTAINER, drawOrder = DrawOrder.PANEL_BACKGROUND)
         self.color = color
         self.recomputePosition()
+
+        # add gradient panels
+        TabsCommandsSeparator(self)
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
