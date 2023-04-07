@@ -1,4 +1,4 @@
-from entity_ui.group.radio_group_entity import RadioGroupEntity
+from entity_ui.group.radio_group_container import RadioGroupContainer
 from root_container.panel_container.panel_container import PanelContainer
 from root_container.panel_container.tab.tab_entity import TabEntity
 from common.dimensions import Dimensions
@@ -7,7 +7,7 @@ from common.dimensions import Dimensions
 If allowNoSelect is True, then no option being selected is allowed
 Child of Panel Entity
 """
-class TabGroupEntity(RadioGroupEntity[TabEntity]):
+class TabGroupEntity(RadioGroupContainer):
 
     def __init__(self, parentPanel: PanelContainer):
         super().__init__(parentPanel, isHorizontal = True, allowNoSelect = False)

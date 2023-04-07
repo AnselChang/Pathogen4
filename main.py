@@ -5,8 +5,7 @@ from entity_base.entity import initEntityClass, setRootContainer
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 
-from root_container.panel_container.tab.tab_group_entity import TabGroupEntity
-from root_container.panel_container.tab.tab_entity import TabEntity
+from root_container.panel_container.tab.tab_handler import TabHandler
 
 from entity_handler.entity_manager import EntityManager
 from entity_handler.interactor import Interactor
@@ -77,6 +76,9 @@ def main():
 
     StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX)
 
+    # create tabs
+    tabHandler = TabHandler(panelContainer)
+
     # initialize commands
     database = CommandDefinitionDatabase()
     commandExpansion = CommandExpansionHandler(panelContainer)
@@ -84,11 +86,6 @@ def main():
 
     # Create path
     path = Path(fieldContainer, panelContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
-
-    # Create tabs
-    tabs = TabGroupEntity(panelContainer)
-    for text in ["A", "B", "C"]:
-        TabEntity(tabs, text)
 
     # Add the gradient at the bottom of the commands
     c1 = (*panelColor, 255)

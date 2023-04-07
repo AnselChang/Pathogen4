@@ -1,6 +1,6 @@
 from common.reference_frame import PointRef, Ref
 from entity_base.listeners.click_listener import ClickLambda
-from entity_ui.group.radio_entity import RadioEntity
+from entity_ui.group.radio_container import RadioContainer
 from entity_base.entity import Entity
 
 from utility.math_functions import isInsideBox2

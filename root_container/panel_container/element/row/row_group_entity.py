@@ -1,12 +1,12 @@
 from entity_base.entity import Entity
-from entity_ui.group.linear_group_entity import LinearGroupEntity
+from entity_ui.group.linear_group_container import LinearGroupContainer
 
 """
 Manages all the rows of the command block
 Each row has a left column (label), and right column (widget or readout)
 """
 
-class RowGroupEntity(LinearGroupEntity):
+class RowGroupEntity(LinearGroupContainer):
     
     def __init__(self, parent: Entity):
 

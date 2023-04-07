@@ -1,11 +1,11 @@
-from entity_ui.group.radio_group_entity import RadioGroupEntity
+from entity_ui.group.radio_group_container import RadioGroupContainer
 from common.dimensions import Dimensions
 
 """
 The expand and collapse buttons on the bottom of the panel
 Child of Panel Entity
 """
-class ExpansionGroupEntity(RadioGroupEntity):
+class ExpansionGroupEntity(RadioGroupContainer):
 
     def __init__(self, panelEntity):
         super().__init__(panelEntity, isHorizontal = True, allowNoSelect = True)

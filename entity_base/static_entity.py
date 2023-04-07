@@ -16,6 +16,7 @@ class StaticEntity(entity.Entity):
     def __init__(self, Fdraw = lambda: None, drawOrder: int = 0) -> None:
         super().__init__(parent = entity.ROOT_CONTAINER, drawOrder = drawOrder)
         self.Fdraw = Fdraw
+        self.recomputePosition()
         
     def isVisible(self) -> bool:
         return True

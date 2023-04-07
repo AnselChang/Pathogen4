@@ -1,18 +1,19 @@
+from entity_base.container_entity import Container
 from entity_base.entity import Entity
-from entity_ui.group.linear_entity import LinearEntity
+from entity_ui.group.linear_container import LinearContainer
 from typing import TypeVar, Generic
 
 """
 A group of linear entities, arranged either horizontally or vertically
 """
 T = TypeVar('T')
-class LinearGroupEntity(Entity, Generic[T]):
+class LinearGroupContainer(Container, Generic[T]):
 
     def __init__(self, parent: Entity, isHorizontal: bool):
         
         super().__init__(parent)
 
-        self.groupEntities: list[LinearEntity | T] = []
+        self.groupEntities: list[LinearContainer | T] = []
         self.isHorizontal = isHorizontal
 
         self.N = 0
@@ -20,7 +21,7 @@ class LinearGroupEntity(Entity, Generic[T]):
         self.recomputePosition()
 
     # add linear entity to group. returns the linear entity's location
-    def add(self, entity: LinearEntity):
+    def add(self, entity: LinearContainer):
         self.groupEntities.append(entity)
         self.N += 1
 
@@ -29,7 +30,7 @@ class LinearGroupEntity(Entity, Generic[T]):
     def N(self) -> int:
         return len(self.groupEntities)
     
-    def getFromID(self, id) -> LinearEntity:
+    def getFromID(self, id) -> LinearContainer:
         for entity in self.groupEntities:
             if entity.id == id:
                 return entity

@@ -37,6 +37,9 @@ class TextEntity(Entity):
         elif self.staticText is not None:
             return self.staticText
         return "[no text specified]"
+    
+    def isTouching(self, mouse: tuple) -> float:
+        return False
 
     # Draw text at the center. opacity set to parent opacity
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

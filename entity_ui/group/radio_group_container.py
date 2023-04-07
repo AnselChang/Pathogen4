@@ -1,6 +1,6 @@
 from entity_base.entity import Entity
-from entity_ui.group.radio_entity import RadioEntity
-from entity_ui.group.linear_group_entity import LinearGroupEntity
+from entity_ui.group.radio_container import RadioContainer
+from entity_ui.group.linear_group_container import LinearGroupContainer
 from entity_handler.entity_manager import EntityManager
 from typing import TypeVar, Generic
 
@@ -8,19 +8,19 @@ from typing import TypeVar, Generic
 If allowNoSelect is True, then no option being selected is allowed
 """
 T = TypeVar('T')
-class RadioGroupEntity(Generic[T], LinearGroupEntity[RadioEntity | T]):
+class RadioGroupContainer(Generic[T], LinearGroupContainer[RadioContainer | T]):
 
     def __init__(self, parent: Entity, isHorizontal: bool, allowNoSelect: bool = False):
         
         super().__init__(parent, isHorizontal)
 
-        self.active: RadioEntity | T = None
+        self.active: RadioContainer | T = None
         self.allowNoSelect = allowNoSelect
 
 
-    def add(self, entity: RadioEntity):
+    def add(self, entity: RadioContainer):
 
-        assert(isinstance(entity, RadioEntity))
+        assert(isinstance(entity, RadioContainer))
 
         result = super().add(entity)
         if not self.allowNoSelect and self.active is None:
@@ -29,7 +29,7 @@ class RadioGroupEntity(Generic[T], LinearGroupEntity[RadioEntity | T]):
         return result
 
 
-    def onOptionClick(self, option: RadioEntity):
+    def onOptionClick(self, option: RadioContainer):
         
         if option not in self.groupEntities:
             raise Exception("given RadioEntity object is not a part of this RadioGroup object")
@@ -41,20 +41,20 @@ class RadioGroupEntity(Generic[T], LinearGroupEntity[RadioEntity | T]):
             self.active = option
 
     # get the active option
-    def getActiveOption(self) -> RadioEntity | T:
+    def getActiveOption(self) -> RadioContainer | T:
         return self.active
     
-    def isOptionOn(self, optionAsEntityOrID: str | RadioEntity):
+    def isOptionOn(self, optionAsEntityOrID: str | RadioContainer):
 
-        if not isinstance(optionAsEntityOrID, RadioEntity):
+        if not isinstance(optionAsEntityOrID, RadioContainer):
             optionAsEntityOrID = self.getFromID(optionAsEntityOrID)
 
         return self.active is optionAsEntityOrID
     
-    def setOption(self, id: str | RadioEntity | None):
+    def setOption(self, id: str | RadioContainer | None):
         if id is None:
             self.active = None
-        elif isinstance(id, RadioEntity):
+        elif isinstance(id, RadioContainer):
             self.active = id
         else:
             self.active = self.getFromID(id)

@@ -17,7 +17,7 @@ class FieldContainer(entity.Entity):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
     def __init__(self, fieldTransform: FieldTransform):
-        super().__init__(parent = entity.ROOT_CONTAINER, drawOrder = DrawOrder.PANEL_BACKGROUND)
+        super().__init__(parent = entity.ROOT_CONTAINER, drawOrder = DrawOrder.FIELD_BACKGROUND)
         self.fieldTransform = fieldTransform
         self.recomputePosition()
 

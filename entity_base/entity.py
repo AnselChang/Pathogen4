@@ -132,7 +132,7 @@ class Entity(ABC, Observable):
         
     # override
     def isVisible(self) -> bool:
-        print("isVisible", self, self._parent)
+        #print("isVisible", self, self._parent)
         return self._parent.isVisible()
     
     # override
@@ -151,7 +151,7 @@ class Entity(ABC, Observable):
 
     # draw rect specified by x, y, width, height. For testing only probably
     def drawRect(self, screen: pygame.Surface):
-        pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT])
+        pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], width = 1)
 
     
     # Must call recomputePosition every time the entity changes its position or dimensions
@@ -260,6 +260,6 @@ class Entity(ABC, Observable):
     
     def __repr__(self):
         try:
-            return f"{self.__class__.__name__} ({int(self.CENTER_X)}, {int(self.CENTER_Y)})"
+            return f"{self.__class__.__name__} ({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)}))"
         except:
             return f"{self.__class__.__name__} (Undefined)"

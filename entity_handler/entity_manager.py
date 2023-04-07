@@ -90,6 +90,7 @@ class EntityManager:
                     hovering = False
 
                 entity.draw(screen, selected, hovering)
+                entity.drawRect(screen)
 
         # draw tooltips on top of the entities
         for entity in self.entities:

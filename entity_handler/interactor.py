@@ -75,6 +75,7 @@ class Interactor:
         return self.box.active
     
     def setHoveredEntity(self, entity: Entity, mouse: PointRef):
+        print(entity)
 
         self.rawHoveredEntity = entity
 

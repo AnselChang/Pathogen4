@@ -1,5 +1,5 @@
 from entity_base.image.toggle_image_entity import ToggleImageEntity
-from entity_ui.group.radio_entity import RadioEntity
+from entity_ui.group.radio_container import RadioContainer
 from root_container.panel_container.command_expansion.expansion_group_entity import ExpansionGroupEntity
 from common.image_manager import ImageID
 from data_structures.observer import Observable
@@ -41,7 +41,7 @@ class CommandExpansionHandler(Observable):
         self.buttons = ExpansionGroupEntity(panelEntity)
         for dict in info:
             id = dict["id"]
-            radio = RadioEntity(self.buttons, id)
+            radio = RadioContainer(self.buttons, id)
             ToggleImageEntity(radio, dict["imageOn"], dict["imageOff"],
                         drawOrder = DrawOrder.UI_BUTTON,
                         tooltip = dict["tooltip"],
