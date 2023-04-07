@@ -12,7 +12,7 @@ class ReadoutDefinition(ElementDefinition):
     def __init__(self, attributeID: Enum, variableName: str, px: int, py: int):
         self._attribute = attributeID
 
-        super().__init__(variableName, px, py)
+        super().__init__(variableName)
 
     # overriding
     def makeElement(self, parent, parentCommand, pathAdapter) -> ReadoutEntity:

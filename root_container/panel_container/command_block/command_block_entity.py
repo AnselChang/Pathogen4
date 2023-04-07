@@ -77,10 +77,10 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.dragOffset = 0
 
-        self.widgetEntities = self.manifestWidgets()
-        self.readoutEntities = self.manifestReadouts()
+        #self.widgetEntities = self.manifestWidgets()
+        #self.readoutEntities = self.manifestReadouts()
 
-        self.titleFont = self.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
+        self.recomputePosition()
 
     # Update animation every tick
     def onTick(self):
@@ -91,6 +91,9 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)
+    
+    def getFunctionName(self) -> str:
+        return self.getDefinition().name
     
     # how much the widgets stretch the command by. return the largest one
     def getWidgetStretch(self) -> int:
@@ -231,7 +234,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         # draw function name
         text = self.getDefinition().name + "()"
         x = self.dimensions.FIELD_WIDTH + 40
-        drawText(screen, self.titleFont.get(), text, (0,0,0), x, y, alignX = 0)
 
     def toString(self) -> str:
         return "Command Block Entity"

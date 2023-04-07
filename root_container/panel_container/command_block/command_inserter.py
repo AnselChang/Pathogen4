@@ -61,6 +61,8 @@ class CommandInserter(Entity, CommandOrInserter):
         self.currentY = self.START_Y
         self.isActive = False
 
+        self.recomputePosition()
+
     def defineTopLeft(self) -> tuple:
         # right below the previous CommandOrInserter
         return self._px(0), self._py(1)

@@ -2,17 +2,19 @@ from entity_base.entity import Entity
 from entity_ui.group.radio_entity import RadioEntity
 from entity_ui.group.linear_group_entity import LinearGroupEntity
 from entity_handler.entity_manager import EntityManager
+from typing import TypeVar, Generic
 
 """a group of radio_entities, where only one is selected at a time
 If allowNoSelect is True, then no option being selected is allowed
 """
-class RadioGroupEntity(LinearGroupEntity[RadioEntity]):
+T = TypeVar('T')
+class RadioGroupEntity(Generic[T], LinearGroupEntity[RadioEntity | T]):
 
     def __init__(self, parent: Entity, isHorizontal: bool, allowNoSelect: bool = False):
         
         super().__init__(parent, isHorizontal)
 
-        self.active: RadioEntity = None
+        self.active: RadioEntity | T = None
         self.allowNoSelect = allowNoSelect
 
 
@@ -20,9 +22,11 @@ class RadioGroupEntity(LinearGroupEntity[RadioEntity]):
 
         assert(isinstance(entity, RadioEntity))
 
-        super().add(entity)
+        result = super().add(entity)
         if not self.allowNoSelect and self.active is None:
             self.active = entity
+
+        return result
 
 
     def onOptionClick(self, option: RadioEntity):
@@ -37,7 +41,7 @@ class RadioGroupEntity(LinearGroupEntity[RadioEntity]):
             self.active = option
 
     # get the active option
-    def getActiveOption(self) -> RadioEntity:
+    def getActiveOption(self) -> RadioEntity | T:
         return self.active
     
     def isOptionOn(self, optionAsEntityOrID: str | RadioEntity):

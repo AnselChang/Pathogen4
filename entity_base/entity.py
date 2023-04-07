@@ -36,7 +36,6 @@ for your entity.
 DrawOrder, with enum defined in draw_order.py, specifies the layering of the drawn objects.
 Feel free to add to DrawOrder enum if you want to order a new entity type.
 """
-
 _entities: EntityManager = None
 _interactor: Interactor = None
 _images: ImageManager = None
@@ -51,6 +50,10 @@ def initEntityClass(entityManager: EntityManager, interactor: Interactor, images
     _fonts = fonts
     _dimensions = dimensions
 
+def setRootContainer(rootContainer):
+    global ROOT_CONTAINER
+    ROOT_CONTAINER = rootContainer
+
 class Entity(ABC, Observable):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
@@ -62,6 +65,8 @@ class Entity(ABC, Observable):
                  hover: HoverListener = None,
                  key: KeyListener = None,
                  drawOrder: int = 0) -> None:
+        
+        print("init", self.__class__.__name__, parent.__class__.__name__ if parent is not None else None)
         
         self.drawOrder = drawOrder
         self.drag = drag
@@ -127,6 +132,7 @@ class Entity(ABC, Observable):
         
     # override
     def isVisible(self) -> bool:
+        print(self, self._parent)
         return self._parent.isVisible()
     
     # override
@@ -150,6 +156,7 @@ class Entity(ABC, Observable):
     
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self):
+        print("recompute", self.__class__.__name__)
         self.WIDTH = self.defineWidth()
         self.HEIGHT = self.defineHeight()
         self.CENTER_X, self.CENTER_Y = self.defineCenter()

@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from entity_base.container_entity import Container
 from root_container.panel_container.command_block.icon_entity import CommandBlockIcon
 from root_container.panel_container.command_block.trash_button_entity import TrashEntity
+from root_container.panel_container.command_block.function_name_entity import FunctionNameEntity
 from adapter.path_adapter import PathAdapter
 from common.draw_order import DrawOrder
 
@@ -20,10 +21,11 @@ class CommandBlockHeader(Container):
         self.recomputePosition()
         
         CommandBlockIcon(self, pathAdapter)
+        FunctionNameEntity(self, parentCommand)
 
         # Only create trash can for custom command blocks
         if hasTrashCan:
-            TrashEntity(parentCommand, onDelete = parentCommand.delete)
+            TrashEntity(self, onDelete = parentCommand.delete)
 
     def defineTopLeft(self) -> tuple:
         return self._px(0), self._py(0)

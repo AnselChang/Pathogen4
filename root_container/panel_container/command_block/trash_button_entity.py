@@ -21,9 +21,9 @@ import pygame
 # trash button for custom commands
 class TrashEntity(Container):
 
-    def __init__(self, parentCommand: CommandBlockEntity, onDelete = lambda: None):
+    def __init__(self, parentHeader, onDelete = lambda: None):
         
-        super().__init__(parent = parentCommand)
+        super().__init__(parent = parentHeader)
 
         ImageEntity(self, imageID = ImageID.TRASH_OFF, imageIDHovered = ImageID.TRASH_ON, drawOrder = DrawOrder.WIDGET, onClick = onDelete)
 

@@ -5,6 +5,7 @@ class StaticCommandContentContainer(Container):
 
     def __init__(self, parent: Entity):
         super().__init__(parent)
+        self.recomputePosition()
 
     def defineCenterX(self) -> float:
         return self._px(0.5)

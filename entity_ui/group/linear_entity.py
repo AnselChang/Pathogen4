@@ -23,6 +23,12 @@ class LinearEntity(Entity, Generic[T]):
 
     def defineCenter(self) -> tuple:
         if self.group.isHorizontal:
-            return self._px(1) / self.group.N, self._py(0.5)
+            return (self.i + 0.5) * self._px(1) / self.group.N, self._py(0.5)
         else:
-            return self._px(0.5), self._py(1) / self.group.N
+            return self._px(0.5), (self.i + 0.5) * self._py(1) / self.group.N
+        
+    def _getSubdivision(self) -> float:
+        if self.group.isHorizontal:
+            return self._px(1) / self.group.N
+        else:
+            return self._py(1) / self.group.N

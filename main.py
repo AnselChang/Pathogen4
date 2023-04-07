@@ -1,6 +1,6 @@
 from entity_base.entity import Entity
 from entity_base.static_entity import StaticEntity
-from entity_base.entity import initEntityClass
+from entity_base.entity import initEntityClass, setRootContainer
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
@@ -67,7 +67,8 @@ def main():
     interactor = Interactor(dimensions, fieldTransform)
     entities = EntityManager()
     initEntityClass(entities, interactor, images, fontManager, dimensions)
-    Entity.ROOT_CONTAINER = entities.initRootContainer()
+    rootContainer = entities.initRootContainer()
+    setRootContainer(rootContainer)
 
     # Add permanent static entities
     panelColor = (100,100,100)
@@ -85,9 +86,9 @@ def main():
     path = Path(fieldContainer, panelContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
 
     # Create tabs
-    tabs = TabGroupEntity()
+    tabs = TabGroupEntity(panelContainer)
     for text in ["A", "B", "C"]:
-        tabs.add(TabEntity(dimensions, fontManager.getDynamicFont(FontID.FONT_NORMAL, 15), text))
+        TabEntity(tabs, text)
 
     # Add the gradient at the bottom of the commands
     c1 = (*panelColor, 255)
@@ -96,7 +97,6 @@ def main():
     offset = 35
     StaticEntity(
         lambda: screen.blit(getGradientSurface(dimensions.PANEL_WIDTH, height, c1, c2, invert=True), (dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - height - offset)),
-        Ftouching = lambda position: isInsideBox2(*position.screenRef, dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset - height/2, dimensions.PANEL_WIDTH, offset + height/2),
         drawOrder = DrawOrder.GRADIENT_PANEL,
     )
     StaticEntity(lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, dimensions.SCREEN_HEIGHT - offset, dimensions.PANEL_WIDTH, offset]), drawOrder = DrawOrder.GRADIENT_PANEL)
@@ -106,7 +106,6 @@ def main():
     height2 = 20
     StaticEntity(
         lambda: pygame.draw.rect(screen, panelColor, [dimensions.FIELD_WIDTH, 0, dimensions.PANEL_WIDTH, height]),
-        Ftouching = lambda position: isInsideBox2(*position.screenRef, dimensions.FIELD_WIDTH, 0, dimensions.PANEL_WIDTH, height + height2/2),
         drawOrder = DrawOrder.GRADIENT_PANEL
     )
     StaticEntity(

@@ -35,7 +35,7 @@ class CommandDefinitionBuilder:
         self.widgets.append(widget)
 
     def addReadout(self, attribute: Enum, px: float, py: float):
-        self.readouts.append(ReadoutDefinition(attribute, px, py))
+        self.readouts.append(ReadoutDefinition(attribute, "name", px, py))
 
     def build(self) -> CommandDefinition:
         return CommandDefinition(
