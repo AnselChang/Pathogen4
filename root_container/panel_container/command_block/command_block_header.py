@@ -16,6 +16,9 @@ class CommandBlockHeader(Container):
 
         self.parentCommand = parentCommand
 
+        # recompute position BEFORE creating child entity
+        self.recomputePosition()
+        
         CommandBlockIcon(self, pathAdapter)
 
         # Only create trash can for custom command blocks

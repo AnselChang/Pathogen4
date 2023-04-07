@@ -25,13 +25,13 @@ class CommandExpansionHandler(Observable):
 
         info = [
             {
-                "id" : "collapse",
+                "id" : ButtonID.COLLAPSE,
                 "imageOn" : ImageID.MIN_ON,
                 "imageOff" : ImageID.MIN_OFF,
                 "tooltip" : "Collapse all commands"
             },
             {
-                "id" : "expand",
+                "id" : ButtonID.EXPAND,
                 "imageOn" : ImageID.MAX_ON,
                 "imageOff" : ImageID.MAX_OFF,
                 "tooltip" : "Expand all commands"

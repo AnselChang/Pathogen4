@@ -9,6 +9,7 @@ from command_creation.command_block_entity_factory import CommandBlockEntityFact
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 from root_container.panel_container.panel_container import PanelContainer
+from root_container.field_container.field_container import FieldContainer
 from root_container.panel_container.command_scrolling.command_scrolling_handler import CommandScrollingHandler
 
 from entity_handler.entity_manager import EntityManager
@@ -20,6 +21,8 @@ from data_structures.linked_list import LinkedList
 from common.dimensions import Dimensions
 from common.reference_frame import PointRef
 
+from entity_base.entity import _entities, _interactor, _dimensions
+
 """
 A class storing state for a segment and the node after it.
 Also stores the relevant commands, and facilitates their interface through Adapter design pattern
@@ -27,21 +30,22 @@ Also stores the relevant commands, and facilitates their interface through Adapt
 class Path:
 
     def __init__(self,
+                 field: FieldContainer,
                  panel: PanelContainer,
                  database: CommandDefinitionDatabase,
-                 entities: EntityManager,
-                 interactor: Interactor,
                  commandFactory: CommandBlockEntityFactory,
                  commandExpansion: CommandExpansionHandler,
-                 dimensions: Dimensions,
                  startPosition: PointRef):
             
+        self.entities = _entities
+        self.interactor = _interactor
+        self.dimensions = _dimensions
+
         self.database = database
-        self.entities = entities
-        self.interactor = interactor
         self.commandFactory = commandFactory
         self.commandExpansion = commandExpansion
-        self.dimensions = dimensions
+
+        self.fieldContainer = field
 
         self.pathList = LinkedList[PathNodeEntity | PathSegmentEntity]() # linked list of nodes and segments
         self.commandList = LinkedList[CommandBlockEntity | CommandInserter]() # linked list of CommandEntities
@@ -49,9 +53,9 @@ class Path:
         self.scrollHandler = CommandScrollingHandler(panel)
 
         # initialize first node
-        self._addInserter(self.commandList.addToEnd) # add initial CommandInserter
-        self._addRawNode(startPosition, self.commandList.addToEnd) # add start node
-        self._addInserter(self.commandList.addToEnd) # add final CommandInserter
+        self._addInserter() # add initial CommandInserter
+        self._addRawNode(startPosition) # add start node
+        self._addInserter() # add final CommandInserter
 
         self.node.updateAdapter()
 
@@ -83,20 +87,20 @@ class Path:
         inserter = CommandInserter(parent, self, self.addCustomCommand)
         self.commandList.addToEnd(inserter)
 
-    def _addRawNode(self, nodePosition: PointRef, func):
+    def _addRawNode(self, nodePosition: PointRef):
 
         # create node and add entity
-        self.node: PathNodeEntity = PathNodeEntity(self.entities, self.interactor, self.dimensions, position = nodePosition)
+        self.node: PathNodeEntity = PathNodeEntity(self.fieldContainer, nodePosition)
         self.pathList.addToEnd(self.node)
 
         # create turn command and add entity
-        self.turnCommand = self.commandFactory.create(self, self.node.getAdapter())
+        self.turnCommand = self.commandFactory.create(self.fieldContainer, self, self.node.getAdapter())
         self.commandList.addToEnd(self.turnCommand)
 
     def _addRawSegment(self):
 
         # create segment and add entity
-        self.segment: PathSegmentEntity = PathSegmentEntity()
+        self.segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer)
         self.pathList.addToEnd(self.segment)
 
         # create segment command and add entity
@@ -104,12 +108,12 @@ class Path:
         self.commandList.insertBeforeEnd(self.segmentCommand)
 
     def addNode(self, nodePosition: PointRef):
-        self._addInserter(self.commandList.addToEnd)
         self._addRawSegment()
-        self._addInserter(self.commandList.addToEnd)
-        self._addRawNode(nodePosition, self.commandList.insertBeforeEnd)
+        self._addInserter()
+        self._addRawNode(nodePosition)
+        self._addInserter()
 
-        self.recomputeY()
+        self.onChangeInCommandPositionOrHeight()
         self.segment.updateAdapter()
         self.node.updateAdapter()
 
@@ -118,9 +122,12 @@ class Path:
         # add the custom command after the inserter
         command = self.commandFactory.create(self, NullPathAdapter())
         self.commandList.insertAfter(inserter, command)
-        self._addInserter(lambda newInserter: self.commandList.insertAfter(command, newInserter))
 
-        self.recomputeY()
+        # insert another inserter after that new command
+        inserter = CommandInserter(command, self, self.addCustomCommand)
+        self.commandList.insertAfter(command)
+
+        self.onChangeInCommandPositionOrHeight()
 
     def deleteCustomCommand(self, command: CustomCommandBlockEntity):
 
@@ -131,7 +138,7 @@ class Path:
         # remove the command
         self.commandList.remove(command)
         self.entities.removeEntity(command)
-        self.recomputeY()
+        self.onChangeInCommandPositionOrHeight()
 
     # set the local expansion flag for each command to isExpand
     def setAllLocalExpansion(self, isExpand: bool):
@@ -151,9 +158,6 @@ class Path:
             node = node.getNext()
         
         return height
-
-    def getScrollbarOffset(self) -> int:
-        return self.scrollbar.getOffset()
     
     # When dragging a custom command. Gets the closest inserter object to the mouse
     def getClosestInserter(self, mouse: PointRef) -> CommandInserter | None:

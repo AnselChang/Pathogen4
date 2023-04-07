@@ -30,7 +30,7 @@ class CommandScrollingHandler(Observable):
         self._staticContainer = StaticCommandContentContainer(panel)
 
         # Scrolling container starts off the same location as static container, but is y offset by scrollbar realtime
-        self._scrollingContainer = ScrollingContentContainer(self.staticContainer, self.commandScrollbar)
+        self._scrollingContainer = ScrollingContentContainer(self._staticContainer, self._commandScrollbar)
         
     # Get the scrolling container, which should be set as parent of first CommandInserter
     # That way, the commands move with the scrolling container

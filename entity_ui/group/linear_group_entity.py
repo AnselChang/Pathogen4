@@ -33,4 +33,4 @@ class LinearGroupEntity(Entity, Generic[T]):
         for entity in self.groupEntities:
             if entity.id == id:
                 return entity
-        raise Exception("No entity with id found")
+        raise Exception(id, "No entity with id found")

@@ -82,11 +82,10 @@ def main():
     commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
 
     # Create path
-    path = Path(panelContainer, database, entities, interactor, commandEntityFactory, commandExpansion, dimensions, PointRef(Ref.FIELD, (24,24)))
+    path = Path(fieldContainer, panelContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
 
     # Create tabs
     tabs = TabGroupEntity()
-    entities.addEntity(tabs, panelContainer)
     for text in ["A", "B", "C"]:
         tabs.add(TabEntity(dimensions, fontManager.getDynamicFont(FontID.FONT_NORMAL, 15), text))
 

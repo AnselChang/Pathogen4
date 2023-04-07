@@ -44,6 +44,10 @@ class Image:
 class ImageManager:
 
     def get(self, id: ImageID, opacity: float = 1) -> pygame.Surface:
+
+        if id not in self.images:
+            raise Exception("ID not found:", id)
+
         if opacity == 1:
             return self.images[id].image
         else:

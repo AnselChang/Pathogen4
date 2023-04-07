@@ -24,9 +24,10 @@ Also draws the constraints
 class Constraints(Entity):
 
     # if distance to line is less than pixel threshold, snap to line
-    def __init__(self, pixelThreshold: int, dimensions: Dimensions):
+    def __init__(self, parent, pixelThreshold: int, dimensions: Dimensions):
 
         super().__init__(
+            parent,
             drawOrder = DrawOrder.CONSTRAINT_LINES
         )
 

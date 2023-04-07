@@ -29,7 +29,7 @@ class TextboxWidgetEntity(WidgetEntity['TextboxWidgetDefinition']):
         else:
             width = lambda: parentCommand.dimensions.PANEL_WIDTH * definition.pwidth
 
-        font: DynamicFont = parentCommand.fontManager.getDynamicFont(definition.fontID, definition.fontSize)
+        font: DynamicFont = parentCommand.fonts.getDynamicFont(definition.fontID, definition.fontSize)
 
         self.textEditor = TextEditorEntity(
             font,

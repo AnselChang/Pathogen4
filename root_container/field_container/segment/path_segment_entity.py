@@ -24,9 +24,10 @@ We also define the constants that apply across all segment types here, like colo
 """
 
 class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
-    def __init__(self) -> None:
+    def __init__(self, parent: Entity) -> None:
         
-        super().__init__(select = SelectLambda(self, "segment"),
+        super().__init__(parent = parent,
+                         select = SelectLambda(self, "segment"),
                          click = ClickLambda(self,FOnDoubleClick = self.onDoubleClick),
                          drawOrder = DrawOrder.SEGMENT)
         
@@ -43,6 +44,8 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode[Entity]):
         self.colorReversed = [191, 118, 118]
         self.colorReversedH = shade(self.colorReversed, 0.9)
         self.colorReversedA = shade(self.colorReversed, 0.4)
+
+        self.updateAdapter()
 
 
     def changeSegmentShape(self, newStateClass: type[PathSegmentState]):

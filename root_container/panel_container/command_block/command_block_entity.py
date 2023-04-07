@@ -41,7 +41,12 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
-        self.animatedHeight = MotionProfile(self.HEIGHT, speed = 0.4)
+        self.definitionIndex: int = 0
+        self.database = database
+        self.pathAdapter = pathAdapter
+        self.type = self.pathAdapter.type
+
+        self.animatedHeight = MotionProfile(self.getDefinition().fullHeight, speed = 0.4)
         self.animatedPosition = MotionProfile(0, speed = 0.3)
 
         self.localExpansion = False
@@ -57,25 +62,23 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         )
 
         CommandOrInserter.__init__(self)
-        self.definitionIndex: int = 0
 
+        # whenever a global expansion flag is changed, recompute each individual command expansion
+        self.commandExpansion = commandExpansion
+        self.commandExpansion.subscribe(onNotify = self.updateTargetHeight)
+
+        self.widgetEntities = []
+        self.readoutEntities = []
+        self.updateTargetHeight()
+        self.recomputePosition()
         self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
 
         self.path = path
-
-        self.pathAdapter = pathAdapter
-        
-        self.type = self.pathAdapter.type
-        self.database = database
 
         self.dragOffset = 0
 
         self.widgetEntities = self.manifestWidgets()
         self.readoutEntities = self.manifestReadouts()
-
-        # whenever a global expansion flag is changed, recompute each individual command expansion
-        self.commandExpansion = commandExpansion
-        self.commandExpansion.subscribe(onNotify = self.updateTargetHeight)
 
         self.titleFont = self.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
 

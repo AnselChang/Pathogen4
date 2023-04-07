@@ -1,10 +1,10 @@
 from entity_base.container_entity import Container
 from entity_ui.scrollbar.scrollbar_entity import ScrollbarEntity
-from entity_ui.scrollbar.scrollbar_container_entity import ScrollbarContainerEntity
+from root_container.panel_container.command_scrolling.command_scrollbar import AbstractScrollbarContainer
 
-class ScrollingContainer(Container):
+class ScrollingContentContainer(Container):
 
-    def __init__(self, parentContainer, scrollbarContainer: ScrollbarContainerEntity):
+    def __init__(self, parentContainer, scrollbarContainer: AbstractScrollbarContainer):
         
         super().__init__(parent = parentContainer)
 

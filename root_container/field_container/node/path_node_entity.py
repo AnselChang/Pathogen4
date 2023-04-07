@@ -1,4 +1,4 @@
-from entity_base.circle_mixin import CircleMixin
+from entity_base.abstract_circle_entity import AbstractCircleEntity
 from entity_base.entity import Entity
 from common.reference_frame import PointRef, VectorRef
 from entity_base.listeners.drag_listener import DragLambda
@@ -7,6 +7,7 @@ from entity_base.listeners.select_listener import SelectListener, SelectLambda
 from entity_base.listeners.key_listener import KeyLambda
 from entity_base.listeners.hover_listener import HoverLambda
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.field_container.field_container import FieldContainer
 from common.draw_order import DrawOrder
 from entity_handler.interactor import Interactor
 from entity_handler.entity_manager import EntityManager
@@ -33,14 +34,15 @@ Neighbors PathSegmentEntities
 Referenced in PathSection
 """
 
-class PathNodeEntity(CircleMixin, AdapterInterface, LinkedListNode[PathSegmentEntity]):
+class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[PathSegmentEntity]):
 
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)
 
-    def __init__(self, position: PointRef):
+    def __init__(self, fieldContainer: FieldContainer, position: PointRef):
         Entity.__init__(self,
-            drag = DragLambda(
+                parent = fieldContainer,
+                drag = DragLambda(
                 self,
                 FonStartDrag = self.onStartDrag,
                 FcanDrag = self.canDrag,
@@ -56,17 +58,16 @@ class PathNodeEntity(CircleMixin, AdapterInterface, LinkedListNode[PathSegmentEn
         
         LinkedListNode.__init__(self)
 
-        super().__init__(radius = 10, hoveredRadius = 12)
-
         self.position = position
         self.adapter: TurnAdapter = TurnAdapter()
 
         self.dragging = True
         SNAPPING_POWER = 5 # in pixels
-        self.constraints = Constraints(SNAPPING_POWER, self.dimensions)
-        self.entities.addEntity(self.constraints, self)
+        self.constraints = Constraints(fieldContainer, SNAPPING_POWER, self.dimensions)
 
         self.shiftKeyPressed = False
+
+        self.updateAdapter()
 
 
     def defineCenter(self) -> tuple:
@@ -74,6 +75,9 @@ class PathNodeEntity(CircleMixin, AdapterInterface, LinkedListNode[PathSegmentEn
 
     def getColor(self) -> tuple:
         return self.FIRST_BLUE_COLOR if self.getPrevious() is None else self.BLUE_COLOR
+
+    def getRadius(self, isHovered: bool = False) -> float:
+        return 12 if isHovered else 10
 
     def getAdapter(self) -> TurnAdapter:
         return self.adapter

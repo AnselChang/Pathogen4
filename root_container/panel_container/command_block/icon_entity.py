@@ -15,6 +15,9 @@ class CommandBlockIcon(Container):
         super().__init__(parent = parentHeader)
         self.pathAdapter = pathAdapter
 
+        # Compute position BEFORE creating child entity
+        self.recomputePosition()
+
         # ImageEntity is bounded exactly by the rect defined in this class
         self.image = ImageEntity(self, pathAdapter.getIcon(), drawOrder = DrawOrder.WIDGET)
 

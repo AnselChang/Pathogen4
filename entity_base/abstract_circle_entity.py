@@ -2,7 +2,10 @@ from abc import abstractmethod
 from entity_base.entity import Entity
 import pygame
 
-class CircleMixin(Entity):
+class AbstractCircleEntity(Entity):
+
+    # NO CONSTRUCTOR. FOR SUBCLASSES, WORKAROUND IS TO CALL ENTITY CONSTRUCTOR DIRECTLY
+    # PYTHON IS CURSED
 
     @abstractmethod
     def getColor(self) -> tuple:
