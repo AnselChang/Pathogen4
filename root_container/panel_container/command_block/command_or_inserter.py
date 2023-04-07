@@ -18,10 +18,11 @@ class CommandOrInserter(LinkedListNode['CommandOrInserter']):
         if isinstance(self._parent, CommandOrInserter):
             self._parent = self.getPrevious()
 
-        # remove the existing next command/inserter, if any
         self._children = [child for child in self._children if not isinstance(child, CommandOrInserter)]
-
+        
         if self.getNext() is not None:
             self._children.append(self.getNext())
 
         print("after:", "parent:", self._parent, "children:", self._children)
+
+    

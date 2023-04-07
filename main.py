@@ -121,6 +121,8 @@ def main():
 
             elif event.type == pygame.KEYDOWN:
                 entities.onKeyDown(event.key)
+                if event.key == pygame.K_p:
+                    path.printCommands()
 
             elif event.type == pygame.KEYUP:
                 entities.onKeyUp(event.key)

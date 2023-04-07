@@ -83,7 +83,7 @@ class Entity(ABC, Observable):
         self._children: list[Entity] = []
         self._parent: Entity = parent
 
-        if self._parent is not None:
+        if self._parent is not None and self not in self._parent._children:
             self._parent._children.append(self)
 
         self.entities._addEntity(self)

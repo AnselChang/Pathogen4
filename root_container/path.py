@@ -126,13 +126,14 @@ class Path:
         self._addInserter()
 
         self.onChangeInCommandPositionOrHeight()
-        self.segment.updateAdapter()
         self.node.updateAdapter()
+        self.segment.updateAdapter()
+        
 
     # add custom command where inserter is
     def addCustomCommand(self, inserter: CommandInserter):
         # add the custom command after the inserter
-        command = self.commandFactory.create(self.commandList.tail, self, NullPathAdapter())
+        command = self.commandFactory.create(inserter, self, NullPathAdapter())
         self.commandList.insertAfter(inserter, command)
 
         # insert another inserter after that new command
@@ -196,4 +197,15 @@ class Path:
         while command is not None:
             if isinstance(command, CommandBlockEntity):
                 func(command)
+            command = command.getNext()
+
+    # Print each command and inserter, display the entity itself, the parent, and the children
+    def printCommands(self):
+        command: CommandBlockEntity | CommandInserter = self.commandList.head
+        print()
+        print("==============")
+        while command is not None:
+            print(command)
+            print("\tparent: ", command._parent)
+            print("\tchildren: ", command._children)
             command = command.getNext()

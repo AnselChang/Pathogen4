@@ -62,9 +62,9 @@ class LinkedList(Generic[T]):
         newNode._next = node
         node._prev = newNode
 
-        node._prev.onUpdateLinkedListPosition()
-        node.onUpdateLinkedListPosition()
-        node._next.onUpdateLinkedListPosition()
+        newNode._prev.onUpdateLinkedListPosition()
+        newNode.onUpdateLinkedListPosition()
+        newNode._next.onUpdateLinkedListPosition()
 
     def insertAfter(self, node: LinkedListNode, newNode: LinkedListNode):
 
@@ -77,9 +77,9 @@ class LinkedList(Generic[T]):
         node._next = newNode
         newNode._prev = node
 
-        node._prev.onUpdateLinkedListPosition()
-        node.onUpdateLinkedListPosition()
-        node._next.onUpdateLinkedListPosition()
+        newNode._prev.onUpdateLinkedListPosition()
+        newNode.onUpdateLinkedListPosition()
+        newNode._next.onUpdateLinkedListPosition()
 
     def remove(self, node: LinkedListNode):
 

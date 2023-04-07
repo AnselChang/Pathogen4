@@ -109,4 +109,8 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         if oldNext is not None:
             oldNext.onUpdateLinkedListPosition()
 
+        self._next.onUpdateLinkedListPosition()
+        if self._next._next is not None:
+            self._next._next.onUpdateLinkedListPosition()
+
         self.path.onChangeInCommandPositionOrHeight()

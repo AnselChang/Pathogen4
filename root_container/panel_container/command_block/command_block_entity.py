@@ -50,7 +50,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.type = self.pathAdapter.type
 
         self.animatedHeight = MotionProfile(self.getDefinition().fullHeight, speed = 0.4)
-        self.animatedPosition = MotionProfile(0, speed = 0.001)
+        self.animatedPosition = MotionProfile(0, speed = 0.00001)
 
         self.localExpansion = False
         
