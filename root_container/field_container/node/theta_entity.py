@@ -2,6 +2,7 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING
 from common.draw_order import DrawOrder
+from common.reference_frame import Ref
 from entity_base.listeners.drag_listener import DragLambda
 
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
@@ -64,7 +65,9 @@ class ThetaEntity(AbstractCircleEntity):
         
         # If neither node nor segment is selected, then no theta control
         if not self.node.select.isSelected and not segment.select.isSelected:
-            return False
+            otherNode = segment.getOther(self.node)
+            if otherNode is None or not otherNode.select.isSelected:
+                return False
         
         # If all conditions are met, then theta control is visible
         return True
@@ -78,6 +81,13 @@ class ThetaEntity(AbstractCircleEntity):
             return self._px(0.5), self._py(0.5)
 
         r = self._awidth(self.DISTANCE_TO_NODE)
+
+        # To avoid theta control overlapping with the node, we need to
+        # shrink distsance as r approaches segmentDistance
+        segmentDistance = segment.getLinearDistance(Ref.SCREEN)
+        if r > segmentDistance / 2.5:
+            r = segmentDistance / 2.5
+
         x, y = self._px(0.5), self._py(0.5)
         theta = segment.getThetaAtNode(self.node)
 

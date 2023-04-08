@@ -133,6 +133,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     
     def updateAdapter(self) -> None:
         self.state.updateAdapter()
+        self.recomputePosition()
 
 
     def toggleDirection(self):
@@ -147,6 +148,14 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     
     def getSegmentType(self) -> SegmentType:
         return self.state.type
+
+    def getOther(self, node: PathNodeEntity):
+        if self.getPrevious() is node:
+            return self.getNext()
+        elif self.getNext() is node:
+            return self.getPrevious()
+        else:
+            raise ValueError("Node is not connected to this segment")
 
     def getColor(self, isActive: bool = False, isHovered: bool = False):
 
@@ -171,6 +180,9 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
     def getEndTheta(self) -> float:
         return self.state.getEndTheta()
+    
+    def getLinearDistance(self, ref: Ref):
+        return (self.getPrevious().position - self.getNext().position).magnitude(ref)
     
     def getThetaAtNode(self, node: PathNodeEntity):
         if self.getPrevious() is node:

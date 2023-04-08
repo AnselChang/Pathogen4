@@ -94,6 +94,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         self.recomputePosition()
         self.beforeThetaNode = ThetaEntity(self, True)
         self.afterThetaNode = ThetaEntity(self, False)
+        
 
 
     def defineCenter(self) -> tuple:
@@ -135,6 +136,8 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         else:
             start = self.getPrevious().getEndTheta()
             end = self.getNext().getEndTheta()
+
+        self.START_THETA, self.END_THETA = start, end
             
         self.adapter.set(TurnAttributeID.THETA1, start, formatDegrees(start, 1))
         self.adapter.set(TurnAttributeID.THETA2, end, formatDegrees(end, 1))
@@ -191,10 +194,10 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         if not self.getNext() is None:
             self.getNext().onNodeMove(self)
         self.updateAdapter()
-        self.recomputePosition()
 
     def onAngleChange(self):
         self.updateAdapter()
+        
 
     def onKeyDown(self, key):
         if key == pygame.K_LSHIFT:

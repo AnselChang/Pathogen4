@@ -233,7 +233,7 @@ class Interactor:
         if self.box.isEnabled():
             self.setSelectedEntities(self.box.update(mouse, entities))
 
-
+        print(self.hoveredEntity)
         # Drag selection
         if self.leftDragging and self.mouseDownEntity in self.selected.entities and not self.box.isEnabled() and self.canDragSelection(mouse):
             for selected in self.selected.entities:
@@ -250,10 +250,7 @@ class Interactor:
             return
         
         if self.hoveredEntity is self.fieldContainer:
-            print("remove all")
-            print(self.selected.entities)
             self.removeAllEntities(False)
-            print(self.selected.entities)
         
         if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:
@@ -273,6 +270,7 @@ class Interactor:
                     self.addEntity(entityToStartDragging)
                     entityToStartDragging.drag.onStartDrag(mouse)
                     self.disableUntilMouseUp = True
+                    print("a")
 
 
 

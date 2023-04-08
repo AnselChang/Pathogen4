@@ -182,9 +182,7 @@ class Path:
         self._addInserter()
 
         self.onChangeInCommandPositionOrHeight()
-        node.updateAdapter()
-        segment.updateAdapter()
-        segment.recomputePosition()
+        node.onNodeMove()
 
         return node
     
