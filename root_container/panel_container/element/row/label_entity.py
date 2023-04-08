@@ -10,7 +10,7 @@ class LabelEntity(TextEntity):
         super().__init__(parent, font, size, staticText + ":", align = TextAlign.RIGHT)
 
     def defineRightX(self) -> tuple:
-        return self._px(0.65)
+        return self._px(0.625)
     
     def defineCenterY(self) -> float:
         return self._py(0.46)
