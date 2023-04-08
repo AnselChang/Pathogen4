@@ -15,9 +15,12 @@ This class also builds the actual menus
 
 class SelectorMenuManager:
 
-    def __init__(self):
+    def __init__(self, fieldContainer):
 
         self.menuDefinitions: list[MenuDefinition] = []
+
+        # Store the field container, as menus need to use it to determine starting location
+        self.fieldContainer = fieldContainer
 
         self.configureNodeMenu()
 
@@ -29,7 +32,7 @@ class SelectorMenuManager:
             
         for menuDefinition in self.menuDefinitions:
             if isinstance(entity, menuDefinition.entityType):
-                return SelectorMenuEntity(entity, menuDefinition.create())
+                return SelectorMenuEntity(self.fieldContainer, entity, menuDefinition.create())
 
         return None
     

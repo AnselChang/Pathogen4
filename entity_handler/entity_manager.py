@@ -101,7 +101,7 @@ class EntityManager:
 
         # draw tooltips on top of the entities
         for entity in self.entities:
-            if isinstance(entity, TooltipOwner) and entity.isVisible() and entity is interactor.hoveredEntity and interactor.selected.isEmpty():
+            if isinstance(entity, TooltipOwner) and entity.isVisible() and entity is interactor.hoveredEntity:
                 entity.drawTooltip(screen, mousePosition, dimensions)
 
     # call onTick() for every entity with tick object

@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
+
 from entity_base.entity import Entity
 from entity_handler.entity_manager import EntityManager
 from entity_handler.select_handler import SelectHandler
@@ -16,11 +21,15 @@ entities based on mouse input
 
 class Interactor:
 
+    def initMenuManager(self, menuManager: SelectorMenuManager):
+        self.selected.initMenuManager(menuManager)
+
     def __init__(self, dimensions: Dimensions, fieldTransform: FieldTransform):
 
         self.dimensions = dimensions
         self.fieldTransform = fieldTransform
 
+        # the multiselect box
         self.box = SelectorBox()
 
         self.hoveredEntity: Entity = None

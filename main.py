@@ -1,6 +1,7 @@
 from entity_base.entity import Entity
 from entity_base.static_entity import StaticEntity
 from entity_base.entity import initEntityClass, setRootContainer
+from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
@@ -72,6 +73,10 @@ def main():
     # Add permanent static entities
     panelContainer = PanelContainer()
     fieldContainer = FieldContainer(fieldTransform)
+
+    # handles the creating of menus when an entity is selected
+    menuManager = SelectorMenuManager(fieldContainer)
+    interactor.initMenuManager(menuManager)
 
     # create tabs
     tabHandler = TabHandler(panelContainer)
