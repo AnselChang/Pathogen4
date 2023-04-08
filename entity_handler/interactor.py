@@ -122,6 +122,8 @@ class Interactor:
         self.mouseStartDrag = mouse
         self.mousePrevious = mouse
 
+        self.mouseDownEntity = self.hoveredEntity
+
         if isRight:
             self.onRightMouseDown(entities, mouse)
         else:
@@ -237,6 +239,11 @@ class Interactor:
     
     # It is guaranteed that onMouseMove() was not called if this function is called
     def onMouseClick(self, mouse: tuple, isRight: bool):
+        
+        # mouse down and mouse up were on different entities, so don't do anything
+        if self.mouseDownEntity is not self.hoveredEntity:
+            return
+        
         if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:
                 self.hoveredEntity.click.onRightClick(mouse)
@@ -249,7 +256,6 @@ class Interactor:
                 """
                 entityToStartDragging: Entity = self.hoveredEntity.click.onLeftClick(mouse)
                 if entityToStartDragging is not None and entityToStartDragging.drag is not None:
-                    print("start")
                     self.leftDragging = True
                     self.removeAllEntities(forceRemove = True)
 
