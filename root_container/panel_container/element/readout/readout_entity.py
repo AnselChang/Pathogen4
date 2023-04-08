@@ -23,17 +23,20 @@ Owns a DefinedReadout which stores information about the widget's context for al
 class ReadoutEntity(Entity):
     def __init__(self, parent, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter, readoutDefinition: ReadoutDefinition):
 
-        super().__init__(parent, drawOrder = DrawOrder.READOUT)
-
         self.border = TextBorder()
 
-        self.font: DynamicFont = parentCommand.fontManager.getDynamicFont(FontID.FONT_NORMAL, 15)
+        self.font: DynamicFont = parentCommand.fonts.getDynamicFont(FontID.FONT_NORMAL, 15)
         self.font.subscribe(onNotify = self.recomputePosition)
 
         self.parentCommand = parentCommand
         self.definition = readoutDefinition
         self.pathAdapter = pathAdapter
         self.pathAdapter.subscribe(onNotify = self.updateText)
+
+        super().__init__(parent, drawOrder = DrawOrder.READOUT)
+        self.updateText()
+        
+        self.recomputePosition()
 
     def updateText(self) -> str:
         self.textString = str(self.pathAdapter.getString(self.definition.getAttribute()))
@@ -56,8 +59,7 @@ class ReadoutEntity(Entity):
         return self.textHeight + self._awidth(self.border.OUTER_Y_MARGIN*2)
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-
         drawText(screen, self.font.get(), self.textString, (0,0,0), self.CENTER_X, self.CENTER_Y, opacity = self.getOpacity())
 
-        alpha = int(round(self.parentCommand.getAddonsOpacity() * 255))
+        alpha = int(round(self.getOpacity() * 255))
         drawTransparentRect(screen, *self.RECT, (0,0,0), alpha = alpha, radius = self.border.BORDER_RADIUS, width = 2)

@@ -48,10 +48,6 @@ class WidgetEntity(Entity, Observable, Generic[T]):
 
         self.parentCommand = parentCommand
         self.definition: WidgetDefinition | T = definition
-    
-
-    def defineCenter(self) -> tuple:
-        return self._px(self.definition.px), self._py(self.definition.py)
 
     # for dynamic widgets. how much to stretch command height by
     def getCommandStretch(self) -> int:

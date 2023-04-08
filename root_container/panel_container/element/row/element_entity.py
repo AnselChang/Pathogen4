@@ -20,6 +20,3 @@ class ElementEntity(TextEntity):
     
     def defineHeight(self) -> float:
         return self._pheight(1)
-    
-    def isVisible(self) -> bool:
-        return not self.parentCommand.isFullyCollapsed()

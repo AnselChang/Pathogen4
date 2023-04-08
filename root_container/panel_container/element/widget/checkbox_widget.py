@@ -46,7 +46,7 @@ class CheckboxWidgetEntity(WidgetEntity['CheckboxWidgetDefinition'], TooltipOwne
     def isTouching(self, position: tuple) -> bool:
          return self.distanceTo(position) < 12
 
-    def drawWidget(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
         if self.getValue():
             id = ImageID.CHECKBOX_ON_H if isHovered else ImageID.CHECKBOX_ON
@@ -64,8 +64,8 @@ class CheckboxWidgetEntity(WidgetEntity['CheckboxWidgetDefinition'], TooltipOwne
 
 class CheckboxWidgetDefinition(WidgetDefinition):
 
-    def __init__(self, name: str, defaultOn: bool, tooltipOn: str = None, tooltipOff: str = None):
-        super().__init__(name)
+    def __init__(self, variableName: str, defaultOn: bool, tooltipOn: str = None, tooltipOff: str = None):
+        super().__init__(variableName)
         self.defaultOn = defaultOn
         self.tooltipOn = tooltipOn
         self.tooltipOff = tooltipOff

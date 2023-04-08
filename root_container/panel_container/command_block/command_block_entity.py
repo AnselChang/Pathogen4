@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from root_container.path import Path
+    from command_creation.command_definition_database import CommandDefinitionDatabase
 
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
@@ -17,9 +18,7 @@ from command_creation.command_definition import CommandDefinition
 from root_container.panel_container.command_block.command_block_header import CommandBlockHeader
 from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
 from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
-
-from root_container.panel_container.element.widget.widget_entity import WidgetEntity
-from root_container.panel_container.element.readout.readout_entity import ReadoutEntity
+from root_container.panel_container.element.all_elements_container import AllElementsContainer
 
 from common.font_manager import FontID
 from common.draw_order import DrawOrder
@@ -39,8 +38,11 @@ Position calculation is offloaded to CommandBlockPosition
 class CommandBlockEntity(Entity, CommandOrInserter):
 
 
-    def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
+    def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
+        self.COLLAPSED_HEIGHT = 30
+        self.EXPANDED_HEIGHT = 50 
+
         self.DRAG_OPACITY = 0.7
         self.dragOffset = 0
 
@@ -49,7 +51,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.pathAdapter = pathAdapter
         self.type = self.pathAdapter.type
 
-        self.animatedHeight = MotionProfile(self.getDefinition().fullHeight, speed = 0.4)
+        self.animatedHeight = MotionProfile(self.COLLAPSED_HEIGHT, speed = 0.4)
         self.animatedPosition = MotionProfile(0, speed = 0.4)
 
         self.localExpansion = False
@@ -70,8 +72,8 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.commandExpansion = commandExpansion
         self.commandExpansion.subscribe(onNotify = self.updateTargetHeight)
 
-        self.widgetEntities = []
-        self.readoutEntities = []
+        self.elementsContainer = None
+
         self.updateTargetHeight(True)
         self.recomputePosition()
         self.updateTargetY(True)
@@ -79,8 +81,13 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.path = path
 
-        #self.widgetEntities = self.manifestWidgets()
-        #self.readoutEntities = self.manifestReadouts()
+        """
+        Right now, this means that the command block is hardcoded to
+        store only the elements for the current command definition,
+        and switching command definitions will not change the elements.
+        This will be changed in the future.
+        """
+        self.elementsContainer = AllElementsContainer(self, self.getDefinition(), pathAdapter)
 
         self.recomputePosition()
 
@@ -98,11 +105,11 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         return self.getDefinition().name
     
     # how much the widgets stretch the command by. return the largest one
-    def getWidgetStretch(self) -> int:
-        stretch = 0
-        for widget in self.widgetEntities:
-            stretch = max(stretch, widget.getCommandStretch())
-        return stretch
+    def getElementStretch(self) -> int:
+        print(self.elementsContainer.defineHeight())
+        if self.elementsContainer is None:
+            return 0
+        return self.elementsContainer.defineHeight()
     
     def isActuallyExpanded(self) -> bool:
         if self.commandExpansion.getForceCollapse():
@@ -113,11 +120,15 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     
     # Call this whenever there might be a change to target height
     def updateTargetHeight(self, isFirst: bool = False):
-        self.COLLAPSED_HEIGHT = 30
-        self.EXPANDED_HEIGHT = self.getDefinition().fullHeight + self.getWidgetStretch()
         
-        height = self.EXPANDED_HEIGHT if self.isActuallyExpanded() else self.COLLAPSED_HEIGHT        
+        rawHeight = self.EXPANDED_HEIGHT if self.isActuallyExpanded() else self.COLLAPSED_HEIGHT
+        height = self._aheight(rawHeight)
+
+        if self.isActuallyExpanded():
+            height += self.getElementStretch()
+
         self.animatedHeight.setEndValue(height)
+           
         if isFirst:
             self.animatedHeight.forceToEndValue()
 

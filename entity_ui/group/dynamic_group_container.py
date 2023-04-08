@@ -16,17 +16,19 @@ class DynamicGroupContainer(LinearGroupContainer['T']):
 
     def __init__(self, parent: Entity, isHorizontal: bool, entitySizePixels: float):
         
-        super().__init__(parent, isHorizontal)
 
         self.pixels = entitySizePixels
         self.groupSize = 0
+
+        super().__init__(parent, isHorizontal)
 
         self.recomputePosition()
 
     # add linear entity to group. returns the linear entity's location
     def add(self, entity: LinearContainer):
-        super().add(entity)
+        result = super().add(entity)
         self.groupSize += self.pixels
+        return result
 
     def defineWidth(self) -> float:
         if self.isHorizontal:

@@ -19,11 +19,14 @@ class LinearContainer(Container, Generic[T]):
 
         self.group: LinearGroupContainer | T = group
         self.id = id
-        self.i = group.add(self)
-        self.group.recomputePosition()
 
         # how much to "fill out" the group. 1 is packed
         self.percent = percent
+        
+        self.i = group.add(self)
+        self.group.recomputePosition()
+
+        
 
     def defineCenter(self) -> tuple:
         if self.group.isHorizontal:

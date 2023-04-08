@@ -47,8 +47,8 @@ class TextboxWidgetEntity(WidgetEntity['TextboxWidgetDefinition']):
 
 class TextboxWidgetDefinition(WidgetDefinition):
 
-    def __init__(self, name: str, fontID: FontID, fontSize: float, defaultText: str, isDynamic: bool, isNumOnly: bool):
-        super().__init__(name)
+    def __init__(self, variableName: str, fontID: FontID, fontSize: float, defaultText: str, isDynamic: bool, isNumOnly: bool):
+        super().__init__(variableName)
 
         self.fontID = fontID
         self.fontSize = fontSize
