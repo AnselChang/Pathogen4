@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from entity_base.entity import Entity
 if TYPE_CHECKING:
-    from root_container.panel_container.panel_container import PanelContainer
+    from root_container.panel_container.panel.block_tab_contents_container import BlockPanelContainer
 
 from common.draw_order import DrawOrder
 from entity_base.entity import Entity
@@ -16,7 +16,7 @@ Gradient below tabs and above commands
 
 class AbstractGradientSeparator(Entity):
 
-    def __init__(self, parentPanel: PanelContainer, invert: bool, percentFullyOpaque: float = 1):
+    def __init__(self, parentPanel: BlockPanelContainer, invert: bool, percentFullyOpaque: float = 1):
 
         self.parentPanel = parentPanel
         self.invert = invert
@@ -43,7 +43,7 @@ class AbstractGradientSeparator(Entity):
 
 class TabsCommandsSeparator(AbstractGradientSeparator):
 
-    def __init__(self, parent: PanelContainer):
+    def __init__(self, parent: BlockPanelContainer):
         super().__init__(parent, False, percentFullyOpaque = 0.75)
         self.recomputePosition()
 
@@ -54,4 +54,4 @@ class TabsCommandsSeparator(AbstractGradientSeparator):
     def defineWidth(self) -> float:
         return self._pwidth(1)
     def defineHeight(self) -> float:
-        return self._pheight(0.08)
+        return self._pheight(0.02)

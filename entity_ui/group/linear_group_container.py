@@ -1,3 +1,4 @@
+from common.draw_order import DrawOrder
 from entity_base.container_entity import Container
 from entity_base.entity import Entity
 from entity_ui.group.linear_container import LinearContainer
@@ -9,9 +10,9 @@ A group of linear entities, arranged either horizontally or vertically
 T = TypeVar('T')
 class LinearGroupContainer(Container, Generic[T]):
 
-    def __init__(self, parent: Entity, isHorizontal: bool):
+    def __init__(self, parent: Entity, isHorizontal: bool, drawOrder: DrawOrder = DrawOrder.PANEL_BACKGROUND):
         
-        super().__init__(parent)
+        super().__init__(parent, drawOrder = drawOrder)
 
         self.groupEntities: list[LinearContainer | T] = []
         self.isHorizontal = isHorizontal

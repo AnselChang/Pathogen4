@@ -7,10 +7,12 @@ from enum import Enum, auto
 class FontID(Enum):
     FONT_NORMAL = auto()
     FONT_CODE = auto()
+    FONT_TITLE = auto()
 
 _fontPaths: dict[FontID, str] = {
     FontID.FONT_NORMAL : 'fonts/CascadiaCode.ttf',
-    FontID.FONT_CODE : 'fonts/CascadiaMono.ttf'
+    FontID.FONT_CODE : 'fonts/CascadiaMono.ttf',
+    FontID.FONT_TITLE : 'fonts/CascadiaCode-Bold.ttf'
 }
 
 # A font class which changes size based on the window resolution

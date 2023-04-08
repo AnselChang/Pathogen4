@@ -14,7 +14,7 @@ class StaticCommandContentContainer(Container):
         return self._px(0.921)
     
     def defineTopY(self) -> float:
-        return self._py(0.08)
+        return self._py(0.02)
     
     def defineBottomY(self) -> float:
         return self._py(0.9)

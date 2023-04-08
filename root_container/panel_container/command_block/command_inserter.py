@@ -103,13 +103,16 @@ class CommandInserter(Entity, CommandOrInserter):
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
         isActive = isActive and self.interactor.leftDragging and self.isActive
+
+        Y_MARGIN = 2
+        rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
         
         if isActive or self.isActive:
             
             color = [140, 140, 140] if isActive else [160, 160, 160]
 
             # draw shaded area
-            pygame.draw.rect(screen, color, self.RECT, border_radius = self.CORNER_RADIUS)
+            pygame.draw.rect(screen, color, rect, border_radius = self.CORNER_RADIUS)
 
             # draw cross
             x,y = self.CENTER_X, self.CENTER_Y

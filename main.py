@@ -19,6 +19,7 @@ from root_container.panel_container.command_expansion.command_expansion_handler 
 
 from root_container.panel_container.panel_container import PanelContainer
 from root_container.field_container.field_container import FieldContainer
+
 from root_container.panel_container.command_scrolling.command_scrollbar import CommandScrollbar
 
 from entity_ui.tooltip import initTooltipFont
@@ -69,22 +70,21 @@ def main():
     setRootContainer(rootContainer)
 
     # Add permanent static entities
-    panelColor = (100,100,100)
-    panelContainer = PanelContainer(panelColor)
+    panelContainer = PanelContainer()
     fieldContainer = FieldContainer(fieldTransform)
-
-    StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX)
 
     # create tabs
     tabHandler = TabHandler(panelContainer)
 
+    StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX)
+
     # initialize commands
     database = CommandDefinitionDatabase()
-    commandExpansion = CommandExpansionHandler(panelContainer)
+    commandExpansion = CommandExpansionHandler(tabHandler.blockContainer)
     commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
 
     # Create path
-    path = Path(fieldContainer, panelContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
+    path = Path(fieldContainer, tabHandler.blockContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)
 
     # initialize pygame artifacts

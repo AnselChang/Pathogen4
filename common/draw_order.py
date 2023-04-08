@@ -5,6 +5,7 @@ class DrawOrder(IntEnum):
     FRONT = auto()
     MOUSE_SELECT_BOX = auto()
     TAB = auto()
+    TAB_BACKGROUND = auto()
     UI_BUTTON = auto()
     SCROLLBAR_BORDER = auto()
     SCROLLBAR = auto()

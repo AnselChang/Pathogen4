@@ -51,7 +51,7 @@ class WidgetContainer(ElementContainer, Observable, Generic[T]):
         pass
     
     def isVisible(self) -> bool:
-        return not self.parentCommand.isFullyCollapsed()
+        return self.parentCommand.isVisible() and not self.parentCommand.isFullyCollapsed()
 
     def getOpacity(self) -> float:
         return self.parentCommand.getAddonsOpacity()

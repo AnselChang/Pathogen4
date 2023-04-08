@@ -1,3 +1,4 @@
+from common.draw_order import DrawOrder
 from entity_base.entity import Entity
 from entity_ui.group.radio_container import RadioContainer
 from entity_ui.group.linear_group_container import LinearGroupContainer
@@ -10,9 +11,9 @@ If allowNoSelect is True, then no option being selected is allowed
 T = TypeVar('T')
 class RadioGroupContainer(Generic[T], LinearGroupContainer[RadioContainer | T]):
 
-    def __init__(self, parent: Entity, isHorizontal: bool, allowNoSelect: bool = False):
+    def __init__(self, parent: Entity, isHorizontal: bool, allowNoSelect: bool = False, drawOrder: DrawOrder = DrawOrder.PANEL_BACKGROUND):
         
-        super().__init__(parent, isHorizontal)
+        super().__init__(parent, isHorizontal, drawOrder)
 
         self.active: RadioContainer | T = None
         self.allowNoSelect = allowNoSelect

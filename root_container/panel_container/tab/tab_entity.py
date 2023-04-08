@@ -20,7 +20,7 @@ import pygame
 class TabEntity(Entity):
 
     # id is used to distinguish between radio entities
-    def __init__(self, parent: Entity, text: str, isOnFunction, onClickFunction):
+    def __init__(self, parent: Entity, text: str, fontID: FontID, fontSize: int, isOnFunction, onClickFunction):
         super().__init__(parent,
             click = ClickLambda(self, FonLeftClick = onClickFunction),
             drawOrder = DrawOrder.TAB)
@@ -29,7 +29,7 @@ class TabEntity(Entity):
         self.r = 5
 
         self.recomputePosition()
-        TextEntity(self, FontID.FONT_NORMAL, 20, staticText = text)
+        TextEntity(self, fontID, fontSize, staticText = text)
 
     def defineWidth(self) -> float:
         return self._mwidth(1)
