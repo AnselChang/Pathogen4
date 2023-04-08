@@ -103,7 +103,10 @@ class Path:
     def onChangeInCommandPositionOrHeight(self):
         self.shouldRecomputeY = True
 
-    def _addInserter(self):
+    def _addInserter(self, afterCommand = None):
+
+        if afterCommand is None:
+            afterCommand = self.commandList.tail
 
         if self.commandList.tail is None:
             parent = self.scrollHandler.getScrollingContainer()
@@ -112,32 +115,43 @@ class Path:
             parent = self.commandList.tail
             isFirst = False
         inserter = CommandInserter(parent, self, self.addCustomCommand, isFirst)
-        self.commandList.addToEnd(inserter)
+        self.commandList.insertAfter(afterCommand, inserter)
+        return inserter
 
-    def _addRawNode(self, nodePosition: PointRef, isTemporary: bool = False):
+    def _addRawNode(self, nodePosition: PointRef, afterPath = None, afterCommand = None, isTemporary: bool = False):
+
+        if afterPath is None:
+            afterPath = self.pathList.tail
+        if afterCommand is None:
+            afterCommand = self.commandList.tail
 
         # create node and add entity
         node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
-        self.pathList.addToEnd(node)
+        self.pathList.insertAfter(afterPath, node)
 
         # create turn command and add entity
-        turnCommand = self.commandFactory.create(self.commandList.tail, self, node.getAdapter())
-        self.commandList.addToEnd(turnCommand)
+        turnCommand = self.commandFactory.create(afterCommand, self, node.getAdapter())
+        self.commandList.insertAfter(afterCommand, turnCommand)
 
         # maintain a relationship between the node and turn command
         self.dict[node] = turnCommand
 
         return node
 
-    def _addRawSegment(self):
+    def _addRawSegment(self, afterPath = None, afterCommand = None):
+
+        if afterPath is None:
+            afterPath = self.pathList.tail
+        if afterCommand is None:
+            afterCommand = self.commandList.tail
 
         # create segment and add entity
-        segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer)
-        self.pathList.addToEnd(segment)
+        segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer, self)
+        self.pathList.insertAfter(afterPath, segment)
 
         # create segment command and add entity
-        segmentCommand = self.commandFactory.create(self.commandList.tail, self, segment.getAdapter())
-        self.commandList.addToEnd(segmentCommand)
+        segmentCommand = self.commandFactory.create(afterCommand, self, segment.getAdapter())
+        self.commandList.insertAfter(afterCommand, segmentCommand)
 
         # maintain a relationship between the segment and segment command
         self.dict[segment] = segmentCommand
@@ -148,13 +162,34 @@ class Path:
     def addNode(self, nodePosition: PointRef, isTemporary: bool = False) -> PathNodeEntity:
         segment = self._addRawSegment()
         self._addInserter()
-        node = self._addRawNode(nodePosition, isTemporary)
+        node = self._addRawNode(nodePosition, isTemporary = isTemporary)
         self._addInserter()
 
         self.onChangeInCommandPositionOrHeight()
         node.updateAdapter()
         segment.updateAdapter()
         segment.recomputePosition()
+
+        return node
+    
+    def insertNode(self, segment: PathSegmentEntity, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
+        node = self._addRawNode(position, segment, self.dict[segment], isTemporary = isTemporary)
+        inserter = self._addInserter(self.dict[node])
+        segment = self._addRawSegment(node, inserter)
+        self._addInserter(self.dict[segment])
+
+        self.onChangeInCommandPositionOrHeight()
+        node.updateAdapter()
+        node.getNext().onNodeMove(node)
+        node.getPrevious().onNodeMove(node)
+
+        command: CommandOrInserter = self.commandList.head
+        while command is not None:
+            print(command)
+            print("\t", command._parent)
+            print("\t", command._children)
+            command = command.getNext()
+
 
         return node
     

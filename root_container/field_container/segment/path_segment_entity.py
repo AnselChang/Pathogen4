@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.path import Path
 
 from entity_base.listeners.drag_listener import DragLambda
 from root_container.field_container.segment.segment_direction import SegmentDirection
@@ -33,7 +35,7 @@ We also define the constants that apply across all segment types here, like colo
 """
 
 class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity']):
-    def __init__(self, parent: Entity) -> None:
+    def __init__(self, parent: Entity, path: Path) -> None:
         
         super().__init__(parent = parent,
                          select = SelectLambda(self, "segment", type = SelectorType.SOLO),
@@ -47,6 +49,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         
         LinkedListNode.__init__(self)
 
+        self.path = path
         self.state: PathSegmentState = StraightSegmentState(self)
         self.direction: SegmentDirection = SegmentDirection.FORWARD
 

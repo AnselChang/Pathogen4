@@ -7,7 +7,7 @@ from root_container.field_container.node.path_node_entity import PathNodeEntity
 class AddNodeEndAction(MenuClickAction[PathNodeEntity]):
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
-        newNode = targetEntity.path.addNode(PointRef(Ref.SCREEN, mouse), True)
+        newNode = targetEntity.path.addNode(PointRef(Ref.SCREEN, mouse), isTemporary = True)
         return newNode
     
 # When clicked, deletes node on path

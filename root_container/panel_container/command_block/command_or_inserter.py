@@ -7,6 +7,7 @@ class CommandOrInserter(LinkedListNode['CommandOrInserter']):
 
         self.CORNER_RADIUS = 3
         self.dragPosition = None
+        self.normalY = 0
 
     
     # Called when linked list position changes. Update parent and children entity relationships
