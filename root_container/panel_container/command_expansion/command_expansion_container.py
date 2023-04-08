@@ -57,9 +57,13 @@ class CommandExpansionContainer(Container, Observable):
             ImageEntity(parent = radio,
                         states = states,
                         drawOrder = DrawOrder.UI_BUTTON,
-                        onClick = radio.onClick,
+                        onClick = lambda mouse, radio=radio: self.onClick(radio, mouse),
                         getStateID = lambda id=id: radio.group.isOptionOn(id)
             )
+
+    def onClick(self, radioButton: RadioContainer, mouse: tuple):
+        radioButton.onClick(mouse)
+        self.notify()
             
 
     def setForceCollapse(self, isCollapse: bool):

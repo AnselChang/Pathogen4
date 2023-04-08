@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from common.draw_order import DrawOrder
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -12,7 +13,8 @@ A subclass of TextEntity. Inside a RowEntity, the label is always on the left co
 class LabelEntity(TextEntity):
 
     def __init__(self, parent, font, size, staticText: str = None):
-        super().__init__(parent, font, size, staticText + ":", align = TextAlign.RIGHT)
+        super().__init__(parent, font, size, staticText + ":",
+                         align = TextAlign.RIGHT, drawOrder = DrawOrder.WIDGET)
 
     def defineRightX(self) -> tuple:
         return self._px(0.625)

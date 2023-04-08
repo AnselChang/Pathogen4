@@ -70,6 +70,9 @@ class Path:
         # register onTick() to be called at end of every tick
         TickEntity(self.onTick, drawOrder=DrawOrder.FRONT)
 
+        # On command expansion button click, recalculate targets
+        commandExpansion.subscribe(onNotify = self.recalculateTargets)
+
     # called every tick, specifically AFTER all the target heights for commands/inserters are computed
     def onTick(self):
         if self.shouldRecomputeY:

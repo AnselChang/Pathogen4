@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from common.draw_order import DrawOrder
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -15,7 +16,7 @@ class ElementContainer(Container):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity):
         self.parentCommand = parentCommand
-        super().__init__(parent)
+        super().__init__(parent, drawOrder = DrawOrder.WIDGET)
 
     def defineCenter(self) -> tuple:
         return self._px(0.8), self._py(0.5)
