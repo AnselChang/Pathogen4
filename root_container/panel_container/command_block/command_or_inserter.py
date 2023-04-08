@@ -2,8 +2,10 @@ from data_structures.linked_list import LinkedListNode
 
 class CommandOrInserter(LinkedListNode['CommandOrInserter']):
 
-    def __init__(self):
+    def __init__(self, isCommand: bool):
         super().__init__()
+
+        self.isCommand = isCommand
 
         self.CORNER_RADIUS = 3
         self.dragPosition = None
@@ -27,4 +29,16 @@ class CommandOrInserter(LinkedListNode['CommandOrInserter']):
 
         #print("after:", "parent:", self._parent, "children:", self._children)
 
+    # backtrack to find the real target height for this enttiy
+    def _getTargetHeight(self):
+
+        current = self
+        height = 0
+        while isinstance(current._parent, CommandOrInserter):
+            if current.isCommand:
+                height += current.ACTUAL_HEIGHT
+            else:
+                height += current.defineHeight()
+            current = current._parent
+        return height
     

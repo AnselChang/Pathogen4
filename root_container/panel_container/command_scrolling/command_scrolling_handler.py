@@ -40,3 +40,6 @@ class CommandScrollingHandler(Observable):
     # Call this to update the scrollbar with the new content height
     def setContentHeight(self, contentHeight: int):
         self._commandScrollbar.scrollbar.setContentHeight(contentHeight)
+
+    def setManualScrollbarPosition(self, y: int):
+        self._commandScrollbar.scrollbar.setManualOffset(y)

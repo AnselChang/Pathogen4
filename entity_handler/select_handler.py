@@ -30,15 +30,15 @@ class SelectHandler:
         self.menuManager = menuManager
 
     # return true if successful add
-    def add(self, entity: Entity) -> bool:
+    def add(self, entity: Entity, forceAdd: bool = False) -> bool:
 
         if entity in self.entities:
             return False
         
-        if entity.select.type == SelectorType.SOLO and not self.isEmpty():
+        if not forceAdd and entity.select.type == SelectorType.SOLO and not self.isEmpty():
             # do not allow if something already selected, and entity is SOLO
             return False
-        elif len(self.entities) == 1 and self.entities[0].select.type == SelectorType.SOLO:
+        elif not forceAdd and len(self.entities) == 1 and self.entities[0].select.type == SelectorType.SOLO:
             # do not allow if something is already selected and that something is SOLO
             return False
 

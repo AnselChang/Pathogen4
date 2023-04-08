@@ -30,14 +30,13 @@ A "plus" button that, when clicked, inserts a custom command there
 class CommandInserter(Entity, CommandOrInserter):
 
     def __init__(self, parent: CommandOrInserter, path: Path, onInsert = lambda: None, isFirst: bool = False):
-
         super().__init__(
             parent = parent,
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
             click = ClickLambda(self, FonLeftClick = lambda mouse: onInsert(self)),
             select = SelectLambda(self, "inserter", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMAND_INSERTER)
-        CommandOrInserter.__init__(self)
+        CommandOrInserter.__init__(self, False)
 
         self.path = path
         self.isFirst = isFirst

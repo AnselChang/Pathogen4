@@ -55,6 +55,11 @@ class ScrollbarEntity(Entity, Observable):
         self.contentHeight = height + BOTTOM_MARGIN
         self.recomputePosition()
 
+    def setManualOffset(self, y):
+        self.percent = (y - self._py(0)) / (self.contentHeight - self._pheight(1))
+        self.percent = clamp(self.percent, 0, 1)
+        self.recomputePosition()
+        self.notify()
 
     def onStartDrag(self, mouse: tuple):
         self.mouseStartY = mouse[1]

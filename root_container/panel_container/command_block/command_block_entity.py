@@ -48,6 +48,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.DRAG_OPACITY = 0.7
         self.dragOffset = 0
+        self.highlighted = False
 
         self.definitionIndex: int = 0
         self.database = database
@@ -65,11 +66,11 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             click = ClickLambda(self, FonLeftClick = self.onClick),
             tick = TickLambda(self, FonTick = self.onTick),
             drag = drag,
-            select = SelectLambda(self, "command", type = SelectorType.SOLO),
+            select = SelectLambda(self, "command", type = SelectorType.SOLO, FonDeselect = self.onDeselect),
             drawOrder = DrawOrder.COMMANND_BLOCK
         )
 
-        CommandOrInserter.__init__(self)
+        CommandOrInserter.__init__(self, True)
 
         # whenever a global expansion flag is changed, recompute each individual command expansion
         self.commandExpansion = commandExpansion
@@ -95,7 +96,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
 
         self.recomputePosition()
-
 
     # Update animation every tick
     def onTick(self):
@@ -131,6 +131,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         
         self.ACTUAL_COLLAPSED_HEIGHT = self._aheight(self.COLLAPSED_HEIGHT)
         self.ACTUAL_EXPANDED_HEIGHT = self._aheight(self.EXPANDED_HEIGHT) + self.getElementStretch()
+        self.ACTUAL_HEIGHT = self.ACTUAL_EXPANDED_HEIGHT if expanded else self.ACTUAL_COLLAPSED_HEIGHT
 
         self.animatedExpansion.setEndValue(1 if expanded else 0)
            
@@ -228,13 +229,34 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     # not applicable for regular command blocks
     def isDragging(self):
         return False
+    
+    def onDeselect(self, interactor):
+        self.highlighted = False
+
+    # Highlight the command block visually
+    # Also, contract all commands except this one
+    def highlight(self):
+        self.interactor.addEntity(self, forceAdd = True)
+        self.highlighted = True
+        self.path.setAllLocalExpansion(False)
+        self.commandExpansion.setForceCollapse(False)
+        self.localExpansion = True
+        self.path.recalculateTargets()
+
+        tail = self.path.commandList.tail
+        contentHeight = 0 if tail is None else tail._getTargetHeight()
+        self.path.scrollHandler.setContentHeight(contentHeight)
+        # cursed number to make scrollbar go down a little more
+        self.path.scrollHandler.setManualScrollbarPosition(self._getTargetHeight() - self.ACTUAL_COLLAPSED_HEIGHT*5)
 
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
         # draw rounded rect
         color = COMMAND_INFO[self.type].color
-        if isActive and isHovered and self.interactor.leftDragging:
+        if self.highlighted:
+            color = shade(color, 1.4)
+        elif isActive and isHovered and self.interactor.leftDragging:
             color = shade(color, 1.3)
         elif isHovered or self.isTouching(self.interactor.CURRENT_MOUSE_POSITION) and not self.interactor.disableUntilMouseUp:
             color = shade(color, 1.2)
@@ -245,6 +267,9 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             drawTransparentRect(screen, *self.RECT, color, alpha = self.DRAG_OPACITY*255, radius = self.CORNER_RADIUS)
         else:
             pygame.draw.rect(screen, color, self.RECT, border_radius = self.CORNER_RADIUS)
+
+        if self.highlighted:
+            pygame.draw.rect(screen, (0,0,0), self.RECT, border_radius = self.CORNER_RADIUS, width = 2)
 
         # draw function name
         text = self.getDefinition().name + "()"

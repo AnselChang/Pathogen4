@@ -27,6 +27,7 @@ class ImageID(Enum):
     CHECKBOX_OFF = auto()
     ADD_NODE = auto()
     DELETE_NODE = auto()
+    REVEAL_COMMAND = auto()
 
 class Image:
 
@@ -82,3 +83,4 @@ class ImageManager:
 
         self.images[ImageID.ADD_NODE] = Image("menu/add.png")
         self.images[ImageID.DELETE_NODE] = Image("menu/delete.png")
+        self.images[ImageID.REVEAL_COMMAND] = Image("menu/reveal.png")

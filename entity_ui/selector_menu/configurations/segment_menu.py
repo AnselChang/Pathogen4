@@ -1,5 +1,6 @@
 from common.reference_frame import PointRef, Ref
 from entity_base.image.image_state import ImageStatesFactory
+from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction
 from entity_ui.selector_menu.selector_menu_factory import *
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity, SegmentDirection
 
@@ -29,6 +30,11 @@ Menu for segments. Functionality for:
 def configureSegmentMenu() -> MenuDefinition:
 
     segmentDefinition = MenuDefinition(PathSegmentEntity)
+
+    # Reveals the corresponding command
+    states = ImageStatesFactory()
+    states.addState(0, ImageID.REVEAL_COMMAND, "Jump to the corresponding command")
+    segmentDefinition.add(states.create(), HighlightCommandAction())
 
     # Add a button that reveals the corresponding command
     states = ImageStatesFactory()

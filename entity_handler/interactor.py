@@ -67,10 +67,10 @@ class Interactor:
         for entity in add:
             self.addEntity(entity)
 
-    def addEntity(self, entity: Entity):
+    def addEntity(self, entity: Entity, forceAdd: bool = False):
         if entity.select.greedy:
             self.greedyEntity = entity
-        if self.selected.add(entity):
+        if self.selected.add(entity, forceAdd):
             entity.select.onSelect(self)
 
     def removeEntity(self, entity: Entity, forceRemove: bool = False):
