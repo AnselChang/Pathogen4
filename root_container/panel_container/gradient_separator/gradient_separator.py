@@ -44,7 +44,7 @@ class AbstractGradientSeparator(Entity):
 class TabsCommandsSeparator(AbstractGradientSeparator):
 
     def __init__(self, parent: BlockPanelContainer):
-        super().__init__(parent, False, percentFullyOpaque = 0.75)
+        super().__init__(parent, False, percentFullyOpaque = 0.2)
         self.recomputePosition()
 
     def defineTopLeft(self) -> tuple:

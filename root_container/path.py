@@ -53,6 +53,7 @@ class Path:
         self.commandList = LinkedList[CommandBlockEntity | CommandInserter]() # linked list of CommandEntities
 
         self.scrollHandler = CommandScrollingHandler(panel)
+        self.scrollHandler.subscribe(onNotify = self.recalculateTargets)
         self.dimensions.subscribe(onNotify = self.onWindowResize)
 
         self.shouldRecomputeY = True
@@ -83,6 +84,9 @@ class Path:
         self.commandList.head.recomputePosition()
 
     def onWindowResize(self):
+
+        self.recalculateTargets()
+
         self.forceAnimationToEnd = True
         self.commandList.head.recomputePosition()
         self.forceAnimationToEnd = False
@@ -202,6 +206,10 @@ class Path:
             if isinstance(command, CommandBlockEntity):
                 func(command)
             command = command.getNext()
+
+    def recalculateTargets(self):
+        self.invokeEveryCommand(lambda command: command.updateTargetHeight())
+        self.invokeEveryCommand(lambda command: command.updateTargetY())
 
     # Print each command and inserter, display the entity itself, the parent, and the children
     def printCommands(self):

@@ -45,12 +45,11 @@ class CustomCommandBlockEntity(CommandBlockEntity):
 
     def onStartDrag(self, mouse: tuple):
         self.dragging = True
-        self.startDragY = self.CENTER_Y
-        self.startMouseY = mouse[1]
+        self.mouseOffset = self.CENTER_Y - mouse[1]
 
     def onStopDrag(self):
         self.dragging = False
-        self.dragOffset = 0
+        self.dragPosition = None
         self.path.onChangeInCommandPositionOrHeight()
 
     # return 1 if not dragging, and dragged opacity if dragging
@@ -59,7 +58,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         return self.dragging
     
     def onDrag(self, mouse: tuple):
-        self.dragOffset = mouse[1] - self.startMouseY
+        self.dragPosition = mouse[1] + self.mouseOffset
         inserter: CommandInserter = self.path.getClosestInserter(mouse)
 
         # no change in position if dragging to immediate neighbor inserter
@@ -68,7 +67,6 @@ class CustomCommandBlockEntity(CommandBlockEntity):
             return
         
         self.moveAfter(inserter)
-        self.startMouseY = mouse[1] # reset start mouse y at new position
 
     def moveAfter(self, inserter: CommandInserter):
 

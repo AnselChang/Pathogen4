@@ -68,13 +68,12 @@ class CommandInserter(Entity, CommandOrInserter):
         # This prevents the ripple effect when inserting a command
         # by using the parent's target position directly instead of their current
         if not self.isFirst:
-            targetDelta = self._parent.targetY - self._parent.animatedPosition.get()
+            y = self._parent.normalY + self._pheight(1)
         else:
-            targetDelta = 0
+            y = self._py(0)
 
         # right below the previous CommandOrInserter
-        self.targetY = self._py(0) if self.isFirst else (self._py(1) - self._parent.dragOffset)
-        return self._px(0), self.targetY + targetDelta
+        return self._px(0), y
 
     def defineWidth(self) -> float:
         # 95% of the panel

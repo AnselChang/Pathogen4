@@ -55,7 +55,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.type = self.pathAdapter.type
 
         self.animatedExpansion = MotionProfile(0, speed = 0.4)
-        self.animatedPosition = MotionProfile(0, speed = 0.4)
+        #self.animatedPosition = MotionProfile(0, speed = 0.4)
 
         self.localExpansion = False
         
@@ -73,7 +73,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         # whenever a global expansion flag is changed, recompute each individual command expansion
         self.commandExpansion = commandExpansion
-        self.commandExpansion.subscribe(onNotify = self.updateTargetHeight)
+        self.commandExpansion.subscribe(onNotify = self.path.recalculateTargets)
 
         self.elementsContainer = None
 
@@ -95,8 +95,8 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     # Update animation every tick
     def onTick(self):
-        if not self.animatedPosition.isDone() or not self.animatedExpansion.isDone():
-            self.animatedPosition.tick()
+        if not self.animatedExpansion.isDone():
+            #self.animatedPosition.tick()
             self.animatedExpansion.tick()
 
             self.path.onChangeInCommandPositionOrHeight()
@@ -134,22 +134,26 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             self.animatedExpansion.forceToEndValue()
 
     def updateTargetY(self, force: bool = False):
-        self.targetY = self._py(1) - self._parent.dragOffset + self.dragOffset
-        self.animatedPosition.setEndValue(self.targetY)
-        if force:
-            self.animatedPosition.forceToEndValue()
+        pass
+        #self.targetY = self._py(1) - self._parent.dragOffset + self.dragOffset
+        #self.animatedPosition.setEndValue(self.targetY)
+        #if force:
+        #    self.animatedPosition.forceToEndValue()
 
     def defineBefore(self):
-        self.updateTargetHeight()
-        self.updateTargetY()
+        pass
+        #self.updateTargetHeight()
+        #self.updateTargetY()
 
     def defineTopLeft(self) -> tuple:
 
-        if self.path.forceAnimationToEnd:
-                self.animatedPosition.forceToEndValue()
+        #if self.path.forceAnimationToEnd:
+        #        self.animatedPosition.forceToEndValue()
 
         # right below the previous CommandOrInserter
-        return self._px(0), self.animatedPosition.get()
+        self.normalY = self._py(1)
+        self.draggingY = self._py(1) if self.dragPosition is None else self.dragPosition
+        return self._px(0), self.draggingY
 
     def defineWidth(self) -> float:
         return self._pwidth(1)
@@ -182,7 +186,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     # Set the local expansion of the command without modifying global expansion flags
     def setLocalExpansion(self, isExpanded):
         self.localExpansion = isExpanded
-        self.updateTargetHeight()
 
     # Toggle command expansion. Modify global expansion flags if needed
     def onClick(self, mouse: tuple):
@@ -199,7 +202,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
                 self.commandExpansion.setForceExpand(False)
 
         self.localExpansion = not self.localExpansion
-        self.updateTargetHeight()
+        self.path.recalculateTargets()
 
     def getOpacity(self) -> float:
         if self.isDragging():
