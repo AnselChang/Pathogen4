@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from root_container.panel_container.panel.panel_container import BlockPanelContainer
+    from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
 
 from root_container.panel_container.command_scrolling.command_scrollbar import CommandScrollbar
 from root_container.panel_container.command_scrolling.static_command_content_container import StaticCommandContentContainer
@@ -17,7 +17,7 @@ Subscribers recieve a notification when scroller moves
 
 class CommandScrollingHandler(Observable):
     
-    def __init__(self, panel: BlockPanelContainer):
+    def __init__(self, panel: BlockTabContentsContainer):
 
         # The scrollbar component and entity itself on the right of the panel
         self._commandScrollbar = CommandScrollbar(panel)
