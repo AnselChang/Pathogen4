@@ -40,6 +40,8 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
+        self.path = path
+
         self.COLLAPSED_HEIGHT = 30
         self.EXPANDED_HEIGHT = 50 
 
@@ -79,8 +81,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.updateTargetY(True)
         self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
 
-        self.path = path
-
         """
         Right now, this means that the command block is hardcoded to
         store only the elements for the current command definition,
@@ -91,11 +91,13 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.recomputePosition()
 
+
     # Update animation every tick
     def onTick(self):
         if not self.animatedPosition.isDone() or not self.animatedHeight.isDone():
             self.animatedPosition.tick()
             self.animatedHeight.tick()
+
             self.path.onChangeInCommandPositionOrHeight()
 
     def getDefinition(self) -> CommandDefinition:
@@ -106,7 +108,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     
     # how much the widgets stretch the command by. return the largest one
     def getElementStretch(self) -> int:
-        print(self.elementsContainer.defineHeight())
         if self.elementsContainer is None:
             return 0
         return self.elementsContainer.defineHeight()
@@ -120,12 +121,13 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     
     # Call this whenever there might be a change to target height
     def updateTargetHeight(self, isFirst: bool = False):
-        
-        rawHeight = self.EXPANDED_HEIGHT if self.isActuallyExpanded() else self.COLLAPSED_HEIGHT
-        height = self._aheight(rawHeight)
 
-        if self.isActuallyExpanded():
-            height += self.getElementStretch()
+        expanded = self.isActuallyExpanded()
+        
+        self.ACTUAL_COLLAPSED_HEIGHT = self._aheight(self.COLLAPSED_HEIGHT)
+        self.ACTUAL_EXPANDED_HEIGHT = self._aheight(self.EXPANDED_HEIGHT) + self.getElementStretch()
+
+        height = self.ACTUAL_EXPANDED_HEIGHT if expanded else self.ACTUAL_COLLAPSED_HEIGHT
 
         self.animatedHeight.setEndValue(height)
            
@@ -142,6 +144,9 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.updateTargetY()
 
+        if self.path.forceAnimationToEnd:
+                self.animatedPosition.forceToEndValue()
+
         # right below the previous CommandOrInserter
         return self._px(0), self.animatedPosition.get()
 
@@ -149,36 +154,21 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         return self._pwidth(1)
     
     def defineHeight(self) -> float:
+        if self.path.forceAnimationToEnd:
+                self.animatedHeight.forceToEndValue()
+        
         # current animated height
         return self._aheight(self.animatedHeight.get())
     
     def getPercentExpanded(self) -> float:
-        return (self.HEIGHT - self.COLLAPSED_HEIGHT) / (self.EXPANDED_HEIGHT - self.COLLAPSED_HEIGHT)
+
+        return (self.HEIGHT - self.ACTUAL_COLLAPSED_HEIGHT) / (self.ACTUAL_EXPANDED_HEIGHT - self.ACTUAL_COLLAPSED_HEIGHT)
         
     def isFullyCollapsed(self) -> bool:
         return self.HEIGHT == self.COLLAPSED_HEIGHT
     
     def isFullyExpanded(self) -> bool:
         return self.HEIGHT == self.EXPANDED_HEIGHT
-
-    # Given the command widgets, create the WidgetEntities and add to entity manager
-    def manifestWidgets(self) -> list[WidgetEntity]:
-
-        widgets: list[WidgetEntity] = []
-        for widget in self.getDefinition().widgets:
-            widgetEntity = widget.make(self)
-            widgetEntity.subscribe(onNotify = self.updateTargetHeight)
-            widgets.append(widgetEntity)
-        return widgets
-    
-    # Given the command widgets, create the ReadoutEntities and add to entity manager
-    def manifestReadouts(self) -> list[ReadoutEntity]:
-        readouts: list[ReadoutEntity] = []
-        for readout in self.getDefinition().readouts:
-            readout = readout.make(self, self.pathAdapter)
-            readouts.append(readout)
-        return readouts
-    
 
     # commands are sandwiched by CommandInserters
     def getPreviousCommand(self) -> 'CommandBlockEntity':
@@ -221,7 +211,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             return self.getOpacity()
         else:
             ratio = self.getPercentExpanded()
-            return ratio * ratio # square for steeper opacity animation
+            return ratio ** 2 # square for steeper opacity animation
     
     # return 1 if not dragging, and dragged opacity if dragging
     # not applicable for regular command blocks

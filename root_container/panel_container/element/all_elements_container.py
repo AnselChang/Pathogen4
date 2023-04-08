@@ -44,9 +44,8 @@ class AllElementsContainer(Container):
         return self._px(0.5)
     
     def defineCenterY(self) -> float:
-        header = self.parentCommand.COLLAPSED_HEIGHT
-        halfway = header + (self.parentCommand.EXPANDED_HEIGHT - header) / 2
-        return self._py(0) + self._aheight(halfway)
+        midpoint = (self.parentCommand.ACTUAL_COLLAPSED_HEIGHT + self.parentCommand.ACTUAL_EXPANDED_HEIGHT) / 2
+        return self._py(0) + midpoint
 
     # This container is dynamically fit to DynamicGroupContainer
     def defineHeight(self) -> float:
@@ -63,6 +62,3 @@ class AllElementsContainer(Container):
     
     def isVisible(self) -> bool:
         return not self.parentCommand.isFullyCollapsed()
-    
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        self.drawRect(screen)

@@ -55,6 +55,9 @@ class Path:
         self.scrollHandler = CommandScrollingHandler(panel)
         self.dimensions.subscribe(onNotify = self.onWindowResize)
 
+        self.shouldRecomputeY = True
+        self.forceAnimationToEnd = False
+
         # initialize first node
         self._addInserter() # add initial CommandInserter
         self._addRawNode(startPosition) # add start node
@@ -62,7 +65,6 @@ class Path:
 
         self.node.updateAdapter()
 
-        self.shouldRecomputeY = True
         # register onTick() to be called at end of every tick
         TickEntity(self.onTick, drawOrder=DrawOrder.FRONT)
 
@@ -71,6 +73,7 @@ class Path:
         if self.shouldRecomputeY:
             self._recomputeY()
             self.shouldRecomputeY = False
+            self.forceAnimationToEnd = False
 
     # Should not be directly called by commands / inserters
     # Instead, call onChangeInCommandPositionOrHeight(), which sets the recompute flag to true
@@ -80,7 +83,9 @@ class Path:
         self.commandList.head.recomputePosition()
 
     def onWindowResize(self):
+        self.forceAnimationToEnd = True
         self.commandList.head.recomputePosition()
+        self.forceAnimationToEnd = False
         self.scrollHandler.setContentHeight(self.getTotalCommandHeight())
 
     # call this every time position or height changes. O(1), call as many time as you want
