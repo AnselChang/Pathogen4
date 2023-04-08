@@ -40,10 +40,7 @@ class CommandDefinitionPresets:
         return builder.build()
 
     def getCodePreset(self) -> CommandDefinition:
-        builder = CommandDefinitionBuilder(CommandType.CUSTOM)
-        builder.setName("code")
-        #builder.setHeight(80)
-        #builder.addWidget(CodeTextboxWidgetDefinition("textbox", 0.5, 0.4, 0.83))
+        builder = CommandDefinitionBuilder(None)
         return builder.build()
     
 

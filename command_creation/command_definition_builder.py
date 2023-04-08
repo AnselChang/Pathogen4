@@ -10,33 +10,60 @@ from enum import Enum
 
 """
 Instantiates a CommandDefinition
+Passing in "None" indicates it is a code command
 """
 
 class CommandDefinitionBuilder:
 
-    def __init__(self, type: CommandType):
+    def __init__(self, type: CommandType | None):
 
         self.type = type
-        self.name = "untitledFunction()"
         self.elements: list[ElementDefinition] = []
-        self.templateText = "// [default text]"
+
+        if type is None:
+            self.type = CommandType.CUSTOM
+            self._isCode = True
+            self.name = "code"
+            self.templateText = "// [default text]"
+        else:
+            self._isCode = False
+            self.name = "untitledFunction"
+            self.templateText = "// [Code template unspecified]"
+
+        
 
     def setName(self, name: str):
+
+        if self._isCode:
+            raise Exception("Cannot set variable name for code commands")
+
         self.name = name
 
     def setTemplateText(self, templateText: str):
+
+        if self._isCode:
+            raise Exception("Cannot set template text to code commands")
+
         self.templateText = templateText
 
     def addWidget(self, widget: WidgetDefinition):
+        if self._isCode:
+            raise Exception("Cannot add widgets to code commands")
+        
         self.elements.append(widget)
 
     def addReadout(self, variableName: str, attribute: Enum):
-        self.elements.append(ReadoutDefinition(attribute, variableName))
+        if self._isCode:
+            raise Exception("Cannot add widgets to code commands")
+        
+        if not self._isCode:
+            self.elements.append(ReadoutDefinition(attribute, variableName))
 
     def build(self) -> CommandDefinition:
         return CommandDefinition(
             type = self.type,
             name = self.name,
             elements = self.elements,
-            templateText = self.templateText
+            templateText = self.templateText,
+            isCode = self._isCode
         )

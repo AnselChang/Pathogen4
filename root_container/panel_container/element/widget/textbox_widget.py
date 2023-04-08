@@ -8,7 +8,7 @@ from root_container.panel_container.element.widget.widget_definition import Widg
 
 from entity_ui.text.text_editor_entity import TextEditorEntity, TextEditorMode
 
-from common.font_manager import FontID, DynamicFont
+from common.font_manager import FontID
 from common.image_manager import ImageID
 from common.draw_order import DrawOrder
 from common.reference_frame import PointRef, Ref
@@ -19,9 +19,6 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity, definition: 'TextboxWidgetDefinition'):
 
-
-        font: DynamicFont = parentCommand.fonts.getDynamicFont(definition.fontID, definition.fontSize)
-
         super().__init__(parent, parentCommand, definition)
 
         self.textEditor = None
@@ -29,7 +26,7 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
 
         self.textEditor = TextEditorEntity(
             self,
-            font,
+            definition.fontID, definition.fontSize,
             isDynamic = definition.isDynamic,
             isNumOnly = definition.isNumOnly,
             defaultText = definition.defaultText

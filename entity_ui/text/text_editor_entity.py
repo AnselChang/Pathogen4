@@ -9,7 +9,7 @@ from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.key_listener import KeyLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
-from common.font_manager import DynamicFont
+from common.font_manager import DynamicFont, FontID
 from utility.math_functions import isInsideBox2
 from common.draw_order import DrawOrder
 
@@ -39,7 +39,7 @@ class CursorBlink:
 # notifies observers whenever resized from text (isDynamic)
 class TextEditorEntity(Entity, Observable):
 
-    def __init__(self, parent: Entity, font: DynamicFont, isDynamic: bool = False, isNumOnly: bool = False, defaultText: str = ""):
+    def __init__(self, parent: Entity, fontID: FontID, fontSize: int, isDynamic: bool = False, isNumOnly: bool = False, isCentered: bool = True, isFixedWidth: bool = False, defaultText: str = ""):
         
         super().__init__(parent, 
             key = KeyLambda(self,
@@ -52,10 +52,12 @@ class TextEditorEntity(Entity, Observable):
             ),
             drawOrder = DrawOrder.WIDGET)
 
-        self.font = font
+        self.font = self.fonts.getDynamicFont(fontID, fontSize)
         
         self.dynamic = isDynamic
         self.numOnly = isNumOnly
+        self.centered = isCentered
+        self.fixedWidth = isFixedWidth
 
         self.border = TextBorder()
 
@@ -92,11 +94,24 @@ class TextEditorEntity(Entity, Observable):
     def removeRow(self):
         self.setRows(self.rows - 1)
 
-    def defineCenter(self) -> tuple:
-        return self._px(0.5), self._py(0.5)
+    def defineCenterY(self) -> tuple:
+        return self._py(0.5)
+    
+    def defineCenterX(self) -> tuple:
+        if self.centered:
+            return self._px(0.5)
+        return None
+        
+    def defineLeftX(self) -> tuple:
+        if not self.centered:
+            return self._px(0)
+        return None
 
     def defineWidth(self) -> float:
-        return self.textHandler.getSurfaceWidth() + self._awidth(self.border.OUTER_X_MARGIN * 2)
+        if self.fixedWidth:
+            return self._pwidth(1)
+        else:
+            return self.textHandler.getSurfaceWidth() + self._awidth(self.border.OUTER_X_MARGIN * 2)
     
     def defineHeight(self) -> float:
         return self.getHeightForNumRows(self.rows)
@@ -144,7 +159,7 @@ class TextEditorEntity(Entity, Observable):
             cx, cy = self.textHandler.getCursor()
             charWidth, charHeight = self.font.getCharWidth(), self.font.getCharHeight()
             x = outerXMargin + cx * charWidth
-            y = outerYMargin + cy * (charHeight + outerYMargin)
+            y = outerYMargin + cy * (charHeight + innerYMargin)
             pygame.draw.rect(surf, (0,0,0), (x, y, 1, charHeight))
 
         screen.blit(surf, (leftX, topY))

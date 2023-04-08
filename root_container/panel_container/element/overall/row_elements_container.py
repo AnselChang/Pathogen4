@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
+from root_container.panel_container.element.overall.abstract_elements_container import AbstractElementsContainer
+
 from adapter.path_adapter import PathAdapter
 from command_creation.command_definition import CommandDefinition
 from entity_base.entity import Entity
@@ -15,13 +17,11 @@ This container is dynamically sized, and will resize itself to fit the number of
 Each row has a left column (label), and right column (widget or readout)
 """
 
-class AllElementsContainer(Container):
+class RowElementsContainer(AbstractElementsContainer):
     
     def __init__(self, parentCommand: CommandBlockEntity, commandDefinition: CommandDefinition, pathAdapter: PathAdapter):
 
-        super().__init__(parentCommand)
-        self.parentCommand = parentCommand
-        self.commandDefinition = commandDefinition
+        super().__init__(parentCommand, commandDefinition, pathAdapter)
 
         self.group = None
         self.recomputePosition()
@@ -38,14 +38,6 @@ class AllElementsContainer(Container):
             # No need to store references after created for now. But could if neededs
             label = elementDefinition.makeLabel(row)
             element = elementDefinition.makeElement(row, parentCommand, pathAdapter)
-        
-
-    def defineCenterX(self) -> float:
-        return self._px(0.5)
-    
-    def defineCenterY(self) -> float:
-        midpoint = (self.parentCommand.ACTUAL_COLLAPSED_HEIGHT + self.parentCommand.ACTUAL_EXPANDED_HEIGHT) / 2
-        return self._py(0) + midpoint
 
     # This container is dynamically fit to DynamicGroupContainer
     def defineHeight(self) -> float:
@@ -56,9 +48,3 @@ class AllElementsContainer(Container):
     # Element and label define their own x positions along width of command block
     def defineWidth(self) -> float:
         return self._pwidth(1)
-    
-    def getOpacity(self) -> float:
-        return self.parentCommand.getAddonsOpacity()
-    
-    def isVisible(self) -> bool:
-        return not self.parentCommand.isFullyCollapsed()

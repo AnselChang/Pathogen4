@@ -69,11 +69,14 @@ class TextHandler:
             remainingText = line[self.cursorX:]
             self.text[self.cursorY] = self.text[self.cursorY][:self.cursorX]
             
-            lastChar = line[self.cursorX - 1]
-            if lastChar == ":" or lastChar == "{":
-                addIndent = 1
+            addIndent = 0
+            if len(line) > 0:
+                lastChar = line[self.cursorX - 1]
+                if lastChar == ":" or lastChar == "{":
+                    addIndent = 1
             else:
-                addIndent = 0
+                lastChar = ""
+                    
             
             # maintain indentation
             self.cursorY += 1

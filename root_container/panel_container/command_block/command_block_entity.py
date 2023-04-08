@@ -18,7 +18,8 @@ from command_creation.command_definition import CommandDefinition
 from root_container.panel_container.command_block.command_block_header import CommandBlockHeader
 from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
 from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
-from root_container.panel_container.element.all_elements_container import AllElementsContainer
+
+from root_container.panel_container.element.overall.elements_container_factory import createElementsContainer
 
 from common.font_manager import FontID
 from common.draw_order import DrawOrder
@@ -87,7 +88,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         and switching command definitions will not change the elements.
         This will be changed in the future.
         """
-        self.elementsContainer = AllElementsContainer(self, self.getDefinition(), pathAdapter)
+        self.elementsContainer = createElementsContainer(self, self.getDefinition(), pathAdapter)
 
         self.recomputePosition()
 

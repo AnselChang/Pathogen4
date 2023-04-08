@@ -21,5 +21,5 @@ COMMAND_INFO = {
     CommandType.STRAIGHT : CommandTypeInfo(COLOR_THEME.get(0)),
     CommandType.ARC : CommandTypeInfo(COLOR_THEME.get(140)),
     CommandType.BEZIER : CommandTypeInfo(COLOR_THEME.get(183)),
-    CommandType.CUSTOM : CommandTypeInfo(COLOR_THEME.get(275))
+    CommandType.CUSTOM : CommandTypeInfo(COLOR_THEME.get(275)),
 }
