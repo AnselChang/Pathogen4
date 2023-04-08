@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
 from entity_base.entity import Entity
-from entity_base.text_entity import TextEntity
+from entity_base.text_entity import TextEntity, TextAlign
 from common.draw_order import DrawOrder
 
 
@@ -21,7 +21,7 @@ class FunctionNameEntity(Entity):
                    fontID = FontID.FONT_NORMAL,
                    fontSize = 19,
                    textFunction = lambda: parentCommand.getFunctionName() + "()",
-                   isAlignCenter = False,
+                   align = TextAlign.LEFT,
                    drawOrder = DrawOrder.WIDGET
                    )
 

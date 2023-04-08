@@ -138,9 +138,11 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         if force:
             self.animatedPosition.forceToEndValue()
 
-    def defineTopLeft(self) -> tuple:
-
+    def defineBefore(self):
+        self.updateTargetHeight()
         self.updateTargetY()
+
+    def defineTopLeft(self) -> tuple:
 
         if self.path.forceAnimationToEnd:
                 self.animatedPosition.forceToEndValue()

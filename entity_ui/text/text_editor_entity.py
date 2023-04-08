@@ -104,8 +104,8 @@ class TextEditorEntity(Entity, Observable):
     def getHeightForNumRows(self, rows: int):
         charHeight = self.font.getCharHeight()
         height = rows * (charHeight + self.border.INNER_Y_MARGIN)
-        height += 2 * self.border.OUTER_Y_MARGIN - self.border.INNER_Y_MARGIN
-        return self._aheight(height)
+        height += self._aheight(2 * self.border.OUTER_Y_MARGIN - self.border.INNER_Y_MARGIN)
+        return height
     
     # Get height offset from current height to one row height
     def getHeightOffset(self) -> float:

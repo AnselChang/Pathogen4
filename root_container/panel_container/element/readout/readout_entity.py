@@ -59,8 +59,14 @@ class ReadoutEntity(ElementContainer):
     def defineHeight(self) -> float:
         return self.textHeight + self._aheight(self.border.OUTER_Y_MARGIN*2)
     
+    def isTouching(self, mouse: tuple) -> bool:
+        return Entity.isTouching(self, mouse)
+    
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        drawText(screen, self.font.get(), self.textString, (0,0,0), self.CENTER_X, self.CENTER_Y, opacity = self.getOpacity())
+
+        color = (60,60,60) if isHovered else (0,0,0)
+
+        drawText(screen, self.font.get(), self.textString, color, self.CENTER_X, self.CENTER_Y, opacity = self.getOpacity())
 
         alpha = int(round(self.getOpacity() * 255))
-        drawTransparentRect(screen, *self.RECT, (0,0,0), alpha = alpha, radius = self.border.BORDER_RADIUS, width = 2)
+        drawTransparentRect(screen, *self.RECT, color, alpha = alpha, radius = self.border.BORDER_RADIUS, width = 2)

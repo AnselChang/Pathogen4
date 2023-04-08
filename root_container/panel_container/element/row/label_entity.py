@@ -1,4 +1,4 @@
-from entity_base.text_entity import TextEntity
+from entity_base.text_entity import TextEntity, TextAlign
 
 """
 A subclass of TextEntity. Inside a RowEntity, the label is always on the left column
@@ -7,10 +7,13 @@ A subclass of TextEntity. Inside a RowEntity, the label is always on the left co
 class LabelEntity(TextEntity):
 
     def __init__(self, parent, font, size, staticText: str = None):
-        super().__init__(parent, font, size, staticText + ":")
+        super().__init__(parent, font, size, staticText + ":", align = TextAlign.RIGHT)
 
-    def defineCenter(self) -> tuple:
-        return self._px(0.325), self._py(0.5)
+    def defineRightX(self) -> tuple:
+        return self._px(0.65)
+    
+    def defineCenterY(self) -> float:
+        return self._py(0.46)
 
     # widgets and readouts should not use ElementEntity width
     # because they are dynamic

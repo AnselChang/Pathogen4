@@ -124,6 +124,10 @@ class Entity(ABC, Observable):
     def defineHeight(self) -> float:
         return self.dimensions.SCREEN_HEIGHT if self._parent is None else self._pheight(1)
     
+    # override this to define anything else before the position is recomputed
+    def defineBefore(self) -> None:
+        return
+
     # override this to define anything else after the position is recomputed
     def defineOther(self) -> None:
         return
@@ -155,6 +159,9 @@ class Entity(ABC, Observable):
     
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self):
+
+        self.defineBefore()
+
         self.WIDTH = self.defineWidth()
         self.HEIGHT = self.defineHeight()
         self.CENTER_X, self.CENTER_Y = self.defineCenter()
@@ -226,11 +233,11 @@ class Entity(ABC, Observable):
     
     # get relative x in "pixels". One "pixel" is accurate for default resolution
     def _ax(self, pixels):
-        return self._parent.LEFT_X + pixels * self.dimensions.RESOLUTION_RATIO
+        return self._parent.LEFT_X + pixels * self.dimensions.X_RATIO
     
     # get relative y in "pixels". One "pixel" is accurate for default resolution
     def _ay(self, pixels):
-        return self._parent.TOP_Y + pixels * self.dimensions.RESOLUTION_RATIO
+        return self._parent.TOP_Y + pixels * self.dimensions.Y_RATIO
     
     # get relative width as a percent of parent horizontal span
     def _pwidth(self, pwidth):
@@ -242,19 +249,19 @@ class Entity(ABC, Observable):
     
     # Get width given a margin (on both sides) from parent horizontal span
     def _mwidth(self, margin):
-        return self._parent.WIDTH - self.dimensions.RESOLUTION_RATIO * margin * 2
+        return self._parent.WIDTH - self.dimensions.X_RATIO * margin * 2
 
     # Get height given a margin (on both sides) from parent vertical span
     def _mheight(self, margin):
-        return self._parent.HEIGHT - self.dimensions.RESOLUTION_RATIO * margin * 2
+        return self._parent.HEIGHT - self.dimensions.Y_RATIO * margin * 2
     
     # Get "absolute" width in "pixels". One "pixel" is accurate for default resolution
     def _awidth(self, pixels):
-        return pixels * self.dimensions.RESOLUTION_RATIO
+        return pixels * self.dimensions.X_RATIO
 
     # Get "absolute" height in "pixels". One "pixel" is accurate for default resolution
     def _aheight(self, pixels):
-        return pixels * self.dimensions.RESOLUTION_RATIO
+        return pixels * self.dimensions.Y_RATIO
     
     def __repr__(self):
         try:

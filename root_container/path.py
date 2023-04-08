@@ -85,7 +85,6 @@ class Path:
     def onWindowResize(self):
         self.forceAnimationToEnd = True
         self.commandList.head.recomputePosition()
-        #self.invokeEveryCommand(lambda command: command.updateTargetHeight())
         self.forceAnimationToEnd = False
         self.scrollHandler.setContentHeight(self.getTotalCommandHeight())
 
