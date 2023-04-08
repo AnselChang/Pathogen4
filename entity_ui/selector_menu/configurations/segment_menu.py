@@ -35,11 +35,6 @@ def configureSegmentMenu() -> MenuDefinition:
     states = ImageStatesFactory()
     states.addState(0, ImageID.REVEAL_COMMAND, "Jump to the corresponding command")
     segmentDefinition.add(states.create(), HighlightCommandAction())
-
-    # Add a button that reveals the corresponding command
-    states = ImageStatesFactory()
-    states.addState(0, ImageID.CHECKBOX_ON, "not implemented")
-    segmentDefinition.add(states.create(), TestMenuClickAction(False))
     
     # Add a button that toggles the direction of the segment
     states = ImageStatesFactory()

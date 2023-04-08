@@ -197,6 +197,13 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
             self.constraints.clear()
             self.shiftKeyPressed = True
 
+        # delete node if temporary
+        if (key == pygame.K_ESCAPE or key == pygame.K_BACKSPACE) and self.temporary:
+            self.path.removeNode(self)
+            self.interactor.removeEntity(self)
+            self.interactor.disableUntilMouseUp = False
+            self.interactor.leftDragging = False
+
     def onKeyUp(self, key):
         if key == pygame.K_LSHIFT:
             self.shiftKeyPressed = False
