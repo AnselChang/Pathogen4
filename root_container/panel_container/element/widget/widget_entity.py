@@ -39,9 +39,6 @@ class WidgetContainer(ElementContainer, Observable, Generic[T]):
         self.parentCommand = parentCommand
         self.definition: WidgetDefinition | T = definition
 
-        self.recomputePosition()
-
-
     # for dynamic widgets. how much to stretch command height by
     def getCommandStretch(self) -> int:
         return 0

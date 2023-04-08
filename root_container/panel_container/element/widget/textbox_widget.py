@@ -23,6 +23,8 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
         font: DynamicFont = parentCommand.fonts.getDynamicFont(definition.fontID, definition.fontSize)
 
         super().__init__(parent, parentCommand, definition)
+
+        self.textEditor = None
         self.recomputePosition()
 
         self.textEditor = TextEditorEntity(
@@ -33,17 +35,22 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
             defaultText = definition.defaultText
         )
 
-        # Sends notification when text height changes
-        self.textEditor.subscribe(onNotify = parentCommand.updateTargetHeight)
-
-
     # for dynamic widgets. how much to stretch command height by
     def getCommandStretch(self) -> int:
         return self.textEditor.getHeightOffset()
     
     def getValue(self) -> bool:
         return self.textEditor.getText()
-
+    
+    def defineWidth(self) -> float:
+        if self.textEditor is None:
+            return 0
+        return self.textEditor.defineWidth()
+    
+    def defineHeight(self) -> float:
+        if self.textEditor is None:
+            return 0
+        return self.textEditor.defineHeight()
 
 class TextboxWidgetDefinition(WidgetDefinition):
 

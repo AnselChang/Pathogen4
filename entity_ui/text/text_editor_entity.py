@@ -96,7 +96,7 @@ class TextEditorEntity(Entity, Observable):
         return self._px(0.5), self._py(0.5)
 
     def defineWidth(self) -> float:
-        return self._awidth(self.textHandler.getSurfaceWidth() + self.border.OUTER_X_MARGIN * 2)
+        return self.textHandler.getSurfaceWidth() + self._awidth(self.border.OUTER_X_MARGIN * 2)
     
     def defineHeight(self) -> float:
         return self.getHeightForNumRows(self.rows)

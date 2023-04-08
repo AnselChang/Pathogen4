@@ -36,7 +36,7 @@ class CommandDefinitionPresets:
         builder.setName("goTurn")
         builder.addReadout("Initial angle", TurnAttributeID.THETA1)
         builder.addReadout("Final angle", TurnAttributeID.THETA2)
-        #builder.addWidget(ValueTextboxWidgetDefinition("textbox", 0.5, 0.6, 3.14))
+        builder.addWidget(ValueTextboxWidgetDefinition("textbox", 3.14))
         return builder.build()
 
     def getCodePreset(self) -> CommandDefinition:
