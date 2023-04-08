@@ -127,6 +127,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
             self.direction = SegmentDirection.REVERSE
         else:
             self.direction = SegmentDirection.FORWARD
+        self.updateAdapter()
 
     def getDirection(self):
         return self.direction
