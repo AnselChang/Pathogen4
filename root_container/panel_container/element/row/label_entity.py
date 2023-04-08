@@ -7,7 +7,7 @@ A subclass of TextEntity. Inside a RowEntity, the label is always on the left co
 class LabelEntity(TextEntity):
 
     def __init__(self, parent, font, size, staticText: str = None):
-        super().__init__(parent, font, size, staticText)
+        super().__init__(parent, font, size, staticText + ":")
 
     def defineCenter(self) -> tuple:
         return self._px(0.3), self._py(0.5)

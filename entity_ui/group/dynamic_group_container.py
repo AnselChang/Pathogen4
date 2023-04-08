@@ -31,16 +31,16 @@ class DynamicGroupContainer(LinearGroupContainer['T']):
         return result
 
     def defineWidth(self) -> float:
-        if self.isHorizontal:
+        if not self.isHorizontal:
             return self._pwidth(1)
         else:
-            return self._awidth(self.pixels)
+            return self._awidth(self.groupSize)
         
     def defineHeight(self) -> float:
-        if self.isHorizontal:
+        if not self.isHorizontal:
             return self._aheight(self.groupSize)
         else:
             return self._pheight(1)
         
-    def defineTopLeft(self) -> tuple:
-        return self._px(0), self._py(0)
+    def defineCenter(self) -> tuple:
+        return self._px(0.5), self._py(0.5)

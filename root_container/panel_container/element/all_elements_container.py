@@ -44,8 +44,9 @@ class AllElementsContainer(Container):
         return self._px(0.5)
     
     def defineCenterY(self) -> float:
-        halfway = (self.parentCommand.COLLAPSED_HEIGHT + self.parentCommand.EXPANDED_HEIGHT) / 2
-        return self._aheight(halfway)
+        header = self.parentCommand.COLLAPSED_HEIGHT
+        halfway = header + (self.parentCommand.EXPANDED_HEIGHT - header) / 2
+        return self._py(0) + self._aheight(halfway)
 
     # This container is dynamically fit to DynamicGroupContainer
     def defineHeight(self) -> float:

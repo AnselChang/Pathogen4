@@ -150,7 +150,7 @@ class Entity(ABC, Observable):
 
     # draw rect specified by x, y, width, height. For testing only probably
     def drawRect(self, screen: pygame.Surface):
-        pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], width = 1)
+        pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], 1)
 
     
     # Must call recomputePosition every time the entity changes its position or dimensions

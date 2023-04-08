@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from common.draw_order import DrawOrder
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -12,52 +13,29 @@ from common.image_manager import ImageID
 from common.reference_frame import PointRef, Ref
 from utility.pygame_functions import drawSurface
 from utility.math_functions import distance
-from entity_ui.tooltip import Tooltip, TooltipOwner
+from entity_base.image.toggle_image_entity import ToggleImageEntity
 import pygame
 
 
-class CheckboxWidgetEntity(WidgetEntity['CheckboxWidgetDefinition'], TooltipOwner):
+class CheckboxWidgetEntity(WidgetEntity['CheckboxWidgetDefinition']):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity, definition: 'CheckboxWidgetDefinition'):
 
-        super().__init__(parent, parentCommand, definition,
-                         click = ClickLambda(self, FonLeftClick = self.onLeftClick)
-                         )
+        super().__init__(parent, parentCommand, definition)
 
         self.value = definition.defaultOn
 
-        self.onModifyDefinition()
+        self.recomputePosition()
 
+        self.checkbox = ToggleImageEntity(self,
+            ImageID.CHECKBOX_ON, ImageID.CHECKBOX_OFF,
+            drawOrder = DrawOrder.WIDGET,
+            onClick = self.onLeftClick,
+            isOn = self.getValue
+            )
 
-    def getValue(self) -> float:
+    def getValue(self) -> bool:
         return self.value
-    
-    def onModifyDefinition(self):
-        if self.definition.tooltipOn is None:
-            self.tooltipOn = None
-        else:
-            self.tooltipOn = Tooltip(self.definition.tooltipOn)
-
-        if self.definition.tooltipOff is None:
-            self.tooltipOff = None
-        else:
-            self.tooltipOff = Tooltip(self.definition.tooltipOff)
-
-    def isTouching(self, position: tuple) -> bool:
-         return self.distanceTo(position) < 12
-
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-
-        if self.getValue():
-            id = ImageID.CHECKBOX_ON_H if isHovered else ImageID.CHECKBOX_ON
-        else:
-            id = ImageID.CHECKBOX_OFF_H if isHovered else ImageID.CHECKBOX_OFF
-
-        image = self.images.get(id, self.getOpacity())
-        drawSurface(screen, image, self.CENTER_X, self.CENTER_Y)
-
-    def getTooltip(self) -> Tooltip | None:
-        return self.tooltipOn if self.getValue() else self.tooltipOff
 
     def onLeftClick(self):
         self.value = not self.value

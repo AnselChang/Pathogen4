@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from root_container.panel_container.element.row.element_entity import ElementEntity
 if TYPE_CHECKING:
     from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
@@ -28,32 +30,23 @@ Stores the actual value of the widget
 """
 # notifies observers when getCommandStretch() changes
 T = TypeVar('T')
-class WidgetEntity(Entity, Observable, Generic[T]):
+class WidgetEntity(ElementEntity, Observable, Generic[T]):
 
-    def __init__(self, parent, parentCommand: CommandBlockEntity, definition: WidgetDefinition,
-                 click: ClickListener = None,
-                 drag: DragListener = None,
-                 hover: HoverListener = None,
-                 tick: TickListener = None,
-                 select: SelectListener = None,
-                 key: KeyListener = None
-                 ):
+    def __init__(self, parent, parentCommand: CommandBlockEntity, definition: WidgetDefinition):
         
-        if hover is None:
-            hover = HoverLambda(self)
-            
-        super().__init__(parent = parent,
-                         click = click, drag = drag, hover = hover, tick = tick, select = select, key = key,
-                         drawOrder = DrawOrder.WIDGET)
+        super().__init__(parent = parent)
 
         self.parentCommand = parentCommand
         self.definition: WidgetDefinition | T = definition
+
+        self.recomputePosition()
+
+        definition.makeElement
 
     # for dynamic widgets. how much to stretch command height by
     def getCommandStretch(self) -> int:
         return 0
 
-    @abstractmethod
     def onModifyDefinition(self):
         pass
 

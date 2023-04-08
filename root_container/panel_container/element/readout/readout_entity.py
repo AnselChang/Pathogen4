@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from root_container.panel_container.element.row.element_entity import ElementEntity
 if TYPE_CHECKING:
     from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
@@ -20,7 +22,7 @@ Belongs to a specific CommandBlockEntity.
 Owns a DefinedReadout which stores information about the widget's context for all commands of that type
 """
 
-class ReadoutEntity(Entity):
+class ReadoutEntity(ElementEntity):
     def __init__(self, parent, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter, readoutDefinition: ReadoutDefinition):
 
         self.border = TextBorder()
@@ -33,7 +35,7 @@ class ReadoutEntity(Entity):
         self.pathAdapter = pathAdapter
         self.pathAdapter.subscribe(onNotify = self.updateText)
 
-        super().__init__(parent, drawOrder = DrawOrder.READOUT)
+        super().__init__(parent)
         self.updateText()
         
         self.recomputePosition()
@@ -48,9 +50,6 @@ class ReadoutEntity(Entity):
     # not interactable
     def isTouching(self, position: PointRef) -> bool:
         return False
-    
-    def defineCenter(self) -> tuple:
-        return self._px(0.5), self._py(0.5)
     
     def defineWidth(self) -> float:
         return self.textWidth + self._awidth(self.border.OUTER_X_MARGIN*2)
