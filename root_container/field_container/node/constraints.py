@@ -71,6 +71,10 @@ class Constraints(Entity):
         if screenDistance < self.PIXEL_THRESHOLD:
             self.constraints.append(line)
 
+    # whether there exists at least one constraint node can snap to
+    def snappable(self) -> bool:
+        return len(self.constraints) > 0
+
     # Get the position after constraints
     def get(self) -> PointRef:
 

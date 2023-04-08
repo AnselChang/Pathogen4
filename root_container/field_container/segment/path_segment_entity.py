@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from common.reference_frame import PointRef, Ref
+from common.reference_frame import PointRef, Ref, VectorRef
 
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
@@ -36,7 +36,12 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         
         super().__init__(parent = parent,
                          select = SelectLambda(self, "segment", type = SelectorType.SOLO),
-                         drag = DragLambda(self, FonStartDrag = self.onStartDrag, FcanDrag = self.canDrag, FonDrag = self.onDrag),
+                         drag = DragLambda(self,
+                                           FonStartDrag = self.onStartDrag,
+                                           FcanDrag = self.canDrag,
+                                           FonDrag = self.onDrag,
+                                           FonStopDrag = self.onStopDrag
+                                           ),
                          drawOrder = DrawOrder.SEGMENT)
         
         LinkedListNode.__init__(self)
@@ -61,6 +66,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         self.nodeStartPosition = []
         for node in [self.getPrevious(), self.getNext()]:
             self.nodeStartPosition.append(node.position)
+            node.constraints.show()
 
     def canDrag(self, mouseTuple: tuple) -> bool:
         mouse = PointRef(Ref.SCREEN, mouseTuple)
@@ -74,10 +80,26 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
                 return False
         return True
 
+    # When dragging, determine if either node is snappable. If so, do it
     def onDrag(self, mouseTuple: PointRef):
         for i, node in enumerate([self.getPrevious(), self.getNext()]):
             node.position = self.nodeGoalPosition[i]
+            node.constraints.reset(node.position)
+
+        delta = VectorRef(Ref.FIELD, (0,0))
+        for node in [self.getPrevious(), self.getNext()]:
+            node.constrainPosition()
+            if node.constraints.snappable():
+                delta = node.constraints.get() - node.position
+                break # can only snap one node at a time
+
+        for node in [self.getPrevious(), self.getNext()]:
+            node.position += delta
             node.onNodeMove()
+
+    def onStopDrag(self):
+        for node in [self.getPrevious(), self.getNext()]:
+            node.constraints.hide()
 
 
     def changeSegmentShape(self, newStateClass: type[PathSegmentState]):

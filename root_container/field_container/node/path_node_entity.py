@@ -134,7 +134,9 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
 
         # if the only one being dragged and shift key not pressed, constrain with snapping
         if self.interactor.selected.hasOnly(self) and not self.shiftKeyPressed:
+            self.constraints.reset(self.position)
             self.constrainPosition()
+            self.position = self.constraints.get()
 
         self.onNodeMove()
 
@@ -160,8 +162,6 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
 
     # "Snaps" to neighbors. Documentation in ConstraintManager
     def constrainPosition(self):
-
-        self.constraints.reset(self.position)
 
         # snap to previous
         if self.getPrevious() is not None:
@@ -196,8 +196,6 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
             self.addCardinalConstraints(self.getPrevious().getPrevious())
         if self.getNext() is not None:
             self.addCardinalConstraints(self.getNext().getNext())
-
-        self.position = self.constraints.get()
         
     
     def addCardinalConstraints(self, current: 'PathNodeEntity'):
