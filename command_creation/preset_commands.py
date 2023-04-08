@@ -34,7 +34,8 @@ class CommandDefinitionPresets:
         from adapter.turn_adapter import TurnAttributeID
         builder = CommandDefinitionBuilder(CommandType.TURN)
         builder.setName("goTurn")
-        builder.addReadout("end angle", TurnAttributeID.THETA2)
+        builder.addReadout("Initial angle", TurnAttributeID.THETA1)
+        builder.addReadout("Final angle", TurnAttributeID.THETA2)
         #builder.addWidget(ValueTextboxWidgetDefinition("textbox", 0.5, 0.6, 3.14))
         return builder.build()
 

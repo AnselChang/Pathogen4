@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from root_container.panel_container.element.row.element_entity import ElementEntity
+from root_container.panel_container.element.row.element_entity import ElementContainer
 if TYPE_CHECKING:
     from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
@@ -22,7 +22,7 @@ Belongs to a specific CommandBlockEntity.
 Owns a DefinedReadout which stores information about the widget's context for all commands of that type
 """
 
-class ReadoutEntity(ElementEntity):
+class ReadoutEntity(ElementContainer):
     def __init__(self, parent, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter, readoutDefinition: ReadoutDefinition):
 
         self.border = TextBorder()
@@ -33,10 +33,9 @@ class ReadoutEntity(ElementEntity):
         self.parentCommand = parentCommand
         self.definition = readoutDefinition
         self.pathAdapter = pathAdapter
-        self.pathAdapter.subscribe(onNotify = self.updateText)
+        self.pathAdapter.subscribe(onNotify = self.recomputePosition)
 
         super().__init__(parent)
-        self.updateText()
         
         self.recomputePosition()
 
@@ -45,7 +44,10 @@ class ReadoutEntity(ElementEntity):
         textSurface = getText(self.font.get(), self.textString, (0,0,0), 1)
         self.textWidth = textSurface.get_width()
         self.textHeight = textSurface.get_height()
-        self.recomputePosition()
+
+    def recomputePosition(self):
+        self.updateText()
+        return super().recomputePosition()
 
     # not interactable
     def isTouching(self, position: PointRef) -> bool:
@@ -55,7 +57,7 @@ class ReadoutEntity(ElementEntity):
         return self.textWidth + self._awidth(self.border.OUTER_X_MARGIN*2)
     
     def defineHeight(self) -> float:
-        return self.textHeight + self._awidth(self.border.OUTER_Y_MARGIN*2)
+        return self.textHeight + self._aheight(self.border.OUTER_Y_MARGIN*2)
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         drawText(screen, self.font.get(), self.textString, (0,0,0), self.CENTER_X, self.CENTER_Y, opacity = self.getOpacity())

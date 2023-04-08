@@ -27,7 +27,7 @@ class AllElementsContainer(Container):
         self.recomputePosition()
 
         # Create the container that will store the rows
-        self.group = DynamicGroupContainer(self, False, entitySizePixels = 30)
+        self.group = DynamicGroupContainer(self, False, entitySizePixels = 28)
 
         # Create the rows
         ROW_SPACING = 0.95

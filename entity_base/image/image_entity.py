@@ -86,9 +86,13 @@ class ImageEntity(Entity, TooltipOwner):
         return self.imageScaledH if isHovered else self.imageScaled
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-
         if self.noImage:
             return
+        
+        image = self._getImage(isHovered and self.dimOnHover)
 
-        drawSurface(screen, self._getImage(isHovered and self.dimOnHover), self.CENTER_X, self.CENTER_Y)
+        if self.getOpacity() != 1:
+            image.set_alpha(self.getOpacity() * 255)
+
+        drawSurface(screen, image, self.CENTER_X, self.CENTER_Y)
             

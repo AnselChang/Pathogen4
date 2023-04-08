@@ -53,7 +53,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.pathAdapter = pathAdapter
         self.type = self.pathAdapter.type
 
-        self.animatedHeight = MotionProfile(self.COLLAPSED_HEIGHT, speed = 0.4)
+        self.animatedExpansion = MotionProfile(0, speed = 0.4)
         self.animatedPosition = MotionProfile(0, speed = 0.4)
 
         self.localExpansion = False
@@ -94,9 +94,9 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     # Update animation every tick
     def onTick(self):
-        if not self.animatedPosition.isDone() or not self.animatedHeight.isDone():
+        if not self.animatedPosition.isDone() or not self.animatedExpansion.isDone():
             self.animatedPosition.tick()
-            self.animatedHeight.tick()
+            self.animatedExpansion.tick()
 
             self.path.onChangeInCommandPositionOrHeight()
 
@@ -127,12 +127,10 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.ACTUAL_COLLAPSED_HEIGHT = self._aheight(self.COLLAPSED_HEIGHT)
         self.ACTUAL_EXPANDED_HEIGHT = self._aheight(self.EXPANDED_HEIGHT) + self.getElementStretch()
 
-        height = self.ACTUAL_EXPANDED_HEIGHT if expanded else self.ACTUAL_COLLAPSED_HEIGHT
-
-        self.animatedHeight.setEndValue(height)
+        self.animatedExpansion.setEndValue(1 if expanded else 0)
            
         if isFirst:
-            self.animatedHeight.forceToEndValue()
+            self.animatedExpansion.forceToEndValue()
 
     def updateTargetY(self, force: bool = False):
         self.targetY = self._py(1) - self._parent.dragOffset + self.dragOffset
@@ -155,20 +153,21 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     
     def defineHeight(self) -> float:
         if self.path.forceAnimationToEnd:
-                self.animatedHeight.forceToEndValue()
+                self.animatedExpansion.forceToEndValue()
         
         # current animated height
-        return self._aheight(self.animatedHeight.get())
+        ratio = self.animatedExpansion.get()
+        height = self.ACTUAL_COLLAPSED_HEIGHT + (self.ACTUAL_EXPANDED_HEIGHT - self.ACTUAL_COLLAPSED_HEIGHT) * ratio
+        return self._aheight(height)
     
     def getPercentExpanded(self) -> float:
-
-        return (self.HEIGHT - self.ACTUAL_COLLAPSED_HEIGHT) / (self.ACTUAL_EXPANDED_HEIGHT - self.ACTUAL_COLLAPSED_HEIGHT)
+        return self.animatedExpansion.get()
         
     def isFullyCollapsed(self) -> bool:
-        return self.HEIGHT == self.COLLAPSED_HEIGHT
+        return self.animatedExpansion.get() == 0
     
     def isFullyExpanded(self) -> bool:
-        return self.HEIGHT == self.EXPANDED_HEIGHT
+        return self.animatedExpansion.get() == 1
 
     # commands are sandwiched by CommandInserters
     def getPreviousCommand(self) -> 'CommandBlockEntity':
@@ -224,7 +223,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         # draw rounded rect
         color = COMMAND_INFO[self.type].color
         if isActive and isHovered and self.interactor.leftDragging:
-            color = shade(color, 1.15)
+            color = shade(color, 1.3)
         elif isHovered or self.isTouching(self.interactor.CURRENT_MOUSE_POSITION):
             color = shade(color, 1.2)
         else:

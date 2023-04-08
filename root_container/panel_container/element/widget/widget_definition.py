@@ -1,5 +1,5 @@
 
-from root_container.panel_container.element.widget.widget_entity import WidgetEntity
+from root_container.panel_container.element.widget.widget_entity import WidgetContainer
 from root_container.panel_container.element.row.element_definition import ElementDefinition
 from abc import abstractmethod
 

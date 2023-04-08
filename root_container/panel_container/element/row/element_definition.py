@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from root_container.panel_container.element.row.element_entity import ElementEntity
+    from root_container.panel_container.element.row.element_entity import ElementContainer
 
 from enum import Enum
 from root_container.panel_container.element.readout.readout_entity import ReadoutEntity
 from root_container.panel_container.element.row.label_entity import LabelEntity
-from root_container.panel_container.element.widget.widget_entity import WidgetEntity
+from root_container.panel_container.element.widget.widget_entity import WidgetContainer
 
 from common.font_manager import FontID
 
@@ -27,7 +27,7 @@ class ElementDefinition(ABC):
         self.LABEL_SIZE = 15
 
     @abstractmethod
-    def makeElement(self, parent, parentCommand, pathAdapter) -> ElementEntity:
+    def makeElement(self, parent, parentCommand, pathAdapter) -> ElementContainer:
         pass
     
     def makeLabel(self, parent) -> LabelEntity:

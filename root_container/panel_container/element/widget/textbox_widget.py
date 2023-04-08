@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
-from root_container.panel_container.element.widget.widget_entity import WidgetEntity
+from root_container.panel_container.element.widget.widget_entity import WidgetContainer
 from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
 
 from entity_ui.text.text_editor_entity import TextEditorEntity, TextEditorMode
@@ -15,7 +15,7 @@ from common.reference_frame import PointRef, Ref
 
 
 
-class TextboxWidgetEntity(WidgetEntity['TextboxWidgetDefinition']):
+class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity, definition: 'TextboxWidgetDefinition'):
 
@@ -56,8 +56,8 @@ class TextboxWidgetDefinition(WidgetDefinition):
         self.isDynamic = isDynamic
         self.isNumOnly = isNumOnly
 
-    def makeElement(self, parent, parentCommand, pathAdapter) -> TextboxWidgetEntity:
-        return TextboxWidgetEntity(parent, parentCommand, self)
+    def makeElement(self, parent, parentCommand, pathAdapter) -> TextboxWidgetContainer:
+        return TextboxWidgetContainer(parent, parentCommand, self)
     
 # dynamic, no text restrictions
 class CodeTextboxWidgetDefinition(TextboxWidgetDefinition):
