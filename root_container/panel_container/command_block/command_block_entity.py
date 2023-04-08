@@ -236,7 +236,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         color = COMMAND_INFO[self.type].color
         if isActive and isHovered and self.interactor.leftDragging:
             color = shade(color, 1.3)
-        elif isHovered or self.isTouching(self.interactor.CURRENT_MOUSE_POSITION):
+        elif isHovered or self.isTouching(self.interactor.CURRENT_MOUSE_POSITION) and not self.interactor.disableUntilMouseUp:
             color = shade(color, 1.2)
         else:
             color = shade(color, 1.1)

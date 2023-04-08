@@ -52,6 +52,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
     RED_COLOR = (255, 102, 102)
 
     def __init__(self, fieldContainer: FieldContainer, path: Path, position: PointRef, temporary: bool = False):
+        self.fieldContainer = fieldContainer
         Entity.__init__(self,
                 parent = fieldContainer,
                 drag = DragLambda(
@@ -164,7 +165,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         mouse = PointRef(Ref.SCREEN, mouseTuple)
         pos: PointRef = self.startPosition + (mouse - self.mouseStartDrag)
         self.lastDragPositionValid = False # See if canDrag() is matched with onDrag() after. If so, valid
-        return isInsideBox(*pos.fieldRef, 0, 0, 144, 144)
+        return isInsideBox(*pos.fieldRef, 0, 0, 144, 144) and isInsideBox(*mouseTuple, *self.fieldContainer.RECT)
 
     def onDrag(self, mouseTuple: PointRef):
         self.lastDragPositionValid = True

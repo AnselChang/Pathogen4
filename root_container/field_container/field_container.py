@@ -50,7 +50,7 @@ class FieldContainer(entity.Entity):
 
     # must impl both of these if want to contain other entity
     def defineWidth(self) -> float:
-        return self.dimensions.SCREEN_HEIGHT
+        return self.dimensions.SCREEN_WIDTH
     def defineHeight(self) -> float:
         return self.dimensions.SCREEN_HEIGHT
     

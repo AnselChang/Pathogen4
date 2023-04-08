@@ -52,6 +52,9 @@ class Interactor:
         self.greedyEntity: Entity = None
         self.rawHoveredEntity: Entity = None
 
+        # disable interaction until mouse up
+        self.disableUntilMouseUp = False
+
     # objects in list A but not B
     def setDifference(self, listA, listB):
         return [obj for obj in listA if obj not in listB]
@@ -88,7 +91,7 @@ class Interactor:
 
         self.rawHoveredEntity = entity
 
-        if self.greedyEntity is not None:
+        if self.greedyEntity is not None or self.disableUntilMouseUp:
             return
 
         if self.hoveredEntity is not entity:
@@ -184,6 +187,7 @@ class Interactor:
         isRight = self.rightDragging
         self.leftDragging = False
         self.rightDragging = False
+        self.disableUntilMouseUp = False
 
         toRemove = []
         for selected in self.selected.entities:
@@ -251,6 +255,7 @@ class Interactor:
 
                     self.addEntity(entityToStartDragging)
                     entityToStartDragging.drag.onStartDrag(mouse)
+                    self.disableUntilMouseUp = True
 
 
 
