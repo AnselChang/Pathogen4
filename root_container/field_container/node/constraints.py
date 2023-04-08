@@ -99,18 +99,18 @@ class Constraints(Entity):
 
     def isTouching(self, position: PointRef) -> bool:
         return False
+    
+    def _point(self, startPoint, distance, theta):
+        return startPoint[0] + distance * math.cos(theta), startPoint[1] + distance * math.sin(theta)
 
     # draw all constraint lines
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+        
+        dist = hypo(self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT)
         for line in self.constraints:
-            point = PointRef(Ref.FIELD, line.point)
-            
-            startPoint, pointA = clipLineToBox(point.screenRef, line.theta, 0,0,self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT)
+            point = PointRef(Ref.FIELD, line.point).screenRef
 
-            distance = distanceTuples(startPoint, pointA)
-            otherDistance = hypo(self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT) - distance
-
-            theta = line.theta + 3.1415
-            pointB = startPoint[0] + otherDistance * math.cos(theta), startPoint[1] + otherDistance * math.sin(theta)
+            pointA = self._point(point, dist, line.theta)
+            pointB = self._point(point, dist, line.theta + 3.1415)
 
             drawDottedLine(screen, (0,0,0), pointA, pointB, 2, 4)
