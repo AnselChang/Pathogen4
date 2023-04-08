@@ -137,6 +137,22 @@ class Path:
         self.dict[node] = turnCommand
 
         return node
+    
+    def _addRawNodeToBeginning(self, nodePosition: PointRef, isTemporary: bool = False):
+
+        # create node and add entity
+        node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
+        self.pathList.addToBeginning(node)
+
+        # create turn command and add entity
+        turnCommand = self.commandFactory.create(self.commandList.head, self, node.getAdapter())
+        self.commandList.insertAfter(self.commandList.head, turnCommand)
+
+        # maintain a relationship between the node and turn command
+        self.dict[node] = turnCommand
+
+        return node
+
 
     def _addRawSegment(self, afterPath = None, afterCommand = None):
 
@@ -183,12 +199,17 @@ class Path:
         node.getNext().onNodeMove(node)
         node.getPrevious().onNodeMove(node)
 
-        command: CommandOrInserter = self.commandList.head
-        while command is not None:
-            print(command)
-            print("\t", command._children)
-            command = command.getNext()
+        return node
+    
+    def addNodeToBeginning(self, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
+        node = self._addRawNodeToBeginning(position, isTemporary = isTemporary)
+        inserter = self._addInserter(self.dict[node])
+        segment = self._addRawSegment(node, inserter)
+        self._addInserter(self.dict[segment])
 
+        self.onChangeInCommandPositionOrHeight()
+        node.updateAdapter()
+        node.getNext().onNodeMove(node)
 
         return node
     

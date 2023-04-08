@@ -10,6 +10,13 @@ class AddNodeEndAction(MenuClickAction[PathNodeEntity]):
         newNode = targetEntity.path.addNode(PointRef(Ref.SCREEN, mouse), isTemporary = True)
         return newNode
     
+# When clicked, start adding a node to the end of the path
+class AddNodeBeginningAction(MenuClickAction[PathNodeEntity]):
+    # entity returned is the new entity to be dragged
+    def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
+        newNode = targetEntity.path.addNodeToBeginning(PointRef(Ref.SCREEN, mouse), isTemporary = True)
+        return newNode
+    
 # When clicked, deletes node on path
 class DeleteNodeAction(MenuClickAction[PathNodeEntity]):
 
@@ -37,6 +44,11 @@ def configureNodeMenu() -> MenuDefinition:
     states = ImageStatesFactory()
     states.addState(0, ImageID.CHECKBOX_ON, "not implemented")
     segmentDefinition.add(states.create(), TestMenuClickAction(False))
+
+    # Only for first node. Adds a node at the end of the path
+    states = ImageStatesFactory()
+    states.addState(0, ImageID.ADD_NODE, "Insert a node before the start of the path")
+    segmentDefinition.add(states.create(), AddNodeBeginningAction(), lambda entity: entity.isFirstNode())
 
     # Only for last node. Adds a node at the end of the path
     states = ImageStatesFactory()
