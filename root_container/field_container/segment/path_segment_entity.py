@@ -1,5 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from entity_base.listeners.drag_listener import DragLambda
+from utility.math_functions import isInsideBox
 if TYPE_CHECKING:
     from root_container.field_container.node.path_node_entity import PathNodeEntity
 
@@ -8,7 +11,7 @@ from enum import Enum
 from common.reference_frame import PointRef, Ref
 
 from entity_base.listeners.click_listener import ClickLambda
-from entity_base.listeners.select_listener import SelectLambda
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
 from entity_base.entity import Entity
 
 from root_container.field_container.segment.path_segment_state import PathSegmentState
@@ -32,8 +35,8 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     def __init__(self, parent: Entity) -> None:
         
         super().__init__(parent = parent,
-                         select = SelectLambda(self, "segment"),
-                         click = ClickLambda(self,FOnDoubleClick = self.onDoubleClick),
+                         select = SelectLambda(self, "segment", type = SelectorType.SOLO),
+                         drag = DragLambda(self, FonStartDrag = self.onStartDrag, FcanDrag = self.canDrag, FonDrag = self.onDrag),
                          drawOrder = DrawOrder.SEGMENT)
         
         LinkedListNode.__init__(self)
@@ -53,6 +56,29 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         self.updateAdapter()
         self.recomputePosition()
 
+    def onStartDrag(self, mouse: tuple):
+        self.mouseStartDrag = PointRef(Ref.SCREEN, mouse)
+        self.nodeStartPosition = []
+        for node in [self.getPrevious(), self.getNext()]:
+            self.nodeStartPosition.append(node.position)
+
+    def canDrag(self, mouseTuple: tuple) -> bool:
+        mouse = PointRef(Ref.SCREEN, mouseTuple)
+
+        self.mouseDelta = mouse - self.mouseStartDrag
+        self.nodeGoalPosition = []
+        for i, node in enumerate([self.getPrevious(), self.getNext()]):
+            newPos = self.nodeStartPosition[i] + self.mouseDelta
+            self.nodeGoalPosition.append(newPos)
+            if not isInsideBox(*newPos.fieldRef, 0, 0, 144, 144):
+                return False
+        return True
+
+    def onDrag(self, mouseTuple: PointRef):
+        for i, node in enumerate([self.getPrevious(), self.getNext()]):
+            node.position = self.nodeGoalPosition[i]
+            node.onNodeMove()
+
 
     def changeSegmentShape(self, newStateClass: type[PathSegmentState]):
         self.state = newStateClass(self)
@@ -60,6 +86,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
     def onNodeMove(self, node: Entity):
         self.updateAdapter()
+        self.recomputePosition()
         if node is self.getPrevious():
             self.getNext().onAngleChange()
         else:
@@ -71,9 +98,6 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     def updateAdapter(self) -> None:
         self.state.updateAdapter()
 
-    def onDoubleClick(self, mouse: tuple):
-        entities = [self, self.getPrevious(), self.getNext()]
-        self.interactor.setSelectedEntities(entities)
 
     def reverseSegmentDirection(self):
         self.isReversed = not self.isReversed

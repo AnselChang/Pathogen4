@@ -72,7 +72,6 @@ class StraightSegmentState(PathSegmentState):
 
         fpos = self.segment.getPrevious().getPositionRef()
         spos = self.segment.getNext().getPositionRef()
-
         return (fpos + (spos - fpos) / 2).screenRef
 
 

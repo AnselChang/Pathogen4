@@ -30,9 +30,8 @@ Composition structure:
 class SelectorMenuEntity(Entity):
 
     def __init__(self, fieldContainer: FieldContainer, selectedEntity: Entity, menuDefinitions: list[MenuButtonDefinition]):
-        print("Spawn")
         self.BUTTON_SIZE = 20 # LinearContainers should be BUTTON_SIZE x BUTTON_SIZE. Relative pixel units
-        self.BUTTON_IMAGE_SCALE = 0.9 # to add additional padding between button images and menu background
+        self.BUTTON_IMAGE_SCALE = 0.7 # to add additional padding between button images and menu background
 
         self.MENU_COLOR = [255, 204, 153]
         self.BORDER_RADIUS = 5
@@ -40,7 +39,6 @@ class SelectorMenuEntity(Entity):
         super().__init__(parent = selectedEntity,
                          drawOrder = DrawOrder.SELECTOR_MENU_BACKGROUND)
         
-        self.pxOfField, self.pyOfField = self.findStartingPosition(fieldContainer, selectedEntity)
         self.fieldContainer = fieldContainer
 
         self.group: DynamicGroupContainer = None
@@ -60,25 +58,14 @@ class SelectorMenuEntity(Entity):
                 pwidth = self.BUTTON_IMAGE_SCALE,
                 pheight = self.BUTTON_IMAGE_SCALE
             )
+        
+        # need to recompute position again to determine correct width
+        self.recomputePosition()
 
     # Remove itself and all children from the screen
     def despawn(self):
         self.entities.removeEntity(self)
-        print("despawn")
 
-    """
-    Based on the position of the entity on the field, we need to determine where
-    to spawn the menu. The menu should be spawned in a way where it is closest
-    to the center of the FieldContainer, but not overlapping the entity,
-    and preferably in open space.
-    It should be returned in units of percent relative to FieldContainer
-    """
-    def findStartingPosition(self, fieldContainer: FieldContainer, selectedEntity: Entity) -> tuple[float, float]:
-
-        # For now, we go with the simplest implementation,
-        # which is to spawn the menu at the center of the field
-        return 0.5, 0.5
-    
     # dynamically bounded to the size of the DynamicGroupContainer
     def defineWidth(self) -> float:
         if self.group is None:
@@ -89,10 +76,13 @@ class SelectorMenuEntity(Entity):
     def defineHeight(self) -> float:
         return self._aheight(self.BUTTON_SIZE)
     
-    # From the position calculated in findStartingPosition(), convert
-    # from percent relative to FieldContainer to absolute units
-    def defineCenter(self) -> tuple:
-        return self.fieldContainer._px(self.pxOfField), self.fieldContainer._py(self.pyOfField)
+    # Left edge of menu should be aligned with the entity
+    def defineLeftX(self) -> float:
+        return self._px(0.5) + self._awidth(10)
+    
+    # Top edge of menu should be aligned of center of entity
+    def defineTopY(self) -> float:
+        return self._py(0.5) + self._aheight(0)
     
     # Draws the background of the menu
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):

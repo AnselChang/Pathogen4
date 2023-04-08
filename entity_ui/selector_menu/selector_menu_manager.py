@@ -4,6 +4,7 @@ from entity_ui.selector_menu.selector_menu_factory import *
 from common.image_manager import ImageID
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
+from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 
 """
 Stores a list of MenuDefinitions: one for each type of entity that can be selected.
@@ -22,7 +23,9 @@ class SelectorMenuManager:
         # Store the field container, as menus need to use it to determine starting location
         self.fieldContainer = fieldContainer
 
+        # add configured menus to the list
         self.configureNodeMenu()
+        self.configureSegmentMenu()
 
     def addMenuDefinition(self, menuDefinition: MenuDefinition):
         self.menuDefinitions.append(menuDefinition)
@@ -50,6 +53,21 @@ class SelectorMenuManager:
         nodeDefinition = MenuDefinition(PathNodeEntity)
         nodeDefinition.add(TestMenuClickAction("Button 1"), "Button 1 tooltip", ImageID.CHECKBOX_OFF)
         nodeDefinition.add(TestMenuClickAction("Button 2"), "Button 2 tooltip", ImageID.STRAIGHT_FORWARD)
-        nodeDefinition.add(TestMenuClickAction("Button 2"), "Button 2 tooltip", ImageID.TURN_LEFT)
+        nodeDefinition.add(TestMenuClickAction("Button 3"), "Button 3 tooltip", ImageID.TURN_LEFT)
 
         self.addMenuDefinition(nodeDefinition)
+
+    """
+    Menu for segments. Functionality for:
+        - revealing command associated with node
+        - Toggle segment type
+        - Toggle reverse direction
+    """
+    def configureSegmentMenu(self):
+
+        # test menu for now
+        segmentDefinition = MenuDefinition(PathSegmentEntity)
+        segmentDefinition.add(TestMenuClickAction("Button 1"), "Button 1 tooltip", ImageID.CHECKBOX_OFF)
+        segmentDefinition.add(TestMenuClickAction("Button 2"), "Button 2 tooltip", ImageID.STRAIGHT_FORWARD)
+
+        self.addMenuDefinition(segmentDefinition)

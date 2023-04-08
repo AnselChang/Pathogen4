@@ -15,7 +15,7 @@ class TestMenuClickAction(MenuClickAction):
     def __init__(self, message: str):
         self.message = message
     def onClick(self, targetEntity: Entity, mouse: tuple):
-        print(targetEntity, mouse, self.message)
+        print(targetEntity, mouse, self.message, targetEntity.RECT)
 
 # Used to construct a menu button for the menu
 class MenuButtonDefinition:

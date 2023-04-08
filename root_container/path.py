@@ -137,6 +137,7 @@ class Path:
         self.onChangeInCommandPositionOrHeight()
         self.node.updateAdapter()
         self.segment.updateAdapter()
+        self.segment.recomputePosition()
         
 
     # add custom command where inserter is

@@ -58,6 +58,11 @@ class SelectHandler:
     def remove(self, entity: Entity) -> None:
         self.entities.remove(entity)
 
+        # If menu already open, close it
+        if self.activeMenu is not None:
+            self.activeMenu.despawn()
+            self.activeMenu = None
+
     def removeAll(self):
         self.entities.clear()
 
