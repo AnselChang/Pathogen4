@@ -1,6 +1,7 @@
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from common.draw_order import DrawOrder
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
 from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
@@ -153,12 +154,12 @@ class Path:
     def deleteCustomCommand(self, command: CustomCommandBlockEntity):
 
         # remove the inserter after the command
-        self.entities.removeEntity(command.getNext())
+        self.entities.removeEntity(command.getNext(), excludeChildrenIf = lambda child: isinstance(child, CommandOrInserter))
         self.commandList.remove(command.getNext())
 
         # remove the command
+        self.entities.removeEntity(command, excludeChildrenIf = lambda child: isinstance(child, CommandOrInserter))
         self.commandList.remove(command)
-        self.entities.removeEntity(command)
         self.onChangeInCommandPositionOrHeight()
 
     # set the local expansion flag for each command to isExpand

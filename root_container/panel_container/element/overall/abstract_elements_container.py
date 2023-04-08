@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from data_structures.observer import Observable
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -7,7 +9,7 @@ if TYPE_CHECKING:
 from command_creation.command_definition import CommandDefinition
 from entity_base.container_entity import Container
 
-class AbstractElementsContainer(Container):
+class AbstractElementsContainer(Container, Observable):
     
     def __init__(self, parentCommand: CommandBlockEntity, commandDefinition: CommandDefinition, pathAdapter: PathAdapter):
         

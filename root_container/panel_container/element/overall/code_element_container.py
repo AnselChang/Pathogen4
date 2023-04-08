@@ -33,6 +33,12 @@ class CodeElementContainer(AbstractElementsContainer):
             defaultText = "// [Enter code here]"
         )
 
+        self.textEditor.subscribe(onNotify = self._notify)
+
+    def _notify(self):
+        print("code element container notified")
+        self.notify()
+
 
     # This container is dynamically fit to DynamicGroupContainer
     def defineHeight(self) -> float:

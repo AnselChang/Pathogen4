@@ -35,18 +35,25 @@ class EntityManager:
         if entity.key is not None:
             self.keyEntities.append(entity)
 
-    def removeEntity(self, entity: Entity):
+    def removeEntity(self, entity: Entity, excludeChildrenIf = lambda child : False):
 
-        for child in entity._children:
-            self.entities.remove(child)
+        i = 0
+        while i < len(entity._children):
+            child = entity._children[i]
+            
+            if not excludeChildrenIf(child):
+                self.removeEntity(child)
+                continue
+            i += 1
 
         entity._parent._children.remove(entity)
-        self.entities.remove(entity)
 
+        self.entities.remove(entity)
         if entity in self.tickEntities:
             self.tickEntities.remove(entity)
         if entity in self.keyEntities:
             self.keyEntities.remove(entity)
+
 
     def getEntityAtPosition(self, position: tuple) -> Entity:
 

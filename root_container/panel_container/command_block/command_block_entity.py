@@ -89,6 +89,10 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         This will be changed in the future.
         """
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), pathAdapter)
+        
+        # on element container resize, recompute target height
+        self.elementsContainer.subscribe(onNotify = self.updateTargetHeight)
+
 
         self.recomputePosition()
 
@@ -132,6 +136,8 @@ class CommandBlockEntity(Entity, CommandOrInserter):
            
         if isFirst:
             self.animatedExpansion.forceToEndValue()
+
+        self.path.onChangeInCommandPositionOrHeight()
 
     def updateTargetY(self, force: bool = False):
         pass

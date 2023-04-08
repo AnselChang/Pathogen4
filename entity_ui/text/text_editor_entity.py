@@ -76,9 +76,6 @@ class TextEditorEntity(Entity, Observable):
 
         self.recomputePosition()
 
-    def recomputePosition(self):
-        super().recomputePosition()
-        self.notify()
 
     def onFontUpdate(self):
         self.textHandler.update()
@@ -170,7 +167,12 @@ class TextEditorEntity(Entity, Observable):
         if self.mode == TextEditorMode.READ:
             return
         
+        oldHeight = self.defineHeight()
+        
         self.textHandler.onKeyDown(key)
+
+        if self.defineHeight() != oldHeight:
+            self.notify()
 
     def onKeyUp(self, key):
         pass
