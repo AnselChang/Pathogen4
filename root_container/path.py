@@ -112,7 +112,7 @@ class Path:
             parent = self.scrollHandler.getScrollingContainer()
             isFirst = True
         else:
-            parent = self.commandList.tail
+            parent = afterCommand
             isFirst = False
         inserter = CommandInserter(parent, self, self.addCustomCommand, isFirst)
         self.commandList.insertAfter(afterCommand, inserter)
@@ -173,7 +173,7 @@ class Path:
         return node
     
     def insertNode(self, segment: PathSegmentEntity, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
-        node = self._addRawNode(position, segment, self.dict[segment], isTemporary = isTemporary)
+        node = self._addRawNode(position, segment, self.dict[segment].getNext(), isTemporary = isTemporary)
         inserter = self._addInserter(self.dict[node])
         segment = self._addRawSegment(node, inserter)
         self._addInserter(self.dict[segment])
@@ -186,7 +186,6 @@ class Path:
         command: CommandOrInserter = self.commandList.head
         while command is not None:
             print(command)
-            print("\t", command._parent)
             print("\t", command._children)
             command = command.getNext()
 
