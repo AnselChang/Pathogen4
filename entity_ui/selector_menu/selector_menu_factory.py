@@ -15,11 +15,12 @@ class MenuClickAction(ABC, Generic[T]):
         return None
         
     # if not available, the button will be grayed out, and cannot be clicked
-    @abstractmethod
     def isActionAvailable(self, targetEntity: Entity | T) -> bool:
-        pass
+        return True
 
     # callback for when button is available and clicked
+    # if something is returned, it will be recieved by onLeftClick at interactor
+    # That is set to make the entity returned to start dragging
     @abstractmethod
     def onClick(self, targetEntity: Entity | T, mouse: tuple):
         pass
@@ -39,14 +40,16 @@ class TestMenuClickAction(MenuClickAction):
 class MenuButtonDefinition:
 
     # onClick should take in TWO ARGUMENTS: the target entity and the mouse
-    def __init__(self, imageStates: list[ImageState], action: MenuClickAction):
+    def __init__(self, imageStates: list[ImageState], action: MenuClickAction, condition = lambda entity: True):
         self.imageStates = imageStates
         self.action = action
+        self.condition = condition
         
 
 """
 Stores the type of entity that can be selected.
 Stores the list of menu button definitions.
+The menu button is only added if the condition is true
 """
 class MenuDefinition:
 
@@ -54,5 +57,5 @@ class MenuDefinition:
         self.entityType = entityType
         self.definitions: list[MenuButtonDefinition] = []
 
-    def add(self, imageStates: list[ImageState], action: MenuClickAction):
-        self.definitions.append(MenuButtonDefinition(imageStates, action))
+    def add(self, imageStates: list[ImageState], action: MenuClickAction, condition = lambda entity: True):
+        self.definitions.append(MenuButtonDefinition(imageStates, action, condition))

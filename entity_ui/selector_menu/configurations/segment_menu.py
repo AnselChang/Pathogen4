@@ -8,10 +8,6 @@ class InvertDirectionAction(MenuClickAction[PathSegmentEntity]):
     # Get the current direction of the segment
     def getStateID(self, targetEntity: PathSegmentEntity) -> Enum:
         return targetEntity.getDirection()
-        
-    # You can always invert a segment direction
-    def isActionAvailable(self, targetEntity: PathSegmentEntity) -> bool:
-        return True
 
     # Toggle the forward/reverse direction
     def onClick(self, targetEntity: PathSegmentEntity, mouse: tuple):
@@ -29,7 +25,7 @@ def configureSegmentMenu() -> MenuDefinition:
 
     # Add a button that reveals the corresponding command
     states = ImageStatesFactory()
-    states.addState(0, ImageID.REVERSE, "not implemented")
+    states.addState(0, ImageID.CHECKBOX_ON, "not implemented")
     segmentDefinition.add(states.create(), TestMenuClickAction(False))
     
     # Add a button that toggles the direction of the segment

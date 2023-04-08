@@ -57,10 +57,9 @@ class SelectHandler:
         return True
     
     # Tries to remove entity from selection. Returns true if successful
-    def remove(self, entity: Entity, currentHoveredEntity: Entity) -> bool:
+    def remove(self, entity: Entity, currentHoveredEntity: Entity, forceRemove: bool) -> bool:
         # don't deselect current entity if the menu related to entity is clicked
-        if self.activeMenu is not None and currentHoveredEntity in self.activeMenu:
-            print("menu clicked")
+        if not forceRemove and self.activeMenu is not None and currentHoveredEntity in self.activeMenu:
             return False
 
         self.entities.remove(entity)

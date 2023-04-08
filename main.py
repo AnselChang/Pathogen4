@@ -76,7 +76,7 @@ def main():
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)
-    interactor.initMenuManager(menuManager)
+    interactor.initInteractor(menuManager, fieldContainer)
 
     # create tabs
     tabHandler = TabHandler(panelContainer)
@@ -141,6 +141,7 @@ def main():
         # Update display and maintain frame rate
         pygame.display.flip()
         clock.tick(60) # fps
+        #print(clock.get_fps())
 
 if __name__ == "__main__":
     #cProfile.run('main()', sort='cumtime')

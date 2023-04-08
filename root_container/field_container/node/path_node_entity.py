@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.path import Path
+
 from enum import Enum
 from entity_base.abstract_circle_entity import AbstractCircleEntity
 from entity_base.entity import Entity
@@ -44,8 +49,9 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
 
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)
+    RED_COLOR = (255, 102, 102)
 
-    def __init__(self, fieldContainer: FieldContainer, position: PointRef):
+    def __init__(self, fieldContainer: FieldContainer, path: Path, position: PointRef, temporary: bool = False):
         Entity.__init__(self,
                 parent = fieldContainer,
                 drag = DragLambda(
@@ -63,11 +69,17 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         
         LinkedListNode.__init__(self)
 
+        self.path = path
         self.position: PointRef = position
         self.adapter = TurnAdapter([
             ImageState(TurnDirection.RIGHT, ImageID.TURN_RIGHT),
             ImageState(TurnDirection.LEFT, ImageID.TURN_LEFT)
         ])
+
+        # A bit like a "hover" node. If user doesn't successfully place it,
+        # it will be deleted. Visually it is semi-transparent to indicate this.
+        self.temporary = temporary
+        self.lastDragPositionValid = False
 
 
         self.dragging = True
@@ -84,9 +96,18 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
 
     def getColor(self, isHovered: bool) -> tuple:
         color = self.FIRST_BLUE_COLOR if self.getPrevious() is None else self.BLUE_COLOR
+
+        # That means we're on the verge of deleting this node, as it
+        # is not in a valid location, and will be deleted if mouse down
+        if self.temporary and self.lastDragPositionValid is False:
+            color = self.RED_COLOR
+
         if isHovered:
             return shade(color, 0.9)
         return color
+    
+    def getOpacity(self) -> float:
+        return 0.75 if self.isTemporary() else 1
 
     def getRadius(self, isHovered: bool = False) -> float:
         return 12 if isHovered else 10
@@ -130,15 +151,24 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         self.constraints.show()
 
     def onStopDrag(self):
+
+        if self.temporary and not self.lastDragPositionValid:
+            self.path.removeNode(self)
+
+
         self.dragging = False
         self.constraints.hide()
+        self.temporary = False # no longer temporary once placed
 
     def canDrag(self, mouseTuple: tuple) -> bool:
         mouse = PointRef(Ref.SCREEN, mouseTuple)
         pos: PointRef = self.startPosition + (mouse - self.mouseStartDrag)
+        self.lastDragPositionValid = False # See if canDrag() is matched with onDrag() after. If so, valid
         return isInsideBox(*pos.fieldRef, 0, 0, 144, 144)
 
     def onDrag(self, mouseTuple: PointRef):
+        self.lastDragPositionValid = True
+
         mouse = PointRef(Ref.SCREEN, mouseTuple)
         self.position = self.startPosition + (mouse - self.mouseStartDrag)
 
@@ -226,4 +256,11 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
                     theta = theta
                 )
 
-        
+    def isFirstNode(self) -> bool:
+        return self.getPrevious() is None
+    
+    def isLastNode(self) -> bool:
+        return self.getNext() is None
+    
+    def isTemporary(self) -> bool:
+        return self.temporary

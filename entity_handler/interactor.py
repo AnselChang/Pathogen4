@@ -21,7 +21,8 @@ entities based on mouse input
 
 class Interactor:
 
-    def initMenuManager(self, menuManager: SelectorMenuManager):
+    def initInteractor(self, menuManager: SelectorMenuManager, fieldContainer):
+        self.fieldContainer = fieldContainer
         self.selected.initMenuManager(menuManager)
 
     def __init__(self, dimensions: Dimensions, fieldTransform: FieldTransform):
@@ -69,13 +70,13 @@ class Interactor:
         if self.selected.add(entity):
             entity.select.onSelect(self)
 
-    def removeEntity(self, entity: Entity):
-        if self.selected.remove(entity, self.hoveredEntity):
+    def removeEntity(self, entity: Entity, forceRemove: bool = False):
+        if self.selected.remove(entity, self.hoveredEntity, forceRemove):
             entity.select.onDeselect(self)
 
-    def removeAllEntities(self):
+    def removeAllEntities(self, forceRemove: bool = False):
         for entity in self.selected.entities:
-            self.removeEntity(entity)
+            self.removeEntity(entity, forceRemove)
 
     def isMultiselect(self) -> bool:
         return self.box.active
@@ -175,7 +176,7 @@ class Interactor:
 
         # start multiselect
         self.box.disable()
-        if self.hoveredEntity is None:
+        if self.hoveredEntity is self.fieldContainer:
             self.box.enable(self.mouseStartDrag)
             self.box.update(mouse, entities)
 
@@ -236,7 +237,22 @@ class Interactor:
             if isRight:
                 self.hoveredEntity.click.onRightClick(mouse)
             else:
-                self.hoveredEntity.click.onLeftClick(mouse)
+                """
+                On the special case onLeftClick returns an entity instead of None,
+                start dragging that entity, even though mouse is up. it will stop
+                dragging once mouse is pressed down again. One use case is creating
+                new nodes with the "add new node" menu button
+                """
+                entityToStartDragging: Entity = self.hoveredEntity.click.onLeftClick(mouse)
+                if entityToStartDragging is not None and entityToStartDragging.drag is not None:
+                    print("start")
+                    self.leftDragging = True
+                    self.removeAllEntities(forceRemove = True)
+
+                    self.addEntity(entityToStartDragging)
+                    entityToStartDragging.drag.onStartDrag(mouse)
+
+
 
     def drawSelectBox(self, screen: pygame.Surface):
 

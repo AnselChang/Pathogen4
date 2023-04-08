@@ -46,7 +46,8 @@ class EntityManager:
                 continue
             i += 1
 
-        entity._parent._children.remove(entity)
+        if entity in entity._parent._children:
+            entity._parent._children.remove(entity)
 
         self.entities.remove(entity)
         if entity in self.tickEntities:

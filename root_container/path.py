@@ -53,6 +53,9 @@ class Path:
         self.pathList = LinkedList[PathNodeEntity | PathSegmentEntity]() # linked list of nodes and segments
         self.commandList = LinkedList[CommandBlockEntity | CommandInserter]() # linked list of CommandEntities
 
+        # store a dict that maintains a mapping from PathNodeEntity | PathSegmentEntity to CommandBlockEntity
+        self.dict: dict[PathNodeEntity | PathSegmentEntity, CommandBlockEntity] = {}
+
         self.scrollHandler = CommandScrollingHandler(panel)
         self.scrollHandler.subscribe(onNotify = self.recalculateTargets)
         self.dimensions.subscribe(onNotify = self.onWindowResize)
@@ -62,10 +65,10 @@ class Path:
 
         # initialize first node
         self._addInserter() # add initial CommandInserter
-        self._addRawNode(startPosition) # add start node
+        node = self._addRawNode(startPosition) # add start node
         self._addInserter() # add final CommandInserter
 
-        self.node.updateAdapter()
+        node.updateAdapter()
 
         # register onTick() to be called at end of every tick
         TickEntity(self.onTick, drawOrder=DrawOrder.FRONT)
@@ -111,37 +114,81 @@ class Path:
         inserter = CommandInserter(parent, self, self.addCustomCommand, isFirst)
         self.commandList.addToEnd(inserter)
 
-    def _addRawNode(self, nodePosition: PointRef):
+    def _addRawNode(self, nodePosition: PointRef, isTemporary: bool = False):
 
         # create node and add entity
-        self.node: PathNodeEntity = PathNodeEntity(self.fieldContainer, nodePosition)
-        self.pathList.addToEnd(self.node)
+        node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
+        self.pathList.addToEnd(node)
 
         # create turn command and add entity
-        self.turnCommand = self.commandFactory.create(self.commandList.tail, self, self.node.getAdapter())
-        self.commandList.addToEnd(self.turnCommand)
+        turnCommand = self.commandFactory.create(self.commandList.tail, self, node.getAdapter())
+        self.commandList.addToEnd(turnCommand)
+
+        # maintain a relationship between the node and turn command
+        self.dict[node] = turnCommand
+
+        return node
 
     def _addRawSegment(self):
 
         # create segment and add entity
-        self.segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer)
-        self.pathList.addToEnd(self.segment)
+        segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer)
+        self.pathList.addToEnd(segment)
 
         # create segment command and add entity
-        self.segmentCommand = self.commandFactory.create(self.commandList.tail, self, self.segment.getAdapter())
-        self.commandList.addToEnd(self.segmentCommand)
+        segmentCommand = self.commandFactory.create(self.commandList.tail, self, segment.getAdapter())
+        self.commandList.addToEnd(segmentCommand)
 
-    def addNode(self, nodePosition: PointRef):
-        self._addRawSegment()
+        # maintain a relationship between the segment and segment command
+        self.dict[segment] = segmentCommand
+
+        return segment
+
+    # return the created PathNodenEntity
+    def addNode(self, nodePosition: PointRef, isTemporary: bool = False) -> PathNodeEntity:
+        segment = self._addRawSegment()
         self._addInserter()
-        self._addRawNode(nodePosition)
+        node = self._addRawNode(nodePosition, isTemporary)
         self._addInserter()
 
         self.onChangeInCommandPositionOrHeight()
-        self.node.updateAdapter()
-        self.segment.updateAdapter()
-        self.segment.recomputePosition()
+        node.updateAdapter()
+        segment.updateAdapter()
+        segment.recomputePosition()
+
+        return node
+    
+    def removeNode(self, node: PathNodeEntity):
+
+        # remove the node
+        self.pathList.remove(node)
+        self.entities.removeEntity(node, excludeChildrenIf = lambda child: isinstance(child, CommandOrInserter))
+        self.deleteCommand(self.dict[node])
+
+        # remove the next segment, unless its the last segment, in which case remove the previous segment
+        if node.isLastNode():
+            segment = node.getPrevious()
+            otherSegment = node.getNext()
+        else:
+            segment = node.getNext()
+            otherSegment = node.getPrevious()
         
+        self.pathList.remove(segment)
+        self.entities.removeEntity(segment, excludeChildrenIf = lambda child: isinstance(child, CommandOrInserter))
+        self.deleteCommand(self.dict[segment])
+
+        # the other segment is the only node/segment affected by this
+        if otherSegment is not None: # it's none if there are only two nodes total and remove last one
+            otherSegment.updateAdapter()
+            otherSegment.recomputePosition()
+
+        if node.getNext() is not None:
+            node.getNext().getNext().onAngleChange()
+        if node.getPrevious() is not None:
+            node.getPrevious().getPrevious().onAngleChange()
+
+        # changed command list, so recompute y
+        self.onChangeInCommandPositionOrHeight()
 
     # add custom command where inserter is
     def addCustomCommand(self, inserter: CommandInserter):
@@ -155,7 +202,7 @@ class Path:
 
         self.onChangeInCommandPositionOrHeight()
 
-    def deleteCustomCommand(self, command: CustomCommandBlockEntity):
+    def deleteCommand(self, command: CommandBlockEntity):
 
         # remove the inserter after the command
         self.entities.removeEntity(command.getNext(), excludeChildrenIf = lambda child: isinstance(child, CommandOrInserter))

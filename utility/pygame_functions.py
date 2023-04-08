@@ -14,11 +14,15 @@ def drawTransparentRect(surface, x, y, w, h, color, alpha, radius = 0, width = 0
     surface.blit(rect_surface, (x, y))
 
 # Draw a transparent circle on a Pygame surface
-def drawTransparentCircle(surface, center, radius, color, alpha):
+def drawTransparentCircle(surface, center, radius, color, alpha = 255, width = 0):
+
+    if alpha == 255:
+        pygame.draw.circle(surface, color, center, radius)
+        return
 
     circleSurface = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
     color_with_alpha = list(color) + [alpha]
-    pygame.draw.circle(circleSurface, color_with_alpha, (radius, radius), radius)
+    pygame.draw.circle(circleSurface, color_with_alpha, (radius, radius), radius, width = width)
     surface.blit(circleSurface, (center[0]-radius, center[1]-radius))
 
 # Draw a thick line on a Pygame surface

@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from entity_base.entity import Entity
+from utility.pygame_functions import drawTransparentCircle
 import pygame
 
 class AbstractCircleEntity(Entity):
@@ -38,9 +39,12 @@ class AbstractCircleEntity(Entity):
         r = self._radius(isHovered)
         pos = (self.CENTER_X, self.CENTER_Y)
 
+        alpha = self.getOpacity() * 255
+
         # draw circle
-        pygame.draw.circle(screen, self.getColor(isHovered), pos, r)
+        drawTransparentCircle(screen, pos, r, self.getColor(isHovered), alpha)
 
         # draw border if active
         if isActive:
-            pygame.draw.circle(screen, (0,0,0), pos, r, 2)
+            pygame.draw.circle(screen, (0,0,0), pos, r, 2 if alpha == 255 else 1)
+            #drawTransparentCircle(screen, pos, r, (0,0,0), alpha, 2)

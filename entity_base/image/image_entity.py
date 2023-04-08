@@ -67,7 +67,8 @@ class ImageEntity(Entity, TooltipOwner):
 
     def attemptToClick(self, mouse: tuple):
         if self.isOn():
-            self.onClick(mouse)
+            return self.onClick(mouse)
+        return None
 
     def defineCenter(self) -> tuple:
         return self._px(self.center_px), self._py(self.center_py)

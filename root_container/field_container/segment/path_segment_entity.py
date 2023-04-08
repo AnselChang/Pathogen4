@@ -102,6 +102,14 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         for node in [self.getPrevious(), self.getNext()]:
             node.constraints.hide()
 
+    # a segment is temporary if the nodes on either ends are temporary
+    def isTemporary(self) -> bool:
+        if self.getPrevious() is not None and self.getPrevious().isTemporary():
+            return True
+        if self.getNext() is not None and self.getNext().isTemporary():
+            return True
+        return False
+
 
     def changeSegmentShape(self, newStateClass: type[PathSegmentState]):
         self.state = newStateClass(self)

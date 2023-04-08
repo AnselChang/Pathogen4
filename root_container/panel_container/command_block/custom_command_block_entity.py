@@ -41,7 +41,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         self.dragging = False
 
     def delete(self, mouse: tuple):
-        self.path.deleteCustomCommand(self)
+        self.path.deleteCommand(self)
 
     def onStartDrag(self, mouse: tuple):
         self.dragging = True

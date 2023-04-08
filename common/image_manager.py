@@ -25,7 +25,8 @@ class ImageID(Enum):
     MIN_OFF = auto()
     CHECKBOX_ON = auto()
     CHECKBOX_OFF = auto()
-    REVERSE = auto()
+    ADD_NODE = auto()
+    DELETE_NODE = auto()
 
 class Image:
 
@@ -79,4 +80,5 @@ class ImageManager:
         self.images[ImageID.CHECKBOX_ON] = Image("widgets/checkbox_on.png", opacityNum = 20)
         self.images[ImageID.CHECKBOX_OFF] = Image("widgets/checkbox_off.png", opacityNum = 20)
 
-        self.images[ImageID.REVERSE] = Image("menu/invert.png")
+        self.images[ImageID.ADD_NODE] = Image("menu/add.png")
+        self.images[ImageID.DELETE_NODE] = Image("menu/delete.png")

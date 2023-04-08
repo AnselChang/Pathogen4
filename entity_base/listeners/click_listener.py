@@ -29,10 +29,10 @@ class ClickLambda(ClickListener):
         self.FOnDoubleClick = FOnDoubleClick
 
     def onLeftClick(self, mouse: tuple):
-        self.FonLeftClick(mouse)
+        return self.FonLeftClick(mouse)
 
     def onRightClick(self, mouse: tuple):
-        self.FonRightClick(mouse)
+        return self.FonRightClick(mouse)
 
     def onDoubleLeftClick(self, mouse: tuple):
-        self.FOnDoubleClick(mouse)
+        return self.FOnDoubleClick(mouse)

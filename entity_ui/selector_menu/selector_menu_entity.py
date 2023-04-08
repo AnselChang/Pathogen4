@@ -51,6 +51,10 @@ class SelectorMenuEntity(Entity):
 
         # Create a menu button container and image for each menu
         for i, definition in enumerate(menuDefinition.definitions):
+
+            if not definition.condition(selectedEntity):
+                continue
+
             buttonContainer = LinearContainer(self.group, i)
             image = ImageEntity(parent = buttonContainer,
                 states = definition.imageStates,
@@ -70,7 +74,8 @@ class SelectorMenuEntity(Entity):
 
     # Remove itself and all children from the screen
     def despawn(self):
-        self.entities.removeEntity(self)
+        if self in self.entities.entities:
+            self.entities.removeEntity(self)
 
     # dynamically bounded to the size of the DynamicGroupContainer
     def defineWidth(self) -> float:
@@ -89,6 +94,10 @@ class SelectorMenuEntity(Entity):
     # Top edge of menu should be aligned of center of entity
     def defineTopY(self) -> float:
         return self._py(0.5) + self._aheight(0)
+    
+    # Even if parent node is transparent, the menu should be opaque
+    def getOpacity(self) -> float:
+        return 1
     
     # Draws the background of the menu
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
