@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from root_container.field_container.segment.segment_type import SegmentType
 if TYPE_CHECKING:
     from root_container.path import Path
 
@@ -142,6 +144,9 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
     def getDirection(self):
         return self.direction
+    
+    def getSegmentType(self) -> SegmentType:
+        return self.state.type
 
     def getColor(self, isActive: bool = False, isHovered: bool = False):
 
@@ -166,6 +171,14 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
     def getEndTheta(self) -> float:
         return self.state.getEndTheta()
+    
+    def getThetaAtNode(self, node: PathNodeEntity):
+        if self.getPrevious() is node:
+            return self.getStartTheta()
+        elif self.getNext() is node:
+            return self.getEndTheta()
+        else:
+            raise Exception("Node is not connected to this segment")
     
     def isTouching(self, position: PointRef) -> bool:
         return self.state.isTouching(position)

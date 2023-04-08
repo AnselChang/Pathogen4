@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
+from root_container.field_container.segment.segment_type import SegmentType
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 
@@ -30,7 +31,7 @@ import pygame
 
 class StraightSegmentState(PathSegmentState):
     def __init__(self, segment: PathSegmentEntity) -> None:
-        super().__init__(segment)
+        super().__init__(SegmentType.STRAIGHT, segment)
         self.adapter = StraightAdapter([
             ImageState(SegmentDirection.FORWARD, ImageID.STRAIGHT_FORWARD),
             ImageState(SegmentDirection.REVERSE, ImageID.STRAIGHT_REVERSE),

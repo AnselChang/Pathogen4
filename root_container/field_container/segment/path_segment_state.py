@@ -1,7 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from root_container.field_container.segment.segment_type import SegmentType
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+    from root_container.field_container.node.path_node_entity import PathNodeEntity
 
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -17,7 +20,8 @@ Also provides an interface for getting thetas at both sides, and holding referen
 """
 
 class PathSegmentState(ABC):
-    def __init__(self, segment: PathSegmentEntity | LinkedListNode) -> None:
+    def __init__(self, type: SegmentType, segment: PathSegmentEntity | LinkedListNode) -> None:
+        self.type = type
         self.segment = segment # type PathSegmentEntity (the parent)
 
     @abstractmethod
@@ -35,6 +39,7 @@ class PathSegmentState(ABC):
     @abstractmethod
     def getEndTheta(self) -> float:
         pass
+
 
     @abstractmethod
     def isTouching(self, position: PointRef) -> bool:

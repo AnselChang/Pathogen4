@@ -16,7 +16,7 @@ class AbstractCircleEntity(Entity):
 
     # get relative radius
     def _radius(self, isHovered: bool = False) -> float:
-        return self.getRadius() * self.dimensions.RESOLUTION_RATIO
+        return self.getRadius(isHovered) * self.dimensions.RESOLUTION_RATIO
 
     def defineWidth(self) -> float:
         return self._radius() * 2

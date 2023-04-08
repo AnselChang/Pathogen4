@@ -78,7 +78,7 @@ class Interactor:
             entity.select.onDeselect(self)
 
     def removeAllEntities(self, forceRemove: bool = False):
-        for entity in self.selected.entities:
+        for entity in self.selected.entities[:]:
             self.removeEntity(entity, forceRemove)
 
     def isMultiselect(self) -> bool:
@@ -159,8 +159,8 @@ class Interactor:
 
         # if there's a group selected but the mouse is not clicking on the group, deselect
         elif self.hoveredEntity is None or self.hoveredEntity not in self.selected.entities:
-
-            self.removeAllEntities()
+            if self.hoveredEntity is not self.fieldContainer:
+                self.removeAllEntities()
 
         if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
             # if enableToggle flag set, disable selection if clicking and already seleected:
@@ -174,6 +174,9 @@ class Interactor:
         for entity in self.selected.entities:
             if entity.drag is not None:
                 entity.drag.onStartDrag(mouse)
+
+        if self.hoveredEntity is self.fieldContainer:
+            self.fieldContainer.drag.onStartDrag(mouse)
 
 
     def onRightMouseDown(self, entities: EntityManager, mouse: tuple):
@@ -232,10 +235,12 @@ class Interactor:
 
 
         # Drag selection
-        if self.leftDragging and not self.box.isEnabled() and self.canDragSelection(mouse):
+        if self.leftDragging and self.mouseDownEntity in self.selected.entities and not self.box.isEnabled() and self.canDragSelection(mouse):
             for selected in self.selected.entities:
                 if selected.drag is not None:
                     selected.drag.onDrag(mouse)
+        elif self.leftDragging and self.mouseDownEntity is self.fieldContainer:
+            self.fieldContainer.drag.onDrag(mouse)
     
     # It is guaranteed that onMouseMove() was not called if this function is called
     def onMouseClick(self, mouse: tuple, isRight: bool):
@@ -243,6 +248,12 @@ class Interactor:
         # mouse down and mouse up were on different entities, so don't do anything
         if self.mouseDownEntity is not self.hoveredEntity:
             return
+        
+        if self.hoveredEntity is self.fieldContainer:
+            print("remove all")
+            print(self.selected.entities)
+            self.removeAllEntities(False)
+            print(self.selected.entities)
         
         if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:

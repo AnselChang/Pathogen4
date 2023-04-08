@@ -18,7 +18,9 @@ class SelectListener(ABC):
 
         # when selected, nothing else is hovered
         # when deselected by clicking somewhere else, do not select the other thing 
-        self.greedy = greedy 
+        self.greedy = greedy
+
+        self.isSelected = False
 
         self.enableToggle = enableToggle # if set to true, clicking while selected will deselect
 
@@ -48,7 +50,9 @@ class SelectLambda(SelectListener):
         return self.FgetHitbox()
     
     def onSelect(self, interactor) -> None:
+        self.isSelected = True
         self.FonSelect(interactor)
 
     def onDeselect(self, interactor) -> None:
+        self.isSelected = False
         self.FonDeselect(interactor)

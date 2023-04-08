@@ -23,7 +23,7 @@ from adapter.path_adapter import AdapterInterface
 from adapter.turn_adapter import TurnAdapter, TurnAttributeID
 
 from root_container.field_container.node.constraints import Constraints
-from common.dimensions import Dimensions
+from root_container.field_container.node.theta_entity import ThetaEntity
 
 from common.image_manager import ImageID
 from data_structures.linked_list import LinkedListNode
@@ -91,6 +91,10 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
 
         self.updateAdapter()
 
+        self.recomputePosition()
+        self.beforeThetaNode = ThetaEntity(self, True)
+        self.afterThetaNode = ThetaEntity(self, False)
+
 
     def defineCenter(self) -> tuple:
         return self.position.screenRef
@@ -111,7 +115,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         return 0.75 if self.isTemporary() else 1
 
     def getRadius(self, isHovered: bool = False) -> float:
-        return 12 if isHovered else 10
+        return 10
 
     def getAdapter(self) -> TurnAdapter:
         return self.adapter

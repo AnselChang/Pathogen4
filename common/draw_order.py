@@ -18,6 +18,7 @@ class DrawOrder(IntEnum):
     COMMANND_BLOCK = auto()
     PANEL_BACKGROUND = auto()
     CONSTRAINT_LINES = auto()
+    THETA_NODE = auto()
     NODE = auto()
     SEGMENT = auto()
     FIELD_BACKGROUND = auto()
