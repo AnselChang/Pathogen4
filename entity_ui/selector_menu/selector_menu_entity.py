@@ -1,5 +1,6 @@
 from entity_base.entity import Entity
 from entity_base.image.image_entity import ImageEntity
+from entity_base.image.toggle_image_entity import ToggleImageEntity
 from entity_ui.group.dynamic_group_container import DynamicGroupContainer
 
 from common.draw_order import DrawOrder
@@ -49,11 +50,14 @@ class SelectorMenuEntity(Entity):
         # Create a menu button container and image for each menu.
         for definition in menuDefinitions:
             buttonContainer = LinearContainer(self.group, definition.tooltipString)
-            ImageEntity(parent = buttonContainer,
-                imageID = definition.imageID,
-                imageIDHovered = definition.imageHoveredID,
+            ToggleImageEntity(parent = buttonContainer,
+                imageOnID = definition.imageOnID,
+                imageOffID = definition.imageOffID,
                 tooltip = definition.tooltipString,
-                onClick = lambda mouse: definition.action.onClick(selectedEntity, mouse),
+                tooltipOff = definition.tooltipOffString,
+                isOn = lambda definition=definition: definition.action.isActionAvailable(selectedEntity),
+                onClick = lambda mouse, definition=definition: definition.action.onClick(selectedEntity, mouse),
+                noHoveringIfOff = True,
                 drawOrder = DrawOrder.SELECTOR_MENU_BUTTON,
                 pwidth = self.BUTTON_IMAGE_SCALE,
                 pheight = self.BUTTON_IMAGE_SCALE

@@ -25,7 +25,7 @@ class ImageEntity(Entity, TooltipOwner):
                 ):
         super().__init__(
             parent = parent,
-            click = ClickLambda(self, FonLeftClick = onClick),
+            click = ClickLambda(self, FonLeftClick = self.attemptToClick),
             drawOrder = drawOrder)
 
         self.center_px, self.center_py = center_px, center_py
@@ -35,6 +35,8 @@ class ImageEntity(Entity, TooltipOwner):
         self.imageIDHovered = imageIDHovered
         self.dimOnHover = dimOnHover
 
+        self.onClick = onClick
+
         self.HOVER_DELTA = 50
         
         if tooltip is None:
@@ -43,6 +45,9 @@ class ImageEntity(Entity, TooltipOwner):
             self.tooltip = Tooltip(tooltip)
 
         self.recomputePosition()
+
+    def attemptToClick(self, mouse: PointRef):
+        self.onClick(mouse)
 
     # function doesn't make much sense for ToggleImageEntities.
     # Most obvious use case is command block icons

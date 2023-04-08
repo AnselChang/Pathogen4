@@ -92,9 +92,9 @@ def brightenSurface(surface, brightness): # brigtness from 0-255
     for x in range(surface.get_width()):
         for y in range(surface.get_height()):
             r, g, b, a = surface.get_at((x, y))
-            r = min(r + brightness, 255)
-            g = min(g + brightness, 255)
-            b = min(b + brightness, 255)
+            r = max(0, min(r + brightness, 255))
+            g = max(0, min(g + brightness, 255))
+            b = max(0, min(b + brightness, 255))
             surface.set_at((x, y), (r, g, b, a))
 
     return surface

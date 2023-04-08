@@ -51,9 +51,9 @@ class SelectorMenuManager:
 
         # test menu for now
         nodeDefinition = MenuDefinition(PathNodeEntity)
-        nodeDefinition.add(TestMenuClickAction("Button 1"), "Button 1 tooltip", ImageID.CHECKBOX_OFF)
-        nodeDefinition.add(TestMenuClickAction("Button 2"), "Button 2 tooltip", ImageID.STRAIGHT_FORWARD)
-        nodeDefinition.add(TestMenuClickAction("Button 3"), "Button 3 tooltip", ImageID.TURN_LEFT)
+        nodeDefinition.add(TestMenuClickAction(True, "Button 1"), "Button 1", ImageID.CHECKBOX_OFF, "Button 1 disabled")
+        nodeDefinition.add(TestMenuClickAction(True, "Button 2"), "Button 2", ImageID.STRAIGHT_FORWARD, "Button 2 disabled")
+        nodeDefinition.add(TestMenuClickAction(False, "Button 3"), "Button 3", ImageID.TURN_LEFT, "Button 3 disabled")
 
         self.addMenuDefinition(nodeDefinition)
 
@@ -67,7 +67,7 @@ class SelectorMenuManager:
 
         # test menu for now
         segmentDefinition = MenuDefinition(PathSegmentEntity)
-        segmentDefinition.add(TestMenuClickAction("Button 1"), "Button 1 tooltip", ImageID.CHECKBOX_OFF)
-        segmentDefinition.add(TestMenuClickAction("Button 2"), "Button 2 tooltip", ImageID.STRAIGHT_FORWARD)
+        segmentDefinition.add(TestMenuClickAction(False, "Button 1"), "Button 1", ImageID.CHECKBOX_OFF, "Button 1 disabled")
+        segmentDefinition.add(TestMenuClickAction(True, "Button 2"), "Button 2", ImageID.STRAIGHT_FORWARD, "Button 2 disabled")
 
         self.addMenuDefinition(segmentDefinition)
