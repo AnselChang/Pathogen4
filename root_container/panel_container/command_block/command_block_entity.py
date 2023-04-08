@@ -16,7 +16,7 @@ from command_creation.command_type import COMMAND_INFO
 from command_creation.command_definition import CommandDefinition
 
 from root_container.panel_container.command_block.command_block_header import CommandBlockHeader
-from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
+from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
 from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
 
 from root_container.panel_container.element.overall.elements_container_factory import createElementsContainer
@@ -39,7 +39,7 @@ Position calculation is offloaded to CommandBlockPosition
 class CommandBlockEntity(Entity, CommandOrInserter):
 
 
-    def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionHandler, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
+    def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
         self.path = path
 

@@ -25,12 +25,11 @@ class ImageID(Enum):
     MIN_OFF = auto()
     CHECKBOX_ON = auto()
     CHECKBOX_OFF = auto()
-    CHECKBOX_ON_H = auto()
-    CHECKBOX_OFF_H = auto()
+    REVERSE = auto()
 
 class Image:
 
-    def __init__(self, path: str, imageScale: float = 1, brighten: int = 0, opacityNum = None):
+    def __init__(self, path: str, brighten: int = 0, opacityNum = None):
         self.image = getImage("images/" + path, 1)
 
         if brighten != 0:
@@ -62,26 +61,22 @@ class ImageManager:
 
         self.images[ImageID.FIELD] = Image("squarefield.png")
 
-        size = 0.045
-        self.images[ImageID.STRAIGHT_FORWARD] = Image("CommandIcons/StraightForward.png", size)
-        self.images[ImageID.STRAIGHT_REVERSE] = Image("CommandIcons/StraightReverse.png", size)
-        self.images[ImageID.TURN_LEFT] = Image("CommandIcons/TurnLeft.png", size)
-        self.images[ImageID.TURN_RIGHT] = Image("CommandIcons/TurnRight.png", size)
-        self.images[ImageID.CUSTOM] = Image("CommandIcons/Custom.png", size)
+        self.images[ImageID.STRAIGHT_FORWARD] = Image("CommandIcons/StraightForward.png")
+        self.images[ImageID.STRAIGHT_REVERSE] = Image("CommandIcons/StraightReverse.png")
+        self.images[ImageID.TURN_LEFT] = Image("CommandIcons/TurnLeft.png")
+        self.images[ImageID.TURN_RIGHT] = Image("CommandIcons/TurnRight.png")
+        self.images[ImageID.CUSTOM] = Image("CommandIcons/Custom.png")
 
-        size = 0.03
-        self.images[ImageID.TRASH_ON] = Image("OtherIcons/TrashOn.png", size)
-        self.images[ImageID.TRASH_OFF] = Image("OtherIcons/TrashOff.png", size)
+        self.images[ImageID.TRASH_ON] = Image("OtherIcons/TrashOn.png")
+        self.images[ImageID.TRASH_OFF] = Image("OtherIcons/TrashOff.png")
 
-        size = 0.07
-        self.images[ImageID.MAX_ON] = Image("OtherIcons/max_on.png", size)
-        self.images[ImageID.MAX_OFF] = Image("OtherIcons/max_off.png", size)
-        self.images[ImageID.MIN_ON] = Image("OtherIcons/min_on.png", size)
-        self.images[ImageID.MIN_OFF] = Image("OtherIcons/min_off.png", size)
+        self.images[ImageID.MAX_ON] = Image("OtherIcons/max_on.png")
+        self.images[ImageID.MAX_OFF] = Image("OtherIcons/max_off.png")
+        self.images[ImageID.MIN_ON] = Image("OtherIcons/min_on.png")
+        self.images[ImageID.MIN_OFF] = Image("OtherIcons/min_off.png")
 
-        size = 0.03
         brighten = 60
-        self.images[ImageID.CHECKBOX_ON] = Image("widgets/checkbox_on.png", size, opacityNum = 20)
-        self.images[ImageID.CHECKBOX_OFF] = Image("widgets/checkbox_off.png", size, opacityNum = 20)
-        self.images[ImageID.CHECKBOX_ON_H] = Image("widgets/checkbox_on.png", size, brighten = brighten, opacityNum = 20)
-        self.images[ImageID.CHECKBOX_OFF_H] = Image("widgets/checkbox_off.png", size, brighten = brighten, opacityNum = 20)
+        self.images[ImageID.CHECKBOX_ON] = Image("widgets/checkbox_on.png", opacityNum = 20)
+        self.images[ImageID.CHECKBOX_OFF] = Image("widgets/checkbox_off.png", opacityNum = 20)
+
+        self.images[ImageID.REVERSE] = Image("menu/invert.png")

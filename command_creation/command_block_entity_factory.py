@@ -8,7 +8,7 @@ from adapter.path_adapter import PathAdapter
 
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
-from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
+from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
 
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from command_creation.command_type import CommandType
@@ -27,7 +27,7 @@ Construct CommandBlockEntity objects
 
 class CommandBlockEntityFactory:
 
-    def __init__(self, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionHandler):
+    def __init__(self, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer):
         self.database = database
         self.expansion = commandExpansion
 

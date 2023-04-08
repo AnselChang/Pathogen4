@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from entity_base.entity import Entity
 from entity_base.listeners.select_listener import SelectorType
 from entity_ui.selector_menu.selector_menu_entity import SelectorMenuEntity
+import entity_base.entity as entityclass
 
 
 """
@@ -55,7 +56,13 @@ class SelectHandler:
         # returns true for successfully selecting entity
         return True
     
-    def remove(self, entity: Entity) -> None:
+    # Tries to remove entity from selection. Returns true if successful
+    def remove(self, entity: Entity, currentHoveredEntity: Entity) -> bool:
+        # don't deselect current entity if the menu related to entity is clicked
+        if self.activeMenu is not None and currentHoveredEntity in self.activeMenu:
+            print("menu clicked")
+            return False
+
         self.entities.remove(entity)
 
         # If menu already open, close it
@@ -63,8 +70,8 @@ class SelectHandler:
             self.activeMenu.despawn()
             self.activeMenu = None
 
-    def removeAll(self):
-        self.entities.clear()
+        return True
+
 
     def hasOnly(self, entity: Entity) -> bool:
         return len(self.entities) == 1 and entity is self.entities[0]

@@ -1,43 +1,48 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 from common.image_manager import ImageID
-
+from entity_base.image.image_entity import ImageEntity, ImageState
 from entity_base.entity import Entity
 
-# Implement this to define a menu action based on the target entity and mouse position
-class MenuClickAction(ABC):
+from typing import TypeVar, Generic
 
+# Implement this to define a menu action based on the target entity and mouse position
+T = TypeVar('T')
+class MenuClickAction(ABC, Generic[T]):
+
+    # override this to return current state ID of the menu button
+    def getStateID(self, targetEntity: Entity | T) -> Enum:
+        return None
+        
+    # if not available, the button will be grayed out, and cannot be clicked
     @abstractmethod
-    def isActionAvailable(self, targetEntity: Entity) -> bool:
+    def isActionAvailable(self, targetEntity: Entity | T) -> bool:
         pass
 
+    # callback for when button is available and clicked
     @abstractmethod
-    def onClick(self, targetEntity: Entity, mouse: tuple):
+    def onClick(self, targetEntity: Entity | T, mouse: tuple):
         pass
 
 # Callback just prints out a specified message
 class TestMenuClickAction(MenuClickAction):
-    def __init__(self, actionAvailable: bool, message: str):
+    def __init__(self, actionAvailable: bool):
         self.actionAvailable = actionAvailable
-        self.message = message
 
     def isActionAvailable(self, targetEntity: Entity) -> bool:
         return self.actionAvailable
 
     def onClick(self, targetEntity: Entity, mouse: tuple):
-        print(targetEntity, mouse, self.message, targetEntity.RECT)
+        print(targetEntity, "test clicked")
 
 # Used to construct a menu button for the menu
 class MenuButtonDefinition:
 
     # onClick should take in TWO ARGUMENTS: the target entity and the mouse
-    def __init__(self, action: MenuClickAction, tooltipString: str, imageOnID: ImageID, tooltipOffString: str = None, imageOffID: ImageID = None):
+    def __init__(self, imageStates: list[ImageState], action: MenuClickAction):
+        self.imageStates = imageStates
         self.action = action
-
-        self.tooltipString = tooltipString
-        self.imageOnID = imageOnID
         
-        self.tooltipOffString = tooltipOffString
-        self.imageOffID = imageOffID
 
 """
 Stores the type of entity that can be selected.
@@ -49,8 +54,5 @@ class MenuDefinition:
         self.entityType = entityType
         self.definitions: list[MenuButtonDefinition] = []
 
-    def add(self, action: MenuClickAction, tooltipString: str, imageOnID: ImageID, tooltipOffString: str = None, imageOffID: ImageID = None):
-        self.definitions.append(MenuButtonDefinition(action, tooltipString, imageOnID, tooltipOffString, imageOffID))
-
-    def create(self) -> list[MenuButtonDefinition]:
-        return self.definitions
+    def add(self, imageStates: list[ImageState], action: MenuClickAction):
+        self.definitions.append(MenuButtonDefinition(imageStates, action))

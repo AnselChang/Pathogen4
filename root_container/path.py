@@ -4,7 +4,7 @@ from root_container.panel_container.command_block.command_block_entity import Co
 from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
 from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
-from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
+from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
 
 from command_creation.command_block_entity_factory import CommandBlockEntityFactory
 
@@ -38,7 +38,7 @@ class Path:
                  panel: BlockTabContentsContainer,
                  database: CommandDefinitionDatabase,
                  commandFactory: CommandBlockEntityFactory,
-                 commandExpansion: CommandExpansionHandler,
+                 commandExpansion: CommandExpansionContainer,
                  startPosition: PointRef):
             
         self.entities = entity._entities

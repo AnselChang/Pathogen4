@@ -16,7 +16,7 @@ from root_container.path import Path
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from command_creation.command_block_entity_factory import CommandBlockEntityFactory
 
-from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
+from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
 
 from root_container.panel_container.panel_container import PanelContainer
 from root_container.field_container.field_container import FieldContainer
@@ -85,7 +85,7 @@ def main():
 
     # initialize commands
     database = CommandDefinitionDatabase()
-    commandExpansion = CommandExpansionHandler(tabHandler.blockContainer)
+    commandExpansion = CommandExpansionContainer(tabHandler.blockContainer)
     commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
 
     # Create path

@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from entity_base.listeners.drag_listener import DragLambda
+from root_container.field_container.segment.segment_direction import SegmentDirection
 from utility.math_functions import isInsideBox
 if TYPE_CHECKING:
     from root_container.field_container.node.path_node_entity import PathNodeEntity
@@ -47,7 +48,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         LinkedListNode.__init__(self)
 
         self.state: PathSegmentState = StraightSegmentState(self)
-        self.isReversed = False
+        self.direction: SegmentDirection = SegmentDirection.FORWARD
 
         self.thickness = 3
         self.hitboxThickness = 5
@@ -121,12 +122,18 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         self.state.updateAdapter()
 
 
-    def reverseSegmentDirection(self):
-        self.isReversed = not self.isReversed
+    def toggleDirection(self):
+        if self.direction == SegmentDirection.FORWARD:
+            self.direction = SegmentDirection.REVERSE
+        else:
+            self.direction = SegmentDirection.FORWARD
+
+    def getDirection(self):
+        return self.direction
 
     def getColor(self, isActive: bool = False, isHovered: bool = False):
 
-        if self.isReversed:
+        if self.direction == SegmentDirection.REVERSE:
             if isActive:
                 return self.colorReversedA
             elif isHovered:

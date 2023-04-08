@@ -19,10 +19,13 @@ class CommandBlockIcon(Container):
         self.recomputePosition()
 
         # ImageEntity is bounded exactly by the rect defined in this class
-        self.image = ImageEntity(self, pathAdapter.getIcon(), drawOrder = DrawOrder.WIDGET, dimOnHover = False)
+        self.image = ImageEntity(parent = self,
+            states = pathAdapter.iconImageStates,
+            getStateID = pathAdapter.getIconStateID,
+            drawOrder = DrawOrder.WIDGET,
+            dimOnHover = False
+        )
 
-        # whenever path adapter updates, update icon
-        pathAdapter.subscribe(onNotify = lambda: self.image.setImage(pathAdapter.getIcon()))
 
     def defineCenter(self) -> tuple:
         return self._ax(20), self._py(0.5)

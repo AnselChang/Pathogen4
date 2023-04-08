@@ -10,7 +10,7 @@ from adapter.path_adapter import PathAdapter
 
 from root_container.panel_container.command_block.trash_button_entity import TrashEntity
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
-from root_container.panel_container.command_expansion.command_expansion_handler import CommandExpansionHandler
+from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 
 from entity_handler.entity_manager import EntityManager
@@ -30,7 +30,7 @@ CustomCommands have two additonal features compared to regular commands
 
 class CustomCommandBlockEntity(CommandBlockEntity):
 
-    def __init__(self, parent: Entity, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionHandler):
+    def __init__(self, parent: Entity, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionContainer):
         
         super().__init__(parent, path, pathAdapter, database, commandExpansion,
                          drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),

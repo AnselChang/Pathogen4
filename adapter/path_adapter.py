@@ -3,6 +3,7 @@ from enum import Enum
 from data_structures.observer import Observable
 from command_creation.command_type import CommandType
 from common.image_manager import ImageID
+from entity_base.image.image_state import ImageState
 
 """
 Abstract class that facilitates communication between Commands and Path entities
@@ -10,9 +11,11 @@ Abstract class that facilitates communication between Commands and Path entities
 
 class PathAdapter(ABC, Observable):
 
-    def __init__(self, type: CommandType, attributes: type[Enum]):
+    def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState, attributes: type[Enum]):
         self.type = type
-        self.icon: ImageID = None
+
+        self.iconImageStates = iconImageStates
+        self.iconStateID: Enum = None
 
         self._dictValue: dict[Enum, float] = {}
         self._dictStr: dict[Enum, str] = {}
@@ -42,17 +45,16 @@ class PathAdapter(ABC, Observable):
         else:
             return None
         
-    def setIcon(self, icon: ImageID):
-        self.icon = icon
-        self.notify()
+    def setIconStateID(self, iconStateID: Enum):
+        self.iconStateID = iconStateID
 
-    def getIcon(self) -> ImageID:
-        return self.icon
+    def getIconStateID(self) -> ImageID:
+        return self.iconStateID
         
 class NullPathAdapter(PathAdapter):
     def __init__(self):
-        super().__init__(CommandType.CUSTOM, {})
-        self.setIcon(ImageID.CUSTOM)
+        image = ImageState(0, ImageID.CUSTOM)
+        super().__init__(CommandType.CUSTOM, image, {})
 
 
 class AdapterInterface(ABC):

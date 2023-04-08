@@ -1,5 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from entity_base.image.image_state import ImageState
+from root_container.field_container.segment.segment_direction import SegmentDirection
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 
@@ -28,7 +31,10 @@ import pygame
 class StraightSegmentState(PathSegmentState):
     def __init__(self, segment: PathSegmentEntity) -> None:
         super().__init__(segment)
-        self.adapter = StraightAdapter()
+        self.adapter = StraightAdapter([
+            ImageState(SegmentDirection.FORWARD, ImageID.STRAIGHT_FORWARD),
+            ImageState(SegmentDirection.REVERSE, ImageID.STRAIGHT_REVERSE),
+        ])
 
     def getAdapter(self) -> PathAdapter:
         return self.adapter
@@ -50,7 +56,7 @@ class StraightSegmentState(PathSegmentState):
         distance = (posB - posA).magnitude(Ref.FIELD)
         self.adapter.set(StraightAttributeID.DISTANCE, distance, f"{distance:.1f}\"")
 
-        self.adapter.setIcon(ImageID.STRAIGHT_REVERSE if self.segment.isReversed else ImageID.STRAIGHT_FORWARD)
+        self.adapter.setIconStateID(self.segment.getDirection())
 
     def getStartTheta(self) -> float:
         theta = (self.segment.getNext().getPositionRef() - self.segment.getPrevious().getPositionRef()).theta()

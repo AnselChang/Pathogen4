@@ -263,6 +263,19 @@ class Entity(ABC, Observable):
     def _aheight(self, pixels):
         return pixels * self.dimensions.Y_RATIO
     
+    # Overloading these methods allows us to use the "in" operator
+    # to check if this entity contains some child (recursively)
+    def __contains__(self, key: 'Entity'):
+
+        if self is key:
+            return True
+
+        for child in self._children:
+            if key in child:
+                return True
+            
+        return False
+    
     def __repr__(self):
         try:
             return f"{self.__class__.__name__} ({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)}))"

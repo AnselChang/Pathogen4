@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from entity_base.image.image_state import ImageState
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -25,7 +27,8 @@ class TrashEntity(Container):
         
         super().__init__(parent = parentHeader)
         self.recomputePosition()
-        ImageEntity(self, imageID = ImageID.TRASH_OFF, imageIDHovered = ImageID.TRASH_ON, drawOrder = DrawOrder.WIDGET, onClick = onDelete)
+        state = ImageState(0, ImageID.TRASH_ON, None, ImageID.TRASH_OFF, None)
+        ImageEntity(self, state, drawOrder = DrawOrder.WIDGET, onClick = onDelete)
 
     def defineCenter(self) -> tuple:
         return self._px(1) - self._awidth(20), self._py(0.5)

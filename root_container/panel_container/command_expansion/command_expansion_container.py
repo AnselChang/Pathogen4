@@ -1,6 +1,8 @@
-from entity_base.image.toggle_image_entity import ToggleImageEntity
+from entity_base.container_entity import Container
+from entity_base.image.image_entity import ImageEntity
+from entity_base.image.image_state import ImageState
 from entity_ui.group.radio_container import RadioContainer
-from root_container.panel_container.command_expansion.expansion_group_entity import ExpansionGroupEntity
+from entity_ui.group.radio_group_container import RadioGroupContainer
 from common.image_manager import ImageID
 from data_structures.observer import Observable
 from common.dimensions import Dimensions
@@ -16,37 +18,47 @@ class ButtonID(Enum):
     COLLAPSE = auto()
     EXPAND = auto()
 
-class CommandExpansionHandler(Observable):
+class CommandExpansionContainer(Container, Observable):
 
     def partition(self, dimensions: Dimensions, i, n):
         return dimensions.FIELD_WIDTH + (i+1) * dimensions.PANEL_WIDTH / (n+1)
 
     def __init__(self, panelEntity):
 
+        super().__init__(panelEntity)
+        self.recomputePosition()
+
         info = [
             {
                 "id" : ButtonID.COLLAPSE,
                 "imageOn" : ImageID.MIN_ON,
                 "imageOff" : ImageID.MIN_OFF,
-                "tooltip" : "Collapse all commands"
+                "tooltip" : "Collapse"
             },
             {
                 "id" : ButtonID.EXPAND,
                 "imageOn" : ImageID.MAX_ON,
                 "imageOff" : ImageID.MAX_OFF,
-                "tooltip" : "Expand all commands"
+                "tooltip" : "Expand"
             }
         ]
 
-        self.buttons = ExpansionGroupEntity(panelEntity)
+        self.buttons = RadioGroupContainer(self, isHorizontal = True, allowNoSelect = True)
         for dict in info:
             id = dict["id"]
             radio = RadioContainer(self.buttons, id)
-            ToggleImageEntity(radio, dict["imageOn"], dict["imageOff"],
+
+            tooltip = dict["tooltip"]
+
+            states = [
+                ImageState(True, dict["imageOn"], f"{tooltip} all commands: enabled"),
+                ImageState(False, dict["imageOff"], f"{tooltip} all commands: disabled")
+            ]
+            ImageEntity(parent = radio,
+                        states = states,
                         drawOrder = DrawOrder.UI_BUTTON,
-                        tooltip = dict["tooltip"],
                         onClick = radio.onClick,
-                        isOn = lambda id=id: radio.group.isOptionOn(id)
+                        getStateID = lambda id=id: radio.group.isOptionOn(id)
             )
             
 
@@ -74,4 +86,13 @@ class CommandExpansionHandler(Observable):
     def getForceExpand(self) -> bool:
         return self.buttons.isOptionOn(ButtonID.EXPAND)
 
+    def defineCenterX(self) -> float:
+        return self._px(0.5)
     
+    def defineBottomY(self) -> float:
+        return self._py(0.95)
+
+    def defineWidth(self) -> float:
+        return self._pwidth(0.8)
+    def defineHeight(self) -> float:
+        return self._pheight(0.05)

@@ -1,15 +1,14 @@
-from common.reference_frame import PointRef, Ref
+from enum import Enum
+from entity_base.image.image_state import ImageState
 from entity_base.listeners.click_listener import ClickLambda
-from entity_ui.group.radio_container import RadioContainer
 from entity_base.entity import Entity
 
-from utility.math_functions import isInsideBox2
-from utility.pygame_functions import drawSurface, brightenSurface, scaleImageToRect
-from common.dimensions import Dimensions
+from utility.pygame_functions import drawSurface
 from common.draw_order import DrawOrder
 from entity_ui.tooltip import TooltipOwner, Tooltip
 from common.image_manager import ImageID
 import pygame
+
 
 """
 A generic image entity, where you pass in images
@@ -18,10 +17,11 @@ Is drawn to fit inside parent entity's rect
 class ImageEntity(Entity, TooltipOwner):
 
     # px, py, pwidth, pheight set by default to the dimensions of the parent
-    def __init__(self, parent, imageID: ImageID, drawOrder: DrawOrder,
-                 tooltip: str | list[str] = None, onClick = lambda mouse: None,
+    def __init__(self, parent, states: ImageState | list[ImageState], drawOrder: DrawOrder,
+                 onClick = lambda mouse: None, dimOnHover: bool = True,
                  center_px = 0.5, center_py = 0.5, pwidth = 1, pheight = 1,
-                 imageIDHovered: ImageID = None, dimOnHover: bool = True
+                 isOn = lambda: True,
+                 getStateID = lambda: None
                 ):
         super().__init__(
             parent = parent,
@@ -31,29 +31,43 @@ class ImageEntity(Entity, TooltipOwner):
         self.center_px, self.center_py = center_px, center_py
         self.pwidth, self.pheight = pwidth, pheight
 
-        self.imageID = imageID
-        self.imageIDHovered = imageIDHovered
-        self.dimOnHover = dimOnHover
-
-        self.onClick = onClick
-
-        self.HOVER_DELTA = 50
-        
-        if tooltip is None:
-            self.tooltip = None
+        self.states: dict[Enum, ImageState] = {}
+        self.defaultID = None
+        if isinstance(states, ImageState):
+            self.addState(states)
         else:
-            self.tooltip = Tooltip(tooltip)
+            [self.addState(state) for state in states]
+
+        self.getStateID = getStateID
+        
+        self.dimOnHover = dimOnHover
+        self.onClick = onClick
+        self.isOn = isOn
 
         self.recomputePosition()
 
-    def attemptToClick(self, mouse: PointRef):
-        self.onClick(mouse)
+    def addState(self, state: ImageState):
+        self.states[state.id] = state
+        if self.defaultID is None:
+            self.defaultID = state.id
 
-    # function doesn't make much sense for ToggleImageEntities.
-    # Most obvious use case is command block icons
-    def setImage(self, imageID: ImageID):
-        self.imageID = imageID
-        self.defineOther() # normally would have to recomputePosition(), but position doesn't change
+    def getCurrentState(self) -> ImageState:
+        id = self.getStateID()
+        if id is None:
+            id = self.defaultID
+        elif id not in self.states:
+                raise Exception("State not found")  
+
+        return self.states[id]
+
+    def setState(self, id):
+        if id not in self.states:
+            raise Exception("State not found")
+        self.currentID = id
+
+    def attemptToClick(self, mouse: tuple):
+        if self.isOn():
+            self.onClick(mouse)
 
     def defineCenter(self) -> tuple:
         return self._px(self.center_px), self._py(self.center_py)
@@ -66,35 +80,15 @@ class ImageEntity(Entity, TooltipOwner):
 
     # define the scaled image surfaces given the parent rect
     def defineOther(self) -> None:
-        image = self.images.get(self.imageID)
-
-        if image is None:
-            self.noImage = True
-            return
-        else:
-            self.noImage = False
-
-        self.imageScaled = scaleImageToRect(image, self.WIDTH, self.HEIGHT)
-        
-        self.imageWidth = self.imageScaled.get_width()
-        self.imageHeight = self.imageScaled.get_height()
-        
-        if self.imageIDHovered is not None:
-            self.imageScaledH = pygame.transform.smoothscale(self.images.get(self.imageIDHovered), (self.imageWidth, self.imageHeight))
-        else:
-            self.imageScaledH = brightenSurface(self.imageScaled, self.HOVER_DELTA)        
+        for state in self.states:
+            self.states[state].update(self.images, self.WIDTH, self.HEIGHT)       
 
     def getTooltip(self) -> Tooltip | None:
-        return self.tooltip
-    
-    def _getImage(self, isHovered):
-        return self.imageScaledH if isHovered else self.imageScaled
+        return self.getCurrentState().getTooltip(self.isOn())
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        if self.noImage:
-            return
         
-        image = self._getImage(isHovered and self.dimOnHover)
+        image = self.getCurrentState().getSurface(self.isOn(), isHovered and self.dimOnHover)
 
         if self.getOpacity() != 1:
             image.set_alpha(self.getOpacity() * 255)

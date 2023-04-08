@@ -1,6 +1,8 @@
+from enum import Enum
 from entity_base.abstract_circle_entity import AbstractCircleEntity
 from entity_base.entity import Entity
 from common.reference_frame import PointRef, Ref, VectorRef
+from entity_base.image.image_state import ImageState
 from entity_base.listeners.drag_listener import DragLambda
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.select_listener import SelectListener, SelectLambda
@@ -34,6 +36,10 @@ Neighbors PathSegmentEntities
 Referenced in PathSection
 """
 
+class TurnDirection(Enum):
+    LEFT = 1
+    RIGHT = 2
+
 class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[PathSegmentEntity]):
 
     BLUE_COLOR = (102, 153, 255)
@@ -58,7 +64,11 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         LinkedListNode.__init__(self)
 
         self.position: PointRef = position
-        self.adapter: TurnAdapter = TurnAdapter()
+        self.adapter = TurnAdapter([
+            ImageState(TurnDirection.RIGHT, ImageID.TURN_RIGHT),
+            ImageState(TurnDirection.LEFT, ImageID.TURN_LEFT)
+        ])
+
 
         self.dragging = True
         SNAPPING_POWER = 5 # in pixels
@@ -104,7 +114,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         self.adapter.set(TurnAttributeID.THETA2, end, formatDegrees(end, 1))
 
         direction = deltaInHeading(start, end)
-        self.adapter.setIcon(ImageID.TURN_RIGHT if direction >= 0 else ImageID.TURN_LEFT)
+        self.adapter.setIconStateID(TurnDirection.RIGHT if direction >= 0 else TurnDirection.LEFT)
 
         self.recomputePosition()
 

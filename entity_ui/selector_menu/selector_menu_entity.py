@@ -1,12 +1,12 @@
 from entity_base.entity import Entity
 from entity_base.image.image_entity import ImageEntity
-from entity_base.image.toggle_image_entity import ToggleImageEntity
+from entity_base.image.image_state import ImageState
 from entity_ui.group.dynamic_group_container import DynamicGroupContainer
 
 from common.draw_order import DrawOrder
 from common.image_manager import ImageID
 from entity_ui.group.linear_container import LinearContainer
-from entity_ui.selector_menu.selector_menu_factory import MenuButtonDefinition
+from entity_ui.selector_menu.selector_menu_factory import MenuDefinition
 from root_container.field_container.field_container import FieldContainer
 import pygame
 
@@ -30,12 +30,14 @@ Composition structure:
 
 class SelectorMenuEntity(Entity):
 
-    def __init__(self, fieldContainer: FieldContainer, selectedEntity: Entity, menuDefinitions: list[MenuButtonDefinition]):
+    def __init__(self, fieldContainer: FieldContainer, selectedEntity: Entity, menuDefinition: MenuDefinition):
         self.BUTTON_SIZE = 20 # LinearContainers should be BUTTON_SIZE x BUTTON_SIZE. Relative pixel units
         self.BUTTON_IMAGE_SCALE = 0.7 # to add additional padding between button images and menu background
 
         self.MENU_COLOR = [255, 204, 153]
         self.BORDER_RADIUS = 5
+
+        self.selectedEntity = selectedEntity
 
         super().__init__(parent = selectedEntity,
                          drawOrder = DrawOrder.SELECTOR_MENU_BACKGROUND)
@@ -47,17 +49,14 @@ class SelectorMenuEntity(Entity):
         
         self.group = DynamicGroupContainer(self, True, self.BUTTON_SIZE)
 
-        # Create a menu button container and image for each menu.
-        for definition in menuDefinitions:
-            buttonContainer = LinearContainer(self.group, definition.tooltipString)
-            ToggleImageEntity(parent = buttonContainer,
-                imageOnID = definition.imageOnID,
-                imageOffID = definition.imageOffID,
-                tooltip = definition.tooltipString,
-                tooltipOff = definition.tooltipOffString,
+        # Create a menu button container and image for each menu
+        for i, definition in enumerate(menuDefinition.definitions):
+            buttonContainer = LinearContainer(self.group, i)
+            image = ImageEntity(parent = buttonContainer,
+                states = definition.imageStates,
                 isOn = lambda definition=definition: definition.action.isActionAvailable(selectedEntity),
                 onClick = lambda mouse, definition=definition: definition.action.onClick(selectedEntity, mouse),
-                noHoveringIfOff = True,
+                getStateID = lambda definition=definition: definition.action.getStateID(selectedEntity),
                 drawOrder = DrawOrder.SELECTOR_MENU_BUTTON,
                 pwidth = self.BUTTON_IMAGE_SCALE,
                 pheight = self.BUTTON_IMAGE_SCALE
@@ -65,6 +64,9 @@ class SelectorMenuEntity(Entity):
         
         # need to recompute position again to determine correct width
         self.recomputePosition()
+
+    def getEntity(self) -> Entity:
+        return self.selectedEntity
 
     # Remove itself and all children from the screen
     def despawn(self):

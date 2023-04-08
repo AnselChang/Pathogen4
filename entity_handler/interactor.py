@@ -70,13 +70,12 @@ class Interactor:
             entity.select.onSelect(self)
 
     def removeEntity(self, entity: Entity):
-        self.selected.remove(entity)
-        entity.select.onDeselect(self)
+        if self.selected.remove(entity, self.hoveredEntity):
+            entity.select.onDeselect(self)
 
     def removeAllEntities(self):
         for entity in self.selected.entities:
-            entity.select.onDeselect(self)
-        self.selected.removeAll()
+            self.removeEntity(entity)
 
     def isMultiselect(self) -> bool:
         return self.box.active

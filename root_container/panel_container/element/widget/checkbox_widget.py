@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from common.draw_order import DrawOrder
+from entity_base.image.image_state import ImageState
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -13,7 +14,7 @@ from common.image_manager import ImageID
 from common.reference_frame import PointRef, Ref
 from utility.pygame_functions import drawSurface
 from utility.math_functions import distance
-from entity_base.image.toggle_image_entity import ToggleImageEntity
+from entity_base.image.image_entity import ImageEntity
 import pygame
 
 
@@ -26,13 +27,17 @@ class CheckboxWidgetContainer(WidgetContainer['CheckboxWidgetDefinition']):
         self.value = definition.defaultOn
 
         self.recomputePosition()
-
-        self.checkbox = ToggleImageEntity(self,
-            ImageID.CHECKBOX_ON, ImageID.CHECKBOX_OFF,
-            drawOrder = DrawOrder.WIDGET,
+        
+        states = [
+            ImageState(True, ImageID.CHECKBOX_ON),
+            ImageState(False, ImageID.CHECKBOX_OFF)
+        ]
+        self.checkbox = ImageEntity(self,
+            states = states,
+            getStateID = self.getValue,
             onClick = self.onLeftClick,
-            isOn = self.getValue
-            )
+            drawOrder = DrawOrder.WIDGET
+        )
 
     def getValue(self) -> bool:
         return self.value
