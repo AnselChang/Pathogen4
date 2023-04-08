@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+
 from entity_base.text_entity import TextEntity, TextAlign
 
 """

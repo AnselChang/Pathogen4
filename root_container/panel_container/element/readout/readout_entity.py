@@ -30,12 +30,11 @@ class ReadoutEntity(ElementContainer):
         self.font: DynamicFont = parentCommand.fonts.getDynamicFont(FontID.FONT_NORMAL, 15)
         self.font.subscribe(onNotify = self.recomputePosition)
 
-        self.parentCommand = parentCommand
         self.definition = readoutDefinition
         self.pathAdapter = pathAdapter
         self.pathAdapter.subscribe(onNotify = self.recomputePosition)
 
-        super().__init__(parent)
+        super().__init__(parent, parentCommand)
         
         self.recomputePosition()
 

@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+
 from entity_base.container_entity import Container
 from entity_base.entity import Entity
 from entity_base.text_entity import TextEntity
@@ -8,7 +13,8 @@ Either a widget or readout. Inside a RowEntity, the label is always on the right
 
 class ElementContainer(Container):
 
-    def __init__(self, parent):
+    def __init__(self, parent, parentCommand: CommandBlockEntity):
+        self.parentCommand = parentCommand
         super().__init__(parent)
 
     def defineCenter(self) -> tuple:

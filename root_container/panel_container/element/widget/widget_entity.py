@@ -34,9 +34,8 @@ class WidgetContainer(ElementContainer, Observable, Generic[T]):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity, definition: WidgetDefinition):
         
-        super().__init__(parent = parent)
+        super().__init__(parent, parentCommand)
 
-        self.parentCommand = parentCommand
         self.definition: WidgetDefinition | T = definition
 
     # for dynamic widgets. how much to stretch command height by
@@ -49,9 +48,6 @@ class WidgetContainer(ElementContainer, Observable, Generic[T]):
     @abstractmethod
     def getValue(self) -> str | float:
         pass
-    
-    def isVisible(self) -> bool:
-        return self.parentCommand.isVisible() and not self.parentCommand.isFullyCollapsed()
 
     def getOpacity(self) -> float:
         return self.parentCommand.getAddonsOpacity()
