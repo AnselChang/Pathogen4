@@ -169,7 +169,7 @@ class Interactor:
                 doNotRemove = None
                 if self.hoveredEntity.drag is not None:
                     doNotRemove = self.hoveredEntity.drag.selectEntityNotThis
-                self.removeAllEntities(self.hoveredEntity.drag.selectEntityNotThis, doNotRemove = doNotRemove)
+                self.removeAllEntities(doNotRemove = doNotRemove)
 
         if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
             # if enableToggle flag set, disable selection if clicking and already seleected:
