@@ -10,7 +10,7 @@ from root_container.field_container.segment.segment_type import SegmentType
 from utility.angle_functions import deltaInHeading
 from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import arcFromThreePoints, distanceTuples, pointTouchingLine, thetaFromPoints
-from utility.pygame_functions import drawArcFromCenterAngles, drawLine
+from utility.pygame_functions import drawArcFromCenterAngles, drawLine, drawVector
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
     from root_container.field_container.node.path_node_entity import PathNodeEntity
@@ -46,39 +46,19 @@ class ArcSegmentState(PathSegmentState):
             ImageState(ArcIconID.REVERSE_RIGHT, ImageID.CURVE_RIGHT_REVERSE),
         ])
 
-        self.THETA1 = None
-        self.THETA2 = None
-
     def getAdapter(self) -> PathAdapter:
         return self.adapter
-
-    """
-    ADAPTER MUST SET:
-        X1, Y1, X2, Y2
-        XCENTER, YCENTER,
-        RADIUS, ARC_LENGTH
-        THETA1, THETA2
-    """
-    def updateAdapter(self) -> None:
-
+    
+    def recalculateArc(self):
         # find 3 points with field reference frame
         self.p1 = self.segment.getPrevious().getPositionRef()
         self.p2 = self.segment.arcNode.positionRef
         self.p3 = self.segment.getNext().getPositionRef()
 
-        # Set positions
-        self.adapter.set(ArcAttributeID.X1, self.p1.fieldRef[0], formatInches(self.p1.fieldRef[0]))
-        self.adapter.set(ArcAttributeID.Y1, self.p1.fieldRef[1], formatInches(self.p1.fieldRef[1]))
-        self.adapter.set(ArcAttributeID.X2, self.p3.fieldRef[0], formatInches(self.p3.fieldRef[0]))
-        self.adapter.set(ArcAttributeID.Y2, self.p3.fieldRef[1], formatInches(self.p3.fieldRef[1]))
-
         # compute center and radius of arc
         c, r = arcFromThreePoints(self.p1.fieldRef, self.p2.fieldRef, self.p3.fieldRef)
         self.CENTER = PointRef(Ref.FIELD, c)
         self.RADIUS = ScalarRef(Ref.FIELD, r)
-        self.adapter.set(ArcAttributeID.XCENTER, self.CENTER.fieldRef[0], formatInches(self.CENTER.fieldRef[0]))
-        self.adapter.set(ArcAttributeID.YCENTER, self.CENTER.fieldRef[1], formatInches(self.CENTER.fieldRef[1]))
-        self.adapter.set(ArcAttributeID.RADIUS, self.RADIUS.fieldRef, formatInches(self.RADIUS.fieldRef))
 
         # (C)enter (T)heta for theta from center to point 1/2/3
         ct1 = thetaFromPoints(self.CENTER.fieldRef, self.p1.fieldRef)
@@ -101,7 +81,6 @@ class ArcSegmentState(PathSegmentState):
         if not self.POSITIVE:
             deltaAngle = (-deltaAngle) % (math.pi*2)
         self.ARC_LENGTH = ScalarRef(Ref.FIELD, deltaAngle * self.RADIUS.fieldRef)
-        self.adapter.set(ArcAttributeID.ARC_LENGTH, self.ARC_LENGTH.fieldRef, formatInches(self.ARC_LENGTH.fieldRef))
 
         self.START_ANGLE = ct1
         self.STOP_ANGLE = ct3
@@ -112,6 +91,34 @@ class ArcSegmentState(PathSegmentState):
         else:
             self.THETA1 = ct1 - math.pi/2
             self.THETA2 = ct3 - math.pi/2
+
+        self.updateAdapter()
+
+
+
+    """
+    ADAPTER MUST SET:
+        X1, Y1, X2, Y2
+        XCENTER, YCENTER,
+        RADIUS, ARC_LENGTH
+        THETA1, THETA2
+    """
+    def updateAdapter(self) -> None:
+
+        # Set positions
+        self.adapter.set(ArcAttributeID.X1, self.p1.fieldRef[0], formatInches(self.p1.fieldRef[0]))
+        self.adapter.set(ArcAttributeID.Y1, self.p1.fieldRef[1], formatInches(self.p1.fieldRef[1]))
+        self.adapter.set(ArcAttributeID.X2, self.p3.fieldRef[0], formatInches(self.p3.fieldRef[0]))
+        self.adapter.set(ArcAttributeID.Y2, self.p3.fieldRef[1], formatInches(self.p3.fieldRef[1]))
+
+        self.adapter.set(ArcAttributeID.XCENTER, self.CENTER.fieldRef[0], formatInches(self.CENTER.fieldRef[0]))
+        self.adapter.set(ArcAttributeID.YCENTER, self.CENTER.fieldRef[1], formatInches(self.CENTER.fieldRef[1]))
+        self.adapter.set(ArcAttributeID.RADIUS, self.RADIUS.fieldRef, formatInches(self.RADIUS.fieldRef))
+
+        self.adapter.set(ArcAttributeID.ARC_LENGTH, self.ARC_LENGTH.fieldRef, formatInches(self.ARC_LENGTH.fieldRef))
+
+        self.adapter.set(ArcAttributeID.THETA1, self.THETA1, formatDegrees(self.THETA1))
+        self.adapter.set(ArcAttributeID.THETA2, self.THETA2, formatDegrees(self.THETA2))
 
 
     def getStartTheta(self) -> float:
@@ -163,4 +170,9 @@ class ArcSegmentState(PathSegmentState):
                                 width = self.segment.thickness,
                                 numSegments = self.ARC_LENGTH.screenRef * RESOLUTION
                                 )
+        
+        # draw theta directions for testing
+        drawVector(screen, *self.p1.screenRef, self.THETA1, 30)
+        drawVector(screen, *self.p3.screenRef, self.THETA2, 30)
+
 

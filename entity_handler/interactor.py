@@ -242,7 +242,7 @@ class Interactor:
 
 
     def canDragSelection(self, offset):
-        for selected in self.selected.entities:
+        for selected in self.draggingEntities:
             if selected.drag is not None:
                 if not selected.drag.canDrag(offset):
                     return False

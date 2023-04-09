@@ -282,3 +282,14 @@ def drawArcFromCenterAngles(screen, startAngle, stopAngle, isPositive, color, ce
         p1 = (center[0] + radius*math.cos(angle1), center[1] + radius*math.sin(angle1))
         p2 = (center[0] + radius*math.cos(angle2), center[1] + radius*math.sin(angle2))
         drawLine(screen, color, *p1, *p2, width)
+
+
+
+# Given a position, a theta, and a magnitude, draw a vector in pygame
+def drawVector(screen, x, y, theta, magnitude):
+    color = (0,0,0)
+    x2 = x + magnitude * math.cos(theta)
+    y2 = y + magnitude * math.sin(theta)
+    drawLine(screen, color, x, y, x2, y2, 2)
+    # draw a cirle at the end position
+    pygame.draw.circle(screen, color, (int(x2), int(y2)), 3)

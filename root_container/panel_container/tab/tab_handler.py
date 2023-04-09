@@ -22,6 +22,8 @@ class TabHandler:
         FONT_ID = FontID.FONT_TITLE
         FONT_SIZE = 15
 
+        self.tabs = None
+
         self.blockContainer = BlockTabContentsContainer(panel, self)
         self.codeContainer = CodeTabContentsContainer(panel, self)
         self.settingsContainer = SettingsTabContentsContainer(panel, self)
@@ -39,4 +41,6 @@ class TabHandler:
             )
 
     def isTabContentsVisible(self, tabContents: AbstractTabContentsContainer) -> bool:
+        if self.tabs is None:
+            return True
         return self.tabs.isOptionOn(tabContents.tabName)

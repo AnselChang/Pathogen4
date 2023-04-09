@@ -14,6 +14,8 @@ from utility.pygame_functions import shade
 if TYPE_CHECKING:
     from root_container.field_container.node.path_node_entity import PathNodeEntity
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+    from root_container.field_container.segment.PathSegmentStates.arc_segment_state import ArcSegmentState
+
 
 from entity_base.abstract_circle_entity import AbstractCircleEntity
 
@@ -31,9 +33,10 @@ that would make the angle at the other side of the segment snap
 class ArcCurveNode(AbstractCircleEntity, Observable):
 
     # segmentFunction is either getPrevious or getNext
-    def __init__(self, segment: PathSegmentEntity):
+    def __init__(self, segment: PathSegmentEntity, arcSegmentState: ArcSegmentState):
 
         self.segment = segment
+        self.arc = arcSegmentState
 
         super().__init__(parent = segment,
             drag = DragLambda(self, selectEntityNotThis = segment, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FcanDrag = self.canDrag, FonStopDrag = self.onStopDrag),
@@ -47,8 +50,6 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         # in field ref (inches)
         self.perpDistance = 10
         self.recomputePositionRef()
-
-        self.recomputePosition()
 
         # handles drawing the line from the segment midpoint to this
         ArcNodeLine(self)
@@ -85,6 +86,7 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         # Theta from M to P (position)
         theta = (self.B - self.A).theta() + math.pi/2
         self.positionRef = self.segmentMidpoint + VectorRef(Ref.FIELD, magnitude = self.perpDistance, heading = theta)
+        print(self.positionRef.fieldRef)
         self.recomputePosition()
 
     # return cached position in screen coordinates
@@ -104,10 +106,11 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         return True
 
     def onDrag(self, mouse: tuple):
+        print("dragging")
         mouseRef = PointRef(Ref.SCREEN, mouse)
         self.perpDistance = distancePointToLine(*mouseRef.fieldRef, *self.B.fieldRef, *self.A.fieldRef, True)
         self.recomputePositionRef()
-        self.notify()
+        self.arc.recalculateArc()
 
     def onStopDrag(self):
         pass
