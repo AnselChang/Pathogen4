@@ -40,7 +40,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
 
         self.dragging = False
 
-    def delete(self, mouse: tuple):
+    def onDelete(self, mouse: tuple):
         self.path.deleteCommand(self)
 
     def onStartDrag(self, mouse: tuple):

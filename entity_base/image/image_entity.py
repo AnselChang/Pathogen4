@@ -22,13 +22,16 @@ class ImageEntity(Entity, TooltipOwner):
                  center_px = 0.5, center_py = 0.5, pwidth = 1, pheight = 1,
                  isOn = lambda: True,
                  getStateID = lambda: None,
-                 drag = None
+                 drag = None,
+                 disableTouching = False
                 ):
         super().__init__(
             parent = parent,
             click = ClickLambda(self, FonLeftClick = self.attemptToClick),
             drag = drag,
             drawOrder = drawOrder)
+        
+        self.disableTouching = disableTouching
         
         self.oldWidth = None
         self.oldHeight = None
@@ -95,6 +98,12 @@ class ImageEntity(Entity, TooltipOwner):
 
     def getTooltip(self) -> Tooltip | None:
         return self.getCurrentState().getTooltip(self.isOn())
+    
+    def isTouching(self, mouse: tuple):
+        if self.disableTouching:
+            return False
+        else:
+            return super().isTouching(mouse)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         

@@ -246,6 +246,13 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         # cursed number to make scrollbar go down a little more
         self.path.scrollHandler.setManualScrollbarPosition(self._getTargetHeight() - self.ACTUAL_COLLAPSED_HEIGHT*5)
 
+    # Called when the highlight button in the command block is clicked.
+    # Should highlight the corresponding node or segment in the path
+    def onHighlightPath(self, mouse: tuple):
+        pathEntity = self.path.getPathEntityFromCommand(self)
+        self.interactor.removeAllEntities()
+        self.interactor.addEntity(pathEntity)
+
     # if mouse down on different command, clear highlight
     def onMouseDown(self, mouse: tuple):
         if CommandBlockEntity.HIGHLIGHTED is not None and CommandBlockEntity.HIGHLIGHTED is not self:

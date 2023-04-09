@@ -23,7 +23,8 @@ class CommandBlockIcon(Container):
             states = pathAdapter.iconImageStates,
             getStateID = pathAdapter.getIconStateID,
             drawOrder = DrawOrder.WIDGET,
-            dimOnHover = False
+            dimOnHover = False,
+            disableTouching = True
         )
 
 

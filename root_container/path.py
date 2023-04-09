@@ -222,6 +222,7 @@ class Path:
         self.pathList.remove(node)
         self.entities.removeEntity(node, excludeChildrenIf = lambda child: isinstance(child, CommandOrInserter))
         self.deleteCommand(self.dict[node])
+        del self.dict[node]
 
         # remove the next segment, unless its the last segment, in which case remove the previous segment
         if node.isLastNode():
@@ -234,6 +235,7 @@ class Path:
         self.pathList.remove(segment)
         self.entities.removeEntity(segment, excludeChildrenIf = lambda child: isinstance(child, CommandOrInserter))
         self.deleteCommand(self.dict[segment])
+        del self.dict[segment]
 
         # the other segment is the only node/segment affected by this
         if otherSegment is not None: # it's none if there are only two nodes total and remove last one
@@ -331,3 +333,9 @@ class Path:
             print("\tparent: ", command._parent)
             print("\tchildren: ", command._children)
             command = command.getNext()
+
+    def getPathEntityFromCommand(self, command: CommandBlockEntity) -> PathSegmentEntity | PathNodeEntity:
+        for pathEntity in self.dict:
+            if self.dict[pathEntity] == command:
+                return pathEntity
+        raise Exception("Command not found in path")

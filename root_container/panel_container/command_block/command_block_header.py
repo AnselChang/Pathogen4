@@ -1,7 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from root_container.panel_container.command_block.highlight_path_entity import HighlightPathEntity
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+    from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 
 from entity_base.container_entity import Container
 from root_container.panel_container.command_block.icon_entity import CommandBlockIcon
@@ -12,7 +15,7 @@ from common.draw_order import DrawOrder
 
 class CommandBlockHeader(Container):
 
-    def __init__(self, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter, hasTrashCan: bool):
+    def __init__(self, parentCommand: CommandBlockEntity | CustomCommandBlockEntity, pathAdapter: PathAdapter, hasTrashCan: bool):
         super().__init__(parentCommand, drawOrder = DrawOrder.WIDGET)
 
         self.parentCommand = parentCommand
@@ -25,9 +28,11 @@ class CommandBlockHeader(Container):
 
         # Only create trash can for custom command blocks
         if hasTrashCan:
-            self.trashEntity = TrashEntity(self, onDelete = parentCommand.delete)
+            self.trashEntity = TrashEntity(self, onDelete = parentCommand.onDelete)
+            self.highlightEntity = None
         else:
             self.trashEntity = None
+            self.highlightEntity = HighlightPathEntity(self, onHighlight = parentCommand.onHighlightPath)
 
     def defineTopLeft(self) -> tuple:
         return self._px(0), self._py(0)
