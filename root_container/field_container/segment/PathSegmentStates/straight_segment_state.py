@@ -23,11 +23,9 @@ from common.image_manager import ImageID
 
 from utility.pygame_functions import drawLine
 from utility.math_functions import pointTouchingLine
+from enum import Enum, auto
 
 import pygame
-
-# Abstract class for a non-functional edge
-# only purpose is to connect two points. 
 
 class StraightSegmentState(PathSegmentState):
     def __init__(self, segment: PathSegmentEntity) -> None:
@@ -88,6 +86,3 @@ class StraightSegmentState(PathSegmentState):
         x2, y2 = self.segment.getNext().getPositionRef().screenRef
 
         drawLine(screen, self.segment.getColor(isActive, isHovered), x1, y1, x2, y2, self.segment.thickness, None)
-
-    def toString(self) -> str:
-        return "straight"

@@ -77,6 +77,15 @@ def boundAngleRadians(angle: float) -> float:
 def deltaInHeading(targetHeading: float, currentHeading: float) -> float:
     return boundAngleRadians(targetHeading - currentHeading)
 
+# If parity == true, must return negative. if parity == false, must return positive.
+def deltaInHeadingParity(targetHeading: float, currentHeading: float, parity: bool) -> float:
+    diff = (targetHeading - currentHeading) % (3.1415*2)
+    if parity and diff > 0:
+        diff -= 3.1415*2
+    elif not parity and diff < 0:
+        diff += 3.1415*2
+    return diff
+
 # Vector projection algorithm
 def pointOnLineClosestToPoint(pointX: int, pointY: int, firstX: int, firstY: int, secondX: int, secondY: int) -> tuple:
     ax = pointX - firstX

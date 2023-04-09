@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from root_container.field_container.segment.PathSegmentStates.arc_segment_state import ArcSegmentState
 
 from root_container.field_container.segment.segment_type import SegmentType
 if TYPE_CHECKING:
@@ -52,7 +53,14 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         LinkedListNode.__init__(self)
 
         self.path = path
-        self.state: PathSegmentState = StraightSegmentState(self)
+
+        self.states: dict[SegmentType, PathSegmentState] = {
+            SegmentType.STRAIGHT: StraightSegmentState(self),
+            SegmentType.ARC: ArcSegmentState(self)
+        }
+
+        self.currentState: SegmentType = SegmentType.STRAIGHT
+
         self.direction: SegmentDirection = SegmentDirection.FORWARD
 
         self.thickness = 3
@@ -66,6 +74,13 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
         self.updateAdapter()
         self.recomputePosition()
+
+    def getState(self) -> PathSegmentState:
+        return self.states[self.currentState]
+    
+    def setState(self, newState: SegmentType) -> None:
+        self.currentState = newState
+        self.updateAdapter()
 
     def onStartDrag(self, mouse: tuple):
         self.mouseStartDrag = PointRef(Ref.SCREEN, mouse)
@@ -115,11 +130,6 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
             return True
         return False
 
-
-    def changeSegmentShape(self, newStateClass: type[PathSegmentState]):
-        self.state = newStateClass(self)
-        self.section.changeSegmentShape(self.getAdapter())
-
     def onNodeMove(self, node: Entity):
         self.updateAdapter()
         self.recomputePosition()
@@ -129,10 +139,10 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
             self.getPrevious().onAngleChange()
 
     def getAdapter(self) -> PathAdapter:
-        return self.state.getAdapter()
+        return self.getState().getAdapter()
     
     def updateAdapter(self) -> None:
-        self.state.updateAdapter()
+        self.getState().updateAdapter()
         self.recomputePosition()
 
 
@@ -147,7 +157,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         return self.direction
     
     def getSegmentType(self) -> SegmentType:
-        return self.state.type
+        return self.currentState
 
     def getOther(self, node: PathNodeEntity):
         if self.getPrevious() is node:
@@ -176,10 +186,10 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
     
     def getStartTheta(self) -> float:
-        return self.state.getStartTheta()
+        return self.getState().getStartTheta()
 
     def getEndTheta(self) -> float:
-        return self.state.getEndTheta()
+        return self.getState().getEndTheta()
     
     def getLinearDistance(self, ref: Ref):
         return (self.getPrevious().position - self.getNext().position).magnitude(ref)
@@ -193,13 +203,13 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
             raise Exception("Node is not connected to this segment")
     
     def isTouching(self, position: PointRef) -> bool:
-        return self.state.isTouching(position)
+        return self.getState().isTouching(position)
 
     def defineCenter(self) -> tuple:
-        return self.state.getCenter()
+        return self.getState().getCenter()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        return self.state.draw(screen, isActive, isHovered)
+        return self.getState().draw(screen, isActive, isHovered)
     
     def toString(self) -> str:
-        "Segment with shape: " + self.state.toString()
+        "Segment with shape: " + str(self.currentState)

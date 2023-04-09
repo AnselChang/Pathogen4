@@ -16,6 +16,10 @@ class ImageID(Enum):
     STRAIGHT_REVERSE = auto()
     TURN_LEFT = auto()
     TURN_RIGHT = auto()
+    CURVE_LEFT_FORWARD = auto()
+    CURVE_RIGHT_FORWARD = auto()
+    CURVE_LEFT_REVERSE = auto()
+    CURVE_RIGHT_REVERSE = auto()
     CUSTOM = auto()
     TRASH_ON = auto()
     TRASH_OFF = auto()
@@ -68,6 +72,11 @@ class ImageManager:
         self.images[ImageID.TURN_LEFT] = Image("CommandIcons/TurnLeft.png")
         self.images[ImageID.TURN_RIGHT] = Image("CommandIcons/TurnRight.png")
         self.images[ImageID.CUSTOM] = Image("CommandIcons/Custom.png")
+
+        self.images[ImageID.CURVE_LEFT_FORWARD] = Image("CommandIcons/CurveLeftForward.png")
+        self.images[ImageID.CURVE_RIGHT_FORWARD] = Image("CommandIcons/CurveRightForward.png")
+        self.images[ImageID.CURVE_LEFT_REVERSE] = Image("CommandIcons/CurveLeftReverse.png")
+        self.images[ImageID.CURVE_RIGHT_REVERSE] = Image("CommandIcons/CurveRightReverse.png")
 
         self.images[ImageID.TRASH_ON] = Image("OtherIcons/TrashOn.png")
         self.images[ImageID.TRASH_OFF] = Image("OtherIcons/TrashOff.png")

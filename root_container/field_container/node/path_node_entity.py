@@ -197,6 +197,14 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
 
     def onAngleChange(self):
         self.updateAdapter()
+
+    def getOther(self, segment: PathSegmentEntity):
+        if self.getPrevious() is segment:
+            return self.getNext()
+        elif self.getNext() is segment:
+            return self.getPrevious()
+        else:
+            raise ValueError("Segment is not connected to this node")
         
 
     def onKeyDown(self, key):

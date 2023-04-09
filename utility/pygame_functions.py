@@ -196,3 +196,22 @@ def scaleImageToRect(image: pygame.Surface, width, height):
     # Scale the image and return the new surface
     scaledSize = (round(imgWidth * scaleFactor), round(imgHeight * scaleFactor))
     return pygame.transform.smoothscale(image, scaledSize)
+
+# manually draw an arc through linear approximation
+# parity is the modular direction from theta1 -> theta2
+def drawArc(screen: pygame.Surface, color: tuple, center: tuple, radius: float, theta1: float, theta2: float, parity: bool, thickness: int = 1, alpha: int = 255):
+
+    dt = math_functions.deltaInHeadingParity(theta2, theta1, parity)
+
+    K = 1 # constant for how many lines to draw (the more the smoother)
+    numberLines = min(500, int(K * abs(dt*radius)))
+
+    x1, y1 = center[0] + radius * math.cos(theta1), center[1] - radius * math.sin(theta1)
+    for i in range(1, numberLines+1):
+        t2 = theta1 + dt * (i) / numberLines
+        x2, y2 = center[0] + radius * math.cos(t2), center[1] - radius * math.sin(t2)
+
+        drawLine(screen, color, x1, y1, x2, y2, thickness, alpha)
+
+        x1 = x2
+        y1 = y2

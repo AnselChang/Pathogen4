@@ -60,14 +60,16 @@ class ThetaEntity(AbstractCircleEntity):
             return False
         
         # If segment is straight, then no theta control
-        if False and segment.getSegmentType() == SegmentType.STRAIGHT:
+        if segment.getSegmentType() == SegmentType.STRAIGHT:
             return False
         
         # If neither node nor segment is selected, then no theta control
         if not self.node.select.isSelected and not segment.select.isSelected:
             otherNode = segment.getOther(self.node)
             if otherNode is None or not otherNode.select.isSelected:
-                return False
+                otherSegment = self.node.getOther(segment)
+                if otherSegment is None or not otherSegment.select.isSelected:
+                    return False
         
         # If all conditions are met, then theta control is visible
         return True

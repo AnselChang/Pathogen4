@@ -228,7 +228,7 @@ class Interactor:
         # after this point, mouse movement was dragging and not just moving around
         if not self.rightDragging and not self.leftDragging:
             return
-        
+                
         # Update multiselect
         if self.box.isEnabled():
             self.setSelectedEntities(self.box.update(mouse, entities))
@@ -268,9 +268,11 @@ class Interactor:
                     self.removeAllEntities(forceRemove = True)
 
                     self.addEntity(entityToStartDragging)
+                    self.hoveredEntity = entityToStartDragging
+                    self.mouseDownEntity = entityToStartDragging
                     entityToStartDragging.drag.onStartDrag(mouse)
                     self.disableUntilMouseUp = True
-                    print("a")
+                    print("a", self.selected.entities)
 
 
 

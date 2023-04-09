@@ -52,7 +52,3 @@ class PathSegmentState(ABC):
     @abstractmethod
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         pass
-
-    @abstractmethod
-    def toString(self) -> str:
-        pass
