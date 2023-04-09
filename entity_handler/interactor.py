@@ -216,6 +216,7 @@ class Interactor:
         for dragged in self.draggingEntities:
             if dragged.drag is not None:
                 dragged.drag.onStopDrag()
+        self.draggingEntities = []
 
         toRemove = []
         for selected in self.selected.entities:

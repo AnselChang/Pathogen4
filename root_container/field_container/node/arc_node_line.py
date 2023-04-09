@@ -1,17 +1,11 @@
 from __future__ import annotations
-import math
 from typing import TYPE_CHECKING
 from common.draw_order import DrawOrder
 from common.reference_frame import *
 from entity_base.entity import Entity
-from entity_base.listeners.drag_listener import DragLambda
 
-from entity_base.listeners.select_listener import SelectLambda, SelectorType
-from root_container.field_container.segment.segment_type import SegmentType
 from utility.pygame_functions import drawDottedLine, shade
 if TYPE_CHECKING:
-    from root_container.field_container.node.path_node_entity import PathNodeEntity
-    from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
     from root_container.field_container.node.arc_curve_node import ArcCurveNode
 import pygame
 
@@ -48,5 +42,3 @@ class ArcNodeLine(Entity):
 
         color = self.arcCurveNode.COLOR_H if isHovered else self.arcCurveNode.COLOR
         drawDottedLine(screen, color, self.a, self.b, length = 10, fill = 0.5, width = 1)
-        pygame.draw.circle(screen, (0,0,0), self.a, 10)
-        pygame.draw.circle(screen, (0,0,0), self.b, 10)

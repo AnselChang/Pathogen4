@@ -8,6 +8,7 @@ from entity_base.listeners.drag_listener import DragLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
 from root_container.field_container.node.arc_node_line import ArcNodeLine
 from root_container.field_container.segment.segment_type import SegmentType
+from utility.math_functions import distancePointToLine
 from utility.pygame_functions import shade
 if TYPE_CHECKING:
     from root_container.field_container.node.path_node_entity import PathNodeEntity
@@ -42,7 +43,8 @@ class ArcCurveNode(AbstractCircleEntity):
         self.COLOR_H = shade(self.COLOR, 0.9)
 
         # perpendicular distance from midpoint to self, signed
-        self.perpDistance = ScalarRef(Ref.FIELD, 10)
+        # in field ref (inches)
+        self.perpDistance = 10
         self.recomputePositionRef()
 
         self.recomputePosition()
@@ -73,15 +75,15 @@ class ArcCurveNode(AbstractCircleEntity):
     # recompute arc curve position given perpDistance
     def recomputePositionRef(self):
         # A and B are PointRef of neighboring nodes
-        A = self.segment.getPrevious().getPositionRef()
-        B = self.segment.getNext().getPositionRef()
+        self.A = self.segment.getPrevious().getPositionRef()
+        self.B = self.segment.getNext().getPositionRef()
 
         # M is midpoint between A and B
-        self.segmentMidpoint: PointRef = A + (B-A) / 2
+        self.segmentMidpoint: PointRef = self.A + (self.B - self.A) / 2
 
         # Theta from M to P (position)
-        theta = (B - A).theta() + math.pi/2
-        self.positionRef = self.segmentMidpoint + VectorRef(Ref.FIELD, magnitude = self.perpDistance.fieldRef, heading = theta)
+        theta = (self.B - self.A).theta() + math.pi/2
+        self.positionRef = self.segmentMidpoint + VectorRef(Ref.FIELD, magnitude = self.perpDistance, heading = theta)
         self.recomputePosition()
 
     # return cached position in screen coordinates
@@ -96,15 +98,14 @@ class ArcCurveNode(AbstractCircleEntity):
 
     def onStartDrag(self, mouse: tuple):
         pass
-        print("start drag")
 
     def canDrag(self, mouse: tuple) -> bool:
         return True
 
     def onDrag(self, mouse: tuple):
-        pass
-        print("drag")
+        mouseRef = PointRef(Ref.SCREEN, mouse)
+        self.perpDistance = distancePointToLine(*mouseRef.fieldRef, *self.B.fieldRef, *self.A.fieldRef, True)
+        self.recomputePositionRef()
 
     def onStopDrag(self):
         pass
-        print("stop drag")

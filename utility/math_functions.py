@@ -43,7 +43,7 @@ def distance(x1,y1,x2,y2):
 def distanceTuples(point1, point2):
     return distance(*point1, *point2)
 
-# Distance between point (x, y) and line (x1, y1,),(x2,y2)
+# Distance between point (x, y) and line (x1, y1),(x2,y2)
 def distancePointToLine(x, y, x1, y1, x2, y2, signed: bool = False):
     ans = ((x2-x1)*(y1-y) - (x1-x)*(y2-y1)) / distance(x1, y1, x2, y2)
     if signed:

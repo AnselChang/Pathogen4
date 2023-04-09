@@ -149,7 +149,10 @@ def drawDottedLine(screen, color, start_pos, end_pos, length = 4, fill = 0.5, wi
     distance = math_functions.hypo(dx, dy)
 
     # calculate the number of dots needed to fill the line
-    dot_count = int(distance / length)
+    dot_count = int(math.ceil(distance / length))
+
+    if dot_count == 0:
+        return
 
     # calculate the x and y distances between each dot
     x_spacing = dx / dot_count
