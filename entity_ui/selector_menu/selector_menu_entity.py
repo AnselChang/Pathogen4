@@ -1,6 +1,7 @@
 from entity_base.entity import Entity
 from entity_base.image.image_entity import ImageEntity
 from entity_base.image.image_state import ImageState
+from entity_base.listeners.drag_listener import DragLambda
 from entity_ui.group.dynamic_group_container import DynamicGroupContainer
 
 from common.draw_order import DrawOrder
@@ -40,6 +41,11 @@ class SelectorMenuEntity(Entity):
         self.selectedEntity = selectedEntity
 
         super().__init__(parent = selectedEntity,
+                         drag = DragLambda(self, selectedEntity,
+                                           FonStartDrag = self.onStartDrag,
+                                           FonDrag = self.onDrag,
+                                           FonStopDrag = self.onStopDrag
+                                           ),
                          drawOrder = DrawOrder.SELECTOR_MENU_BACKGROUND)
         
         self.fieldContainer = fieldContainer
@@ -102,3 +108,14 @@ class SelectorMenuEntity(Entity):
     # Draws the background of the menu
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         pygame.draw.rect(screen, self.MENU_COLOR, self.RECT, border_radius = self.BORDER_RADIUS)
+
+    def onStartDrag(self, mouse: tuple):
+        print("start drag")
+
+    @abstractmethod
+    def onDrag(self, mouse: tuple):
+        print("drag")
+
+    @abstractmethod
+    def onStopDrag(self):
+        print("stop drag")

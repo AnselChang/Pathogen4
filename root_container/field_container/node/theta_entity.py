@@ -57,12 +57,12 @@ class ThetaEntity(AbstractCircleEntity):
         
         # If no segment, then no theta control
         if segment is None:
-            print("no segment")
+            #print("no segment")
             return False
         
         # If segment is straight, then no theta control
         if segment.getSegmentType() == SegmentType.STRAIGHT:
-            print("straight")
+            #print("straight")
             return False
         
         # If neither node nor segment is selected, then no theta control
@@ -75,7 +75,7 @@ class ThetaEntity(AbstractCircleEntity):
                     return False
         
         # If all conditions are met, then theta control is visible
-        print("good")
+        #print("good")
         return True
     
     def defineCenter(self) -> tuple:
