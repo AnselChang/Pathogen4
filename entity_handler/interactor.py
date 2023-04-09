@@ -42,6 +42,7 @@ class Interactor:
 
         self.mouseStartDrag: tuple = None
         self.didMove: bool = False
+        self.mouseDownEntity = None
 
         # these variables deal with double clicking
         self.previousClickEntity = None

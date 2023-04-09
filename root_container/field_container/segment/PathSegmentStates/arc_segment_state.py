@@ -97,13 +97,15 @@ class ArcSegmentState(PathSegmentState):
 
     # attempt to constraint self.THETA1 and self.THETA2 to the opposing thetas for their nodes
     def constrainTheta(self):
+        prevNode = self.segment.getPrevious()
+        nextNode = self.segment.getNext()
+        prevNode.constraints.resetThetaConstraints(self.THETA1, prevNode.getPositionRef())
+        nextNode.constraints.resetThetaConstraints(self.THETA2, nextNode.getPositionRef())
 
         if pygame.key.get_pressed()[pygame.K_LSHIFT]:
             return
         
         # HANDLE THETA1
-        prevNode = self.segment.getPrevious()
-        prevNode.constraints.resetThetaConstraints(self.THETA1, prevNode.getPositionRef())
 
         # attempt to constrain to previous node theta. Note that Constraints already handles the 180 cases
         if prevNode.getPrevious() is not None:
@@ -116,14 +118,15 @@ class ArcSegmentState(PathSegmentState):
         newTheta1 = prevNode.constraints.getTheta()
         if newTheta1 != self.THETA1:
             # recalculate arc but with newTheta1
-            self.recalculateArcFromTheta1(newTheta1)
+            self.THETA1 = newTheta1
+            dx = self.p3.fieldRef[0] - self.p1.fieldRef[0]
+            dy = self.p3.fieldRef[1] - self.p1.fieldRef[1]
+            self.THETA2 = thetaFromArc(self.THETA1, dx, dy)
+            self.recalculateArcFromTheta()
             self.notify()
             return
         
         # HANDLE THETA2
-        nextNode = self.segment.getNext()
-        nextNode.constraints.resetThetaConstraints(self.THETA2, nextNode.getPositionRef())
-
         # attempt to constrain to previous node theta. Note that Constraints already handles the 180 cases
         if nextNode.getNext() is not None:
             nextNode.constraints.addThetaConstraint(nextNode.END_THETA)
@@ -135,23 +138,21 @@ class ArcSegmentState(PathSegmentState):
         newTheta2 = nextNode.constraints.getTheta()
         if newTheta2 != self.THETA2:
             # recalculate arc but with newTheta1
-            self.recalculateArcFromTheta2(newTheta2)
+            self.THETA2 = newTheta2
+            dx = self.p3.fieldRef[0] - self.p1.fieldRef[0]
+            dy = self.p3.fieldRef[1] - self.p1.fieldRef[1]
+            self.THETA1 = thetaFromArc(self.THETA2, dx, dy)
+            self.recalculateArcFromTheta()
             self.notify()
             return
         
         
         
-    # Given: theta1, self.p1, self.p3.
+    # Given: theta1, theta2, self.p1, self.p3.
     # Find: self.p2, self.CENTER, self.RADIUS, self.ARC_LENGTH, self.THETA2
-    def recalculateArcFromTheta1(self, theta1: float):
-        self.THETA1 = theta1
-        self.CENTER = PointRef(Ref.FIELD, arcCenterFromTwoPointsAndTheta(*self.p1.fieldRef, *self.p3.fieldRef, theta1))
+    def recalculateArcFromTheta(self):
+        self.CENTER = PointRef(Ref.FIELD, arcCenterFromTwoPointsAndTheta(*self.p1.fieldRef, *self.p3.fieldRef, self.THETA1))
         self.RADIUS = ScalarRef(Ref.FIELD, distanceTuples(self.CENTER.fieldRef, self.p1.fieldRef))
-
-        dx = self.p3.fieldRef[0] - self.p1.fieldRef[0]
-        dy = self.p3.fieldRef[1] - self.p1.fieldRef[1]
-        self.THETA2 = thetaFromArc(self.THETA1, dx, dy)
-
 
         ct1 = thetaFromPoints(self.CENTER.fieldRef, self.p1.fieldRef)
         ct3 = thetaFromPoints(self.CENTER.fieldRef, self.p3.fieldRef)
@@ -172,7 +173,6 @@ class ArcSegmentState(PathSegmentState):
         d = distancePointToLine(*self.p2.fieldRef, *self.p3.fieldRef, *self.p1.fieldRef, True)
         self.segment.arcNode.setPerpDistance(d)
         
-
 
     def recalculateArcFromTheta2(self, theta2: float):
         pass

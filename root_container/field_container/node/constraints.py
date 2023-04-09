@@ -158,6 +158,9 @@ class Constraints(Entity):
     # draw all constraint lines
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
+        if self.interactor.selected.moreThanOne():
+            return
+
         visible = []
         if self.visiblePosition:
             visible.extend(self.positionConstraints)

@@ -78,3 +78,6 @@ class SelectHandler:
     
     def isEmpty(self) -> bool:
         return len(self.entities) == 0
+    
+    def moreThanOne(self) -> bool:
+        return len(self.entities) > 1
