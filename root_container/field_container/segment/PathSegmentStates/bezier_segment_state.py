@@ -23,8 +23,7 @@ from root_container.field_container.segment.path_segment_state import PathSegmen
 import pygame
 
 """
-An arc segment is controlled by a CurveNode which lies at the perpendicular bisector
-of the two nodes.
+A bezier segment is controlled by two nodes and their BezierThetaEntities
 """
 
 class ArcIconID(Enum):
@@ -33,9 +32,9 @@ class ArcIconID(Enum):
     REVERSE_LEFT = auto()
     REVERSE_RIGHT = auto()
 
-class ArcSegmentState(PathSegmentState):
+class BezierSegmentState(PathSegmentState):
     def __init__(self, segment: PathSegmentEntity | LinkedListNode) -> None:
-        super().__init__(SegmentType.ARC, segment)
+        super().__init__(SegmentType.BEZIER, segment)
         self.adapter = ArcAdapter([
             ImageState(ArcIconID.FORWARD_LEFT, ImageID.CURVE_LEFT_FORWARD),
             ImageState(ArcIconID.FORWARD_RIGHT, ImageID.CURVE_RIGHT_FORWARD),

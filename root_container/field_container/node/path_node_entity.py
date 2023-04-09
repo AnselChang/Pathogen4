@@ -23,7 +23,7 @@ from adapter.path_adapter import AdapterInterface
 from adapter.turn_adapter import TurnAdapter, TurnAttributeID
 
 from root_container.field_container.node.constraints import Constraints
-from root_container.field_container.node.theta_entity import ThetaEntity
+from root_container.field_container.node.bezier_theta_node import BezierThetaNode
 
 from common.image_manager import ImageID
 from data_structures.linked_list import LinkedListNode
@@ -92,8 +92,8 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         self.updateAdapter()
 
         self.recomputePosition()
-        self.beforeThetaNode = ThetaEntity(self, True)
-        self.afterThetaNode = ThetaEntity(self, False)
+        self.beforeThetaNode = BezierThetaNode(self, True)
+        self.afterThetaNode = BezierThetaNode(self, False)
         
 
 

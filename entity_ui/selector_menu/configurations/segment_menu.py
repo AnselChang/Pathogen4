@@ -44,8 +44,8 @@ class ToggleSegmentTypeAction(MenuClickAction[PathSegmentEntity]):
         if current == SegmentType.STRAIGHT:
             targetEntity.setState(SegmentType.ARC)
         elif current == SegmentType.ARC:
-            targetEntity.setState(SegmentType.CURVE)  
-        elif current == SegmentType.CURVE:
+            targetEntity.setState(SegmentType.BEZIER)  
+        elif current == SegmentType.BEZIER:
             targetEntity.setState(SegmentType.STRAIGHT)
         else:
             raise Exception("Invalid segment type")      
@@ -77,7 +77,7 @@ def configureSegmentMenu() -> MenuDefinition:
     states = ImageStatesFactory()
     states.addState(SegmentType.STRAIGHT, ImageID.STRAIGHT_SEGMENT, "Segment type: straight")
     states.addState(SegmentType.ARC, ImageID.ARC_SEGMENT, "Segment type: arc")
-    states.addState(SegmentType.CURVE, ImageID.CURVE_SEGMENT, "Segment type: bezier")
+    states.addState(SegmentType.BEZIER, ImageID.CURVE_SEGMENT, "Segment type: bezier")
     segmentDefinition.add(states.create(), ToggleSegmentTypeAction())
 
     # Inserts a node which splits this segment into two. New node is set to temporary and following mouse position

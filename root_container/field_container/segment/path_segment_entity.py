@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from root_container.field_container.segment.PathSegmentStates.arc_segment_state import ArcSegmentState
+from root_container.field_container.node.arc_curve_node import ArcCurveNode
 
 from root_container.field_container.segment.segment_type import SegmentType
 if TYPE_CHECKING:
@@ -21,6 +21,8 @@ from entity_base.listeners.select_listener import SelectLambda, SelectorType
 from entity_base.entity import Entity
 
 from root_container.field_container.segment.path_segment_state import PathSegmentState
+from root_container.field_container.segment.PathSegmentStates.bezier_segment_state import BezierSegmentState
+from root_container.field_container.segment.PathSegmentStates.arc_segment_state import ArcSegmentState
 from root_container.field_container.segment.PathSegmentStates.straight_segment_state import StraightSegmentState
 
 from adapter.path_adapter import PathAdapter, AdapterInterface
@@ -57,7 +59,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         self.states: dict[SegmentType, PathSegmentState] = {
             SegmentType.STRAIGHT: StraightSegmentState(self),
             SegmentType.ARC: ArcSegmentState(self),
-            SegmentType.CURVE: ArcSegmentState(self)
+            SegmentType.BEZIER: BezierSegmentState(self)
         }
 
         self.currentState: SegmentType = SegmentType.STRAIGHT
@@ -73,8 +75,16 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         self.colorReversedH = shade(self.colorReversed, 0.92)
         self.colorReversedA = shade(self.colorReversed, 0.7)
 
+        # Since the construction of this segment is not complete, with
+        # having both nodes not guaranteed, initialization of ArcCurveEntity
+        # is delayed until both nodes are set at updateAdapter()
+        self.arcNode: ArcCurveNode = None
+
         self.updateAdapter()
         self.recomputePosition()
+
+        
+
 
     def getState(self) -> PathSegmentState:
         return self.states[self.currentState]
@@ -134,6 +144,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     def onNodeMove(self, node: Entity):
         self.updateAdapter()
         self.recomputePosition()
+        self.arcNode.recomputePositionRef()
         if node is self.getPrevious():
             self.getNext().onAngleChange()
         else:
@@ -143,6 +154,11 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         return self.getState().getAdapter()
     
     def updateAdapter(self) -> None:
+
+        # initailize arc node
+        if self.arcNode is None and self.getNext() is not None and self.getPrevious() is not None:
+            self.arcNode = ArcCurveNode(self)
+
         self.getState().updateAdapter()
         self.recomputePosition()
 

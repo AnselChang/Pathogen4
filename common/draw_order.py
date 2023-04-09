@@ -21,6 +21,7 @@ class DrawOrder(IntEnum):
     THETA_NODE = auto()
     NODE = auto()
     SEGMENT = auto()
+    THETA_LINE = auto()
     MENU_LINE = auto()
     FIELD_BACKGROUND = auto()
     BACKGROUND = auto()

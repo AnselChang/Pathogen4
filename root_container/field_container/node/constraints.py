@@ -117,4 +117,4 @@ class Constraints(Entity):
             pointA = self._point(point, dist, line.theta)
             pointB = self._point(point, dist, line.theta + 3.1415)
 
-            drawDottedLine(screen, (0,0,0), pointA, pointB, 2, 4)
+            drawDottedLine(screen, (0,0,0), pointA, pointB, length = 12, fill = 0.5, width = 1)

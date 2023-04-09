@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 from entity_base.abstract_circle_entity import AbstractCircleEntity
 
 """
+FOR BEZIER SEGMENTS ONLY
 A PathNodeEntity has two ThetaEntities, for the start and end angles.
 Only is visible when all three conditions are met
 - the segment or node is selected
@@ -24,7 +25,7 @@ Can snap to cardinal directions, the opposing ThetaEntity, as well as the angle
 that would make the angle at the other side of the segment snap
 """
 
-class ThetaEntity(AbstractCircleEntity):
+class BezierThetaNode(AbstractCircleEntity):
 
     # segmentFunction is either getPrevious or getNext
     def __init__(self, pathNode: PathNodeEntity, isBeforeTheta: bool):
@@ -60,8 +61,8 @@ class ThetaEntity(AbstractCircleEntity):
             #print("no segment")
             return False
         
-        # If segment is straight, then no theta control
-        if segment.getSegmentType() == SegmentType.STRAIGHT:
+        # If segment is not bezier, then no theta control
+        if segment.getSegmentType() != SegmentType.BEZIER:
             #print("straight")
             return False
         
