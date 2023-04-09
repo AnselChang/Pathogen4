@@ -146,3 +146,39 @@ def arcFromThreePoints(p1, p2, p3):
     radius = math.sqrt((center_x - p1[0]) ** 2 + (center_y - p1[1]) ** 2)
 
     return (center_x, center_y), radius
+
+# Given (x1,y1), (x2,y2), and the heading of (x1,y1), find the center of the /arc
+def arcCenterFromTwoPointsAndTheta(x1, y1, x2, y2, theta) -> tuple:
+
+    a = (x1 - x2) * math.cos(theta) + (y1 - y2) * math.sin(theta)
+    b = (y1 - y2) * math.cos(theta) - (x1 - x2) * math.sin(theta)
+    c = a / (2 * b)
+    
+
+    x = (x1+x2)/2 + c * (y1 - y2)
+    y = (y1+y2)/2 + c * (x2 - x1)
+
+    return x,y
+
+# Given (x1,y1) and (x2,y2) and a radius to define an arc,
+# return the two possible midpoints
+def getArcMidpoint(x1, y1, x2, y2, r) -> tuple[tuple]:
+
+    # mx is either positive or negative
+    mx1 = r * (x1 + x2) / math.sqrt((x1+x2)**2 + (y1+y2)**2)
+    mx2 = -mx1
+
+    def myFromMx(mx):
+        return mx * (y1 + y2) / (x1 + x2)
+    
+    my1 = myFromMx(mx1)
+    my2 = myFromMx(mx2)
+
+    return (mx1, my1), (mx2, my2)
+
+
+# Given an initial theta and an offset x and y, calculate the other theta
+# if (0,0) and (x,y) were two points of an arc with the initial theta
+def thetaFromArc(theta1: float, dx: float, dy: float) -> float:
+    return (2 * math.atan2(dy, dx) - theta1) % (3.1415*2)
+

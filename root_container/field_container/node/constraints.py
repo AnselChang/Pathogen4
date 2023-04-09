@@ -2,6 +2,7 @@ from entity_base.entity import Entity
 
 from common.dimensions import Dimensions
 from common.draw_order import DrawOrder
+from utility.angle_functions import deltaInHeading
 
 from utility.line import Line
 from common.reference_frame import PointRef, Ref, ScalarRef
@@ -97,6 +98,23 @@ class Constraints(Entity):
                 del self.constraints[1]
 
         return PointRef(Ref.FIELD, new)
+    
+    # reset, constrain, and get all-in-one
+    def handleThetaConstraint(self, nodePosition: PointRef, myTheta: float, thetaToSnap: float) -> float:
+
+        self.clear()
+
+        THETA_SNAP_TOLERANCE = 0.05
+
+        # check both 0 and 180 degree positions
+        for targetTheta in [thetaToSnap, thetaToSnap + math.pi]:
+            if abs(deltaInHeading(myTheta, targetTheta)) < THETA_SNAP_TOLERANCE:
+                self.constraints.append(Line(nodePosition.fieldRef, targetTheta))
+                return targetTheta
+
+        # no active constraint found. Just return original angle
+        return myTheta
+
     
     def isVisible(self) -> bool:
         return self.visible

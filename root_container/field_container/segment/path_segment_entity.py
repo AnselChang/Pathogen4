@@ -167,7 +167,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         # initailize arc node
         if self.arcNode is None and self.getNext() is not None and self.getPrevious() is not None:
             self.arcNode = ArcCurveNode(self, self.states[SegmentType.ARC])
-            self.states[SegmentType.ARC].recalculateArc()
+            #self.arcNode.subscribe(onNotify = self.updateAdapter)
 
         self.getState().updateAdapter()
         self.recomputePosition()

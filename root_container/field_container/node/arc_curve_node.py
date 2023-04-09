@@ -100,7 +100,8 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         return 6 if isHovered else 5
 
     def onStartDrag(self, mouse: tuple):
-        pass
+        self.segment.getPrevious().constraints.show()
+        self.segment.getNext().constraints.show()
 
     def canDrag(self, mouse: tuple) -> bool:
         return True
@@ -110,7 +111,15 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         mouseRef = PointRef(Ref.SCREEN, mouse)
         self.perpDistance = distancePointToLine(*mouseRef.fieldRef, *self.B.fieldRef, *self.A.fieldRef, True)
         self.recomputePositionRef()
-        self.arc.recalculateArc()
+
+        self.arc.recalculateArcFromArcCurveNode()
+        self.arc.constrainTheta()
+        #self.arc.updateAdapter()
+
+    def setPerpDistance(self, perpDistance: float):
+        self.perpDistance = perpDistance
+        self.recomputePositionRef()
 
     def onStopDrag(self):
-        pass
+        self.segment.getPrevious().constraints.hide()
+        self.segment.getNext().constraints.hide()

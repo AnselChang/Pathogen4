@@ -9,7 +9,7 @@ from root_container.field_container.segment.segment_direction import SegmentDire
 from root_container.field_container.segment.segment_type import SegmentType
 from utility.angle_functions import deltaInHeading
 from utility.format_functions import formatDegrees, formatInches
-from utility.math_functions import arcFromThreePoints, distanceTuples, pointTouchingLine, thetaFromPoints
+from utility.math_functions import arcCenterFromTwoPointsAndTheta, arcFromThreePoints, distancePointToLine, distanceTuples, getArcMidpoint, pointTouchingLine, thetaFromArc, thetaFromPoints
 from utility.pygame_functions import drawArcFromCenterAngles, drawLine, drawVector
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
@@ -49,7 +49,8 @@ class ArcSegmentState(PathSegmentState):
     def getAdapter(self) -> PathAdapter:
         return self.adapter
     
-    def recalculateArc(self):
+    def recalculateArcFromArcCurveNode(self):
+
         # find 3 points with field reference frame
         self.p1 = self.segment.getPrevious().getPositionRef()
         self.p2 = self.segment.arcNode.positionRef
@@ -92,8 +93,62 @@ class ArcSegmentState(PathSegmentState):
             self.THETA1 = ct1 - math.pi/2
             self.THETA2 = ct3 - math.pi/2
 
-        self.updateAdapter()
+    # attempt to constraint self.THETA1 and self.THETA2 to the opposing thetas for their nodes
+    def constrainTheta(self):
+        prevNode = self.segment.getPrevious()
+        newTheta1 = prevNode.constraints.handleThetaConstraint(prevNode.getPositionRef(), self.THETA1, prevNode.START_THETA)
+        if newTheta1 != self.THETA1:
+            # recalculate arc but with newTheta1
+            self.recalculateArcFromTheta1(newTheta1)
+            print("snap")
+            return
+        
+        # Only if snapping to previous failed, try snapping to next
+        nextNode = self.segment.getNext()
+        newTheta2 = nextNode.constraints.handleThetaConstraint(nextNode.getPositionRef(), self.THETA2, nextNode.END_THETA)
+        if newTheta2 != self.THETA2:
+            # recalculate arc but with newTheta2
+            self.recalculateArcFromTheta2(newTheta2)
+            return
+        
+        
+    # Given: theta1, self.p1, self.p3.
+    # Find: self.p2, self.CENTER, self.RADIUS, self.ARC_LENGTH, self.THETA2
+    def recalculateArcFromTheta1(self, theta1: float):
+        self.THETA1 = theta1
+        self.CENTER = PointRef(Ref.FIELD, arcCenterFromTwoPointsAndTheta(*self.p1.fieldRef, *self.p3.fieldRef, theta1))
+        self.RADIUS = ScalarRef(Ref.FIELD, distanceTuples(self.CENTER.fieldRef, self.p1.fieldRef))
 
+        # two possible midpoints
+        m1, m2 = getArcMidpoint(*self.p1.fieldRef, *self.p3.fieldRef, self.RADIUS.fieldRef)
+
+        # THIS IS PROBLEM, NOT PICKING RIGHT P2 PROBABLY
+        # pick the one closer to the original midpoint. definitely not the best way to do it, but it's the easiest
+        if distanceTuples(m1, self.p2.fieldRef) < distanceTuples(m2, self.p2.fieldRef):
+            self.p2 = PointRef(Ref.FIELD, m1)
+        else:
+            self.p2 = PointRef(Ref.FIELD, m2)
+
+        ct1 = thetaFromPoints(self.CENTER.fieldRef, self.p1.fieldRef)
+        ct3 = thetaFromPoints(self.CENTER.fieldRef, self.p3.fieldRef)
+        self.START_ANGLE = ct1
+        self.STOP_ANGLE = ct3
+        deltaAngle = (ct3 - ct1) % (math.pi*2)
+        if not self.POSITIVE:
+            deltaAngle = (-deltaAngle) % (math.pi*2)
+        self.ARC_LENGTH = ScalarRef(Ref.FIELD, deltaAngle * self.RADIUS.fieldRef)
+
+        dx = self.p3.fieldRef[0] - self.p1.fieldRef[0]
+        dy = self.p3.fieldRef[1] - self.p1.fieldRef[1]
+        self.THETA2 = thetaFromArc(self.THETA1, dx, dy)
+
+        # now, force ArcCurveNode to this new position
+        d = distancePointToLine(*self.p2.fieldRef, *self.p3.fieldRef, *self.p1.fieldRef, True)
+        self.segment.arcNode.setPerpDistance(d)
+
+
+    def recalculateArcFromTheta2(self, theta2: float):
+        pass
 
 
     """
@@ -104,6 +159,8 @@ class ArcSegmentState(PathSegmentState):
         THETA1, THETA2
     """
     def updateAdapter(self) -> None:
+
+        self.recalculateArcFromArcCurveNode()
 
         # Set positions
         self.adapter.set(ArcAttributeID.X1, self.p1.fieldRef[0], formatInches(self.p1.fieldRef[0]))
@@ -174,5 +231,7 @@ class ArcSegmentState(PathSegmentState):
         # draw theta directions for testing
         drawVector(screen, *self.p1.screenRef, self.THETA1, 30)
         drawVector(screen, *self.p3.screenRef, self.THETA2, 30)
+
+        pygame.draw.circle(screen, (0,0,255), self.p2.screenRef, 5)
 
 
