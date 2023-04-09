@@ -38,6 +38,8 @@ Position calculation is offloaded to CommandBlockPosition
 
 class CommandBlockEntity(Entity, CommandOrInserter):
 
+    HIGHLIGHTED = None
+
 
     def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
@@ -48,7 +50,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.DRAG_OPACITY = 0.7
         self.dragOffset = 0
-        self.highlighted = False
 
         self.definitionIndex: int = 0
         self.database = database
@@ -63,10 +64,10 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         # This recomputes position at Entity constructor
         super().__init__(
             parent = parent,
-            click = ClickLambda(self, FonLeftClick = self.onClick),
+            click = ClickLambda(self, FonLeftClick = self.onClick, FOnMouseDown = self.onMouseDown),
             tick = TickLambda(self, FonTick = self.onTick),
             drag = drag,
-            select = SelectLambda(self, "command", type = SelectorType.SOLO, FonDeselect = self.onDeselect),
+            select = SelectLambda(self, "command", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMANND_BLOCK
         )
 
@@ -230,14 +231,11 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     def isDragging(self):
         return False
     
-    def onDeselect(self, interactor):
-        self.highlighted = False
 
     # Highlight the command block visually
     # Also, contract all commands except this one
     def highlight(self):
-        self.interactor.addEntity(self, forceAdd = True)
-        self.highlighted = True
+        CommandBlockEntity.HIGHLIGHTED = self
         self.path.setAllLocalExpansion(False)
         self.commandExpansion.setForceCollapse(False)
         self.localExpansion = True
@@ -249,12 +247,18 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         # cursed number to make scrollbar go down a little more
         self.path.scrollHandler.setManualScrollbarPosition(self._getTargetHeight() - self.ACTUAL_COLLAPSED_HEIGHT*5)
 
+    # if mouse down on different command, clear highlight
+    def onMouseDown(self, mouse: tuple):
+        if CommandBlockEntity.HIGHLIGHTED is not None and CommandBlockEntity.HIGHLIGHTED is not self:
+            CommandBlockEntity.HIGHLIGHTED = None
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
+        isHighlighted = (CommandBlockEntity.HIGHLIGHTED is self)
+
         # draw rounded rect
         color = COMMAND_INFO[self.type].color
-        if self.highlighted:
+        if isHighlighted:
             color = shade(color, 1.4)
         elif isActive and isHovered and self.interactor.leftDragging:
             color = shade(color, 1.3)
@@ -268,7 +272,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         else:
             pygame.draw.rect(screen, color, self.RECT, border_radius = self.CORNER_RADIUS)
 
-        if self.highlighted:
+        if isHighlighted:
             pygame.draw.rect(screen, (0,0,0), self.RECT, border_radius = self.CORNER_RADIUS, width = 2)
 
         # draw function name

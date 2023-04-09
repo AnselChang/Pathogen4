@@ -131,6 +131,9 @@ class Interactor:
 
     def onLeftMouseDown(self, mouse: tuple, shiftKey: bool):
 
+        if self.hoveredEntity.click is not None:
+            self.hoveredEntity.click.onMouseDown(mouse)
+
         # handle double-click logic
         if self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if self.previousClickEntity is self.hoveredEntity and time.time() - self.previousClickTime < self.DOUBLE_CLICK_TIME:
