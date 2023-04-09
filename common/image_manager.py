@@ -32,6 +32,9 @@ class ImageID(Enum):
     ADD_NODE = auto()
     DELETE_NODE = auto()
     REVEAL_COMMAND = auto()
+    STRAIGHT_SEGMENT = auto()
+    ARC_SEGMENT = auto()
+    CURVE_SEGMENT = auto()
 
 class Image:
 
@@ -93,3 +96,7 @@ class ImageManager:
         self.images[ImageID.ADD_NODE] = Image("menu/add.png")
         self.images[ImageID.DELETE_NODE] = Image("menu/delete.png")
         self.images[ImageID.REVEAL_COMMAND] = Image("menu/reveal.png")
+
+        self.images[ImageID.STRAIGHT_SEGMENT] = Image("menu/straight_type.png")
+        self.images[ImageID.ARC_SEGMENT] = Image("menu/arc_type.png")
+        self.images[ImageID.CURVE_SEGMENT] = Image("menu/curve_type.png")

@@ -33,9 +33,9 @@ class ThetaEntity(AbstractCircleEntity):
 
         self.node = pathNode
         self.isBeforeTheta = isBeforeTheta
+
         super().__init__(parent = pathNode,
-            select = SelectLambda(self, "theta", type = SelectorType.SOLO),
-            drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FcanDrag = self.canDrag, FonStopDrag = self.onStopDrag),
+            drag = DragLambda(self, selectEntityNotThis = self.getSegment, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FcanDrag = self.canDrag, FonStopDrag = self.onStopDrag),
             drawOrder = DrawOrder.THETA_NODE
         )
 
@@ -57,10 +57,12 @@ class ThetaEntity(AbstractCircleEntity):
         
         # If no segment, then no theta control
         if segment is None:
+            print("no segment")
             return False
         
         # If segment is straight, then no theta control
         if segment.getSegmentType() == SegmentType.STRAIGHT:
+            print("straight")
             return False
         
         # If neither node nor segment is selected, then no theta control
@@ -69,9 +71,11 @@ class ThetaEntity(AbstractCircleEntity):
             if otherNode is None or not otherNode.select.isSelected:
                 otherSegment = self.node.getOther(segment)
                 if otherSegment is None or not otherSegment.select.isSelected:
+                    print("not selected")
                     return False
         
         # If all conditions are met, then theta control is visible
+        print("good")
         return True
     
     def defineCenter(self) -> tuple:

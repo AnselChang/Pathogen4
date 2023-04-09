@@ -35,6 +35,7 @@ class Interactor:
 
         self.hoveredEntity: Entity = None
         self.selected: SelectHandler = SelectHandler()
+        self.draggingEntities: list[Entity] = []
 
         self.leftDragging: bool = False
         self.rightDragging: bool = False
@@ -174,9 +175,23 @@ class Interactor:
                 self.addEntity(self.hoveredEntity)
 
         # start dragging all the selected entities
-        for entity in self.selected.entities:
-            if entity.drag is not None:
-                entity.drag.onStartDrag(mouse)
+        if self.hoveredEntity.drag is not None and self.hoveredEntity.select is None:
+            self.draggingEntities = [self.hoveredEntity]
+            self.hoveredEntity.drag.onStartDrag(mouse)
+
+            toSelect = self.hoveredEntity.drag.selectEntityNotThis
+            if toSelect is not None:
+                if callable(toSelect):
+                    toSelect = toSelect()
+                self.addEntity(toSelect)
+        
+        elif self.hoveredEntity in self.selected.entities:
+            self.draggingEntities = self.selected.entities[:]
+            for entity in self.draggingEntities:
+                if entity.drag is not None:
+                    entity.drag.onStartDrag(mouse)
+        else:
+            self.draggingEntities = []
 
         if self.hoveredEntity is self.fieldContainer:
             self.fieldContainer.drag.onStartDrag(mouse)
@@ -197,10 +212,12 @@ class Interactor:
         self.rightDragging = False
         self.disableUntilMouseUp = False
 
+        for dragged in self.draggingEntities:
+            if dragged.drag is not None:
+                dragged.drag.onStopDrag()
+
         toRemove = []
         for selected in self.selected.entities:
-            if selected.drag is not None:
-                selected.drag.onStopDrag()
             if selected.select.deselectOnMouseUp:
                 toRemove.append(selected)
         for entity in toRemove:
@@ -236,10 +253,9 @@ class Interactor:
         if self.box.isEnabled():
             self.setSelectedEntities(self.box.update(mouse, entities))
 
-        print(self.hoveredEntity)
         # Drag selection
-        if self.leftDragging and self.mouseDownEntity in self.selected.entities and not self.box.isEnabled() and self.canDragSelection(mouse):
-            for selected in self.selected.entities:
+        if self.leftDragging and not self.box.isEnabled() and self.canDragSelection(mouse):
+            for selected in self.draggingEntities:
                 if selected.drag is not None:
                     selected.drag.onDrag(mouse)
         elif self.leftDragging and self.mouseDownEntity is self.fieldContainer:

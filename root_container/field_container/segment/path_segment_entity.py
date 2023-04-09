@@ -56,7 +56,8 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
         self.states: dict[SegmentType, PathSegmentState] = {
             SegmentType.STRAIGHT: StraightSegmentState(self),
-            SegmentType.ARC: ArcSegmentState(self)
+            SegmentType.ARC: ArcSegmentState(self),
+            SegmentType.CURVE: ArcSegmentState(self)
         }
 
         self.currentState: SegmentType = SegmentType.STRAIGHT
