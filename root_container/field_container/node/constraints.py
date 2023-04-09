@@ -1,12 +1,13 @@
+import itertools
 from entity_base.entity import Entity
 
 from common.dimensions import Dimensions
 from common.draw_order import DrawOrder
-from utility.angle_functions import deltaInHeading
+from utility.angle_functions import deltaInHeading, parallelTheta
 
 from utility.line import Line
 from common.reference_frame import PointRef, Ref, ScalarRef
-from utility.math_functions import distanceTuples, clipLineToBox, distanceTuples, hypo
+from utility.math_functions import distanceTuples, clipLineToBox, distanceTuples, hypo, thetaFromPoints
 from utility.pygame_functions import drawDottedLine
 import pygame, math
 
@@ -32,31 +33,40 @@ class Constraints(Entity):
             drawOrder = DrawOrder.CONSTRAINT_LINES
         )
         
-        self.constraints: list[Line] = []
+        self.positionConstraints: list[Line] = []
+        self.thetaConstraints: list[float] = []
         self.PIXEL_THRESHOLD = pixelThreshold
 
-        self.visible = False
+        self.visiblePosition = False
+        self.visibleTheta = False
 
         self.recomputePosition()
 
-    def show(self):
-        self.visible = True
-
-    def hide(self):
-        self.visible = False
-
     def clear(self):
-        self.constraints.clear()
+        self.positionConstraints.clear()
+        self.thetaConstraints.clear()
 
-    def reset(self, mouse: PointRef):
+    def showPosition(self):
+        self.visiblePosition = True
+
+    def hidePosition(self):
+        self.visiblePosition = False
+
+    def showTheta(self):
+        self.visibleTheta = True
+
+    def hideTheta(self):
+        self.visibleTheta = False  
+
+    def resetPositionConstraints(self, mouse: PointRef):
         self.mouse = mouse
-        self.clear()
+        self.positionConstraints.clear()
 
     # The constraint is some other node with an angle to snap to
-    def addConstraint(self, other: PointRef, theta: float):
+    def addPositionConstraint(self, other: PointRef, theta: float):
 
         # a maximum of two linear constraints can be satisfied in 2d space
-        if len(self.constraints) > 2:
+        if len(self.positionConstraints) > 2:
             return
 
         line = Line(other.fieldRef, theta)
@@ -70,54 +80,74 @@ class Constraints(Entity):
             return
 
         if screenDistance < self.PIXEL_THRESHOLD:
-            self.constraints.append(line)
+            self.positionConstraints.append(line)
 
     # whether there exists at least one constraint node can snap to
     def snappable(self) -> bool:
-        return len(self.constraints) > 0
+        return len(self.positionConstraints) > 0
 
     # Get the position after constraints
-    def get(self) -> PointRef:
+    def getPosition(self) -> PointRef:
 
-        if len(self.constraints) == 0:
+        if len(self.positionConstraints) == 0:
             # no constraints applied
             return self.mouse
         
 
-        if len(self.constraints) == 1:
+        if len(self.positionConstraints) == 1:
             # Single constraint
-            new = self.constraints[0].closestPoint(self.mouse.fieldRef)
+            new = self.positionConstraints[0].closestPoint(self.mouse.fieldRef)
         else:
             # Two constraints. New position is the intersection of the two linear constraints
-            new = self.constraints[0].intersection(self.constraints[1])
+            new = self.positionConstraints[0].intersection(self.positionConstraints[1])
 
             # intersecting lines cannot be super close to parallel
             # the intersection must be reasonably close to initial position
             if new is None or distanceTuples(self.mouse.fieldRef, new) > self.PIXEL_THRESHOLD:
-                new = self.constraints[0].closestPoint(self.mouse.fieldRef)
-                del self.constraints[1]
+                new = self.positionConstraints[0].closestPoint(self.mouse.fieldRef)
+                del self.positionConstraints[1]
 
         return PointRef(Ref.FIELD, new)
     
+    def resetThetaConstraints(self, myTheta: float, position: PointRef):
+        self.myTheta = myTheta
+        self.position = position
+        self.thetaConstraintFound = False
+        self.thetaConstraints.clear()
+    
     # reset, constrain, and get all-in-one
-    def handleThetaConstraint(self, nodePosition: PointRef, myTheta: float, thetaToSnap: float) -> float:
+    def addThetaConstraint(self, thetaToSnap: float):
 
-        self.clear()
+        if self.thetaConstraintFound:
+            return
 
         THETA_SNAP_TOLERANCE = 0.05
 
         # check both 0 and 180 degree positions
         for targetTheta in [thetaToSnap, thetaToSnap + math.pi]:
-            if abs(deltaInHeading(myTheta, targetTheta)) < THETA_SNAP_TOLERANCE:
-                self.constraints.append(Line(nodePosition.fieldRef, targetTheta))
-                return targetTheta
+            if abs(deltaInHeading(self.myTheta, targetTheta)) < THETA_SNAP_TOLERANCE:
+                self.myTheta = targetTheta
+                self.thetaConstraints.append(Line(self.position.fieldRef, targetTheta))
+                self.thetaConstraintFound = True
+                return
 
-        # no active constraint found. Just return original angle
-        return myTheta
+    def getTheta(self) -> float:
+        return self.myTheta
 
+    def hasConstraints(self) -> bool:
+        return len(self.positionConstraints) > 0 or len(self.thetaConstraints) > 0
+    
+    # Find whether a constraint's line is identical to the one specified positionFieldRef and theta
+    def hasConstraint(self, positionFieldRef, theta) -> bool:
+        for constraint in itertools.chain(self.positionConstraints, self.thetaConstraints):
+            pointToLineAngle = thetaFromPoints(constraint.point, positionFieldRef)
+            print(theta, constraint.theta)
+            if parallelTheta(pointToLineAngle, theta, 0.01) and parallelTheta(constraint.theta, theta, 0.01):
+                return True
+        return False
     
     def isVisible(self) -> bool:
-        return self.visible
+        return self.visiblePosition or self.visibleTheta
 
     def isTouching(self, position: PointRef) -> bool:
         return False
@@ -128,11 +158,17 @@ class Constraints(Entity):
     # draw all constraint lines
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
+        visible = []
+        if self.visiblePosition:
+            visible.extend(self.positionConstraints)
+        if self.visibleTheta:
+            visible.extend(self.thetaConstraints)
+
         dist = hypo(self.dimensions.FIELD_WIDTH, self.dimensions.SCREEN_HEIGHT)
-        for line in self.constraints:
+        for line in visible:
             point = PointRef(Ref.FIELD, line.point).screenRef
 
             pointA = self._point(point, dist, line.theta)
             pointB = self._point(point, dist, line.theta + 3.1415)
 
-            drawDottedLine(screen, (0,0,0), pointA, pointB, length = 12, fill = 0.5, width = 1)
+            drawDottedLine(screen, (30,255,30), pointA, pointB, length = 12, fill = 0.5, width = 2)

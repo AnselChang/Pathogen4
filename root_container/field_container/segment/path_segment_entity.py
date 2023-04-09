@@ -63,6 +63,9 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
             SegmentType.ARC: ArcSegmentState(self),
             SegmentType.BEZIER: BezierSegmentState(self)
         }
+        # on state update, recompute itself
+        for stateID in self.states:
+            self.states[stateID].subscribe(self.recomputePosition)
 
         self.currentState: SegmentType = SegmentType.STRAIGHT
 
@@ -107,7 +110,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         self.nodeStartPosition = []
         for node in [self.getPrevious(), self.getNext()]:
             self.nodeStartPosition.append(node.position)
-            node.constraints.show()
+            node.constraints.showPosition()
 
     def canDrag(self, mouseTuple: tuple) -> bool:
         mouse = PointRef(Ref.SCREEN, mouseTuple)
@@ -125,13 +128,13 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     def onDrag(self, mouseTuple: PointRef):
         for i, node in enumerate([self.getPrevious(), self.getNext()]):
             node.position = self.nodeGoalPosition[i]
-            node.constraints.reset(node.position)
+            node.constraints.resetPositionConstraints(node.position)
 
         delta = VectorRef(Ref.FIELD, (0,0))
         for node in [self.getPrevious(), self.getNext()]:
             node.constrainPosition()
             if node.constraints.snappable():
-                delta = node.constraints.get() - node.position
+                delta = node.constraints.getPosition() - node.position
                 break # can only snap one node at a time
 
         for node in [self.getPrevious(), self.getNext()]:
@@ -140,7 +143,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
     def onStopDrag(self):
         for node in [self.getPrevious(), self.getNext()]:
-            node.constraints.hide()
+            node.constraints.hidePosition()
 
     # a segment is temporary if the nodes on either ends are temporary
     def isTemporary(self) -> bool:

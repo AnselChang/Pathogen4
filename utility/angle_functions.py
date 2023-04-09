@@ -1,4 +1,7 @@
 # Bound angle to between -pi and pi, preferring the smaller magnitude
+import math
+
+
 def boundAngleRadians(angle: float) -> float:
     PI = 3.1415
     angle %= 2 * PI
@@ -15,5 +18,10 @@ def deltaInHeading(targetHeading: float, currentHeading: float) -> float:
 def headingDiff(headingA: float, headingB: float):
     return abs(deltaInHeading(headingA, headingB))
 
-def headingsEqual(headingA: float, headingB: float) -> bool:
-    return abs(deltaInHeading(headingA, headingB)) < 0.001
+def parallelTheta(theta1, theta2, tolerance = 1e-3) -> bool:
+
+    if headingDiff(theta1, theta2) < tolerance:
+        return True
+    if headingDiff(theta1, theta2 + math.pi) < tolerance:
+        return True
+    return False

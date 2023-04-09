@@ -148,15 +148,17 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         self.recomputePosition()
 
     def onHoverOff(self):
-        self.constraints.hide()
+        self.constraints.hidePosition()
+        self.constraints.hideTheta()
 
     def onHoverOn(self):
-        self.constraints.show()
+        self.constraints.showPosition()
+        self.constraints.showTheta()
 
     def onStartDrag(self, mouse: tuple):
         self.mouseStartDrag = PointRef(Ref.SCREEN, mouse)
         self.startPosition = self.position.copy()
-        self.constraints.show()
+        self.constraints.showPosition()
 
     def onStopDrag(self):
 
@@ -165,26 +167,26 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
 
 
         self.dragging = False
-        self.constraints.hide()
+        self.constraints.hidePosition()
         self.temporary = False # no longer temporary once placed
 
         # recalculate constraints for nodes, neighbors, and neighbors of neighbors
         # for hovering purposes
         if self.getNext() is not None:
             next = self.getNext().getNext()
-            next.constraints.reset(next.position)
+            next.constraints.resetPositionConstraints(next.position)
             next.constrainPosition()
             if next.getNext() is not None:
                 next = next.getNext().getNext()
-                next.constraints.reset(next.position)
+                next.constraints.resetPositionConstraints(next.position)
                 next.constrainPosition()
         if self.getPrevious() is not None:
             prev = self.getPrevious().getPrevious()
-            prev.constraints.reset(prev.position)
+            prev.constraints.resetPositionConstraints(prev.position)
             prev.constrainPosition()
             if prev.getPrevious() is not None:
                 prev = prev.getPrevious().getPrevious()
-                prev.constraints.reset(prev.position)
+                prev.constraints.resetPositionConstraints(prev.position)
                 prev.constrainPosition()
         
 
@@ -202,9 +204,9 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
 
         # if the only one being dragged and shift key not pressed, constrain with snapping
         if self.interactor.selected.hasOnly(self) and not self.shiftKeyPressed:
-            self.constraints.reset(self.position)
+            self.constraints.resetPositionConstraints(self.position)
             self.constrainPosition()
-            self.position = self.constraints.get()
+            self.position = self.constraints.getPosition()
 
         self.onNodeMove()
 
@@ -250,7 +252,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         if self.getPrevious() is not None:
             pNode: PathNodeEntity = self.getPrevious().getPrevious()
             if pNode.getPrevious() is not None:
-                self.constraints.addConstraint(
+                self.constraints.addPositionConstraint(
                     other = pNode.getPositionRef(),
                     theta = pNode.getPrevious().getEndTheta()
                 )
@@ -259,7 +261,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         if self.getNext() is not None:
             nNode: PathNodeEntity = self.getNext().getNext()
             if nNode.getNext() is not None:
-                self.constraints.addConstraint(
+                self.constraints.addPositionConstraint(
                     other = nNode.getPositionRef(),
                     theta = nNode.getNext().getStartTheta()
                 )
@@ -268,7 +270,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         if self.getPrevious() is not None and self.getNext() is not None:
             pNodePos = self.getPrevious().getPrevious().getPositionRef()
             nNodePos = self.getNext().getNext().getPositionRef()
-            self.constraints.addConstraint(
+            self.constraints.addPositionConstraint(
                 other = pNodePos,
                 theta = (nNodePos - pNodePos).theta()
             )
@@ -289,12 +291,12 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         PI = 3.1415
         for theta in [0, PI/2]:
             if current.getPrevious() is not None:
-                self.constraints.addConstraint(
+                self.constraints.addPositionConstraint(
                     other = current.getPrevious().getPrevious().getPositionRef(),
                     theta = theta
                 )
             if current.getNext() is not None:
-                self.constraints.addConstraint(
+                self.constraints.addPositionConstraint(
                     other = current.getNext().getNext().getPositionRef(),
                     theta = theta
                 )

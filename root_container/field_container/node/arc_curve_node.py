@@ -86,7 +86,6 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         # Theta from M to P (position)
         theta = (self.B - self.A).theta() + math.pi/2
         self.positionRef = self.segmentMidpoint + VectorRef(Ref.FIELD, magnitude = self.perpDistance, heading = theta)
-        print(self.positionRef.fieldRef)
         self.recomputePosition()
 
     # return cached position in screen coordinates
@@ -100,16 +99,15 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         return 6 if isHovered else 5
 
     def onStartDrag(self, mouse: tuple):
-        self.segment.getPrevious().constraints.show()
-        self.segment.getNext().constraints.show()
+        self.segment.getPrevious().constraints.showTheta()
+        self.segment.getNext().constraints.showTheta()
 
     def canDrag(self, mouse: tuple) -> bool:
         return True
 
     def onDrag(self, mouse: tuple):
-        print("dragging")
         mouseRef = PointRef(Ref.SCREEN, mouse)
-        self.perpDistance = distancePointToLine(*mouseRef.fieldRef, *self.B.fieldRef, *self.A.fieldRef, True)
+        self.setPerpDistance(distancePointToLine(*mouseRef.fieldRef, *self.B.fieldRef, *self.A.fieldRef, True))
         self.recomputePositionRef()
 
         self.arc.recalculateArcFromArcCurveNode()
@@ -117,9 +115,16 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         #self.arc.updateAdapter()
 
     def setPerpDistance(self, perpDistance: float):
+        # prevent arc from ever being perfectly straight, which causes division issues
+        #print(perpDistance)
+        MIN_MAGNITUDE = 1e-2
+        if abs(perpDistance) < MIN_MAGNITUDE:
+            #print("as")
+            perpDistance = MIN_MAGNITUDE if perpDistance > 0 else -MIN_MAGNITUDE
+
         self.perpDistance = perpDistance
         self.recomputePositionRef()
 
     def onStopDrag(self):
-        self.segment.getPrevious().constraints.hide()
-        self.segment.getNext().constraints.hide()
+        self.segment.getPrevious().constraints.hideTheta()
+        self.segment.getNext().constraints.hideTheta()

@@ -25,20 +25,34 @@ class ArcNodeLine(Entity):
 
         self.recomputePosition()
 
-    # return cached position in screen coordinates
-    def defineCenter(self) -> tuple:
-        a = self.arcCurveNode.positionRef
-        b = self.arcCurveNode.segmentMidpoint
-        pos = (a + (b - a) / 2).screenRef
-
-        # cache positions for drawing
-        self.a = a.screenRef
-        self.b = b.screenRef
-        return pos
-
+    def isTouching(self, point: tuple) -> bool:
+        return False
 
     # draw from self.a to self.b, which is from the arcCurveNode to the midpoint
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
 
+
+        center = self.arcCurveNode.arc.CENTER.screenRef
+        r = self.dimensions.FIELD_DIAGONAL
+
+        # draw line from arcCurveNode to midpoint
         color = self.arcCurveNode.COLOR_H if isHovered else self.arcCurveNode.COLOR
-        drawDottedLine(screen, color, self.a, self.b, length = 10, fill = 0.5, width = 1)
+        acn = self.arcCurveNode.positionRef.screenRef
+        drawDottedLine(screen, color, acn, center, length = 10, fill = 0.5, width = 1)
+        pygame.draw.circle(screen, shade(color, 0.9), center, 3)
+
+        # Draw line extending before start of arc
+        startNode = self.arcCurveNode.arc.p1
+        theta1 = self.arcCurveNode.arc.THETA1 + math.pi
+        if not self.arcCurveNode.segment.getPrevious().constraints.hasConstraint(startNode.fieldRef, theta1):
+            # only draw if there isn't already green constraints indicator
+            extended = startNode.screenRef[0] + r*math.cos(theta1), startNode.screenRef[1] + r*math.sin(theta1)
+            drawDottedLine(screen, (0,0,0), startNode.screenRef, extended, length = 10, fill = 0.5, width = 1)
+
+        # Draw line extending past end of arc
+        endNode = self.arcCurveNode.arc.p3
+        theta2 = self.arcCurveNode.arc.THETA2
+        if not self.arcCurveNode.segment.getNext().constraints.hasConstraint(endNode.fieldRef, theta2):
+            # only draw if there isn't already green constraints indicator
+            extended = endNode.screenRef[0] + r*math.cos(theta2), endNode.screenRef[1] + r*math.sin(theta2)
+            drawDottedLine(screen, (0,0,0), endNode.screenRef, extended, length = 10, fill = 0.5, width = 1)

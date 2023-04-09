@@ -29,6 +29,7 @@ class Dimensions(Observable):
         self.SCREEN_HEIGHT = screenHeight
         self.FIELD_WIDTH = int(screenWidth * self.RATIO)
         self.PANEL_WIDTH = screenWidth - self.FIELD_WIDTH
+        self.FIELD_DIAGONAL = math.sqrt(self.FIELD_WIDTH ** 2 + self.SCREEN_HEIGHT ** 2)
 
         #ratioSquared = (self.SCREEN_WIDTH * self.SCREEN_HEIGHT) / (self.DEFAULT_SCREEN_HEIGHT * self.DEFAULT_SCREEN_WIDTH)
         #self.RESOLUTION_RATIO = math.sqrt(ratioSquared)

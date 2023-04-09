@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from data_structures.observer import Observable
 
 from root_container.field_container.segment.segment_type import SegmentType
 if TYPE_CHECKING:
@@ -19,7 +20,7 @@ Following the State design pattern, an interface for segment shapes (straight, a
 Also provides an interface for getting thetas at both sides, and holding references to nodes
 """
 
-class PathSegmentState(ABC):
+class PathSegmentState(ABC, Observable):
     def __init__(self, type: SegmentType, segment: PathSegmentEntity | LinkedListNode) -> None:
         self.type = type
         self.segment = segment # type PathSegmentEntity (the parent)
