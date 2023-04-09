@@ -168,6 +168,26 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         self.constraints.hide()
         self.temporary = False # no longer temporary once placed
 
+        # recalculate constraints for nodes, neighbors, and neighbors of neighbors
+        # for hovering purposes
+        if self.getNext() is not None:
+            next = self.getNext().getNext()
+            next.constraints.reset(next.position)
+            next.constrainPosition()
+            if next.getNext() is not None:
+                next = next.getNext().getNext()
+                next.constraints.reset(next.position)
+                next.constrainPosition()
+        if self.getPrevious() is not None:
+            prev = self.getPrevious().getPrevious()
+            prev.constraints.reset(prev.position)
+            prev.constrainPosition()
+            if prev.getPrevious() is not None:
+                prev = prev.getPrevious().getPrevious()
+                prev.constraints.reset(prev.position)
+                prev.constrainPosition()
+        
+
     def canDrag(self, mouseTuple: tuple) -> bool:
         mouse = PointRef(Ref.SCREEN, mouseTuple)
         pos: PointRef = self.startPosition + (mouse - self.mouseStartDrag)
