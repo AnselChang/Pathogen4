@@ -26,6 +26,7 @@ class ScrollbarEntity(Entity, Observable):
         )
 
         self.percent = 0
+        self.contentHeight = 0
         self.setContentHeight(0)
         self.recomputePosition()
 
@@ -52,8 +53,19 @@ class ScrollbarEntity(Entity, Observable):
 
     def setContentHeight(self, height):
         BOTTOM_MARGIN = 70
-        self.contentHeight = height + BOTTOM_MARGIN
-        self.recomputePosition()
+
+        if (height + BOTTOM_MARGIN) != self.contentHeight:
+            self.contentHeight = height + BOTTOM_MARGIN
+
+            moveableDistance = (self._pheight(1) - self.defineHeight())
+            if moveableDistance == 0:
+                self.percent = 0
+            else:
+                self.percent = (self.TOP_Y - self._py(0)) / moveableDistance
+                self.percent = clamp(self.percent, 0, 1)
+
+            self.recomputePosition()
+            self.notify()
 
     def setManualOffset(self, y):
         self.percent = (y - self._py(0)) / (self.contentHeight - self._pheight(1))

@@ -156,7 +156,7 @@ class Entity(ABC, Observable):
     def drawRect(self, screen: pygame.Surface):
         pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], 1)
 
-    
+
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self):
 

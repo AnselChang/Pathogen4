@@ -57,7 +57,6 @@ class Path:
         self.dict: dict[PathNodeEntity | PathSegmentEntity, CommandBlockEntity] = {}
 
         self.scrollHandler = CommandScrollingHandler(panel)
-        self.scrollHandler.subscribe(onNotify = self.recalculateTargets)
         self.dimensions.subscribe(onNotify = self.onWindowResize)
 
         self.shouldRecomputeY = True
@@ -87,8 +86,14 @@ class Path:
     # Instead, call onChangeInCommandPositionOrHeight(), which sets the recompute flag to true
     # This way, recomputation only happens a maximum of once per tick
     def _recomputeY(self):
-        self.scrollHandler.setContentHeight(self.getTotalCommandHeight())
         self.commandList.head.recomputePosition()
+
+    # called from last inserter when all recomputations are done.
+    # Update scrollbar
+    def onRecalculatedAllCommands(self):
+        if self.commandList.tail is not None:
+            height = self.commandList.tail.BOTTOM_Y - self.commandList.head.TOP_Y
+            self.scrollHandler.setContentHeight(height)
 
     def onWindowResize(self):
 
@@ -314,7 +319,7 @@ class Path:
 
     def recalculateTargets(self):
         self.invokeEveryCommand(lambda command: command.updateTargetHeight())
-        self.invokeEveryCommand(lambda command: command.updateTargetY())
+        #self.invokeEveryCommand(lambda command: command.updateTargetY())
 
     # Print each command and inserter, display the entity itself, the parent, and the children
     def printCommands(self):

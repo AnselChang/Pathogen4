@@ -29,6 +29,9 @@ class ImageEntity(Entity, TooltipOwner):
             click = ClickLambda(self, FonLeftClick = self.attemptToClick),
             drag = drag,
             drawOrder = drawOrder)
+        
+        self.oldWidth = None
+        self.oldHeight = None
 
         self.center_px, self.center_py = center_px, center_py
         self.pwidth, self.pheight = pwidth, pheight
@@ -83,8 +86,12 @@ class ImageEntity(Entity, TooltipOwner):
 
     # define the scaled image surfaces given the parent rect
     def defineOther(self) -> None:
-        for state in self.states:
-            self.states[state].update(self.images, self.WIDTH, self.HEIGHT)       
+        # only recalculate if the parent width or height has changed
+        if self.oldWidth != self.WIDTH or self.oldHeight != self.HEIGHT:
+            self.oldWidth = self.WIDTH
+            self.oldHeight = self.HEIGHT
+            for state in self.states:
+                self.states[state].update(self.images, self.WIDTH, self.HEIGHT)       
 
     def getTooltip(self) -> Tooltip | None:
         return self.getCurrentState().getTooltip(self.isOn())

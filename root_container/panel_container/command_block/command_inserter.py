@@ -82,6 +82,10 @@ class CommandInserter(Entity, CommandOrInserter):
         HEIGHT_MIN = 5
         HEIGHT_MAX = 12
         return self._aheight(HEIGHT_MAX if self.isActive else HEIGHT_MIN)
+    
+    def defineOther(self):
+        if self.getNext() is None:
+            self.path.onRecalculatedAllCommands()
 
     def setActive(self, isActive):
         self.isActive = isActive

@@ -81,7 +81,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.updateTargetHeight(True)
         self.recomputePosition()
-        self.updateTargetY(True)
         self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
 
         """
@@ -95,7 +94,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         # on element container resize, recompute target height
         self.elementsContainer.subscribe(onNotify = self.updateTargetHeight)
 
-
+        self.updateTargetHeight(True)
         self.recomputePosition()
 
     # Update animation every tick
@@ -124,9 +123,11 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         elif self.commandExpansion.getForceExpand():
             return True
         return self.localExpansion
+
     
     # Call this whenever there might be a change to target height
     def updateTargetHeight(self, isFirst: bool = False):
+        #print(self, "update target height")
 
         expanded = self.isActuallyExpanded()
         
@@ -138,8 +139,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
            
         if isFirst:
             self.animatedExpansion.forceToEndValue()
-
-        self.path.onChangeInCommandPositionOrHeight()
 
     def updateTargetY(self, force: bool = False):
         pass

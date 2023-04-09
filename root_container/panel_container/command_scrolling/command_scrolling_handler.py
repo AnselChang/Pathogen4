@@ -22,9 +22,6 @@ class CommandScrollingHandler(Observable):
         # The scrollbar component and entity itself on the right of the panel
         self._commandScrollbar = CommandScrollbar(panel)
 
-        # When scrollbar moves, send a notification
-        self._commandScrollbar.subscribe(onNotify = self.notify)
-
         # The unmoving container indicating the bounding box of all the commands.
         # Command block width is set to this
         self._staticContainer = StaticCommandContentContainer(panel)
