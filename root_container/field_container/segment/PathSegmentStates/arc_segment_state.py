@@ -9,7 +9,7 @@ from root_container.field_container.segment.segment_direction import SegmentDire
 from root_container.field_container.segment.segment_type import SegmentType
 from utility.angle_functions import deltaInHeading
 from utility.format_functions import formatDegrees, formatInches
-from utility.math_functions import arcFromThreePoints, pointTouchingLine, thetaFromPoints
+from utility.math_functions import arcFromThreePoints, distanceTuples, pointTouchingLine, thetaFromPoints
 from utility.pygame_functions import drawArcFromCenterAngles, drawLine
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
@@ -92,6 +92,9 @@ class ArcSegmentState(PathSegmentState):
         rct2 = (ct2 - ct1) % (math.pi*2)
         rtc3 = (ct3 - ct1) % (math.pi*2)
         
+        self.CT1 = ct1
+        self.CT2 = ct2
+        self.CT3 = ct3
         self.POSITIVE = rct2 < rtc3
 
         deltaAngle = rtc3
@@ -118,12 +121,27 @@ class ArcSegmentState(PathSegmentState):
         return self.THETA2
 
 
-    # for now, returns if touching the straight line between two nodes
-    # but this should be changed to check if touching the arc itself
-    def isTouching(self, position: PointRef) -> bool:
-        x1, y1 = self.segment.getPrevious().getPositionRef().screenRef
-        x2, y2 = self.segment.getNext().getPositionRef().screenRef
-        return pointTouchingLine(*position, x1, y1, x2, y2, self.segment.hitboxThickness)
+    # Checks if it inside the start/stop angle range, and
+    # if screenRef of magnitudes are within some margin
+    def isTouching(self, mouse: tuple) -> bool:
+
+        HITBOX_THICKNESS = 7 # in raw pixels
+
+        ctm = thetaFromPoints(self.CENTER.screenRef, mouse)
+        rctm = (ctm - self.CT1) % (math.pi*2)
+        rtc3 = (self.CT3 - self.CT1) % (math.pi*2)
+        angleInside = rtc3 < rctm
+
+        if self.POSITIVE:
+            angleInside = not angleInside
+
+        if not angleInside:
+            return False
+
+        # not in start/stop angle range
+        # check if mouse is within radius
+        dist = distanceTuples(self.CENTER.screenRef, mouse)
+        return abs(dist - self.RADIUS.screenRef) < HITBOX_THICKNESS
 
     # for now, return midpoint between previous and next nodes. But
     # this should be changed to a point on the arc itself

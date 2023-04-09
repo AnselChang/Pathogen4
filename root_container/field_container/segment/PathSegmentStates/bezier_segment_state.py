@@ -66,7 +66,7 @@ class BezierSegmentState(PathSegmentState):
 
     # for now, returns if touching the straight line between two nodes
     # but this should be changed to check if touching the arc itself
-    def isTouching(self, position: PointRef) -> bool:
+    def isTouching(self, position: tuple) -> bool:
         x1, y1 = self.segment.getPrevious().getPositionRef().screenRef
         x2, y2 = self.segment.getNext().getPositionRef().screenRef
         return pointTouchingLine(*position, x1, y1, x2, y2, self.segment.hitboxThickness)
