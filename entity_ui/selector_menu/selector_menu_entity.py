@@ -1,3 +1,4 @@
+import math
 from entity_base.entity import Entity
 from entity_base.image.image_entity import ImageEntity
 from entity_base.image.image_state import ImageState
@@ -7,6 +8,7 @@ from entity_ui.group.dynamic_group_container import DynamicGroupContainer
 from common.draw_order import DrawOrder
 from common.image_manager import ImageID
 from entity_ui.group.linear_container import LinearContainer
+from entity_ui.selector_menu.menu_line_entity import MenuLineEntity
 from entity_ui.selector_menu.selector_menu_factory import MenuDefinition
 from root_container.field_container.field_container import FieldContainer
 import pygame
@@ -40,15 +42,23 @@ class SelectorMenuEntity(Entity):
 
         self.selectedEntity = selectedEntity
 
-        super().__init__(parent = selectedEntity,
-                         drag = DragLambda(self, selectedEntity,
+        # Both this object and the individual menu images have this lambda.
+        # So, when either the menu background or menu buttons are dragged,
+        # move this
+        dragLambda = DragLambda(self, selectedEntity,
                                            FonStartDrag = self.onStartDrag,
                                            FonDrag = self.onDrag,
                                            FonStopDrag = self.onStopDrag
-                                           ),
+                                           )
+
+        super().__init__(parent = selectedEntity,
+                         drag = dragLambda,
                          drawOrder = DrawOrder.SELECTOR_MENU_BACKGROUND)
         
         self.fieldContainer = fieldContainer
+
+        self.relX = 10
+        self.relY = 0
 
         self.group: DynamicGroupContainer = None
         self.recomputePosition()
@@ -69,11 +79,14 @@ class SelectorMenuEntity(Entity):
                 getStateID = lambda definition=definition: definition.action.getStateID(selectedEntity),
                 drawOrder = DrawOrder.SELECTOR_MENU_BUTTON,
                 pwidth = self.BUTTON_IMAGE_SCALE,
-                pheight = self.BUTTON_IMAGE_SCALE
+                pheight = self.BUTTON_IMAGE_SCALE,
+                drag = dragLambda
             )
         
         # need to recompute position again to determine correct width
         self.recomputePosition()
+
+        MenuLineEntity(self, selectedEntity)
 
     def getEntity(self) -> Entity:
         return self.selectedEntity
@@ -95,11 +108,11 @@ class SelectorMenuEntity(Entity):
     
     # Left edge of menu should be aligned with the entity
     def defineLeftX(self) -> float:
-        return self._px(0.5) + self._awidth(10)
+        return self._px(0.5) + self._awidth(self.relX)
     
     # Top edge of menu should be aligned of center of entity
     def defineTopY(self) -> float:
-        return self._py(0.5) + self._aheight(0)
+        return self._py(0.5) + self._aheight(self.relY)
     
     # Even if parent node is transparent, the menu should be opaque
     def getOpacity(self) -> float:
@@ -107,15 +120,18 @@ class SelectorMenuEntity(Entity):
     
     # Draws the background of the menu
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
+
         pygame.draw.rect(screen, self.MENU_COLOR, self.RECT, border_radius = self.BORDER_RADIUS)
 
     def onStartDrag(self, mouse: tuple):
-        print("start drag")
+        self.startMouseX, self.startMouseY = mouse
+        self.startRelX, self.startRelY = self.relX, self.relY
 
-    @abstractmethod
     def onDrag(self, mouse: tuple):
-        print("drag")
+        deltaX, deltaY = mouse[0] - self.startMouseX, mouse[1] - self.startMouseY
+        self.relX = self.startRelX + self._inverse_awidth(deltaX)
+        self.relY = self.startRelY + self._inverse_aheight(deltaY)
+        self.recomputePosition()
 
-    @abstractmethod
     def onStopDrag(self):
-        print("stop drag")
+        pass

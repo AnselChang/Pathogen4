@@ -258,10 +258,16 @@ class Entity(ABC, Observable):
     # Get "absolute" width in "pixels". One "pixel" is accurate for default resolution
     def _awidth(self, pixels):
         return pixels * self.dimensions.X_RATIO
+    
+    def _inverse_awidth(self, absolutePixels):
+        return absolutePixels / self.dimensions.X_RATIO
 
     # Get "absolute" height in "pixels". One "pixel" is accurate for default resolution
     def _aheight(self, pixels):
         return pixels * self.dimensions.Y_RATIO
+    
+    def _inverse_aheight(self, absolutePixels):
+        return absolutePixels / self.dimensions.Y_RATIO
     
     # Overloading these methods allows us to use the "in" operator
     # to check if this entity contains some child (recursively)

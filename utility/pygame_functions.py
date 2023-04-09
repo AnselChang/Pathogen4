@@ -215,3 +215,38 @@ def drawArc(screen: pygame.Surface, color: tuple, center: tuple, radius: float, 
 
         x1 = x2
         y1 = y2
+
+def drawThinArcFromCenterAndRadius(screen: pygame.Surface, color: tuple, p1, p2, p3, center, radius):
+
+    if center is None:  # The points are collinear
+        return
+
+    angle_start = math.atan2(p1[1] - center[1], p1[0] - center[0])
+    angle_middle = math.atan2(p2[1] - center[1], p2[0] - center[0])
+    angle_end = math.atan2(p3[1] - center[1], p3[0] - center[0])
+
+    # Check the winding order of the points to determine the correct arc
+    winding = (p3[0] - p1[0]) * (p2[1] - p1[1]) - (p3[1] - p1[1]) * (p2[0] - p1[0])
+    if winding > 0:  # Counter-clockwise
+        if angle_start <= angle_middle <= angle_end:
+            pass
+        elif angle_start > angle_middle:
+            if angle_middle <= angle_end:
+                angle_start -= 2 * math.pi
+            else:
+                angle_end += 2 * math.pi
+        else:
+            angle_end += 2 * math.pi
+    else:  # Clockwise
+        if angle_start >= angle_middle >= angle_end:
+            pass
+        elif angle_start < angle_middle:
+            if angle_middle >= angle_end:
+                angle_start += 2 * math.pi
+            else:
+                angle_end -= 2 * math.pi
+        else:
+            angle_end -= 2 * math.pi
+
+    rect = pygame.Rect(center[0] - radius, center[1] - radius, 2 * radius, 2 * radius)
+    pygame.draw.arc(screen, color, rect, angle_start, angle_end)

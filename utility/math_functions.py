@@ -123,3 +123,23 @@ def clipLineToBox(point: tuple, theta: float, boxX, boxY, boxWidth, boxHeight): 
             line_end = min(intersections, key=lambda p: math.hypot(line_start[0] - p[0], line_start[1] - p[1]))
 
     return line_start, line_end
+
+# returns center, radius given three consecutive points
+def arcFromThreePoints(p1, p2, p3):
+    d = 2 * (p1[0] * (p2[1] - p3[1]) + p2[0] * (p3[1] - p1[1]) + p3[0] * (p1[1] - p2[1]))
+    if d == 0:  # The points are collinear
+        return None, None
+
+    center_x = (
+        (p1[0] ** 2 + p1[1] ** 2) * (p2[1] - p3[1])
+        + (p2[0] ** 2 + p2[1] ** 2) * (p3[1] - p1[1])
+        + (p3[0] ** 2 + p3[1] ** 2) * (p1[1] - p2[1])
+    ) / d
+    center_y = (
+        (p1[0] ** 2 + p1[1] ** 2) * (p3[0] - p2[0])
+        + (p2[0] ** 2 + p2[1] ** 2) * (p1[0] - p3[0])
+        + (p3[0] ** 2 + p3[1] ** 2) * (p2[0] - p1[0])
+    ) / d
+    radius = math.sqrt((center_x - p1[0]) ** 2 + (center_y - p1[1]) ** 2)
+
+    return (center_x, center_y), radius

@@ -21,11 +21,13 @@ class ImageEntity(Entity, TooltipOwner):
                  onClick = lambda mouse: None, dimOnHover: bool = True,
                  center_px = 0.5, center_py = 0.5, pwidth = 1, pheight = 1,
                  isOn = lambda: True,
-                 getStateID = lambda: None
+                 getStateID = lambda: None,
+                 drag = None
                 ):
         super().__init__(
             parent = parent,
             click = ClickLambda(self, FonLeftClick = self.attemptToClick),
+            drag = drag,
             drawOrder = drawOrder)
 
         self.center_px, self.center_py = center_px, center_py
