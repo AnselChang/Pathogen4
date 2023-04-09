@@ -9,6 +9,12 @@ from utility.math_functions import distance
 from utility.bezier_functions import bezier_curve_points
 import math, pygame
 
+"""
+Handles drawing the line between the menu and the selected entity
+# Finds closest corner on menu, and uses a bezier curve through three points
+Is drawn below everything else on the field
+"""
+
 class MenuLineEntity(Entity):
 
     def __init__(self, menuBackground: SelectorMenuEntity, entity: Entity):
@@ -38,7 +44,7 @@ class MenuLineEntity(Entity):
         ep = [self.entity.CENTER_X, self.entity.CENTER_Y]
         closest = math.inf
         
-
+        # iterate through four corners to find closest to entity
         for corner in [
             (-1, -1),
             (-1, 1),
@@ -47,7 +53,7 @@ class MenuLineEntity(Entity):
         ]:
             x = self.CENTER_X + corner[0] * self.WIDTH/2
             y = self.CENTER_Y + corner[1] * self.HEIGHT/2
-            DELTA = distance(x, y, *ep) * 0.5
+            DELTA = distance(x, y, *ep) * 0.5 # distance from menu corner to intermediate point
             dist = distance(x, y, *ep)
             if dist < closest:
                 closest = dist
@@ -59,11 +65,13 @@ class MenuLineEntity(Entity):
                 midA = (x1, ym)
                 midB = (xm, y1)
 
+                # pick the intermediate point closer to entity
                 if distance(*midA, *ep) < distance(*midB, *ep):
                     x2, y2 = midA
                 else:
                     x2, y2 = midB
         
+        # generate bezier from three points
         self.p1 = (x1,y1)
         self.p2 = (x2, y2)
         self.p3 = (self.entity.CENTER_X, self.entity.CENTER_Y)

@@ -194,6 +194,7 @@ class Interactor:
             self.draggingEntities = []
 
         if self.hoveredEntity is self.fieldContainer:
+            self.draggingEntities = [self.fieldContainer]
             self.fieldContainer.drag.onStartDrag(mouse)
 
 

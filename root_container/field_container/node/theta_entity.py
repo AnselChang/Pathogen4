@@ -71,7 +71,7 @@ class ThetaEntity(AbstractCircleEntity):
             if otherNode is None or not otherNode.select.isSelected:
                 otherSegment = self.node.getOther(segment)
                 if otherSegment is None or not otherSegment.select.isSelected:
-                    print("not selected")
+                    #print("not selected")
                     return False
         
         # If all conditions are met, then theta control is visible
