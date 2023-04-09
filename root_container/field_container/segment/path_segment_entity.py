@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from entity_base.listeners.tick_listener import TickLambda
 from root_container.field_container.node.arc_curve_node import ArcCurveNode
 
 from root_container.field_container.segment.segment_type import SegmentType
@@ -50,6 +51,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
                                            FonDrag = self.onDrag,
                                            FonStopDrag = self.onStopDrag
                                            ),
+                         tick = TickLambda(self, self.tick),
                          drawOrder = DrawOrder.SEGMENT)
         
         LinkedListNode.__init__(self)
@@ -84,7 +86,9 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         self.recomputePosition()
 
         
-
+    def tick(self):
+        return
+        print(self.getPrevious(), self.getNext())
 
     def getState(self) -> PathSegmentState:
         return self.states[self.currentState]
@@ -154,10 +158,12 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         return self.getState().getAdapter()
     
     def updateAdapter(self) -> None:
+        print("update adapter")
 
         # initailize arc node
         if self.arcNode is None and self.getNext() is not None and self.getPrevious() is not None:
             self.arcNode = ArcCurveNode(self)
+            self.arcNode.subscribe(onNotify = self.updateAdapter)
 
         self.getState().updateAdapter()
         self.recomputePosition()

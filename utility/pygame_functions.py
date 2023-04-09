@@ -252,3 +252,33 @@ def drawThinArcFromCenterAndRadius(screen: pygame.Surface, color: tuple, p1, p2,
 
     rect = pygame.Rect(center[0] - radius, center[1] - radius, 2 * radius, 2 * radius)
     pygame.draw.arc(screen, color, rect, angle_start, angle_end)
+
+
+"""
+Given a start and stop angle, as well as positive/negative angle direction,
+draw an arc numerically.
+"""
+def drawArcFromCenterAngles(screen, startAngle, stopAngle, isPositive, color, center, radius, width, numSegments):
+    
+    # make sure both are positive
+    startAngle = startAngle % (2*math.pi)
+    stopAngle = stopAngle % (2*math.pi)
+
+    # flip, so that we're always going positively from start to stop
+    if not isPositive:
+        startAngle, stopAngle = stopAngle, startAngle
+
+    # avoid wraparound by subtracting 2pi from startAngle
+    if startAngle > stopAngle:
+        startAngle -= 2*math.pi
+    assert(startAngle < stopAngle)
+
+    # at this point, we are ALWAYS going from startAngle up to stopAngle
+    numSegments = int(math.ceil(numSegments))
+    deltaTheta = (stopAngle - startAngle) / numSegments
+    for i in range(numSegments):
+        angle1 = startAngle + i*deltaTheta
+        angle2 = startAngle + (i+1)*deltaTheta
+        p1 = (center[0] + radius*math.cos(angle1), center[1] + radius*math.sin(angle1))
+        p2 = (center[0] + radius*math.cos(angle2), center[1] + radius*math.sin(angle2))
+        drawLine(screen, color, *p1, *p2, width)

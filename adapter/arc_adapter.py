@@ -10,6 +10,8 @@ class ArcAttributeID(Enum):
     Y1 = auto()
     X2 = auto()
     Y2 = auto()
+    XCENTER = auto()
+    YCENTER = auto()
     RADIUS = auto()
     ARC_LENGTH = auto()
     THETA1 = auto()

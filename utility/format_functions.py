@@ -1,6 +1,9 @@
-def formatDegrees(radians: float, roundDigits: int) -> str:
+def formatDegrees(radians: float, roundDigits: int = 2) -> str:
     deg = round(radians * 180 / 3.1415, roundDigits)
     return f"{deg}\u00b0"
+
+def formatInches(inches: float, roundDigits: int = 2) -> str:
+    return f"{round(inches, roundDigits)}\""
 
 def hsvToRgb(h, s, v) -> tuple:
     """

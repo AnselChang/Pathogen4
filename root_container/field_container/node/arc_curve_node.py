@@ -3,6 +3,7 @@ import math
 from typing import TYPE_CHECKING
 from common.draw_order import DrawOrder
 from common.reference_frame import *
+from data_structures.observer import Observable
 from entity_base.listeners.drag_listener import DragLambda
 
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
@@ -27,7 +28,7 @@ Can snap to cardinal directions, the opposing ThetaEntity, as well as the angle
 that would make the angle at the other side of the segment snap
 """
 
-class ArcCurveNode(AbstractCircleEntity):
+class ArcCurveNode(AbstractCircleEntity, Observable):
 
     # segmentFunction is either getPrevious or getNext
     def __init__(self, segment: PathSegmentEntity):
@@ -106,6 +107,7 @@ class ArcCurveNode(AbstractCircleEntity):
         mouseRef = PointRef(Ref.SCREEN, mouse)
         self.perpDistance = distancePointToLine(*mouseRef.fieldRef, *self.B.fieldRef, *self.A.fieldRef, True)
         self.recomputePositionRef()
+        self.notify()
 
     def onStopDrag(self):
         pass

@@ -86,6 +86,9 @@ def deltaInHeadingParity(targetHeading: float, currentHeading: float, parity: bo
         diff += 3.1415*2
     return diff
 
+def thetaFromPoints(p1, p2):
+    return math.atan2(p2[1] - p1[1], p2[0] - p1[0])
+
 # Vector projection algorithm
 def pointOnLineClosestToPoint(pointX: int, pointY: int, firstX: int, firstY: int, secondX: int, secondY: int) -> tuple:
     ax = pointX - firstX

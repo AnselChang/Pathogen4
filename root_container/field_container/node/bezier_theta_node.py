@@ -101,7 +101,6 @@ class BezierThetaNode(AbstractCircleEntity):
         # flip theta if this is the start theta for visual consistency
         if self.isBeforeTheta:
             theta += math.pi
-
         return x + r * math.cos(theta), y + r * math.sin(theta)
     
     def getColor(self, isHovered: bool = False) -> tuple:

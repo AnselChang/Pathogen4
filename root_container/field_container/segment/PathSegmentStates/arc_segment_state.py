@@ -1,20 +1,23 @@
 from __future__ import annotations
+import math
 from typing import TYPE_CHECKING
-from adapter.arc_adapter import ArcAdapter
+from adapter.arc_adapter import ArcAdapter, ArcAttributeID
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
 
 from root_container.field_container.segment.segment_type import SegmentType
-from utility.math_functions import pointTouchingLine
-from utility.pygame_functions import drawLine
+from utility.angle_functions import deltaInHeading
+from utility.format_functions import formatDegrees, formatInches
+from utility.math_functions import arcFromThreePoints, pointTouchingLine, thetaFromPoints
+from utility.pygame_functions import drawArcFromCenterAngles, drawLine
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
     from root_container.field_container.node.path_node_entity import PathNodeEntity
 
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from common.reference_frame import PointRef
+from common.reference_frame import PointRef, Ref, ScalarRef
 from entity_base.entity import Entity
 from data_structures.linked_list import LinkedListNode
 from adapter.path_adapter import PathAdapter
@@ -49,13 +52,64 @@ class ArcSegmentState(PathSegmentState):
     def getAdapter(self) -> PathAdapter:
         return self.adapter
 
-    
+    """
+    ADAPTER MUST SET:
+        X1, Y1, X2, Y2
+        XCENTER, YCENTER,
+        RADIUS, ARC_LENGTH
+        THETA1, THETA2
+    """
     def updateAdapter(self) -> None:
-        # If its the first time, set the initial theta to be the angles if
-        # the segment was a straight line
-        if self.THETA1 is None:
-            self.THETA1 = (self.segment.getNext().getPositionRef() - self.segment.getPrevious().getPositionRef()).theta()
-        self.THETA2 = self.THETA1
+
+        # find 3 points with field reference frame
+        self.p1 = self.segment.getPrevious().getPositionRef()
+        self.p2 = self.segment.arcNode.positionRef
+        self.p3 = self.segment.getNext().getPositionRef()
+
+        # Set positions
+        self.adapter.set(ArcAttributeID.X1, self.p1.fieldRef[0], formatInches(self.p1.fieldRef[0]))
+        self.adapter.set(ArcAttributeID.Y1, self.p1.fieldRef[1], formatInches(self.p1.fieldRef[1]))
+        self.adapter.set(ArcAttributeID.X2, self.p3.fieldRef[0], formatInches(self.p3.fieldRef[0]))
+        self.adapter.set(ArcAttributeID.Y2, self.p3.fieldRef[1], formatInches(self.p3.fieldRef[1]))
+
+        # compute center and radius of arc
+        c, r = arcFromThreePoints(self.p1.fieldRef, self.p2.fieldRef, self.p3.fieldRef)
+        self.CENTER = PointRef(Ref.FIELD, c)
+        self.RADIUS = ScalarRef(Ref.FIELD, r)
+        self.adapter.set(ArcAttributeID.XCENTER, self.CENTER.fieldRef[0], formatInches(self.CENTER.fieldRef[0]))
+        self.adapter.set(ArcAttributeID.YCENTER, self.CENTER.fieldRef[1], formatInches(self.CENTER.fieldRef[1]))
+        self.adapter.set(ArcAttributeID.RADIUS, self.RADIUS.fieldRef, formatInches(self.RADIUS.fieldRef))
+
+        # (C)enter (T)heta for theta from center to point 1/2/3
+        ct1 = thetaFromPoints(self.CENTER.fieldRef, self.p1.fieldRef)
+        ct2 = thetaFromPoints(self.CENTER.fieldRef, self.p2.fieldRef)
+        ct3 = thetaFromPoints(self.CENTER.fieldRef, self.p3.fieldRef)
+
+        # need to figure out if clockwise or counterclockwise arc
+        # determine by checking if passing 2 between 1 and 3
+        # do this by shifting perspective to ct1 -> 0, and
+        # mod from 0 to 2pi. note % is always sign of denom
+        rct2 = (ct2 - ct1) % (math.pi*2)
+        rtc3 = (ct3 - ct1) % (math.pi*2)
+        
+        self.POSITIVE = rct2 < rtc3
+
+        deltaAngle = rtc3
+        if not self.POSITIVE:
+            deltaAngle = (-deltaAngle) % (math.pi*2)
+        self.ARC_LENGTH = ScalarRef(Ref.FIELD, deltaAngle * self.RADIUS.fieldRef)
+        self.adapter.set(ArcAttributeID.ARC_LENGTH, self.ARC_LENGTH.fieldRef, formatInches(self.ARC_LENGTH.fieldRef))
+
+        self.START_ANGLE = ct1
+        self.STOP_ANGLE = ct3
+
+        if self.POSITIVE:
+            self.THETA1 = ct1 + math.pi/2
+            self.THETA2 = ct3 + math.pi/2
+        else:
+            self.THETA1 = ct1 - math.pi/2
+            self.THETA2 = ct3 - math.pi/2
+
 
     def getStartTheta(self) -> float:
         return self.THETA1
@@ -77,15 +131,18 @@ class ArcSegmentState(PathSegmentState):
         if self.segment.getPrevious() is None or self.segment.getNext() is None:
             return (0, 0)
 
-        fpos = self.segment.getPrevious().getPositionRef()
-        spos = self.segment.getNext().getPositionRef()
-        return (fpos + (spos - fpos) / 2).screenRef
+        return self.p2.screenRef
 
-    # for now, draw a line between previous and next nodes. But
-    # this should be changed to draw the arc itself
+    # Draw an arc given arc calculations in updateAdapter()
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        x1, y1 = self.segment.getPrevious().getPositionRef().screenRef
-        x2, y2 = self.segment.getNext().getPositionRef().screenRef
 
-        drawLine(screen, self.segment.getColor(isActive, isHovered), x1, y1, x2, y2, self.segment.thickness, None)
+        # how smooth the arc should be
+        RESOLUTION = 10
+
+        color = self.segment.getColor(isActive, isHovered)
+        drawArcFromCenterAngles(screen, self.START_ANGLE, self.STOP_ANGLE, self.POSITIVE,
+                                color, self.CENTER.screenRef, self.RADIUS.screenRef, 
+                                width = self.segment.thickness,
+                                numSegments = self.ARC_LENGTH.screenRef * RESOLUTION
+                                )
 
