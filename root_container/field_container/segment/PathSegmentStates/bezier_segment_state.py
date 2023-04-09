@@ -56,6 +56,7 @@ class BezierSegmentState(PathSegmentState):
             self.THETA1 = (self.segment.getNext().getPositionRef() - self.segment.getPrevious().getPositionRef()).theta()
         self.THETA2 = self.THETA1
 
+
     def getStartTheta(self) -> float:
         return self.THETA1
 

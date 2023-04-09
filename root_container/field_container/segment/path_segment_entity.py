@@ -95,7 +95,12 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     
     def setState(self, newState: SegmentType) -> None:
         self.currentState = newState
+
+        self.getState().onStateChange()
         self.updateAdapter()
+
+        self.getPrevious().onAngleChange()
+        self.getNext().onAngleChange()
 
     def onStartDrag(self, mouse: tuple):
         self.mouseStartDrag = PointRef(Ref.SCREEN, mouse)
@@ -158,7 +163,6 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         return self.getState().getAdapter()
     
     def updateAdapter(self) -> None:
-        print("update adapter")
 
         # initailize arc node
         if self.arcNode is None and self.getNext() is not None and self.getPrevious() is not None:

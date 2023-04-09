@@ -32,6 +32,9 @@ class PathSegmentState(ABC):
     def updateAdapter(self) -> None:
         pass
 
+    def onStateChange(self):
+        pass
+
     @abstractmethod
     def getStartTheta(self) -> float:
         pass
