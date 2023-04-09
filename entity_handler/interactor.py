@@ -78,9 +78,10 @@ class Interactor:
         if self.selected.remove(entity, self.hoveredEntity, forceRemove):
             entity.select.onDeselect(self)
 
-    def removeAllEntities(self, forceRemove: bool = False):
+    def removeAllEntities(self, forceRemove: bool = False, doNotRemove: Entity = None):
         for entity in self.selected.entities[:]:
-            self.removeEntity(entity, forceRemove)
+            if entity is not doNotRemove:
+                self.removeEntity(entity, forceRemove)
 
     def isMultiselect(self) -> bool:
         return self.box.active
@@ -164,7 +165,11 @@ class Interactor:
         # if there's a group selected but the mouse is not clicking on the group, deselect
         elif self.hoveredEntity is None or self.hoveredEntity not in self.selected.entities:
             if self.hoveredEntity is not self.fieldContainer:
-                self.removeAllEntities()
+
+                doNotRemove = None
+                if self.hoveredEntity.drag is not None:
+                    doNotRemove = self.hoveredEntity.drag.selectEntityNotThis
+                self.removeAllEntities(self.hoveredEntity.drag.selectEntityNotThis, doNotRemove = doNotRemove)
 
         if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.select is not None:
             # if enableToggle flag set, disable selection if clicking and already seleected:

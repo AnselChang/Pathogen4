@@ -48,6 +48,7 @@ class SelectHandler:
         if self.activeMenu is not None:
             self.activeMenu.despawn()
             self.activeMenu = None
+            print("close menu")
 
         # If entity has a menu, open it, but only if there is only one entity selected
         if len(self.entities) == 1:
