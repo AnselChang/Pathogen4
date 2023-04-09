@@ -288,6 +288,7 @@ class Interactor:
                     self.removeAllEntities(forceRemove = True)
 
                     self.addEntity(entityToStartDragging)
+                    self.draggingEntities = [entityToStartDragging]
                     self.hoveredEntity = entityToStartDragging
                     self.mouseDownEntity = entityToStartDragging
                     entityToStartDragging.drag.onStartDrag(mouse)

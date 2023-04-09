@@ -6,11 +6,20 @@ from root_container.field_container.segment.path_segment_entity import PathSegme
 from root_container.field_container.segment.segment_type import SegmentType
 
 # When clicked, segment toggles forward/reverse direction
+class DirectionButtonID(Enum):
+    STRAIGHT_FORWARD = 0
+    CURVE_FORWARD = 1
+    STRAIGHT_REVERSE = 2
+    CURVE_REVERSE = 3
 class InvertDirectionAction(MenuClickAction[PathSegmentEntity]):
 
     # Get the current direction of the segment
     def getStateID(self, targetEntity: PathSegmentEntity) -> Enum:
-        return targetEntity.getDirection()
+        isStraight = (targetEntity.getSegmentType() == SegmentType.STRAIGHT)
+        if targetEntity.getDirection() == SegmentDirection.FORWARD:
+            return DirectionButtonID.STRAIGHT_FORWARD if isStraight else DirectionButtonID.CURVE_FORWARD
+        else:
+            return DirectionButtonID.STRAIGHT_REVERSE if isStraight else DirectionButtonID.CURVE_REVERSE
 
     # Toggle the forward/reverse direction
     def onClick(self, targetEntity: PathSegmentEntity, mouse: tuple):
@@ -58,8 +67,10 @@ def configureSegmentMenu() -> MenuDefinition:
     
     # Add a button that toggles the direction of the segment
     states = ImageStatesFactory()
-    states.addState(SegmentDirection.FORWARD, ImageID.STRAIGHT_FORWARD, "Direction: forward")
-    states.addState(SegmentDirection.REVERSE, ImageID.STRAIGHT_REVERSE, "Direction: reverse")
+    states.addState(DirectionButtonID.STRAIGHT_FORWARD, ImageID.STRAIGHT_FORWARD, "Direction: forward")
+    states.addState(DirectionButtonID.STRAIGHT_REVERSE, ImageID.STRAIGHT_REVERSE, "Direction: reverse")
+    states.addState(DirectionButtonID.CURVE_FORWARD, ImageID.CURVE_LEFT_FORWARD, "Direction: forward")
+    states.addState(DirectionButtonID.CURVE_REVERSE, ImageID.CURVE_LEFT_REVERSE, "Direction: reverse")
     segmentDefinition.add(states.create(), InvertDirectionAction())
 
     # Add a button that toggles segment type
