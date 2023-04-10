@@ -1,6 +1,7 @@
 from entity_base.entity import Entity
 from entity_base.static_entity import StaticEntity
 from entity_base.entity import initEntityClass, setRootContainer
+from entity_ui.dropdown.dropdown_container import DropdownContainer
 from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
@@ -73,6 +74,9 @@ def main():
     # Add permanent static entities
     panelContainer = PanelContainer()
     fieldContainer = FieldContainer(fieldTransform)
+
+    # test dropdown, remove after testing
+    DropdownContainer(fieldContainer, ["A", "B", "C", "D"], FontID.FONT_NORMAL, 15, awidth = 60)
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)

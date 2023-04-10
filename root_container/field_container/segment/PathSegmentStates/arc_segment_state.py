@@ -126,7 +126,6 @@ class ArcSegmentState(PathSegmentState):
             if headingDiff(self.THETA1, self.THETA2) < 1e-3:
                 # cannot be collinear
                 prevNode.constraints.clearThetaConstraints()
-                print("collinear")
             else:
                 self.recalculateArcFromTheta()
                 self.notify()
@@ -152,7 +151,6 @@ class ArcSegmentState(PathSegmentState):
             if headingDiff(self.THETA1, self.THETA2) < 1e-3:
                 # cannot be collinear
                 prevNode.constraints.clearThetaConstraints()
-                print("collinear")
             else:
                 self.recalculateArcFromTheta()
                 self.notify()

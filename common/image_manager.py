@@ -35,6 +35,7 @@ class ImageID(Enum):
     STRAIGHT_SEGMENT = auto()
     ARC_SEGMENT = auto()
     CURVE_SEGMENT = auto()
+    DROPDOWN_ICON = auto()
 
 class Image:
 
@@ -100,3 +101,5 @@ class ImageManager:
         self.images[ImageID.STRAIGHT_SEGMENT] = Image("menu/straight_type.png")
         self.images[ImageID.ARC_SEGMENT] = Image("menu/arc_type.png")
         self.images[ImageID.CURVE_SEGMENT] = Image("menu/curve_type.png")
+
+        self.images[ImageID.DROPDOWN_ICON] = Image("widgets/dropdown.png")
