@@ -43,7 +43,7 @@ def configureNodeMenu() -> MenuDefinition:
 
     # Reveals the corresponding command
     states = ImageStatesFactory()
-    states.addState(0, ImageID.REVEAL_COMMAND, "Jump to the corresponding command")
+    states.addState(0, ImageID.REVEAL_COMMAND, "Jump to the corresponding command", None, "No turning necessary")
     segmentDefinition.add(states.create(), HighlightCommandAction())
 
     # Only for first node. Adds a node at the end of the path

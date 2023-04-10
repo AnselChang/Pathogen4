@@ -105,8 +105,7 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
 
         self.arc.recalculateArcFromArcCurveNode()
         self.arc.constrainTheta()
-        self.segment.recomputePosition()
-        #self.arc.updateAdapter()
+        self.segment.onReshape()
 
     def setPerpDistance(self, perpDistance: float):
         # prevent arc from ever being perfectly straight, which causes division issues

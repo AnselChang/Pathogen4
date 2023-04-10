@@ -1,5 +1,6 @@
 from adapter.path_adapter import PathAdapter
 from command_creation.command_type import CommandType
+from data_structures.observer import NotifyType
 
 from enum import Enum, auto
 
@@ -15,13 +16,17 @@ class TurnAdapter(PathAdapter):
 
         super().__init__(CommandType.TURN, iconImageStates, TurnAttributeID)
 
-        self.turnEnabled: bool = True # if set to false, means THETA1 ~= THETA2)
+        self.turnEnabled: bool = None # if set to false, means THETA1 ~= THETA2)
 
     def set(self, attribute: TurnAttributeID, value: float, string: str):
         super().set(attribute, value, string)
 
     def setTurnEnabled(self, turnEnabled: bool):
+        isChange = self.turnEnabled != turnEnabled
         self.turnEnabled = turnEnabled
+        if isChange:
+            self.notify(NotifyType.TURN_ENABLE_TOGGLED)
+        
 
     def isTurnEnabled(self) -> bool:
         return self.turnEnabled

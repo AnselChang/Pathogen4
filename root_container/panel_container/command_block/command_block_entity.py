@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from adapter.turn_adapter import TurnAdapter
 if TYPE_CHECKING:
     from root_container.path import Path
     from command_creation.command_definition_database import CommandDefinitionDatabase
@@ -12,7 +13,7 @@ from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
 from adapter.path_adapter import PathAdapter
 
-from command_creation.command_type import COMMAND_INFO
+from command_creation.command_type import COMMAND_INFO, CommandType
 from command_creation.command_definition import CommandDefinition
 
 from root_container.panel_container.command_block.command_block_header import CommandBlockHeader
@@ -23,6 +24,7 @@ from root_container.panel_container.element.overall.elements_container_factory i
 
 from common.font_manager import FontID
 from common.draw_order import DrawOrder
+from data_structures.observer import NotifyType
 from utility.pygame_functions import shade, drawText, drawTransparentRect
 from utility.motion_profile import MotionProfile
 import pygame, re
@@ -56,10 +58,15 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.pathAdapter = pathAdapter
         self.type = self.pathAdapter.type
 
+        # controls height animatino
         self.animatedExpansion = MotionProfile(0, speed = 0.4)
-        #self.animatedPosition = MotionProfile(0, speed = 0.4)
-
+        # whether to expand by default, ignoring global flags
         self.localExpansion = False
+
+        # whether to hide command from list, i.e. when no turn
+        self.hideCommand = False
+
+        
         
         # This recomputes position at Entity constructor
         super().__init__(
@@ -94,8 +101,14 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         # on element container resize, recompute target height
         self.elementsContainer.subscribe(onNotify = self.updateTargetHeight)
 
+        # For turn commands: if turn is enabled/disabled, command is shown/hidden
+        if self.pathAdapter.type == CommandType.TURN:
+            self.pathAdapter.subscribe(id = NotifyType.TURN_ENABLE_TOGGLED, onNotify = self.onTurnEnableToggled)
+
         self.updateTargetHeight(True)
         self.recomputePosition()
+        
+        self.onTurnEnableToggled()
 
     # Update animation every tick
     def onTick(self):
@@ -161,11 +174,18 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.normalY = self._py(1)
         self.draggingY = self._py(1) if self.dragPosition is None else self.dragPosition
         return self._px(0), self.draggingY
+    
+    def isVisible(self) -> bool:
+        return not self.hideCommand
 
     def defineWidth(self) -> float:
         return self._pwidth(1)
     
     def defineHeight(self) -> float:
+
+        if self.hideCommand:
+            return 0
+
         if self.path.forceAnimationToEnd:
                 self.animatedExpansion.forceToEndValue()
         
@@ -210,6 +230,12 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.localExpansion = not self.localExpansion
         self.path.recalculateTargets()
+
+    def onTurnEnableToggled(self):
+        if self.pathAdapter.type == CommandType.TURN:
+            turnAdapter: TurnAdapter = self.pathAdapter
+            self.hideCommand = not turnAdapter.isTurnEnabled()
+            self.path.onChangeInCommandPositionOrHeight()
 
     def getOpacity(self) -> float:
         if self.isDragging():

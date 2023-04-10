@@ -79,6 +79,10 @@ class CommandInserter(Entity, CommandOrInserter):
         return self._pwidth(1)
     
     def defineHeight(self) -> float:
+
+        if not self.isFirst and self.getPrevious() is not None and self.getPrevious().hideCommand:
+            return 0
+
         HEIGHT_MIN = 5
         HEIGHT_MAX = 12
         return self._aheight(HEIGHT_MAX if self.isActive else HEIGHT_MIN)

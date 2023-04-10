@@ -169,6 +169,13 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         else:
             self.getPrevious().onAngleChange()
 
+    def onReshape(self):
+        self.updateAdapter()
+        self.recomputePosition()
+        self.getNext().onAngleChange()
+        self.getPrevious().onAngleChange()
+        
+
     def getAdapter(self) -> PathAdapter:
         return self.getState().getAdapter()
     
