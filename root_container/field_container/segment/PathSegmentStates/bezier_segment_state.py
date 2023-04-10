@@ -4,10 +4,10 @@ from adapter.arc_adapter import ArcAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
-
+import constants
 from root_container.field_container.segment.segment_type import SegmentType
 from utility.bezier_functions import generate_cubic_points
-from utility.bezier_functions_2 import points_cubic_bezier_segment_length
+from utility.bezier_functions_2 import fast_points_cubic_bezier, normalized_points_cubic_bezier
 from utility.math_functions import pointTouchingLine, thetaFromPoints
 from utility.pygame_functions import drawLine
 if TYPE_CHECKING:
@@ -52,7 +52,9 @@ class BezierSegmentState(PathSegmentState):
         return self.adapter
     
     # compute bezier curve purely through field ref. but store points as PointRef
-    def recomputeBezier(self):
+    # fast is not normalized. Used when dragging
+    # slow is normalized. Used when mouse released
+    def recomputeBezier(self, fast: bool = False):
         # sometimes redundant, but must guarantee that the bezier nodes are initialized
         self.segment.bezierTheta1.recomputePosition()
         self.segment.bezierTheta2.recomputePosition()
@@ -63,8 +65,11 @@ class BezierSegmentState(PathSegmentState):
         p2 = self.segment.bezierTheta2.getPositionRef().fieldRef
         p3 = self.segment.getNext().getPositionRef().fieldRef
 
-        points = points_cubic_bezier_segment_length(0.3, p0, p1, p2, p3)
-        #print(points)
+        
+        if fast:
+            points = fast_points_cubic_bezier(p0, p1, p2, p3)
+        else:
+            points = normalized_points_cubic_bezier(constants.BEIZER_SEGMENT_LENGTH, p0, p1, p2, p3)
 
         # to avoid null scenarios, set start and end location as points if length < 2
         if len(points) < 2:
@@ -72,9 +77,9 @@ class BezierSegmentState(PathSegmentState):
 
         self.points = [PointRef(Ref.FIELD, point) for point in points]
 
-        # calculate start/end theta from the first two points / last two points
-        self.THETA1 = thetaFromPoints(points[0], points[1])
-        self.THETA2 = thetaFromPoints(points[-2], points[-1])
+        # calculate start/end theta from control points
+        self.THETA1 = thetaFromPoints(p0, p1)
+        self.THETA2 = thetaFromPoints(p2, p3)
 
         self.MIDPOINT: PointRef = self.points[len(self.points) // 2]
 
@@ -110,5 +115,11 @@ class BezierSegmentState(PathSegmentState):
         for i in range(len(self.points) - 1):
             x1, y1 = self.points[i].screenRef
             x2, y2 = self.points[i+1].screenRef
-            drawLine(screen, color, x1, y1, x2, y2, self.segment.thickness, None)
+            drawLine(screen, color, x1, y1, x2, y2, self.segment.getThickness(), None)
+
+        # Draw every point if selected
+        if self.segment.isSelfOrNodesSelected():
+            for point in self.points:
+                x, y = point.screenRef
+                pygame.draw.circle(screen, (0,0,0), (x, y), 1)
 

@@ -251,7 +251,7 @@ class ArcSegmentState(PathSegmentState):
         color = self.segment.getColor(isActive, isHovered)
         drawArcFromCenterAngles(screen, self.START_ANGLE, self.STOP_ANGLE, self.POSITIVE,
                                 color, self.CENTER.screenRef, self.RADIUS.screenRef, 
-                                width = self.segment.thickness,
+                                width = self.segment.getThickness(),
                                 numSegments = self.ARC_LENGTH.screenRef * RESOLUTION
                                 )
 

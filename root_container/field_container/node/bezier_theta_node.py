@@ -129,9 +129,12 @@ class BezierThetaNode(AbstractCircleEntity):
 
         self.dx, self.dy = (absolutePosition - self.getNode().getPositionRef()).fieldRef
 
+        # calculate bezier curve but fast while dragging (not equidistant points)
         self.recomputePosition()
-        self.bezier.recomputeBezier()
+        self.bezier.recomputeBezier(True)
         self.segment.recomputePosition()
 
+    # reclculate bezier curve but with equidistant points
     def onStopDrag(self):
-        pass
+        self.bezier.recomputeBezier(False)
+        self.segment.recomputePosition()

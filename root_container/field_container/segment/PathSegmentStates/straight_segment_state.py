@@ -85,4 +85,4 @@ class StraightSegmentState(PathSegmentState):
         x1, y1 = self.segment.getPrevious().getPositionRef().screenRef
         x2, y2 = self.segment.getNext().getPositionRef().screenRef
 
-        drawLine(screen, self.segment.getColor(isActive, isHovered), x1, y1, x2, y2, self.segment.thickness, None)
+        drawLine(screen, self.segment.getColor(isActive, isHovered), x1, y1, x2, y2, self.segment.getThickness(), None)
