@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Find all .py files in the current directory and its subdirectories
-files=$(find . -name "*.py")
+files=$(find . -name "*.$1")
 
 # Count the total number of lines of code and Python classes in the files
 total_lines=0
@@ -14,6 +14,7 @@ for file in $files; do
 done
 
 # Print the total number of lines of code and Python classes
-echo "Total number of lines of code in .py files: $total_lines"
-echo "Total number of Python classes: $class_count"
+echo "Total number of lines of code in .$1 files: $total_lines"
+echo "Total number of classes: $class_count"
+echo "Average lines of code per class: $((total_lines / class_count))"
 

@@ -75,9 +75,6 @@ def main():
     panelContainer = PanelContainer()
     fieldContainer = FieldContainer(fieldTransform)
 
-    # test dropdown, remove after testing
-    DropdownContainer(fieldContainer, ["A", "B", "C", "D"], FontID.FONT_NORMAL, 12, awidth = 60)
-
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)
     interactor.initInteractor(menuManager, fieldContainer)

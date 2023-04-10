@@ -30,8 +30,7 @@ class DropdownOptionEntity(Entity):
 
         super().__init__(parent = dropdownContainer,
             click = ClickLambda(self, FonLeftClick = lambda mouse, i=i, t=t: dropdownContainer.onOptionClick(i, t())),
-            hover = HoverLambda(self),
-            drawOrder = DrawOrder.WIDGET
+            hover = HoverLambda(self)
             )
         self.dropdownContainer = dropdownContainer
         self.i = i

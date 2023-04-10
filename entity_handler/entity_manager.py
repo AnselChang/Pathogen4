@@ -23,13 +23,23 @@ class EntityManager:
     def initRootContainer(self):
         self.rootContainer = RootContainer()
         return self.rootContainer
+    
+    def sortEntities(self, useTiebreaker: bool):
+    
+        if useTiebreaker:
+            key = lambda entity: (entity.drawOrder, -entity.drawOrderTiebreaker())
+        else:
+            key = lambda entity: entity.drawOrder
+
+        self.entities.sort(key = key, reverse = True)
+
 
     # by setting a parent, it will be removed when parent is removed
     # SHOULD ONLY BE CALLED WITHIN BASE ENTITY CLASS
     def _addEntity(self, entity: Entity):
         
         self.entities.append(entity)
-        self.entities.sort(key = lambda entity: entity.drawOrder, reverse = True)
+        self.sortEntities(False)
 
         if entity.tick is not None:
             self.tickEntities.append(entity)
@@ -93,7 +103,7 @@ class EntityManager:
             return closest
     
     def drawEntities(self, interactor, screen: pygame.Surface, mousePosition: tuple, dimensions: Dimensions):
-
+        self.sortEntities(True)
         for entity in self.entities:
             if entity.isVisible():
                 selected = entity in interactor.selected.entities

@@ -19,7 +19,7 @@ class ElementContainer(Container):
         super().__init__(parent, drawOrder = DrawOrder.WIDGET)
 
     def defineCenter(self) -> tuple:
-        return self._px(0.8), self._py(0.5)
+        return self._px(0.75), self._py(0.5)
 
     # widgets and readouts should not use ElementEntity width
     # because they are dynamic

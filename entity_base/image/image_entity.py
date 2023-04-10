@@ -23,7 +23,8 @@ class ImageEntity(Entity, TooltipOwner):
                  isOn = lambda: True,
                  getStateID = lambda: None,
                  drag = None,
-                 disableTouching = False
+                 disableTouching = False,
+                 drawOrderTiebreakFunction = lambda: 0
                 ):
         super().__init__(
             parent = parent,
@@ -32,6 +33,7 @@ class ImageEntity(Entity, TooltipOwner):
             drawOrder = drawOrder)
         
         self.disableTouching = disableTouching
+        self.drawOrderTiebreakFunction = drawOrderTiebreakFunction
         
         self.oldWidth = None
         self.oldHeight = None
@@ -104,6 +106,9 @@ class ImageEntity(Entity, TooltipOwner):
             return False
         else:
             return super().isTouching(mouse)
+        
+    def drawOrderTiebreaker(self) -> float:
+        return self.drawOrderTiebreakFunction()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         

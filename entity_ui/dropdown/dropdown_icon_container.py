@@ -24,8 +24,9 @@ class DropdownIconContainer(Container):
 
         ImageEntity(parent = self, 
             states = ImageState(0, ImageID.DROPDOWN_ICON),
-            drawOrder = DrawOrder.DROPDOWN_TEXT,
-            disableTouching = True
+            drawOrder = DrawOrder.DROPDOWN,
+            disableTouching = True,
+            drawOrderTiebreakFunction = lambda: (self.dropdownContainer.drawOrderTiebreaker()+1)
         )
 
     def defineCenterX(self):

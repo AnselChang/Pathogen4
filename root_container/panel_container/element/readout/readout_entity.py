@@ -27,7 +27,7 @@ class ReadoutEntity(ElementContainer):
 
         self.border = TextBorder()
 
-        self.font: DynamicFont = parentCommand.fonts.getDynamicFont(FontID.FONT_NORMAL, 15)
+        self.font: DynamicFont = parentCommand.fonts.getDynamicFont(readoutDefinition.LABEL_FONT, readoutDefinition.LABEL_SIZE)
         self.font.subscribe(onNotify = self.recomputePosition)
 
         self.definition = readoutDefinition

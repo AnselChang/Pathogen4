@@ -24,9 +24,17 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
         self.textEditor = None
         self.recomputePosition()
 
+        fontID = definition.fontID
+        fontSize = definition.fontSize
+
+        if fontID is None:
+            fontID = definition.LABEL_FONT
+        if fontSize is None:
+            fontSize = definition.LABEL_SIZE
+
         self.textEditor = TextEditorEntity(
             self,
-            definition.fontID, definition.fontSize,
+            fontID, fontSize,
             isDynamic = definition.isDynamic,
             isNumOnly = definition.isNumOnly,
             defaultText = definition.defaultText
@@ -51,6 +59,7 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
 
 class TextboxWidgetDefinition(WidgetDefinition):
 
+    # set fontID and fontSize to None to use defaults
     def __init__(self, variableName: str, fontID: FontID, fontSize: float, defaultText: str, isDynamic: bool, isNumOnly: bool):
         super().__init__(variableName)
 
@@ -73,4 +82,4 @@ class ValueTextboxWidgetDefinition(TextboxWidgetDefinition):
 
     def __init__(self, name: str, defaultValue: float):
         defaultText = str(round(defaultValue, 3))
-        super().__init__(name, fontID = FontID.FONT_NORMAL, fontSize = 15, defaultText = defaultText, isDynamic = False, isNumOnly = True)
+        super().__init__(name, fontID = None, fontSize = None, defaultText = defaultText, isDynamic = False, isNumOnly = True)

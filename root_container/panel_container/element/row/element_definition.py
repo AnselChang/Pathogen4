@@ -24,7 +24,7 @@ class ElementDefinition(ABC):
 
 
         self.LABEL_FONT = FontID.FONT_NORMAL
-        self.LABEL_SIZE = 15
+        self.LABEL_SIZE = 11
 
     @abstractmethod
     def makeElement(self, parent, parentCommand, pathAdapter) -> ElementContainer:

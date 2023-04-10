@@ -83,7 +83,7 @@ class DropdownContainer(Container):
         super().__init__(parent,
                          tick = TickLambda(self, FonTick = self.onTick),
                          click = ClickLambda(self, FOnMouseDownAny = self.onMouseDown),
-                         drawOrder = DrawOrder.DROPDOWN_BACKGROUND
+                         drawOrder = DrawOrder.DROPDOWN
                          )
                          
 
@@ -129,8 +129,7 @@ class DropdownContainer(Container):
         rect = (self.LEFT_X-1, self.TOP_Y-1, self.WIDTH+2, self.surface.get_height()+3)
         pygame.draw.rect(screen, (0,0,0), rect, width = 2, border_radius = self.CORNER_RADIUS)
 
-    def onSelect(self, interactor):
-         print("select")
-
-    def onDeselect(self, interactor):
-         print("deselect")
+    # Higher number is drawn in the front.
+    # We want to draw the lowest y coordinate in the front
+    def drawOrderTiebreaker(self) -> float:
+        return -self.CENTER_Y

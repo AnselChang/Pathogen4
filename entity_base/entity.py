@@ -153,6 +153,11 @@ class Entity(ABC, Observable):
     def isTouching(self, mouse: tuple) -> float:
         self._isTouching = isInsideBox2(*mouse, *self.RECT)
         return self._isTouching
+    
+    # override
+    # with entities of equal DrawOrder, the largest number is drawn in the front 
+    def drawOrderTiebreaker(self) -> float:
+        return 0
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
