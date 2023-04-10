@@ -1,11 +1,14 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from entity_handler.entity_manager import EntityManager
     from entity_handler.interactor import Interactor
     from common.font_manager import FontManager
     from common.image_manager import ImageManager
     from common.dimensions import Dimensions
+    from common.field_transform import FieldTransform
+
 
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -41,14 +44,16 @@ _interactor: Interactor = None
 _images: ImageManager = None
 _fonts: FontManager = None
 _dimensions: Dimensions = None
+_transform: FieldTransform = None
 ROOT_CONTAINER = None
-def initEntityClass(entityManager: EntityManager, interactor: Interactor, images: ImageManager, fonts: FontManager, dimensions: Dimensions):
-    global _entities, _interactor, _images, _fonts, _dimensions
+def initEntityClass(entityManager: EntityManager, interactor: Interactor, images: ImageManager, fonts: FontManager, dimensions: Dimensions, transform: FieldTransform):
+    global _entities, _interactor, _images, _fonts, _dimensions, _transform
     _entities = entityManager
     _interactor = interactor
     _images = images
     _fonts = fonts
     _dimensions = dimensions
+    _transform = transform
 
 def setRootContainer(rootContainer):
     global ROOT_CONTAINER
@@ -79,6 +84,7 @@ class Entity(ABC, Observable):
         self.images = _images
         self.fonts = _fonts
         self.dimensions = _dimensions
+        self.transform = _transform
 
         self._children: list[Entity] = []
         self._parent: Entity = parent

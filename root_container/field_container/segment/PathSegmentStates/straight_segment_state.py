@@ -67,7 +67,7 @@ class StraightSegmentState(PathSegmentState):
     def isTouching(self, position: tuple) -> bool:
         x1, y1 = self.segment.getPrevious().getPositionRef().screenRef
         x2, y2 = self.segment.getNext().getPositionRef().screenRef
-        return pointTouchingLine(*position, x1, y1, x2, y2, self.segment.hitboxThickness)
+        return pointTouchingLine(*position, x1, y1, x2, y2, self.segment.getThickness(True))
 
 
     def getCenter(self) -> tuple:

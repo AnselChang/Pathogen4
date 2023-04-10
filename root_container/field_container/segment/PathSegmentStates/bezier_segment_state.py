@@ -44,12 +44,19 @@ class BezierSegmentState(PathSegmentState):
             ImageState(ArcIconID.REVERSE_RIGHT, ImageID.CURVE_RIGHT_REVERSE),
         ])
 
-        self.points: list[PointRef] = None # the bezier points
+        self.points: list[PointRef] = None # the bezier points in fieldRef
+        self.MOUSE_DETECTION_POINTS = None # the mouse bezier points in screenRef
+
+
         self.THETA1 = None
         self.THETA2 = None
 
         self.FAST_BEZIER_RESOLUTION = 1 # 5
         self.MOUSE_BEZIER_RESOLUTION = 0.3
+        
+
+        # every time the screen shifts, recompute the mouse detection points
+        self.segment.transform.subscribe(onNotify = self.onScreenRefChange)
 
     def getAdapter(self) -> PathAdapter:
         return self.adapter
@@ -74,19 +81,11 @@ class BezierSegmentState(PathSegmentState):
         p2 = self.segment.bezierTheta2.getPositionRef().fieldRef
         p3 = self.segment.getNext().getPositionRef().fieldRef
 
-        
         if fast:
             points = fast_points_cubic_bezier(self.FAST_BEZIER_RESOLUTION, p0, p1, p2, p3)
             # no need to update self.MOUSE_DETECTION_POINTS while dragging
         else:
             points = normalized_points_cubic_bezier(constants.BEIZER_SEGMENT_LENGTH, p0, p1, p2, p3)
-
-            """
-            In addition, compute another set of points with much lower resolution.
-            This list of points will be used for detecting if the mouse is hovering
-            over the segment, which should reduce performance overhead
-            """
-            self.MOUSE_DETECTION_POINTS = fast_points_cubic_bezier(self.MOUSE_BEZIER_RESOLUTION, p0, p1, p2, p3)
 
         # to avoid null scenarios, set start and end location as points if length < 2
         if len(points) < 2:
@@ -100,6 +99,22 @@ class BezierSegmentState(PathSegmentState):
 
         self.MIDPOINT: PointRef = self.points[len(self.points) // 2]
 
+        if fast:
+            self.recomputeMouseDetectionPoints()
+
+    def onScreenRefChange(self):
+        if self.segment.getSegmentType() == SegmentType.BEZIER:
+            self.recomputeMouseDetectionPoints()
+
+    # called anytime the bezier nodes are shifted IN SCREEN COORDINATES
+    def recomputeMouseDetectionPoints(self):
+        # get the four control points
+        p0 = self.segment.getPrevious().getPositionRef().screenRef
+        p1 = self.segment.bezierTheta1.getPositionRef().screenRef
+        p2 = self.segment.bezierTheta2.getPositionRef().screenRef
+        p3 = self.segment.getNext().getPositionRef().screenRef
+
+        self.MOUSE_DETECTION_POINTS = fast_points_cubic_bezier(self.MOUSE_BEZIER_RESOLUTION, p0, p1, p2, p3)
     
     def updateAdapter(self) -> None:
         self.recomputeBezier()
@@ -112,12 +127,22 @@ class BezierSegmentState(PathSegmentState):
         return self.THETA2
 
 
-    # for now, returns if touching the straight line between two nodes
-    # but this should be changed to check if touching the arc itself
+    # Use the low-res self.MOUSE_DETECTION_POINTS
+    # Check if mouse is touching any of those lines
     def isTouching(self, position: tuple) -> bool:
-        x1, y1 = self.segment.getPrevious().getPositionRef().screenRef
-        x2, y2 = self.segment.getNext().getPositionRef().screenRef
-        return pointTouchingLine(*position, x1, y1, x2, y2, self.segment.hitboxThickness)
+
+        # sliding window for making lines across points
+        # Increases effective hitbox size
+        WINDOW_SIZE = 5
+
+        # loop through each segment
+        for i in range(len(self.MOUSE_DETECTION_POINTS) - WINDOW_SIZE):
+            x1, y1 = self.MOUSE_DETECTION_POINTS[i]
+            x2, y2 = self.MOUSE_DETECTION_POINTS[i+WINDOW_SIZE]
+            if pointTouchingLine(*position, x1, y1, x2, y2, self.segment.getThickness(True)):
+                return True
+
+        return False
 
     # The midpoint of the list of points in the bezier curve
     def getCenter(self) -> tuple:

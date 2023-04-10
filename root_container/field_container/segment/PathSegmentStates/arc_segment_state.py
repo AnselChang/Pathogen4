@@ -216,8 +216,6 @@ class ArcSegmentState(PathSegmentState):
     # if screenRef of magnitudes are within some margin
     def isTouching(self, mouse: tuple) -> bool:
 
-        HITBOX_THICKNESS = 7 # in raw pixels
-
         ctm = thetaFromPoints(self.CENTER.screenRef, mouse)
         rctm = (ctm - self.CT1) % (math.pi*2)
         rtc3 = (self.CT3 - self.CT1) % (math.pi*2)
@@ -232,7 +230,7 @@ class ArcSegmentState(PathSegmentState):
         # not in start/stop angle range
         # check if mouse is within radius
         dist = distanceTuples(self.CENTER.screenRef, mouse)
-        return abs(dist - self.RADIUS.screenRef) < HITBOX_THICKNESS
+        return abs(dist - self.RADIUS.screenRef) < self.segment.getThickness(True)
 
     # for now, return midpoint between previous and next nodes. But
     # this should be changed to a point on the arc itself

@@ -73,7 +73,6 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
         self.direction: SegmentDirection = SegmentDirection.FORWARD
 
-        self.hitboxThickness = 5
         self.colorForward = [122, 210, 118]
         self.colorForwardH = shade(self.colorForward, 0.92)
         self.colorForwardA = shade(self.colorForward, 0.7)
@@ -253,8 +252,11 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     def defineCenter(self) -> tuple:
         return self.getState().getCenter()
     
-    def getThickness(self) -> int:
-        return int(3 * self.dimensions.RESOLUTION_RATIO)
+    def getThickness(self, isForMouseDetection: bool = False) -> int:
+        
+        thickness = 6 if isForMouseDetection else 3
+
+        return int(thickness * self.dimensions.RESOLUTION_RATIO)
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         return self.getState().draw(screen, isActive, isHovered)

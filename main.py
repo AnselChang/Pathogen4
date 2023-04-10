@@ -66,7 +66,7 @@ def main():
     # Initialize entities
     interactor = Interactor(dimensions, fieldTransform)
     entities = EntityManager()
-    initEntityClass(entities, interactor, images, fontManager, dimensions)
+    initEntityClass(entities, interactor, images, fontManager, dimensions, fieldTransform)
     rootContainer = entities.initRootContainer()
     setRootContainer(rootContainer)
 
