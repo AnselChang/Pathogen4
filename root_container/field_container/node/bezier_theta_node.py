@@ -160,7 +160,7 @@ class BezierThetaNode(AbstractCircleEntity):
         if self.isStartAngle:
             currentTheta = thetaFromPoints(node.getPositionRef().fieldRef, self.positionRef.fieldRef)
         else:
-            currentTheta = thetaFromPoints(self.positionRef.fieldRef, node.getPositionRef().fieldRef)
+            currentTheta = thetaFromPoints(node.getPositionRef().fieldRef, self.positionRef.fieldRef)
 
         node.constraints.resetThetaConstraints(currentTheta, node.getPositionRef())
 

@@ -1,7 +1,9 @@
 from __future__ import annotations
+import math
 from typing import TYPE_CHECKING
 
 from root_container.field_container.node.node_line import NodeLine
+from root_container.field_container.segment.segment_direction import SegmentDirection
 if TYPE_CHECKING:
     from root_container.path import Path
 
@@ -137,17 +139,11 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         return self.position
     
     def updateAdapter(self) -> None:
-        if self.getPrevious() is None and self.getNext() is None:
+        start = self.getStartTheta()
+        end = self.getStopTheta()
+
+        if start is None: # (and end is None)
             start, end = 0,0
-        elif self.getPrevious() is not None and self.getNext() is None:
-            angle = self.getPrevious().getEndTheta()
-            start, end = angle, angle
-        elif self.getNext() is not None and self.getPrevious() is None:
-            angle = self.getNext().getStartTheta()
-            start, end = angle, angle
-        else:
-            start = self.getPrevious().getEndTheta()
-            end = self.getNext().getEndTheta()
 
         self.START_THETA, self.END_THETA = start, end
             
@@ -161,14 +157,44 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
 
         self.recomputePosition()
 
+    # gets the start theta, adjusted for segment direction.
+    # returns None if there is no previous node
+    def getStartTheta(self):
+        if self.getPrevious() is None:
+            if self.getNext() is None:
+                return None
+            else:
+                return self.getStopTheta()
+        
+        theta = self.getPrevious().getEndTheta()
+        if self.getPrevious().getDirection() == SegmentDirection.REVERSE:
+            theta = (theta + math.pi) % (math.pi*2)
+        return theta
+
+    # gets the stop theta, adjusted for segment direction.
+    # returns None if there is no next node
+    def getStopTheta(self):
+        if self.getNext() is None:
+            if self.getPrevious() is None:
+                return None
+            else:
+                return self.getStartTheta()
+        
+        theta = self.getNext().getStartTheta()
+        if self.getNext().getDirection() == SegmentDirection.REVERSE:
+            theta = (theta + math.pi) % (math.pi*2)
+        return theta
+
     def isTurnEnabled(self) -> bool:
-        # if there is no previous or next node, then we can't turn to it
-        if self.getPrevious() is None or self.getNext() is None:
-            return False
         
         # No turning if the start and end theta are close to the same
-        startTheta = self.getPrevious().getEndTheta()
-        endTheta = self.getNext().getStartTheta()
+        startTheta = self.getStartTheta()
+        endTheta = self.getStopTheta()
+
+        # if there is no previous or next node, then we can't turn to it
+        if startTheta is None or endTheta is None:
+            return False
+        
         return headingDiff(startTheta, endTheta) > 1e-3
         
 

@@ -74,7 +74,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             click = ClickLambda(self, FonLeftClick = self.onClick, FOnMouseDown = self.onMouseDown),
             tick = TickLambda(self, FonTick = self.onTick),
             drag = drag,
-            select = SelectLambda(self, "command", type = SelectorType.SOLO),
+            #select = SelectLambda(self, "command", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMANND_BLOCK
         )
 
@@ -107,7 +107,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         self.updateTargetHeight(True)
         self.recomputePosition()
-        
+
         self.onTurnEnableToggled()
 
     # Update animation every tick

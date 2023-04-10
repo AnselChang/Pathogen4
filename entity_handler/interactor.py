@@ -165,7 +165,7 @@ class Interactor:
 
         # if there's a group selected but the mouse is not clicking on the group, deselect
         elif self.hoveredEntity is None or self.hoveredEntity not in self.selected.entities:
-            if self.hoveredEntity is not self.fieldContainer:
+            if self.hoveredEntity is not self.fieldContainer and self.hoveredEntity.select is not None:
 
                 doNotRemove = None
                 if self.hoveredEntity.drag is not None:

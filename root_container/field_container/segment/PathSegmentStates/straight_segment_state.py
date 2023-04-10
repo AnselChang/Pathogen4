@@ -53,6 +53,8 @@ class StraightSegmentState(PathSegmentState):
         self.adapter.set(StraightAttributeID.Y2, posB.fieldRef[1], f"{posB.fieldRef[1]:.1f})")
 
         distance = (posB - posA).magnitude(Ref.FIELD)
+        if self.segment.getDirection() == SegmentDirection.REVERSE:
+            distance *= -1
         self.adapter.set(StraightAttributeID.DISTANCE, distance, f"{distance:.1f}\"")
 
         self.adapter.setIconStateID(self.segment.getDirection())
