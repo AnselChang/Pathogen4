@@ -15,5 +15,13 @@ class TurnAdapter(PathAdapter):
 
         super().__init__(CommandType.TURN, iconImageStates, TurnAttributeID)
 
+        self.turnEnabled: bool = True # if set to false, means THETA1 ~= THETA2)
+
     def set(self, attribute: TurnAttributeID, value: float, string: str):
         super().set(attribute, value, string)
+
+    def setTurnEnabled(self, turnEnabled: bool):
+        self.turnEnabled = turnEnabled
+
+    def isTurnEnabled(self) -> bool:
+        return self.turnEnabled

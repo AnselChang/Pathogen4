@@ -1,4 +1,4 @@
 
 # The approxiamte distance between each individual point
 # for cubic bezier curves, in inches
-BEIZER_SEGMENT_LENGTH = 0.5
+BEIZER_SEGMENT_LENGTH = 0.75

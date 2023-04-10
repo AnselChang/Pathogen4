@@ -43,8 +43,14 @@ class Constraints(Entity):
         self.recomputePosition()
 
     def clear(self):
-        self.positionConstraints.clear()
+        self.clearThetaConstraints()
+        self.clearPositionConstraints()
+
+    def clearThetaConstraints(self):
         self.thetaConstraints.clear()
+
+    def clearPositionConstraints(self):
+        self.positionConstraints.clear()
 
     def showPosition(self):
         self.visiblePosition = True

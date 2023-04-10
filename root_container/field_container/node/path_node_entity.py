@@ -32,7 +32,7 @@ from data_structures.linked_list import LinkedListNode
 
 from utility.math_functions import isInsideBox
 from utility.pygame_functions import shade
-from utility.angle_functions import deltaInHeading
+from utility.angle_functions import deltaInHeading, headingDiff
 from utility.format_functions import formatDegrees
 
 import pygame
@@ -49,6 +49,7 @@ class TurnDirection(Enum):
 
 class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[PathSegmentEntity]):
 
+    TURN_DISABLED_COLOR = (0,0,0)
     BLUE_COLOR = (102, 153, 255)
     FIRST_BLUE_COLOR = (40, 40, 255)
     RED_COLOR = (255, 102, 102)
@@ -103,7 +104,13 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         return self.position.screenRef
 
     def getColor(self, isHovered: bool) -> tuple:
-        color = self.FIRST_BLUE_COLOR if self.getPrevious() is None else self.BLUE_COLOR
+
+        if self.isFirstNode():
+            color = self.FIRST_BLUE_COLOR
+        elif self.isTurnEnabled():
+            color = self.BLUE_COLOR
+        else:
+            color = self.TURN_DISABLED_COLOR
 
         # That means we're on the verge of deleting this node, as it
         # is not in a valid location, and will be deleted if mouse down
@@ -118,7 +125,10 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         return 0.75 if self.isTemporary() else 1
 
     def getRadius(self, isHovered: bool = False) -> float:
-        return 10
+        if self.isTurnEnabled() or self.isFirstNode():
+            return 10
+        else:
+            return 7 if isHovered else 6
 
     def getAdapter(self) -> TurnAdapter:
         return self.adapter
@@ -147,7 +157,20 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         direction = deltaInHeading(start, end)
         self.adapter.setIconStateID(TurnDirection.RIGHT if direction >= 0 else TurnDirection.LEFT)
 
+        self.adapter.setTurnEnabled(self.isTurnEnabled())
+
         self.recomputePosition()
+
+    def isTurnEnabled(self) -> bool:
+        # if there is no previous or next node, then we can't turn to it
+        if self.getPrevious() is None or self.getNext() is None:
+            return False
+        
+        # No turning if the start and end theta are close to the same
+        startTheta = self.getPrevious().getEndTheta()
+        endTheta = self.getNext().getStartTheta()
+        return headingDiff(startTheta, endTheta) > 1e-2
+        
 
     def onHoverOff(self):
         self.constraints.hidePosition()

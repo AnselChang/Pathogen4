@@ -7,7 +7,7 @@ from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
 
 from root_container.field_container.segment.segment_type import SegmentType
-from utility.angle_functions import deltaInHeading
+from utility.angle_functions import deltaInHeading, headingDiff
 from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import arcCenterFromTwoPointsAndTheta, arcFromThreePoints, distancePointToLine, distanceTuples, getArcMidpoint, pointTouchingLine, thetaFromArc, thetaFromPoints
 from utility.pygame_functions import drawArcFromCenterAngles, drawLine, drawVector
@@ -122,9 +122,15 @@ class ArcSegmentState(PathSegmentState):
             dx = self.p3.fieldRef[0] - self.p1.fieldRef[0]
             dy = self.p3.fieldRef[1] - self.p1.fieldRef[1]
             self.THETA2 = thetaFromArc(self.THETA1, dx, dy)
-            self.recalculateArcFromTheta()
-            self.notify()
-            return
+
+            if headingDiff(self.THETA1, self.THETA2) < 1e-3:
+                # cannot be collinear
+                prevNode.constraints.clearThetaConstraints()
+                print("collinear")
+            else:
+                self.recalculateArcFromTheta()
+                self.notify()
+                return
         
         # HANDLE THETA2
         # attempt to constrain to previous node theta. Note that Constraints already handles the 180 cases
@@ -142,9 +148,15 @@ class ArcSegmentState(PathSegmentState):
             dx = self.p3.fieldRef[0] - self.p1.fieldRef[0]
             dy = self.p3.fieldRef[1] - self.p1.fieldRef[1]
             self.THETA1 = thetaFromArc(self.THETA2, dx, dy)
-            self.recalculateArcFromTheta()
-            self.notify()
-            return
+
+            if headingDiff(self.THETA1, self.THETA2) < 1e-3:
+                # cannot be collinear
+                prevNode.constraints.clearThetaConstraints()
+                print("collinear")
+            else:
+                self.recalculateArcFromTheta()
+                self.notify()
+                return
         
         
         
@@ -244,7 +256,7 @@ class ArcSegmentState(PathSegmentState):
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
         # how smooth the arc should be
-        RESOLUTION = 10
+        RESOLUTION = 1
 
         color = self.segment.getColor(isActive, isHovered)
         drawArcFromCenterAngles(screen, self.START_ANGLE, self.STOP_ANGLE, self.POSITIVE,
