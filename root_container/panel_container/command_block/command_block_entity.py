@@ -99,7 +99,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), pathAdapter)
         
         # on element container resize, recompute target height
-        self.elementsContainer.subscribe(onNotify = self.updateTargetHeight)
+        self.elementsContainer.subscribe(onNotify = self.onElementsResize)
 
         # For turn commands: if turn is enabled/disabled, command is shown/hidden
         if self.pathAdapter.type == CommandType.TURN:
@@ -128,7 +128,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     def getElementStretch(self) -> int:
         if self.elementsContainer is None:
             return 0
-        print(self.elementsContainer.defineHeight())
         return self.elementsContainer.defineHeight()
     
     def isActuallyExpanded(self) -> bool:
@@ -138,6 +137,9 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             return True
         return self.localExpansion
 
+    def onElementsResize(self):
+        self.updateTargetHeight()
+        self.path.onChangeInCommandPositionOrHeight()
     
     # Call this whenever there might be a change to target height
     def updateTargetHeight(self, isFirst: bool = False):
@@ -147,7 +149,6 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         
         self.ACTUAL_COLLAPSED_HEIGHT = self._aheight(self.COLLAPSED_HEIGHT)
         self.ACTUAL_EXPANDED_HEIGHT = self._aheight(self.EXPANDED_HEIGHT) + self.getElementStretch()
-        print("actual:", self.ACTUAL_EXPANDED_HEIGHT)
         self.ACTUAL_HEIGHT = self.ACTUAL_EXPANDED_HEIGHT if expanded else self.ACTUAL_COLLAPSED_HEIGHT
 
         self.animatedExpansion.setEndValue(1 if expanded else 0)
