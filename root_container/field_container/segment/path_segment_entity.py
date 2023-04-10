@@ -148,6 +148,11 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         for node in [self.getPrevious(), self.getNext()]:
             node.constraints.hidePosition()
 
+    # callback when a node attached to this segment has stopped dragging
+    # Pass callback on to segment states if they need to do something
+    def onNodeStopDrag(self):
+        self.getState().onNodeStopDrag()
+
     # a segment is temporary if the nodes on either ends are temporary
     def isTemporary(self) -> bool:
         if self.getPrevious() is not None and self.getPrevious().isTemporary():

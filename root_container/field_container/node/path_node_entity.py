@@ -191,6 +191,10 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
                 prev.constraints.resetPositionConstraints(prev.position)
                 prev.constrainPosition()
         
+        if self.getNext() is not None:
+            self.getNext().onNodeStopDrag()
+        if self.getPrevious() is not None:
+            self.getPrevious().onNodeStopDrag()
 
     def canDrag(self, mouseTuple: tuple) -> bool:
         mouse = PointRef(Ref.SCREEN, mouseTuple)

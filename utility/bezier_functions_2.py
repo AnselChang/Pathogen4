@@ -51,9 +51,7 @@ def normalized_points_cubic_bezier(segment_length, p0, p1, p2, p3):
 
     
 # Evenly-spaced values of t. Segments may not be equidistant
-def fast_points_cubic_bezier(p0, p1, p2, p3):
-
-    RESOLUTION = 5
+def fast_points_cubic_bezier(RESOLUTION, p0, p1, p2, p3):
 
     # use approximate distance to calculate how many points to calculate
     approximateDistance = distanceTuples(p0, p1)

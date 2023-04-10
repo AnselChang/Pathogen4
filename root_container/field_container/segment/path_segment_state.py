@@ -56,3 +56,7 @@ class PathSegmentState(ABC, Observable):
     @abstractmethod
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         pass
+
+    # callback when a node attached to this segment has stopped dragging
+    def onNodeStopDrag(self):
+        pass

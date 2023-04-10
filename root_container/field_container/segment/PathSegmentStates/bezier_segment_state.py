@@ -48,13 +48,22 @@ class BezierSegmentState(PathSegmentState):
         self.THETA1 = None
         self.THETA2 = None
 
+        self.FAST_BEZIER_RESOLUTION = 1 # 5
+        self.MOUSE_BEZIER_RESOLUTION = 0.3
+
     def getAdapter(self) -> PathAdapter:
         return self.adapter
+    
+    # callback when a node attached to this segment has stopped dragging
+    # In this case, recompute bezier but with equidistant points
+    def onNodeStopDrag(self):
+        self.recomputeBezier(False)
+        self.segment.recomputePosition()
     
     # compute bezier curve purely through field ref. but store points as PointRef
     # fast is not normalized. Used when dragging
     # slow is normalized. Used when mouse released
-    def recomputeBezier(self, fast: bool = False):
+    def recomputeBezier(self, fast: bool = True):
         # sometimes redundant, but must guarantee that the bezier nodes are initialized
         self.segment.bezierTheta1.recomputePosition()
         self.segment.bezierTheta2.recomputePosition()
@@ -67,9 +76,17 @@ class BezierSegmentState(PathSegmentState):
 
         
         if fast:
-            points = fast_points_cubic_bezier(p0, p1, p2, p3)
+            points = fast_points_cubic_bezier(self.FAST_BEZIER_RESOLUTION, p0, p1, p2, p3)
+            # no need to update self.MOUSE_DETECTION_POINTS while dragging
         else:
             points = normalized_points_cubic_bezier(constants.BEIZER_SEGMENT_LENGTH, p0, p1, p2, p3)
+
+            """
+            In addition, compute another set of points with much lower resolution.
+            This list of points will be used for detecting if the mouse is hovering
+            over the segment, which should reduce performance overhead
+            """
+            self.MOUSE_DETECTION_POINTS = fast_points_cubic_bezier(self.MOUSE_BEZIER_RESOLUTION, p0, p1, p2, p3)
 
         # to avoid null scenarios, set start and end location as points if length < 2
         if len(points) < 2:
@@ -85,7 +102,6 @@ class BezierSegmentState(PathSegmentState):
 
     
     def updateAdapter(self) -> None:
-        print("recompute bezier")
         self.recomputeBezier()
 
 
