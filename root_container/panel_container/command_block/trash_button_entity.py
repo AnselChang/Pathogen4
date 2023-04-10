@@ -27,7 +27,7 @@ class TrashEntity(Container):
         
         super().__init__(parent = parentHeader)
         self.recomputePosition()
-        state = ImageState(0, ImageID.TRASH_ON, None, ImageID.TRASH_OFF, None)
+        state = ImageState(0, ImageID.TRASH_OFF, imageOnHoveredID = ImageID.TRASH_ON)
         ImageEntity(self, state, drawOrder = DrawOrder.WIDGET, onClick = onDelete)
 
     def defineCenter(self) -> tuple:
