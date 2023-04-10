@@ -169,7 +169,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         # No turning if the start and end theta are close to the same
         startTheta = self.getPrevious().getEndTheta()
         endTheta = self.getNext().getStartTheta()
-        return headingDiff(startTheta, endTheta) > 1e-2
+        return headingDiff(startTheta, endTheta) > 1e-3
         
 
     def onHoverOff(self):

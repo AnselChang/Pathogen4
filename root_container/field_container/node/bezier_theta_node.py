@@ -6,6 +6,7 @@ from common.reference_frame import PointRef, Ref, VectorRef
 from entity_base.listeners.drag_listener import DragLambda
 
 from root_container.field_container.segment.segment_type import SegmentType
+from utility.math_functions import distanceTuples, thetaFromPoints
 from utility.pygame_functions import shade
 if TYPE_CHECKING:
     from root_container.field_container.node.path_node_entity import PathNodeEntity
@@ -13,6 +14,8 @@ if TYPE_CHECKING:
     from root_container.field_container.segment.PathSegmentStates.bezier_segment_state import BezierSegmentState
 
 from entity_base.abstract_circle_entity import AbstractCircleEntity
+
+import pygame
 
 """
 FOR BEZIER SEGMENTS ONLY
@@ -118,6 +121,9 @@ class BezierThetaNode(AbstractCircleEntity):
 
     def canDrag(self, mouse: tuple) -> bool:
         return True
+    
+    def setRelativeFromAbsolutePosition(self, absolutePosition: PointRef):
+        self.dx, self.dy = (absolutePosition - self.getNode().getPositionRef()).fieldRef
 
     # find the absolute position the node is being dragged to,
     # and using that calculate what the relative position from the
@@ -127,10 +133,11 @@ class BezierThetaNode(AbstractCircleEntity):
         absoluteY = mouse[1] + self.offsetY
         absolutePosition = PointRef(Ref.SCREEN, (absoluteX, absoluteY))
 
-        self.dx, self.dy = (absolutePosition - self.getNode().getPositionRef()).fieldRef
+        self.setRelativeFromAbsolutePosition(absolutePosition)
 
         # calculate bezier curve but fast while dragging (not equidistant points)
         self.recomputePosition()
+        self.constrain()
         self.bezier.recomputeBezier(True)
         self.segment.onReshape()
 
@@ -138,3 +145,44 @@ class BezierThetaNode(AbstractCircleEntity):
     def onStopDrag(self):
         self.bezier.recomputeBezier(False)
         self.segment.recomputePosition()
+
+    
+    # attempt to constrain the angle to match previous/next angle
+    def constrain(self):
+        node = self.getNode()
+
+        # can't constrain if no previous/next node
+        if self.isStartAngle and node.getPrevious() is None:
+            return
+        if not self.isStartAngle and node.getNext() is None:
+            return
+        
+        if self.isStartAngle:
+            currentTheta = thetaFromPoints(node.getPositionRef().fieldRef, self.positionRef.fieldRef)
+        else:
+            currentTheta = thetaFromPoints(self.positionRef.fieldRef, node.getPositionRef().fieldRef)
+
+        node.constraints.resetThetaConstraints(currentTheta, node.getPositionRef())
+
+        # SHIFT key disables constraints
+        if pygame.key.get_pressed()[pygame.K_LSHIFT]:
+            return
+        
+        # attempt to constrain to other theta
+        if self.isStartAngle:
+            otherTheta = node.getPrevious().getStartTheta()
+        else:
+            otherTheta = node.getNext().getEndTheta()
+        node.constraints.addThetaConstraint(otherTheta)
+
+        newTheta = node.constraints.getTheta()
+
+        # if theta has changed, recalculate position.
+        # maintain distance to node, but change angle to new theta
+        if currentTheta != newTheta:
+            magnitude = distanceTuples(self.positionRef.fieldRef, node.getPositionRef().fieldRef)
+            absolutePosition = node.getPositionRef() + VectorRef(Ref.FIELD, magnitude = magnitude, heading = newTheta)
+
+            # convert from absolute position to relative offset
+            self.setRelativeFromAbsolutePosition(absolutePosition)
+            self.recomputePosition()
