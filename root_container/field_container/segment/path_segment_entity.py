@@ -248,7 +248,8 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
 
     def defineCenter(self) -> tuple:
         return self.getState().getCenter()
-
+    
+    
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         return self.getState().draw(screen, isActive, isHovered)
     

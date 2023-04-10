@@ -41,6 +41,7 @@ class SelectorMenuEntity(Entity):
         self.BORDER_RADIUS = 5
 
         self.selectedEntity = selectedEntity
+        selectedEntity.subscribe(onNotify = self.recomputePosition)
 
         # Both this object and the individual menu images have this lambda.
         # So, when either the menu background or menu buttons are dragged,

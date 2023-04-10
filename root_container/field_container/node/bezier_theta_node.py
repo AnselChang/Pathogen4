@@ -131,6 +131,7 @@ class BezierThetaNode(AbstractCircleEntity):
 
         self.recomputePosition()
         self.bezier.recomputeBezier()
+        self.segment.recomputePosition()
 
     def onStopDrag(self):
         pass

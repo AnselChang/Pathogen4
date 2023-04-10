@@ -7,6 +7,7 @@ from root_container.field_container.segment.segment_direction import SegmentDire
 
 from root_container.field_container.segment.segment_type import SegmentType
 from utility.bezier_functions import generate_cubic_points
+from utility.bezier_functions_2 import points_cubic_bezier_segment_length
 from utility.math_functions import pointTouchingLine, thetaFromPoints
 from utility.pygame_functions import drawLine
 if TYPE_CHECKING:
@@ -61,10 +62,9 @@ class BezierSegmentState(PathSegmentState):
         p1 = self.segment.bezierTheta1.getPositionRef().fieldRef
         p2 = self.segment.bezierTheta2.getPositionRef().fieldRef
         p3 = self.segment.getNext().getPositionRef().fieldRef
-        #print(p0, p1, p2, p3)
 
-        points = generate_cubic_points(p0, p1, p2, p3, 0.1)
-        print(points)
+        points = points_cubic_bezier_segment_length(0.3, p0, p1, p2, p3)
+        #print(points)
 
         # to avoid null scenarios, set start and end location as points if length < 2
         if len(points) < 2:

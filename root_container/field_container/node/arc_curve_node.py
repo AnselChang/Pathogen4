@@ -105,6 +105,7 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
 
         self.arc.recalculateArcFromArcCurveNode()
         self.arc.constrainTheta()
+        self.segment.recomputePosition()
         #self.arc.updateAdapter()
 
     def setPerpDistance(self, perpDistance: float):
