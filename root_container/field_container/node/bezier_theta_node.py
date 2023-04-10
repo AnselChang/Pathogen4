@@ -95,7 +95,6 @@ class BezierThetaNode(AbstractCircleEntity):
 
         nx, ny = self.getNode().getPositionRef().fieldRef
         self.positionRef = PointRef(Ref.FIELD, (nx + self.dx, ny + self.dy))
-        print(nx, ny, self.dx, self.dy)
 
         return self.positionRef.screenRef
 
@@ -113,13 +112,23 @@ class BezierThetaNode(AbstractCircleEntity):
         return 6 if isHovered else 5
 
     def onStartDrag(self, mouse: tuple):
-        pass
+        self.offsetX = self.CENTER_X - mouse[0]
+        self.offsetY = self.CENTER_Y - mouse[1]
 
     def canDrag(self, mouse: tuple) -> bool:
         return True
 
+    # find the absolute position the node is being dragged to,
+    # and using that calculate what the relative position from the
+    # associated node should be
     def onDrag(self, mouse: tuple):
-        pass
+        absoluteX = mouse[0] + self.offsetX
+        absoluteY = mouse[1] + self.offsetY
+        absolutePosition = PointRef(Ref.SCREEN, (absoluteX, absoluteY))
+
+        self.dx, self.dy = (absolutePosition - self.getNode().getPositionRef()).fieldRef
+
+        self.recomputePosition()
 
     def onStopDrag(self):
         pass
