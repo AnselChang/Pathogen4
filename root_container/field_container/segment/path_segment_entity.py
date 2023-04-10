@@ -174,8 +174,8 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         # initailize arc node
         if not self.isFullyInitialized and self.getNext() is not None and self.getPrevious() is not None:
             self.arcNode = ArcCurveNode(self, self.states[SegmentType.ARC])
-            self.bezierTheta1 = BezierThetaNode(self, self.getPrevious, True)
-            self.bezierTheta2 = BezierThetaNode(self, self.getNext, False)
+            self.bezierTheta1 = BezierThetaNode(self, self.states[SegmentType.BEZIER], self.getPrevious, True)
+            self.bezierTheta2 = BezierThetaNode(self, self.states[SegmentType.BEZIER], self.getNext, False)
 
             # must call this after initilizing arcNode and bezierThetas,
             # so that position recomputation happens before drawing lines

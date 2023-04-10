@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 from common.draw_order import DrawOrder
 from entity_base.entity import Entity
 from utility.math_functions import distance
-from utility.bezier_functions import bezier_curve_points
+from utility.bezier_functions import generate_quadratic_points
 import math, pygame
 
 """
@@ -75,4 +75,4 @@ class MenuLineEntity(Entity):
         self.p1 = (x1,y1)
         self.p2 = (x2, y2)
         self.p3 = (self.entity.CENTER_X, self.entity.CENTER_Y)
-        self.points = bezier_curve_points(self.p1, self.p2, self.p3, 2)
+        self.points = generate_quadratic_points(self.p1, self.p2, self.p3, 2)

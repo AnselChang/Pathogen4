@@ -6,7 +6,8 @@ from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
 
 from root_container.field_container.segment.segment_type import SegmentType
-from utility.math_functions import pointTouchingLine
+from utility.bezier_functions import generate_cubic_points
+from utility.math_functions import pointTouchingLine, thetaFromPoints
 from utility.pygame_functions import drawLine
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from common.reference_frame import PointRef
+from common.reference_frame import PointRef, Ref
 from entity_base.entity import Entity
 from data_structures.linked_list import LinkedListNode
 from adapter.path_adapter import PathAdapter
@@ -42,19 +43,45 @@ class BezierSegmentState(PathSegmentState):
             ImageState(ArcIconID.REVERSE_RIGHT, ImageID.CURVE_RIGHT_REVERSE),
         ])
 
+        self.points: list[PointRef] = None # the bezier points
         self.THETA1 = None
         self.THETA2 = None
 
     def getAdapter(self) -> PathAdapter:
         return self.adapter
+    
+    # compute bezier curve purely through field ref. but store points as PointRef
+    def recomputeBezier(self):
+        # sometimes redundant, but must guarantee that the bezier nodes are initialized
+        self.segment.bezierTheta1.recomputePosition()
+        self.segment.bezierTheta2.recomputePosition()
+
+        # get the four control points
+        p0 = self.segment.getPrevious().getPositionRef().fieldRef
+        p1 = self.segment.bezierTheta1.getPositionRef().fieldRef
+        p2 = self.segment.bezierTheta2.getPositionRef().fieldRef
+        p3 = self.segment.getNext().getPositionRef().fieldRef
+        #print(p0, p1, p2, p3)
+
+        points = generate_cubic_points(p0, p1, p2, p3, 0.1)
+        print(points)
+
+        # to avoid null scenarios, set start and end location as points if length < 2
+        if len(points) < 2:
+            points = [p0, p3]
+
+        self.points = [PointRef(Ref.FIELD, point) for point in points]
+
+        # calculate start/end theta from the first two points / last two points
+        self.THETA1 = thetaFromPoints(points[0], points[1])
+        self.THETA2 = thetaFromPoints(points[-2], points[-1])
+
+        self.MIDPOINT: PointRef = self.points[len(self.points) // 2]
 
     
     def updateAdapter(self) -> None:
-        # If its the first time, set the initial theta to be the angles if
-        # the segment was a straight line
-        if self.THETA1 is None:
-            self.THETA1 = (self.segment.getNext().getPositionRef() - self.segment.getPrevious().getPositionRef()).theta()
-        self.THETA2 = self.THETA1
+        print("recompute bezier")
+        self.recomputeBezier()
 
 
     def getStartTheta(self) -> float:
@@ -71,21 +98,17 @@ class BezierSegmentState(PathSegmentState):
         x2, y2 = self.segment.getNext().getPositionRef().screenRef
         return pointTouchingLine(*position, x1, y1, x2, y2, self.segment.hitboxThickness)
 
-    # for now, return midpoint between previous and next nodes. But
-    # this should be changed to a point on the arc itself
+    # The midpoint of the list of points in the bezier curve
     def getCenter(self) -> tuple:
-        if self.segment.getPrevious() is None or self.segment.getNext() is None:
-            return (0, 0)
+        return self.MIDPOINT.screenRef
 
-        fpos = self.segment.getPrevious().getPositionRef()
-        spos = self.segment.getNext().getPositionRef()
-        return (fpos + (spos - fpos) / 2).screenRef
-
-    # for now, draw a line between previous and next nodes. But
-    # this should be changed to draw the arc itself
+    # Iterate through list of points and draw thick lines between them
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        x1, y1 = self.segment.getPrevious().getPositionRef().screenRef
-        x2, y2 = self.segment.getNext().getPositionRef().screenRef
+        
+        color = self.segment.getColor(isActive, isHovered)
 
-        drawLine(screen, self.segment.getColor(isActive, isHovered), x1, y1, x2, y2, self.segment.thickness, None)
+        for i in range(len(self.points) - 1):
+            x1, y1 = self.points[i].screenRef
+            x2, y2 = self.points[i+1].screenRef
+            drawLine(screen, color, x1, y1, x2, y2, self.segment.thickness, None)
 
