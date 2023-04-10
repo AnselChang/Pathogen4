@@ -70,12 +70,14 @@ class Interactor:
             self.addEntity(entity)
 
     def addEntity(self, entity: Entity, forceAdd: bool = False):
+        entity = entity.select.rootSelectEntity
         if entity.select.greedy:
             self.greedyEntity = entity
         if self.selected.add(entity, forceAdd):
             entity.select.onSelect(self)
 
     def removeEntity(self, entity: Entity, forceRemove: bool = False):
+        entity = entity.select.rootSelectEntity
         if self.selected.remove(entity, self.hoveredEntity, forceRemove):
             entity.select.onDeselect(self)
 
@@ -95,7 +97,10 @@ class Interactor:
         self.rawHoveredEntity = entity
 
         if self.greedyEntity is not None or self.disableUntilMouseUp:
-            return
+            if entity.select is not None and entity.select.rootSelectEntity is self.greedyEntity:
+                pass
+            else:
+                return
 
         if self.hoveredEntity is not entity:
 
@@ -120,6 +125,10 @@ class Interactor:
         # prevent double clicks
         if self.leftDragging or self.rightDragging:
             return
+        
+        for entity in entities.entities:
+            if entity.click is not None:
+                entity.click.onMouseDownAny(mouse)
 
         self.didMove = False
         self.mouseStartDrag = mouse
@@ -214,6 +223,11 @@ class Interactor:
             self.box.update(mouse, entities)
 
     def onMouseUp(self, entities: EntityManager, mouse: tuple):
+
+        for entity in entities.entities:
+            if entity.click is not None:
+                entity.click.onMouseUpAny(mouse)
+
         isRight = self.rightDragging
         self.leftDragging = False
         self.rightDragging = False

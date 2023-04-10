@@ -1,3 +1,7 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from entity_ui.dropdown.dropdown_container import DropdownContainer
 
 from common.draw_order import DrawOrder
 from common.image_manager import ImageID
@@ -12,18 +16,20 @@ Left side of the top option
 
 class DropdownIconContainer(Container):
     
-    def __init__(self, parent):
+    def __init__(self, parent, dropdownContainer: DropdownContainer):
         super().__init__(parent)
+        self.dropdownContainer = dropdownContainer
 
         self.recomputePosition()
 
         ImageEntity(parent = self, 
             states = ImageState(0, ImageID.DROPDOWN_ICON),
             drawOrder = DrawOrder.DROPDOWN_TEXT,
+            disableTouching = True
         )
 
     def defineCenterX(self):
-        return self._ax(7)
+        return self._ax(self.dropdownContainer.ICON_LEFT_OFFSET)
 
     def defineCenterY(self):
         return self._py(0.5)

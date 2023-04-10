@@ -18,6 +18,7 @@ class EntityManager:
         # entities that own Tick (must call onTick() every tick)
         self.tickEntities: list[Entity] = []
         self.keyEntities: list[Entity] = []        
+        self.clickEntities: list[Entity] = []
 
     def initRootContainer(self):
         self.rootContainer = RootContainer()
@@ -34,6 +35,8 @@ class EntityManager:
             self.tickEntities.append(entity)
         if entity.key is not None:
             self.keyEntities.append(entity)
+        if entity.click is not None:
+            self.clickEntities.append(entity)
 
     def removeEntity(self, entity: Entity, excludeChildrenIf = lambda child : False):
 
@@ -54,6 +57,8 @@ class EntityManager:
             self.tickEntities.remove(entity)
         if entity in self.keyEntities:
             self.keyEntities.remove(entity)
+        if entity in self.clickEntities:
+            self.clickEntities.remove(entity)
 
 
     def getEntityAtPosition(self, position: tuple) -> Entity:

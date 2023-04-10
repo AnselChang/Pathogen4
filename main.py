@@ -76,7 +76,7 @@ def main():
     fieldContainer = FieldContainer(fieldTransform)
 
     # test dropdown, remove after testing
-    DropdownContainer(fieldContainer, ["A", "B", "C", "D"], FontID.FONT_NORMAL, 15, awidth = 60)
+    DropdownContainer(fieldContainer, ["A", "B", "C", "D"], FontID.FONT_NORMAL, 12, awidth = 60)
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)

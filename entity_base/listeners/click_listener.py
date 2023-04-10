@@ -9,6 +9,14 @@ class ClickListener(ABC):
     def onMouseDown(self, mouse: tuple):
         pass
 
+    @abstractmethod
+    def onMouseDownAny(self, mouse: tuple):
+        pass
+
+    @abstractmethod
+    def onMouseUpAny(self, mouse: tuple):
+        pass
+
 
     @abstractmethod
     def onLeftClick(self, mouse: tuple):
@@ -28,6 +36,8 @@ class ClickLambda(ClickListener):
                  FonRightClick = lambda mouse: None,
                  FOnDoubleClick = lambda mouse: None,
                  FOnMouseDown = lambda mouse: None,
+                 FOnMouseUpAny = lambda mouse: None,
+                 FOnMouseDownAny = lambda mouse: None
                  ):
         super().__init__(entity)
 
@@ -35,9 +45,17 @@ class ClickLambda(ClickListener):
         self.FonRightClick = FonRightClick
         self.FOnDoubleClick = FOnDoubleClick
         self.FOnMouseDown = FOnMouseDown
+        self.FOnMouseUpAny = FOnMouseUpAny
+        self.FOnMouseDownAny = FOnMouseDownAny
 
     def onMouseDown(self, mouse: tuple):
         return self.FOnMouseDown(mouse)
+    
+    def onMouseDownAny(self, mouse: tuple):
+        return self.FOnMouseDownAny(mouse)
+    
+    def onMouseUpAny(self, mouse: tuple):
+        return self.FOnMouseUpAny(mouse)
 
     def onLeftClick(self, mouse: tuple):
         return self.FonLeftClick(mouse)
@@ -47,4 +65,3 @@ class ClickLambda(ClickListener):
 
     def onDoubleLeftClick(self, mouse: tuple):
         return self.FOnDoubleClick(mouse)
-    

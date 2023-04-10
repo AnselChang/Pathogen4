@@ -5,6 +5,8 @@ from entity_base.container_entity import Container
 from entity_base.entity import Entity
 from entity_base.image.image_entity import ImageEntity
 from entity_base.image.image_state import ImageState
+from entity_base.listeners.click_listener import ClickLambda
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
 from entity_base.listeners.tick_listener import TickLambda
 from entity_base.text_entity import TextAlign, TextEntity
 from entity_ui.dropdown.dropdown_option_entity import DropdownOptionEntity
@@ -30,7 +32,7 @@ class DropdownContainer(Container):
 
     def getOptionHeight(self) -> float:
         self.font.get()
-        return self.font.getCharHeight() * 1.2
+        return self.font.getCharHeight() * self.TEXT_PADDING_RATIO
     
     def onOptionClick(self, i, optionText: str):
         self.selectedOptionText = optionText
@@ -64,18 +66,32 @@ class DropdownContainer(Container):
         for option in self.options:
             option.drawOnSurface(self.surface, self.font.get())
 
+    # if clicking elsewhere on the screen, collapse the dropdown
+    def onMouseDown(self, mouse: tuple):
+        for option in self.options:
+            if option.hover.isHovering:
+                return
+        self.collapse()
+
     def __init__(self, parent: Entity, options: list[str], fontID: FontID, fontSize: int, awidth: float):
+        
+        self.CORNER_RADIUS = 5
+        self.TEXT_PADDING_RATIO = 1.1
+        self.TEXT_LEFT_OFFSET = 15
+        self.ICON_LEFT_OFFSET = 7
+        
         super().__init__(parent,
                          tick = TickLambda(self, FonTick = self.onTick),
-                         drawOrder = DrawOrder.DROPDOWN_BACKGROUND)
+                         click = ClickLambda(self, FOnMouseDownAny = self.onMouseDown),
+                         drawOrder = DrawOrder.DROPDOWN_BACKGROUND
+                         )
+                         
 
         self.expanded = False
 
         self.awidth = awidth
         self.font = self.fonts.getDynamicFont(fontID, fontSize)
         self.heightProfile = MotionProfile(self.getOptionHeight(), 0.4)
-
-        self.CORNER_RADIUS = 5
 
         self.optionTexts = options
         self.selectedOptionText = options[0]
@@ -93,10 +109,6 @@ class DropdownContainer(Container):
             self.options.append(o)
         self.recomputePosition()
 
-        
-
-
-
     def defineWidth(self):
         return self._awidth(self.awidth)
     
@@ -113,3 +125,9 @@ class DropdownContainer(Container):
     def draw(self, screen, a, b):
         #pygame.draw.rect(screen, (0, 0, 0), self.RECT, width = 1)
         screen.blit(self.surface, (self.LEFT_X, self.TOP_Y))
+
+    def onSelect(self, interactor):
+         print("select")
+
+    def onDeselect(self, interactor):
+         print("deselect")

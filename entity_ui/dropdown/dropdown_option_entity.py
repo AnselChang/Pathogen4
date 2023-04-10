@@ -6,6 +6,7 @@ from common.font_manager import FontID
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.hover_listener import HoverLambda
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
 from entity_ui.dropdown.dropdown_icon_container import DropdownIconContainer
 from utility.pygame_functions import drawLine, drawText
 if TYPE_CHECKING:
@@ -42,7 +43,7 @@ class DropdownOptionEntity(Entity):
         self.recomputePosition()
 
         if i == 0:
-            DropdownIconContainer(self)
+            DropdownIconContainer(self, dropdownContainer)
 
         
     def isVisible(self) -> bool:
@@ -62,13 +63,13 @@ class DropdownOptionEntity(Entity):
     
     def drawOnSurface(self, surface, font):
         
-        isHovering = self.hover.isHovering
-        color = [52, 132, 240] if isHovering else [196, 219, 250]
+        if self.hover.isHovering:
+            color = [176, 200, 250] if self.isFirst else [52, 132, 240]
+        else:
+            color = [196, 219, 250]
 
         x = self.LEFT_X - self._px(0)
         y = self.TOP_Y - self._py(0)
-
-        TEXT_LEFT_MARGIN = 15
 
         #drawLine(surface, (0,0,0), x, y, x + 200, y, 1)
 
@@ -81,14 +82,15 @@ class DropdownOptionEntity(Entity):
             bl = r
             br = r
 
-        pygame.draw.rect(surface, color, (x, y, self.WIDTH, self.HEIGHT),
+        h = 0 if self.isLast else 1 # prevent any gaps between options
+        pygame.draw.rect(surface, color, (x, y, self.WIDTH, self.HEIGHT+h),
                         border_top_left_radius = tl,
                         border_top_right_radius = tr,
                         border_bottom_left_radius = bl,
                         border_bottom_right_radius = br
                          )
         drawText(surface, font, self.getText(), (0,0,0),
-                 x = x + self._awidth(TEXT_LEFT_MARGIN),
+                 x = x + self._awidth(self.dropdownContainer.TEXT_LEFT_OFFSET),
                  y = y + self.HEIGHT/2,
                  alignX = 0,
                  alignY = 0.5

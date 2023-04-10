@@ -10,11 +10,19 @@ class SelectorType(Enum):
 
 class SelectListener(ABC):
 
-    def __init__(self, entity, id: str, enableToggle: bool, greedy: bool = False, type: SelectorType = SelectorType.FREE, deselectOnMouseUp = False):
+    def __init__(self, entity, id: str, enableToggle: bool, greedy: bool = False,
+                 type: SelectorType = SelectorType.FREE, deselectOnMouseUp = False,
+                 rootSelectEntity = None
+                 ):
         self.entity = entity
         self.id = id
         self.type = type
         self.deselectOnMouseUp = deselectOnMouseUp
+
+        if rootSelectEntity is None:
+            self.rootSelectEntity = entity
+        else:
+            self.rootSelectEntity = rootSelectEntity
 
         # when selected, nothing else is hovered
         # when deselected by clicking somewhere else, do not select the other thing 
@@ -40,8 +48,11 @@ class SelectListener(ABC):
     
 class SelectLambda(SelectListener):
 
-    def __init__(self, entity, id: str, enableToggle: bool = False, greedy: bool = False, type: SelectorType = SelectorType.FREE, deselectOnMouseUp = False, FgetHitbox = lambda : None, FonSelect = lambda interactor: None, FonDeselect = lambda interactor: None):
-        super().__init__(entity, id, enableToggle, greedy, type, deselectOnMouseUp)
+    def __init__(self, entity, id: str, enableToggle: bool = False, greedy: bool = False,
+                 type: SelectorType = SelectorType.FREE, deselectOnMouseUp = False,
+                 FgetHitbox = lambda : None, FonSelect = lambda interactor: None,
+                   FonDeselect = lambda interactor: None, rootSelectEntity = None):
+        super().__init__(entity, id, enableToggle, greedy, type, deselectOnMouseUp, rootSelectEntity)
         self.FgetHitbox = FgetHitbox
         self.FonSelect = FonSelect
         self.FonDeselect = FonDeselect
