@@ -61,6 +61,7 @@ class Constraints(Entity):
     def resetPositionConstraints(self, mouse: PointRef):
         self.mouse = mouse
         self.positionConstraints.clear()
+        self.thetaConstraints.clear()
 
     # The constraint is some other node with an angle to snap to
     def addPositionConstraint(self, other: PointRef, theta: float):
@@ -141,7 +142,6 @@ class Constraints(Entity):
     def hasConstraint(self, positionFieldRef, theta) -> bool:
         for constraint in itertools.chain(self.positionConstraints, self.thetaConstraints):
             pointToLineAngle = thetaFromPoints(constraint.point, positionFieldRef)
-            print(theta, constraint.theta)
             if parallelTheta(pointToLineAngle, theta, 0.01) and parallelTheta(constraint.theta, theta, 0.01):
                 return True
         return False

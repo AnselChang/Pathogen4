@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from root_container.field_container.node.node_line import NodeLine
 if TYPE_CHECKING:
     from root_container.path import Path
 
@@ -92,8 +94,8 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[Path
         self.updateAdapter()
 
         self.recomputePosition()
-        self.beforeThetaNode = BezierThetaNode(self, True)
-        self.afterThetaNode = BezierThetaNode(self, False)
+
+        NodeLine(self)
         
 
 

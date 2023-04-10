@@ -27,6 +27,10 @@ class LinearGroupContainer(Container, Generic[T]):
         self.N += 1
 
         return self.N - 1
+    
+    def remove(self, entity: LinearContainer):
+        self.groupEntities.remove(entity)
+        self.N -= 1
 
     def N(self) -> int:
         return len(self.groupEntities)

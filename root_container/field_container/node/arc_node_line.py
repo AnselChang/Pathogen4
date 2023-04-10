@@ -40,19 +40,3 @@ class ArcNodeLine(Entity):
         acn = self.arcCurveNode.positionRef.screenRef
         drawDottedLine(screen, color, acn, center, length = 10, fill = 0.5, width = 1)
         pygame.draw.circle(screen, shade(color, 0.9), center, 3)
-
-        # Draw line extending before start of arc
-        startNode = self.arcCurveNode.arc.p1
-        theta1 = self.arcCurveNode.arc.THETA1 + math.pi
-        if not self.arcCurveNode.segment.getPrevious().constraints.hasConstraint(startNode.fieldRef, theta1):
-            # only draw if there isn't already green constraints indicator
-            extended = startNode.screenRef[0] + r*math.cos(theta1), startNode.screenRef[1] + r*math.sin(theta1)
-            drawDottedLine(screen, (0,0,0), startNode.screenRef, extended, length = 10, fill = 0.5, width = 1)
-
-        # Draw line extending past end of arc
-        endNode = self.arcCurveNode.arc.p3
-        theta2 = self.arcCurveNode.arc.THETA2
-        if not self.arcCurveNode.segment.getNext().constraints.hasConstraint(endNode.fieldRef, theta2):
-            # only draw if there isn't already green constraints indicator
-            extended = endNode.screenRef[0] + r*math.cos(theta2), endNode.screenRef[1] + r*math.sin(theta2)
-            drawDottedLine(screen, (0,0,0), endNode.screenRef, extended, length = 10, fill = 0.5, width = 1)

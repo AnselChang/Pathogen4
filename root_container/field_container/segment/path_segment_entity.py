@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from entity_base.listeners.tick_listener import TickLambda
 from root_container.field_container.node.arc_curve_node import ArcCurveNode
+from root_container.field_container.node.bezier_lines import BezierLines
+from root_container.field_container.node.bezier_theta_node import BezierThetaNode
 
 from root_container.field_container.segment.segment_type import SegmentType
 if TYPE_CHECKING:
@@ -84,6 +86,8 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         # having both nodes not guaranteed, initialization of ArcCurveEntity
         # is delayed until both nodes are set at updateAdapter()
         self.arcNode: ArcCurveNode = None
+
+        self.isFullyInitialized = False
 
         self.updateAdapter()
         self.recomputePosition()
@@ -168,9 +172,16 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     def updateAdapter(self) -> None:
 
         # initailize arc node
-        if self.arcNode is None and self.getNext() is not None and self.getPrevious() is not None:
+        if not self.isFullyInitialized and self.getNext() is not None and self.getPrevious() is not None:
             self.arcNode = ArcCurveNode(self, self.states[SegmentType.ARC])
-            #self.arcNode.subscribe(onNotify = self.updateAdapter)
+            self.bezierTheta1 = BezierThetaNode(self, self.getPrevious, True)
+            self.bezierTheta2 = BezierThetaNode(self, self.getNext, False)
+
+            # must call this after initilizing arcNode and bezierThetas,
+            # so that position recomputation happens before drawing lines
+            BezierLines(self)
+
+            self.isFullyInitialized = True
 
         self.getState().updateAdapter()
         self.recomputePosition()
@@ -241,5 +252,11 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         return self.getState().draw(screen, isActive, isHovered)
     
-    def toString(self) -> str:
-        "Segment with shape: " + str(self.currentState)
+    def isSelfOrNodesSelected(self):
+        if self.select.isSelected:
+            return True
+        elif self.getPrevious().select.isSelected:
+            return True
+        elif self.getNext().select.isSelected:
+            return True
+        return False

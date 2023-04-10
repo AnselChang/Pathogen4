@@ -65,14 +65,7 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
             return False
         
         # If segment or neighboring nodes are not selected, then no theta control
-        if (not self.segment.select.isSelected
-            and not self.segment.getPrevious().select.isSelected
-            and not self.segment.getNext().select.isSelected
-            ):
-            return False
-        
-        # If all conditions are met, then theta control is visible
-        return True
+        return self.segment.isSelfOrNodesSelected()
     
     # recompute arc curve position given perpDistance
     def recomputePositionRef(self):
