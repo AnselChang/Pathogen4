@@ -126,6 +126,9 @@ class DropdownContainer(Container):
         #pygame.draw.rect(screen, (0, 0, 0), self.RECT, width = 1)
         screen.blit(self.surface, (self.LEFT_X, self.TOP_Y))
 
+        rect = (self.LEFT_X-1, self.TOP_Y-1, self.WIDTH+2, self.surface.get_height()+3)
+        pygame.draw.rect(screen, (0,0,0), rect, width = 2, border_radius = self.CORNER_RADIUS)
+
     def onSelect(self, interactor):
          print("select")
 

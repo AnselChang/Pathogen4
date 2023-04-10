@@ -128,6 +128,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
     def getElementStretch(self) -> int:
         if self.elementsContainer is None:
             return 0
+        print(self.elementsContainer.defineHeight())
         return self.elementsContainer.defineHeight()
     
     def isActuallyExpanded(self) -> bool:
@@ -146,6 +147,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         
         self.ACTUAL_COLLAPSED_HEIGHT = self._aheight(self.COLLAPSED_HEIGHT)
         self.ACTUAL_EXPANDED_HEIGHT = self._aheight(self.EXPANDED_HEIGHT) + self.getElementStretch()
+        print("actual:", self.ACTUAL_EXPANDED_HEIGHT)
         self.ACTUAL_HEIGHT = self.ACTUAL_EXPANDED_HEIGHT if expanded else self.ACTUAL_COLLAPSED_HEIGHT
 
         self.animatedExpansion.setEndValue(1 if expanded else 0)
@@ -192,7 +194,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         # current animated height
         ratio = self.animatedExpansion.get()
         height = self.ACTUAL_COLLAPSED_HEIGHT + (self.ACTUAL_EXPANDED_HEIGHT - self.ACTUAL_COLLAPSED_HEIGHT) * ratio
-        return self._aheight(height)
+        return height
     
     def getPercentExpanded(self) -> float:
         return self.animatedExpansion.get()

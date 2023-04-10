@@ -103,6 +103,8 @@ def main():
     # Main game loop
     while True:
         mouse = pygame.mouse.get_pos()
+        pygame.display.set_caption(f"({mouse[0]}, {mouse[1]})")
+
         mouseRef = PointRef(Ref.SCREEN, mouse)
         interactor.setHoveredEntity(entities.getEntityAtPosition(mouse), mouse)
 
