@@ -20,7 +20,7 @@ class LabelEntity(TextEntity):
         return self._px(0.5)
     
     def defineCenterY(self) -> float:
-        return self._py(0.46)
+        return self._py(0.48)
 
     # widgets and readouts should not use ElementEntity width
     # because they are dynamic

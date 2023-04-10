@@ -104,7 +104,6 @@ def main():
 
         mouseRef = PointRef(Ref.SCREEN, mouse)
         interactor.setHoveredEntity(entities.getEntityAtPosition(mouse), mouse)
-
         # handle events and call callbacks
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

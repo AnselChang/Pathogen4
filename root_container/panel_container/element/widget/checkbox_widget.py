@@ -49,10 +49,10 @@ class CheckboxWidgetContainer(WidgetContainer['CheckboxWidgetDefinition']):
     # widgets and readouts should not use ElementEntity width
     # because they are dynamic
     def defineWidth(self) -> float:
-        return self._pheight(0.8)
+        return self.defineHeight()
     
     def defineHeight(self) -> float:
-        return self._pheight(0.8)
+        return self._pheight(0.6)
     
     def draw(self,b,c,d):
         #print(self.checkbox.RECT)

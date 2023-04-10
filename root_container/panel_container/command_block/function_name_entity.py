@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from common.font_manager import FontID
+from entity_base.container_entity import Container
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -10,7 +11,7 @@ from common.draw_order import DrawOrder
 
 
 # trash button for custom commands
-class FunctionNameEntity(Entity):
+class FunctionNameEntity(Container):
 
     def __init__(self, parentHeader, parentCommand: CommandBlockEntity):
         

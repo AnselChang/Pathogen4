@@ -70,8 +70,14 @@ class TextEditorEntity(Entity, Observable):
         self.mode: TextEditorMode = TextEditorMode.READ
 
         self.backgroundColor: dict[TextEditorMode, tuple] = {
-            TextEditorMode.READ : (239, 226, 174),
-            TextEditorMode.WRITE : (174, 198, 239)
+            TextEditorMode.WRITE : {
+                True: (239, 226, 174),
+                False: (239, 226, 174)
+            },
+            TextEditorMode.READ : {
+                True: (176, 200, 250),
+                False: (196, 219, 250)
+            }
         }
 
         self.recomputePosition()
@@ -140,7 +146,8 @@ class TextEditorEntity(Entity, Observable):
 
         surf = pygame.Surface((width, height))
         
-        pygame.draw.rect(surf, self.backgroundColor[self.mode], [0,0,width,height], border_radius = self.border.BORDER_RADIUS)
+
+        pygame.draw.rect(surf, self.backgroundColor[self.mode][isHovered], [0,0,width,height], border_radius = self.border.BORDER_RADIUS)
         pygame.draw.rect(surf, (0,0,0), [0,0,width,height], width = 2, border_radius = self.border.BORDER_RADIUS)
         surf.set_alpha(self.getOpacity() * 255)
 
