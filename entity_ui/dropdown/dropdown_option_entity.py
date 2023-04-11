@@ -69,13 +69,13 @@ class DropdownOptionEntity(Entity):
         return self._px(0.5)
     
     def defineTopY(self) -> float:
-        return self._py(0) + self._aheight(self.i * self.dropdownContainer.optionHeight)
+        return self._py(0) + self.i * self.dropdownContainer.optionHeight
     
     def defineWidth(self) -> float:
         return self._pwidth(1)
     
     def defineHeight(self) -> float:
-        return self._aheight(self.dropdownContainer.optionHeight)
+        return self.dropdownContainer.optionHeight
     
     # Higher number is drawn in the front.
     # We want to draw the lowest y coordinate in the front
@@ -108,17 +108,19 @@ class DropdownOptionEntity(Entity):
             br = r
 
         h = 0 if self.isLast else 1 # prevent any gaps between options
-        pygame.draw.rect(surface, color, (x, y, self.WIDTH, self.HEIGHT+h),
+        alpha = int(round(self.getOpacity() * 255))
+        pygame.draw.rect(surface, (*color, alpha), (x, y, self.WIDTH, self.HEIGHT+h),
                         border_top_left_radius = tl,
                         border_top_right_radius = tr,
                         border_bottom_left_radius = bl,
                         border_bottom_right_radius = br
                          )
-        drawText(surface, self.font.get(), self.getText(), (0,0,0),
+        drawText(surface, self.font.get(), self.getText(), (0,0,0, alpha),
                  x = x + self._awidth(self.dropdownContainer.TEXT_LEFT_OFFSET),
                  y = y + self.HEIGHT/2,
                  alignX = 0,
-                 alignY = 0.5
+                 alignY = 0.5,
+                 opacity = self.getOpacity()
                  )
 
 

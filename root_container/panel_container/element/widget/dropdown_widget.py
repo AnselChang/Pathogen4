@@ -33,7 +33,8 @@ class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition']):
         colorHovered = [52, 132, 240]
         colorOff = [196, 219, 250]
         self.dropdown = DropdownContainer(self, definition.options, FontID.FONT_NORMAL, 11,
-                                          colorSelectedHovered, colorSelected, colorHovered, colorOff, dynamicWidth = False)
+                                          colorSelectedHovered, colorSelected, colorHovered, colorOff,
+                                          dynamicWidth = False, verticalTextPadding = 1)
 
     def getValue(self) -> bool:
         return self.dropdown.getSelectedOptionText()

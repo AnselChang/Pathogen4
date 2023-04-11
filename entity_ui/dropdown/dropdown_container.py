@@ -87,7 +87,7 @@ class DropdownContainer(Container):
 
         DropdownIconContainer(self.currentOption, self)
 
-        self.heightProfile = MotionProfile(self.optionHeight, 0.4)
+        self.heightProfile = MotionProfile(self.optionHeight, 0.4, 1)
         self.widthProfile = MotionProfile(self.getFullWidth(), 0.4)
         self.borderProfile = MotionProfile(0 if dynamicBorderOpacity else 1, 0.4)
 
@@ -236,8 +236,10 @@ class DropdownContainer(Container):
 
         rect = (self.LEFT_X-1, self.TOP_Y-1, self.surface.get_width()+2, self.surface.get_height()+3)
         
-        if self.dynamicBorderOpacity:
-            alpha = int(round(self.borderProfile.get() * 255))
+        borderProfileOpacity = self.borderProfile.get() if self.dynamicBorderOpacity else 1
+        opacity = min(borderProfileOpacity, self.getOpacity())
+        if opacity < 1:
+            alpha = int(round(opacity * 255))
             drawTransparentRect(screen, *rect, (0,0,0), alpha, width = 2, radius = self.CORNER_RADIUS)
         else:
             pygame.draw.rect(screen, (0,0,0), rect, width = 2, border_radius = self.CORNER_RADIUS)

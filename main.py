@@ -103,10 +103,13 @@ def main():
         dimensions.RESIZED_THIS_FRAME = False
 
         mouse = pygame.mouse.get_pos()
-        pygame.display.set_caption(f"({mouse[0]}, {mouse[1]})")
+        
 
         mouseRef = PointRef(Ref.SCREEN, mouse)
-        interactor.setHoveredEntity(entities.getEntityAtPosition(mouse), mouse)
+        hoveredEntity = entities.getEntityAtPosition(mouse)
+        pygame.display.set_caption(f"({mouse[0]}, {mouse[1]}), {str(hoveredEntity)}")
+
+        interactor.setHoveredEntity(hoveredEntity, mouse)
         # handle events and call callbacks
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

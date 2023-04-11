@@ -10,9 +10,10 @@ after each update.
 """
 
 class MotionProfile:
-    def __init__(self, endValue, speed):
+    def __init__(self, endValue, speed, threshold = 0.001):
         self._speed = speed
         self._currentValue = endValue
+        self._threshold = threshold
 
         self.setEndValue(endValue)
 
@@ -28,14 +29,14 @@ class MotionProfile:
 
     def isDone(self) -> bool:
         distanceRemaining = self._endValue - self._currentValue
-        return abs(distanceRemaining) < 0.0001
+        return abs(distanceRemaining) < self._threshold
 
     def tick(self) -> float:
         # Calculate the distance remaining
         distanceRemaining = self._endValue - self._currentValue
 
         # If we're already at the end value, return it
-        if abs(distanceRemaining) < 0.0001:
+        if abs(distanceRemaining) < self._threshold:
             self._currentValue = self._endValue
             self._done = True
             return self._currentValue
