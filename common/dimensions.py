@@ -9,7 +9,7 @@ class Dimensions(Observable):
 
     def __init__(self):
 
-        self.RATIO = 0.45
+        self.RATIO = 0.55
 
         self.FIELD_SIZE_IN_INCHES = 144
         self.FIELD_MARGIN_IN_PIXELS = 95 # the margin from image (0,0) to (0,0) of the field in pixels

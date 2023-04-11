@@ -39,4 +39,4 @@ class DropdownIconContainer(Container):
         return self.defineHeight()
     
     def defineHeight(self):
-        return self._pheight(0.8)
+        return self._pheight(self.dropdownContainer.ICON_SCALE)

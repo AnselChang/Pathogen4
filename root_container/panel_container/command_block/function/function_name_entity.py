@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from common.font_manager import FontID
 from entity_base.container_entity import Container
 from entity_base.listeners.hover_listener import HoverLambda
-from root_container.panel_container.command_block.function.function_selector_icon import FunctionSelectorIcon
+from entity_ui.dropdown.dropdown_container import DropdownContainer
 from utility.pygame_functions import shade
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
@@ -39,8 +39,18 @@ class FunctionNameEntity(Entity):
                    dx = self.dx
                    )
         
-        FunctionSelectorIcon(self, parentCommand)
-
+        color = self.parentCommand.getColor()
+        colorSelectedHovered = shade(color, 1)
+        colorSelected = shade(color, 1.05)
+        colorHovered = shade(color, 1.1)
+        colorOff = shade(color, 1.3)
+        
+        self.dropdown = DropdownContainer(self, ["goForward()", "goForwardTimed()", "go()"],
+                          FontID.FONT_NORMAL, 18,
+                          colorSelectedHovered, colorSelected, colorHovered, colorOff,
+                          dynamicWidth = True, dynamicBorderOpacity = True, centered = False,
+                          iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, textPaddingRatio = 0.85)
+        
         self.recomputePosition()
 
     def defineLeftX(self) -> tuple:
@@ -57,13 +67,6 @@ class FunctionNameEntity(Entity):
 
         RIGHT_MARGIN = 5
         return self._awidth(self.dx + RIGHT_MARGIN) + self.textEntity.getTextWidth() # yes, this is height not width. square icon
+    
     def defineHeight(self) -> float:
         return self._pheight(0.8)
-    
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
-
-        s = 1 if isHovered else 1.1
-        color = shade(self.parentCommand.getColor(), s)
-        pygame.draw.rect(screen, color, self.RECT,
-                         border_radius = self.CORNER_RADIUS
-                         )

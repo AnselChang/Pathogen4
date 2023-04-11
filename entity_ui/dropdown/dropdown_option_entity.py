@@ -18,13 +18,19 @@ class DropdownOptionEntity(Entity):
 
     # i is used for positioning. Active option is 0, after that it's 1, 2, ...
     # For active option, pass in dynamic text. Otherwise, pass in static text
-    def __init__(self, dropdownContainer: DropdownContainer, i: int, font: DynamicFont, staticText: str = None,
+    def __init__(self, dropdownContainer: DropdownContainer, i: int, font: DynamicFont,
+                 colorSelectedHovered, colorSelected, colorHovered, colorOff, staticText: str = None,
                  dynamicText: Callable = None, visible = lambda: True, isLast = False):
 
         if dynamicText is None:
             self.getText = lambda staticText=staticText: staticText
         else:
             self.getText = dynamicText
+
+        self.colorSelectedHovered = colorSelectedHovered
+        self.colorSelected = colorSelected
+        self.colorHovered = colorHovered
+        self.colorOff = colorOff
 
         self.font = font
         t = self.getText
@@ -69,11 +75,11 @@ class DropdownOptionEntity(Entity):
         return self._aheight(self.dropdownContainer.getOptionHeight())
     
     def drawOnSurface(self, surface):
-        
-        if self.hover.isHovering:
-            color = [176, 200, 250] if self.isFirst else [52, 132, 240]
+
+        if self.isFirst:
+            color = self.colorSelectedHovered if self.hover.isHovering else self.colorSelected
         else:
-            color = [196, 219, 250]
+            color = self.colorHovered if self.hover.isHovering else self.colorOff
 
         x = self.LEFT_X - self._px(0)
         y = self.TOP_Y - self._py(0)
