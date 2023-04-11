@@ -6,6 +6,7 @@ from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.panel_container.command_block.function.function_group_selector import FunctionGroupSelector
 
 from root_container.panel_container.tab.tab_handler import TabHandler
 
@@ -89,6 +90,9 @@ def main():
     commandExpansion = CommandExpansionContainer(tabHandler.blockContainer)
     commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
 
+    # test
+    FunctionGroupSelector(fieldContainer, "B", ["A", "B", "C"], fontManager.getDynamicFont(FontID.FONT_TITLE, 16), [0,255,0], 80)
+
     # Create path
     path = Path(fieldContainer, tabHandler.blockContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)
@@ -146,5 +150,5 @@ def main():
         #print(clock.get_fps())
 
 if __name__ == "__main__":
-    cProfile.run('main()', sort='cumtime')
-    #main()
+    #cProfile.run('main()', sort='cumtime')
+    main()
