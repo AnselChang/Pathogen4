@@ -9,6 +9,7 @@ from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
 from entity_base.listeners.tick_listener import TickLambda
 from entity_base.text_entity import TextAlign, TextEntity
+from entity_ui.dropdown.dropdown_icon_container import DropdownIconContainer
 from entity_ui.dropdown.dropdown_option_entity import DropdownOptionEntity
 from entity_ui.group.linear_container import LinearContainer
 from entity_ui.group.radio_group_container import RadioGroupContainer
@@ -34,10 +35,10 @@ class DropdownContainer(Container):
     def __init__(self, parent: Entity, options: list[str], fontID: FontID, fontSize: int,
                  colorSelectedHovered, colorSelected, colorHovered, colorOff,
                  dynamicWidth: bool = False, dynamicBorderOpacity: bool = False, centered: bool = True,
-                 iconScale = 0.8, textPaddingRatio = 1.1, textLeftOffset = 14, textRightOffset = 5, cornerRadius = 5):
+                 iconScale = 0.8, verticalTextPadding = 0, textLeftOffset = 14, textRightOffset = 5, cornerRadius = 5):
         
         self.CORNER_RADIUS = cornerRadius
-        self.TEXT_PADDING_RATIO = textPaddingRatio
+        self.VERTICAL_TEXT_PADDING = verticalTextPadding
         self.TEXT_LEFT_OFFSET = textLeftOffset
         self.ICON_LEFT_OFFSET = self.TEXT_LEFT_OFFSET // 2
         self.TEXT_RIGHT_OFFSET = textRightOffset
@@ -65,6 +66,7 @@ class DropdownContainer(Container):
         self.options = []
 
         self.widthProfile = None
+        self.heightProfile = None
         self.borderProfile = None
         self.recomputePosition()
 
@@ -83,14 +85,13 @@ class DropdownContainer(Container):
             self.options.append(o)
         self.recomputePosition()
 
-        self.heightProfile = MotionProfile(self.getOptionHeight(), 0.4)
+        DropdownIconContainer(self.currentOption, self)
+
+        self.heightProfile = MotionProfile(self.optionHeight, 0.4)
         self.widthProfile = MotionProfile(self.getFullWidth(), 0.4)
         self.borderProfile = MotionProfile(0 if dynamicBorderOpacity else 1, 0.4)
 
-    def getOptionHeight(self) -> float:
-        self.font.get()
-        return self.font.getCharHeight() * self.TEXT_PADDING_RATIO
-    
+
     def onOptionClick(self, i, optionText: str):
         self.selectedOptionText = optionText
 
@@ -104,24 +105,49 @@ class DropdownContainer(Container):
     def getSelectedOptionText(self) -> str:
         return self.selectedOptionText
     
-    def updateHeightProfile(self):
-        if self.dynamicWidth:
-            self.widthProfile.setEndValue(self.getFullWidth())
+    def getFullWidth(self):
+
+        if len(self.options) == 0:
+            return 0
+        elif self.dynamicWidth and not self.expanded:
+            textWidth = self.getOptionWithText(self.selectedOptionText).getTextWidth()
+        else:
+            textWidth = self.maxOptionWidth
+        
+        return textWidth + self._awidth(self.TEXT_LEFT_OFFSET + self.TEXT_RIGHT_OFFSET)
+    
+    def getFullHeight(self):
+        if self.expanded:
+            height = self.optionHeight * (len(self.optionTexts) + 1)
+        else:
+            height = self.optionHeight
+        return height
+        
+
+    def updateProfiles(self, force: bool = False):
+        if self.widthProfile is None:
+            return
+    
+        self.widthProfile.setEndValue(self.getFullWidth())
+        self.heightProfile.setEndValue(self.getFullHeight())
+        self.borderProfile.setEndValue(1 if self.expanded else 0)
+
+        if force:
+            self.widthProfile.forceToEndValue()
+            self.heightProfile.forceToEndValue()
+            self.borderProfile.forceToEndValue()
+        
 
     def expand(self):
         self.expanded = True
-        self.heightProfile.setEndValue(self.getOptionHeight() * len(self.optionTexts)+1)
-        self.borderProfile.setEndValue(1)
-        self.updateHeightProfile()
+        self.updateProfiles()
         
     def collapse(self):
         self.expanded = False
-        self.heightProfile.setEndValue(self.getOptionHeight())
-        self.borderProfile.setEndValue(0)
-        self.updateHeightProfile()
+        self.updateProfiles()
     
     def isFullyCollapsed(self) -> bool:
-        return self.heightProfile.get() == self.getOptionHeight()
+        return self.heightProfile.isDone() and not self.expanded
 
     def onTick(self):
 
@@ -134,10 +160,12 @@ class DropdownContainer(Container):
         if recompute:
             self.recomputePosition()
 
-        width = self.widthProfile.get()
-        height = self._aheight(self.heightProfile.get())
-        self.surface = pygame.Surface((width, height-1), pygame.SRCALPHA).convert_alpha()
+        if False and self.selectedOptionText == "goForward()":
+            print(self.heightProfile._currentValue, self.heightProfile._endValue, self.heightProfile._done)
 
+        width = self.widthProfile.get()
+        height = self.heightProfile.get()
+        self.surface = pygame.Surface((width, height-1), pygame.SRCALPHA).convert_alpha()
         for option in self.options:
             option.drawOnSurface(self.surface)
 
@@ -153,33 +181,37 @@ class DropdownContainer(Container):
             if option.getText() == text:
                 return option
 
-    def getFullWidth(self):
-
-        if len(self.options) == 0:
-            return 0
-        elif self.dynamicWidth and not self.expanded:
-            textWidth = self.getOptionWithText(self.selectedOptionText).getTextWidth()
-        else:
-            widths = [option.getTextWidth() for option in self.options]
-            textWidth = max(widths)
-        
-        return textWidth + self._awidth(self.TEXT_LEFT_OFFSET + self.TEXT_RIGHT_OFFSET)
     
     # recompute option text surfaces before computing own
     def defineBefore(self):
+
+        if len(self.options) == 0:
+            self.maxOptionWidth = 0
+            self.optionHeight = 0
+            return
+
         for option in self.options:
             option.recomputePosition()
 
-    def defineWidth(self):
-        fullWidth = self.getFullWidth()
+        self.maxOptionWidth = max([option.getTextWidth() for option in self.options])
+        
+        self.optionHeight = max([option.getTextHeight() for option in self.options])
+        self.optionHeight += 2 * self._awidth(self.VERTICAL_TEXT_PADDING)
 
-        if self.widthProfile is not None:
-            self.widthProfile.setEndValue(fullWidth)
-            return self.widthProfile.get()
-        return 0
+        if self.dimensions.RESIZED_THIS_FRAME:
+            self.updateProfiles(True)
+
+    def defineWidth(self):
+
+        if self.widthProfile is None:
+            return 0
+        return self.widthProfile.get()
     
     def defineHeight(self):
-        return self._aheight(self.getOptionHeight() * len(self.optionTexts))
+        if self.heightProfile is None:
+            return 0
+        
+        return self.heightProfile.get()
     
     def defineCenterX(self):
         if self.centered:
@@ -192,7 +224,11 @@ class DropdownContainer(Container):
         return None
     
     def defineTopY(self) -> float:
-        return self._py(0.5) - self._aheight(self.getOptionHeight() / 2)
+        return self._py(0.5) - self.optionHeight / 2
+    
+    def defineOther(self):
+        self.updateProfiles()
+    
     
     def draw(self, screen, a, b):
         #pygame.draw.rect(screen, (0, 0, 0), self.RECT, width = 1)
@@ -209,4 +245,4 @@ class DropdownContainer(Container):
     # Higher number is drawn in the front.
     # We want to draw the lowest y coordinate in the front
     def drawOrderTiebreaker(self) -> float:
-        return -self.CENTER_Y
+        return -self.TOP_Y

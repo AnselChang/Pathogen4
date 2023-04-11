@@ -83,6 +83,8 @@ class EntityManager:
         # At this point, drawOrder is set to entity with highest priority
         # We delete all entities from self.touching that are not this priority
         self.touching = [entity for entity in self.touching if entity.drawOrder == drawOrder]
+        self.touching.sort(key = lambda entity: -entity.drawOrderTiebreaker())
+        self.touching = [entity for entity in self.touching if entity.drawOrderTiebreaker() == self.touching[0].drawOrderTiebreaker()]
 
         # Now we find the winning entity from the list.
         if len(self.touching) == 0:

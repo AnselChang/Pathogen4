@@ -99,6 +99,9 @@ def main():
 
     # Main game loop
     while True:
+
+        dimensions.RESIZED_THIS_FRAME = False
+
         mouse = pygame.mouse.get_pos()
         pygame.display.set_caption(f"({mouse[0]}, {mouse[1]})")
 

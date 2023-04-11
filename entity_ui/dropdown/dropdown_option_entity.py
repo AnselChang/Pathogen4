@@ -47,34 +47,46 @@ class DropdownOptionEntity(Entity):
         self.isLast = isLast
 
         self.recomputePosition()
-
-        if i == 0:
-            DropdownIconContainer(self, dropdownContainer)
+            
 
         
     def isVisible(self) -> bool:
+
         return super().isVisible() and self.visible()
     
     def defineBefore(self):
         surface = getText(self.font.get(), self.getText(), (0,0,0))
         self.textWidth = surface.get_width()
+        self.textHeight = surface.get_height()
 
     def getTextWidth(self) -> float:
         return self.textWidth
+    
+    def getTextHeight(self) -> float:
+        return self.textHeight
 
     def defineCenterX(self) -> float:
         return self._px(0.5)
     
     def defineTopY(self) -> float:
-        return self._py(0) + self._aheight(self.i * self.dropdownContainer.getOptionHeight())
+        return self._py(0) + self._aheight(self.i * self.dropdownContainer.optionHeight)
     
     def defineWidth(self) -> float:
         return self._pwidth(1)
     
     def defineHeight(self) -> float:
-        return self._aheight(self.dropdownContainer.getOptionHeight())
+        return self._aheight(self.dropdownContainer.optionHeight)
+    
+    # Higher number is drawn in the front.
+    # We want to draw the lowest y coordinate in the front
+    def drawOrderTiebreaker(self) -> float:
+        return -self.dropdownContainer.TOP_Y
+
     
     def drawOnSurface(self, surface):
+
+        if not self.isVisible():
+            return
 
         if self.isFirst:
             color = self.colorSelectedHovered if self.hover.isHovering else self.colorSelected

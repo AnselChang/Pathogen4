@@ -13,8 +13,10 @@ from entity_base.text_entity import TextEntity, TextAlign
 from common.draw_order import DrawOrder
 import pygame
 
+"""
+Draws the function name, and contains the dropdown to select the funciton
+"""
 
-# trash button for custom commands
 class FunctionNameEntity(Entity):
 
     def __init__(self, parentHeader, parentCommand: CommandBlockEntity):
@@ -29,19 +31,10 @@ class FunctionNameEntity(Entity):
         self.recomputePosition()
 
         self.CORNER_RADIUS = 5
-
-        self.textEntity = TextEntity(self,
-                   fontID = FontID.FONT_NORMAL,
-                   fontSize = 18,
-                   textFunction = lambda: parentCommand.getFunctionName() + "()",
-                   align = TextAlign.LEFT,
-                   drawOrder = DrawOrder.FUNCTION_NAME,
-                   dx = self.dx
-                   )
         
         color = self.parentCommand.getColor()
-        colorSelectedHovered = shade(color, 1)
-        colorSelected = shade(color, 1.05)
+        colorSelectedHovered = shade(color, 0.975)
+        colorSelected = shade(color, 1)
         colorHovered = shade(color, 1.1)
         colorOff = shade(color, 1.3)
         
@@ -49,7 +42,7 @@ class FunctionNameEntity(Entity):
                           FontID.FONT_NORMAL, 18,
                           colorSelectedHovered, colorSelected, colorHovered, colorOff,
                           dynamicWidth = True, dynamicBorderOpacity = True, centered = False,
-                          iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, textPaddingRatio = 0.85)
+                          iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, verticalTextPadding = 0)
         
         self.recomputePosition()
 

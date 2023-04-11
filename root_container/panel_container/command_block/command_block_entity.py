@@ -48,7 +48,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         
         self.path = path
 
-        self.COLLAPSED_HEIGHT = 30
+        self.COLLAPSED_HEIGHT = 35
         self.EXPANDED_HEIGHT = 50 
 
         self.DRAG_OPACITY = 0.7

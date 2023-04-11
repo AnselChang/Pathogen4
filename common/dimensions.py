@@ -9,6 +9,8 @@ class Dimensions(Observable):
 
     def __init__(self):
 
+        self.RESIZED_THIS_FRAME = False
+
         self.RATIO = 0.55
 
         self.FIELD_SIZE_IN_INCHES = 144
@@ -52,6 +54,9 @@ class Dimensions(Observable):
         self.SMALLER_FIELD_SIDE = min(self.SCREEN_HEIGHT, self.FIELD_WIDTH)
 
         screen = pygame.display.set_mode((screenWidth,screenHeight), pygame.RESIZABLE)
+
+        self.RESIZED_THIS_FRAME = True
+
         self.notify()
 
         return screen
