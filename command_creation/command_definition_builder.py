@@ -4,7 +4,7 @@ from root_container.panel_container.element.widget.widget_definition import Widg
 from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
 from root_container.panel_container.element.row.element_definition import ElementDefinition
 
-from command_creation.command_type import CommandType
+from command_creation.command_type import COLOR_THEME, COMMAND_INFO, CommandType
 
 from enum import Enum
 
@@ -23,21 +23,35 @@ class CommandDefinitionBuilder:
         if type is None:
             self.type = CommandType.CUSTOM
             self._isCode = True
-            self.name = "code"
+            self.name = "code()"
             self.templateText = "// [default text]"
         else:
             self._isCode = False
             self.name = "untitledFunction"
             self.templateText = "// [Code template unspecified]"
 
-        
+        # set to default color
+        self.color = COMMAND_INFO[self.type].color
 
     def setName(self, name: str):
 
         if self._isCode:
             raise Exception("Cannot set variable name for code commands")
+        
+        if not name[0:1].isalpha() or not name.isalnum():
+            raise Exception("String must be alphanumeric and start with a letter")
 
-        self.name = name
+        self.name = name + "()"
+
+    def setColor(self, hueOrColor):
+        if not self.type == CommandType.CUSTOM:
+            raise Exception("Cannot set color for non-custom commands")
+        
+        if isinstance(hueOrColor, float) or isinstance(hueOrColor, int):
+            self.color = COLOR_THEME.get(hueOrColor)
+        else:
+            self.color = hueOrColor
+
 
     def setTemplateText(self, templateText: str):
 
@@ -60,9 +74,11 @@ class CommandDefinitionBuilder:
             self.elements.append(ReadoutDefinition(attribute, variableName))
 
     def build(self) -> CommandDefinition:
+
         return CommandDefinition(
             type = self.type,
             name = self.name,
+            color = self.color,
             elements = self.elements,
             templateText = self.templateText,
             isCode = self._isCode

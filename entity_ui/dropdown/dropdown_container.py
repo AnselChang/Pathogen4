@@ -1,6 +1,7 @@
 from common.draw_order import DrawOrder
 from common.font_manager import DynamicFont, FontID
 from common.image_manager import ImageID
+from data_structures.observer import Observable
 from entity_base.container_entity import Container
 from entity_base.entity import Entity
 from entity_base.image.image_entity import ImageEntity
@@ -18,19 +19,16 @@ import pygame
 from utility.pygame_functions import drawTransparentRect
 
 """
-A dropdown is a radio group that stores
+A dropdown is a dynamic group that stores
 each option, as well as a ImageEntity that displays
 the dropdown arrow icon.
 A dropdown is either expanded or collapsed. The DynamicGroupContainer
-expands and collapses when the dropdown is expanded/collapsed, through
-addingg/deleting LinearContainer entities. This class holds a list
-of the LinearContainer options seperately.
+expands and collapses when the dropdown is expanded/collapsed.
 It takes in a list of string options at initialization.
-It also takes in pwidth.
-the center of the top option is set to the center of the parent
+Whenever the option is changed, it sends a notification to all subscribers.
 """
 
-class DropdownContainer(Container):
+class DropdownContainer(Container, Observable):
 
     # In addition to setting option text, update the other options
     # to include the old selected option but exclude the new selected option
@@ -38,6 +36,7 @@ class DropdownContainer(Container):
         self.selectedOptionText = selectedText
         self.otherOptions = [text for text in self.optionTexts if text != selectedText]
         self.recomputePosition()
+        self.notify()
 
     def getOptionText(self, i: int) -> str:
         if i == -1:

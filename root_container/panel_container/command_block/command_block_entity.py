@@ -14,7 +14,7 @@ from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
 from adapter.path_adapter import PathAdapter
 
-from command_creation.command_type import COMMAND_INFO, CommandType
+from command_creation.command_type import CommandType
 from command_creation.command_definition import CommandDefinition
 
 from root_container.panel_container.command_block.command_block_header import CommandBlockHeader
@@ -298,7 +298,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             CommandBlockEntity.HIGHLIGHTED = None
 
     def getColor(self) -> tuple:
-        return COMMAND_INFO[self.type].color
+        return self.getDefinition().color
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         

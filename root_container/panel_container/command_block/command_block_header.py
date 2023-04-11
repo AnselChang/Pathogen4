@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 from entity_base.container_entity import Container
 from root_container.panel_container.command_block.icon_entity import CommandBlockIcon
 from root_container.panel_container.command_block.trash_button_entity import TrashEntity
-from root_container.panel_container.command_block.function.function_name_entity import FunctionNameEntity
+from root_container.panel_container.command_block.function_name_entity import FunctionNameEntity
 from adapter.path_adapter import PathAdapter
 from common.draw_order import DrawOrder
 

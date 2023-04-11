@@ -38,13 +38,17 @@ class FunctionNameEntity(Entity):
         colorHovered = shade(color, 1.1)
         colorOff = shade(color, 1.3)
         
-        self.dropdown = DropdownContainer(self, ["goForward()", "goForwardTimed()", "go()"],
+        names = self.getDefinitionFunctionNames()
+        self.dropdown = DropdownContainer(self, names,
                           FontID.FONT_NORMAL, 18,
                           colorSelectedHovered, colorSelected, colorHovered, colorOff,
                           dynamicWidth = True, dynamicBorderOpacity = True, centered = False,
                           iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, verticalTextPadding = 0)
         
         self.recomputePosition()
+
+    def getDefinitionFunctionNames(self) -> list[str]:
+        return self.parentCommand.database.getDefinitionNames(self.parentCommand.type)
 
     def defineLeftX(self) -> tuple:
         return self._px(0) + self._pheight(1)
