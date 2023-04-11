@@ -143,6 +143,14 @@ class Entity(ABC, Observable):
         #print("isVisible", self, self._parent)
         return self._parent.isVisible()
     
+    def isSelfOrChildrenHovering(self):
+        if self.hover is not None and self.hover.isHovering:
+            return True
+        for child in self._children:
+            if child.isSelfOrChildrenHovering():
+                return True
+        return False
+    
     # override
     def getOpacity(self) -> float:
         if self._parent is not None:
@@ -166,7 +174,6 @@ class Entity(ABC, Observable):
     # draw rect specified by x, y, width, height. For testing only probably
     def drawRect(self, screen: pygame.Surface):
         pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], 1)
-
 
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self):

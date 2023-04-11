@@ -29,10 +29,10 @@ class CommandBlockIcon(Container):
 
 
     def defineCenter(self) -> tuple:
-        return self._ax(20), self._py(0.5)
+        return self._px(0) + self._pheight(0.52), self._py(0.5)
 
     # must impl both of these if want to contain other entity
     def defineWidth(self) -> float:
-        return self._pheight(0.8) # yes, this is height not width. square icon
+        return self.defineHeight()
     def defineHeight(self) -> float:
         return self._pheight(0.8)

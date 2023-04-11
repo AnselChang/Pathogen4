@@ -29,7 +29,9 @@ class Dimensions(Observable):
 
     # Resize screen to (screenWidth, screenHeight) and return a new instance of the screen with updated dimensions
     def resizeScreen(self, screenWidth: int, screenHeight: int) -> pygame.Surface:
-
+        screenWidth = max(screenWidth, int(screenHeight * self.RATIO)*2)
+        screenHeight = max(screenHeight, 500)
+        
 
         self.SCREEN_WIDTH = screenWidth
         self.SCREEN_HEIGHT = screenHeight

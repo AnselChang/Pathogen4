@@ -2,7 +2,7 @@ from entity_base.entity import Entity
 
 from common.font_manager import DynamicFont, FontID
 from entity_base.listeners.click_listener import ClickLambda
-from utility.pygame_functions import drawText
+from utility.pygame_functions import drawText, getText
 from common.draw_order import DrawOrder
 import pygame, enum
 
@@ -21,7 +21,9 @@ class TextEntity(Entity):
     # if not align center, then left of text will be aligned with left of parent
     def __init__(self, parent, fontID: FontID, fontSize: int, staticText: str = None,
                  textFunction = None, align: TextAlign = TextAlign.CENTER,
-                 drawOrder = DrawOrder.FRONT, onClick = lambda mouse: None):
+                 drawOrder = DrawOrder.FRONT, onClick = lambda mouse: None,
+                 dx = 0, dy = 0
+                 ):
 
         # for now, always draw text in the front. can easily make flexible if needed
         super().__init__(parent,
@@ -29,6 +31,7 @@ class TextEntity(Entity):
                          drawOrder = drawOrder)
 
         self.align = align
+        self.dx, self.dy = dx, dy
 
         self.staticText = staticText
         self.textFunction = textFunction
@@ -38,6 +41,11 @@ class TextEntity(Entity):
 
         self.recomputePosition()
 
+    def defineOther(self):
+        self.surface = getText(self.font.get(), self.getText(), (0,0,0), 1)
+
+    def getTextWidth(self):
+        return self.surface.get_width()
     
     def getText(self):
         if self.textFunction is not None:
@@ -60,4 +68,8 @@ class TextEntity(Entity):
         else:
             x = self.RIGHT_X
             alignX = 1
-        drawText(screen, self.font.get(), self.getText(), (0,0,0), x, self.CENTER_Y, opacity = self.getOpacity(), alignX = alignX)
+
+        x += self._awidth(self.dx)
+        y = self.CENTER_Y + self._aheight(self.dy)
+
+        drawText(screen, self.font.get(), self.getText(), (0,0,0), x, y, opacity = self.getOpacity(), alignX = alignX)

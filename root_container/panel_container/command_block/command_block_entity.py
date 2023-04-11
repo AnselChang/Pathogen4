@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from adapter.turn_adapter import TurnAdapter
+from entity_base.listeners.hover_listener import HoverLambda
 if TYPE_CHECKING:
     from root_container.path import Path
     from command_creation.command_definition_database import CommandDefinitionDatabase
@@ -74,6 +75,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
             click = ClickLambda(self, FonLeftClick = self.onClick, FOnMouseDown = self.onMouseDown),
             tick = TickLambda(self, FonTick = self.onTick),
             drag = drag,
+            hover = HoverLambda(self),
             #select = SelectLambda(self, "command", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMANND_BLOCK
         )
@@ -85,6 +87,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.commandExpansion.subscribe(onNotify = self.path.recalculateTargets)
 
         self.elementsContainer = None
+        self.mouseHoveringCommand = False
 
         self.updateTargetHeight(True)
         self.recomputePosition()
@@ -112,6 +115,13 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
     # Update animation every tick
     def onTick(self):
+
+        if self.getNext() is not None and self.getNext().isSelfOrChildrenHovering():
+            self.mouseHoveringCommand = False
+        else:
+            self.mouseHoveringCommand = self.isSelfOrChildrenHovering()
+
+
         if not self.animatedExpansion.isDone():
             #self.animatedPosition.tick()
             self.animatedExpansion.tick()
@@ -287,17 +297,20 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         if CommandBlockEntity.HIGHLIGHTED is not None and CommandBlockEntity.HIGHLIGHTED is not self:
             CommandBlockEntity.HIGHLIGHTED = None
 
+    def getColor(self) -> tuple:
+        return COMMAND_INFO[self.type].color
+
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
         isHighlighted = (CommandBlockEntity.HIGHLIGHTED is self)
 
         # draw rounded rect
-        color = COMMAND_INFO[self.type].color
+        color = self.getColor()
         if isHighlighted:
             color = shade(color, 1.4)
         elif isActive and isHovered and self.interactor.leftDragging:
             color = shade(color, 1.3)
-        elif isHovered or self.isTouching(self.interactor.CURRENT_MOUSE_POSITION) and not self.interactor.disableUntilMouseUp:
+        elif self.mouseHoveringCommand and not self.interactor.disableUntilMouseUp:
             color = shade(color, 1.2)
         else:
             color = shade(color, 1.1)

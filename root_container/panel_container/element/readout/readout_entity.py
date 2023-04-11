@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from entity_base.listeners.hover_listener import HoverLambda
 
 from root_container.panel_container.element.row.element_entity import ElementContainer
 if TYPE_CHECKING:
@@ -48,9 +49,6 @@ class ReadoutEntity(ElementContainer):
         self.updateText()
         return super().recomputePosition()
 
-    # not interactable
-    def isTouching(self, position: PointRef) -> bool:
-        return False
     
     def defineWidth(self) -> float:
         return self.textWidth + self._awidth(self.border.OUTER_X_MARGIN*2)

@@ -14,6 +14,8 @@ class DrawOrder(IntEnum):
     DROPDOWN = auto()
     GRADIENT_SEPARATOR = auto()
     COMMAND_INSERTER = auto()
+    FUNCTION_NAME = auto()
+    FUNCTION_NAME_BACKGROUND = auto()
     READOUT = auto()
     WIDGET = auto()
     COMMANND_BLOCK = auto()

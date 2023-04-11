@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from common.draw_order import DrawOrder
+from entity_base.listeners.hover_listener import HoverLambda
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -16,7 +17,7 @@ class ElementContainer(Container):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity):
         self.parentCommand = parentCommand
-        super().__init__(parent, drawOrder = DrawOrder.WIDGET)
+        super().__init__(parent, hover = HoverLambda(self), drawOrder = DrawOrder.WIDGET)
 
     def defineCenter(self) -> tuple:
         return self._px(0.75), self._py(0.5)

@@ -1,6 +1,7 @@
 from entity_base.entity import Entity
 
 from data_structures.observer import Observable
+from entity_base.listeners.hover_listener import HoverLambda
 
 from entity_ui.text.text_handler import TextHandler
 from entity_ui.text.text_border import TextBorder
@@ -50,6 +51,7 @@ class TextEditorEntity(Entity, Observable):
                 FonSelect = self.onSelect,
                 FonDeselect = self.onDeselect
             ),
+            hover = HoverLambda(self),
             drawOrder = DrawOrder.WIDGET)
 
         self.font = self.fonts.getDynamicFont(fontID, fontSize)

@@ -2,6 +2,7 @@ from enum import Enum
 from entity_base.image.image_state import ImageState
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.entity import Entity
+from entity_base.listeners.hover_listener import HoverLambda
 
 from utility.pygame_functions import drawSurface
 from common.draw_order import DrawOrder
@@ -30,6 +31,7 @@ class ImageEntity(Entity, TooltipOwner):
             parent = parent,
             click = ClickLambda(self, FonLeftClick = self.attemptToClick),
             drag = drag,
+            hover = HoverLambda(self),
             drawOrder = drawOrder)
         
         self.disableTouching = disableTouching
