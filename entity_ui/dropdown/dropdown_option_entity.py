@@ -43,7 +43,7 @@ class DropdownOptionEntity(Entity):
         self.i = i
         self.visible = visible
         
-        self.isFirst = (i == 0)
+        self.isFirst = (i == -1)
         self.isLast = isLast
 
         self.recomputePosition()
@@ -69,7 +69,7 @@ class DropdownOptionEntity(Entity):
         return self._px(0.5)
     
     def defineTopY(self) -> float:
-        return self._py(0) + self.i * self.dropdownContainer.optionHeight
+        return self._py(0) + (self.i+1) * self.dropdownContainer.optionHeight
     
     def defineWidth(self) -> float:
         return self._pwidth(1)

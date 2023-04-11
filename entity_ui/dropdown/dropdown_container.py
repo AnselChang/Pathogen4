@@ -32,6 +32,19 @@ the center of the top option is set to the center of the parent
 
 class DropdownContainer(Container):
 
+    # In addition to setting option text, update the other options
+    # to include the old selected option but exclude the new selected option
+    def setSelectedText(self, selectedText: str):
+        self.selectedOptionText = selectedText
+        self.otherOptions = [text for text in self.optionTexts if text != selectedText]
+        self.recomputePosition()
+
+    def getOptionText(self, i: int) -> str:
+        if i == -1:
+            return self.selectedOptionText
+        else:
+            return self.otherOptions[i]
+
     def __init__(self, parent: Entity, options: list[str], fontID: FontID, fontSize: int,
                  colorSelectedHovered, colorSelected, colorHovered, colorOff,
                  dynamicWidth: bool = False, dynamicBorderOpacity: bool = False, centered: bool = True,
@@ -61,26 +74,26 @@ class DropdownContainer(Container):
 
         self.font = self.fonts.getDynamicFont(fontID, fontSize)
 
-        self.optionTexts = options
-        self.selectedOptionText = options[0]
         self.options = []
 
         self.widthProfile = None
         self.heightProfile = None
         self.borderProfile = None
-        self.recomputePosition()
 
-        self.currentOption = DropdownOptionEntity(self, 0, self.font, 
+        self.optionTexts = options
+        self.setSelectedText(options[0]) # recomputes position from this call
+
+        self.currentOption = DropdownOptionEntity(self, -1, self.font, 
                                                   colorSelectedHovered, colorSelected, colorHovered, colorOff,
                                                   dynamicText = self.getSelectedOptionText)
 
         self.options: list[DropdownOptionEntity] = [self.currentOption]
-        for i, optionStr in enumerate(options):
-            o = DropdownOptionEntity(self, i+1, self.font,
+        for i in range(len(self.otherOptions)):
+            o = DropdownOptionEntity(self, i, self.font,
                                  colorSelectedHovered, colorSelected, colorHovered, colorOff,
-                                 staticText = optionStr,
+                                 dynamicText = lambda i=i: self.getOptionText(i),
                                  visible = lambda: not self.isFullyCollapsed(),
-                                 isLast = (i == len(options)-1)
+                                 isLast = (i == len(self.otherOptions)-1)
                                  )
             self.options.append(o)
         self.recomputePosition()
@@ -93,11 +106,11 @@ class DropdownContainer(Container):
 
 
     def onOptionClick(self, i, optionText: str):
-        self.selectedOptionText = optionText
+        self.setSelectedText(optionText)
 
         # if it's the selected option that's clicked, toggle visibility
         # otherwise, collapse the dropdown
-        if i == 0:
+        if i == -1:
             self.collapse() if self.expanded else self.expand()
         else:
             self.collapse()
@@ -118,7 +131,7 @@ class DropdownContainer(Container):
     
     def getFullHeight(self):
         if self.expanded:
-            height = self.optionHeight * (len(self.optionTexts) + 1)
+            height = self.optionHeight * (len(self.optionTexts))
         else:
             height = self.optionHeight
         return height
@@ -159,9 +172,6 @@ class DropdownContainer(Container):
 
         if recompute:
             self.recomputePosition()
-
-        if False and self.selectedOptionText == "goForward()":
-            print(self.heightProfile._currentValue, self.heightProfile._endValue, self.heightProfile._done)
 
         width = self.widthProfile.get()
         height = self.heightProfile.get()
