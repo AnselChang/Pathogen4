@@ -28,8 +28,7 @@ class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition']):
 
         self.recomputePosition()
         
-        DROPDOWN_WIDTH = 80
-        self.dropdown = DropdownContainer(self, definition.options, FontID.FONT_NORMAL, 11, DROPDOWN_WIDTH)
+        self.dropdown = DropdownContainer(self, definition.options, FontID.FONT_NORMAL, 11)
 
     def getValue(self) -> bool:
         return self.dropdown.getSelectedOptionText()

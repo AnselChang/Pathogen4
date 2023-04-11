@@ -1,14 +1,14 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 from common.draw_order import DrawOrder
-from common.font_manager import FontID
+from common.font_manager import DynamicFont, FontID
 
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.hover_listener import HoverLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
 from entity_ui.dropdown.dropdown_icon_container import DropdownIconContainer
-from utility.pygame_functions import drawLine, drawText
+from utility.pygame_functions import drawLine, drawText, getText
 if TYPE_CHECKING:
     from entity_ui.dropdown.dropdown_container import DropdownContainer
 
@@ -18,7 +18,7 @@ class DropdownOptionEntity(Entity):
 
     # i is used for positioning. Active option is 0, after that it's 1, 2, ...
     # For active option, pass in dynamic text. Otherwise, pass in static text
-    def __init__(self, dropdownContainer: DropdownContainer, i: int, staticText: str = None,
+    def __init__(self, dropdownContainer: DropdownContainer, i: int, font: DynamicFont, staticText: str = None,
                  dynamicText: Callable = None, visible = lambda: True, isLast = False):
 
         if dynamicText is None:
@@ -26,6 +26,7 @@ class DropdownOptionEntity(Entity):
         else:
             self.getText = dynamicText
 
+        self.font = font
         t = self.getText
 
         super().__init__(parent = dropdownContainer,
@@ -47,6 +48,13 @@ class DropdownOptionEntity(Entity):
         
     def isVisible(self) -> bool:
         return super().isVisible() and self.visible()
+    
+    def defineBefore(self):
+        surface = getText(self.font.get(), self.getText(), (0,0,0))
+        self.textWidth = surface.get_width()
+
+    def getTextWidth(self) -> float:
+        return self.textWidth
 
     def defineCenterX(self) -> float:
         return self._px(0.5)
@@ -60,7 +68,7 @@ class DropdownOptionEntity(Entity):
     def defineHeight(self) -> float:
         return self._aheight(self.dropdownContainer.getOptionHeight())
     
-    def drawOnSurface(self, surface, font):
+    def drawOnSurface(self, surface):
         
         if self.hover.isHovering:
             color = [176, 200, 250] if self.isFirst else [52, 132, 240]
@@ -88,7 +96,7 @@ class DropdownOptionEntity(Entity):
                         border_bottom_left_radius = bl,
                         border_bottom_right_radius = br
                          )
-        drawText(surface, font, self.getText(), (0,0,0),
+        drawText(surface, self.font.get(), self.getText(), (0,0,0),
                  x = x + self._awidth(self.dropdownContainer.TEXT_LEFT_OFFSET),
                  y = y + self.HEIGHT/2,
                  alignX = 0,
