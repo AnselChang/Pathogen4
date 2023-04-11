@@ -107,7 +107,7 @@ def main():
 
         mouseRef = PointRef(Ref.SCREEN, mouse)
         hoveredEntity = entities.getEntityAtPosition(mouse)
-        pygame.display.set_caption(f"({mouse[0]}, {mouse[1]}), {str(hoveredEntity)}")
+        pygame.display.set_caption(f"({mouse[0]}, {mouse[1]}), {str(hoveredEntity)}, parent = {str(hoveredEntity._parent)}")
 
         interactor.setHoveredEntity(hoveredEntity, mouse)
         # handle events and call callbacks

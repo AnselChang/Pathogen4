@@ -302,6 +302,6 @@ class Entity(ABC, Observable):
     
     def __repr__(self):
         try:
-            return f"{self.__class__.__name__} ({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)}))"
+            return f"{self.__class__.__name__} ({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)})"
         except:
             return f"{self.__class__.__name__} (Undefined)"
