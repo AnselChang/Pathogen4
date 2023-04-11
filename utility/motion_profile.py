@@ -19,17 +19,24 @@ class MotionProfile:
 
     def setEndValue(self, endValue):
         self._endValue = endValue
-        self._done = False
 
     def forceToEndValue(self):
         self._currentValue = self._endValue
     
     def get(self) -> float:
-        return self._currentValue
+        distanceRemaining = self._endValue - self._currentValue
+        if abs(distanceRemaining) < self._threshold:
+            return self._endValue
+        else:
+            return self._currentValue
 
     def isDone(self) -> bool:
         distanceRemaining = self._endValue - self._currentValue
-        return abs(distanceRemaining) < self._threshold
+        if abs(distanceRemaining) < self._threshold:
+            self._currentValue = self._endValue
+            return True
+        else:
+            return False
 
     def tick(self) -> float:
         # Calculate the distance remaining
@@ -38,7 +45,6 @@ class MotionProfile:
         # If we're already at the end value, return it
         if abs(distanceRemaining) < self._threshold:
             self._currentValue = self._endValue
-            self._done = True
             return self._currentValue
         
         self._currentValue += (self._endValue - self._currentValue) * self._speed
