@@ -152,5 +152,5 @@ def main():
         #print(clock.get_fps())
 
 if __name__ == "__main__":
-    cProfile.run('main()', sort='cumtime')
-    #main()
+    #cProfile.run('main()', sort='cumtime')
+    main()

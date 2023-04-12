@@ -174,11 +174,15 @@ class Path(Observer):
         segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer, self)
         self.pathList.insertAfter(afterPath, segment)
 
-        for adapter in segment.getAllAdapters():
+        for i, adapter in enumerate(segment.getAllAdapters()):
             segmentCommand = self.commandFactory.create(afterCommand, self, adapter)
             self.commandList.insertAfter(afterCommand, segmentCommand)
             self.linker.linkSegment(segment, segmentCommand)
             afterCommand = self._addInserter(segmentCommand)
+
+            # Hide all but the first (straight) command
+            if i != 0:
+                segmentCommand.setInvisible()
 
         return segment
 
