@@ -1,6 +1,7 @@
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from common.draw_order import DrawOrder
 from data_structures.observer import Observer
+from root_container.field_container.segment.segment_type import PathSegmentType
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
 from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
@@ -343,3 +344,21 @@ class Path(Observer):
     
     def getCommandFromPathEntity(self, pathEntity: PathSegmentEntity | PathNodeEntity) -> CommandBlockEntity:
         return self.linker.getCommandFromPath(pathEntity)
+    
+    # when the segment type has changed, show the correct command and hide the others
+    def onSegmentTypeChange(self, segment: PathSegmentEntity, oldType: PathSegmentType, newType: PathSegmentType):
+        
+        oldCommand = self.linker.getCommandFromSegmentAndType(segment, oldType)
+        commandToShow = self.linker.getCommandFromSegmentAndType(segment, newType)
+
+        for command in self.linker.getCommandsFromSegment(segment):
+            if command is commandToShow:
+                command.setVisible()
+            else:
+                command.setInvisible()
+
+        # if old command was highlighted, then highlight the new command
+        if oldCommand.isHighlighted():
+            commandToShow.highlight()
+
+        self.onChangeInCommandPositionOrHeight()

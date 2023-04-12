@@ -53,7 +53,14 @@ class PathCommandLinker:
                 if command.getCommandType() == self._getCommandTypeFromSegmentType(pathType):
                     return command
             raise Exception("PathCommandLinker: No command found for segment " + str(segment))
-        
+    
+    def getCommandFromSegmentAndType(self, segment: PathSegmentEntity, pathType: PathSegmentType) -> CommandBlockEntity:
+        targetCommandType = self._getCommandTypeFromSegmentType(pathType)
+        for command in self.segmentToCommands[segment]:
+            if command.getCommandType() == targetCommandType:
+                return command
+        raise Exception("PathCommandLinker: No command found for segment " + str(segment) + " and type " + str(pathType))
+
     def getLastCommandFromSegment(self, segment: PathSegmentEntity) -> CommandBlockEntity:
         return self.segmentToCommands[segment][-1]
     
