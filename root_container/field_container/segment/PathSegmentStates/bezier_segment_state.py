@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from adapter.arc_adapter import ArcAdapter
+from adapter.bezier_adapter import BezierAdapter, BezierAttributeID
 from common.image_manager import ImageID
 from data_structures.observer import Observer
 from entity_base.image.image_state import ImageState
@@ -9,6 +9,7 @@ import constants
 from root_container.field_container.segment.segment_type import SegmentType
 from utility.bezier_functions import generate_cubic_points
 from utility.bezier_functions_2 import fast_points_cubic_bezier, normalized_points_cubic_bezier
+from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import pointTouchingLine, thetaFromPoints
 from utility.pygame_functions import drawLine
 if TYPE_CHECKING:
@@ -29,20 +30,14 @@ import pygame
 A bezier segment is controlled by two nodes and their BezierThetaEntities
 """
 
-class ArcIconID(Enum):
-    FORWARD_LEFT = auto()
-    FORWARD_RIGHT = auto()
-    REVERSE_LEFT = auto()
-    REVERSE_RIGHT = auto()
+class BezierIconID(Enum):
+    BEZIER = auto()
 
 class BezierSegmentState(PathSegmentState, Observer):
     def __init__(self, segment: PathSegmentEntity | LinkedListNode) -> None:
         super().__init__(SegmentType.BEZIER, segment)
-        self.adapter = ArcAdapter([
-            ImageState(ArcIconID.FORWARD_LEFT, ImageID.CURVE_LEFT_FORWARD),
-            ImageState(ArcIconID.FORWARD_RIGHT, ImageID.CURVE_RIGHT_FORWARD),
-            ImageState(ArcIconID.REVERSE_LEFT, ImageID.CURVE_LEFT_REVERSE),
-            ImageState(ArcIconID.REVERSE_RIGHT, ImageID.CURVE_RIGHT_REVERSE),
+        self.adapter = BezierAdapter([
+            ImageState(BezierIconID.BEZIER, ImageID.BEZIER),
         ])
 
         self.points: list[PointRef] = None # the bezier points in fieldRef
@@ -82,6 +77,9 @@ class BezierSegmentState(PathSegmentState, Observer):
         p2 = self.segment.bezierTheta2.getPositionRef().fieldRef
         p3 = self.segment.getNext().getPositionRef().fieldRef
 
+        self.START_POINT = p0
+        self.END_POINT = p3
+
         if fast:
             points = fast_points_cubic_bezier(self.FAST_BEZIER_RESOLUTION, p0, p1, p2, p3)
             # no need to update self.MOUSE_DETECTION_POINTS while dragging
@@ -119,6 +117,16 @@ class BezierSegmentState(PathSegmentState, Observer):
     
     def updateAdapter(self) -> None:
         self.recomputeBezier()
+
+        self.adapter.set(BezierAttributeID.X1, self.START_POINT[0], formatInches(self.START_POINT[0]))
+        self.adapter.set(BezierAttributeID.Y1, self.START_POINT[1], formatInches(self.START_POINT[1]))
+        self.adapter.set(BezierAttributeID.X2, self.END_POINT[0], formatInches(self.END_POINT[0]))
+        self.adapter.set(BezierAttributeID.Y2, self.END_POINT[1], formatInches(self.END_POINT[1]))
+
+        self.adapter.set(BezierAttributeID.THETA1, self.THETA1, formatDegrees(self.THETA1))
+        self.adapter.set(BezierAttributeID.THETA2, self.THETA2, formatDegrees(self.THETA2))
+
+        self.adapter.setIconStateID(BezierIconID.BEZIER)
 
 
     def getStartTheta(self) -> float:

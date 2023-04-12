@@ -20,6 +20,7 @@ class ImageID(Enum):
     CURVE_RIGHT_FORWARD = auto()
     CURVE_LEFT_REVERSE = auto()
     CURVE_RIGHT_REVERSE = auto()
+    BEZIER = auto()
     CUSTOM = auto()
     TRASH_ON = auto()
     TRASH_OFF = auto()
@@ -81,6 +82,8 @@ class ImageManager:
         self.images[ImageID.CURVE_RIGHT_FORWARD] = Image("CommandIcons/CurveRightForward.png")
         self.images[ImageID.CURVE_LEFT_REVERSE] = Image("CommandIcons/CurveLeftReverse.png")
         self.images[ImageID.CURVE_RIGHT_REVERSE] = Image("CommandIcons/CurveRightReverse.png")
+
+        self.images[ImageID.BEZIER] = Image("CommandIcons/Bezier.png")
 
         self.images[ImageID.TRASH_ON] = Image("OtherIcons/TrashOn.png")
         self.images[ImageID.TRASH_OFF] = Image("OtherIcons/TrashOff.png")

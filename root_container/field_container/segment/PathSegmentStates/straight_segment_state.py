@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
 from root_container.field_container.segment.segment_type import SegmentType
+from utility.format_functions import formatInches
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 
@@ -47,15 +48,15 @@ class StraightSegmentState(PathSegmentState):
         posA = self.segment.getPrevious().getPositionRef()
         posB = self.segment.getNext().getPositionRef()
 
-        self.adapter.set(StraightAttributeID.X1, posA.fieldRef[0], f"{posA.fieldRef[0]:.1f})")
-        self.adapter.set(StraightAttributeID.Y1, posA.fieldRef[1], f"{posA.fieldRef[1]:.1f})")
-        self.adapter.set(StraightAttributeID.X2, posB.fieldRef[0], f"{posB.fieldRef[0]:.1f})")
-        self.adapter.set(StraightAttributeID.Y2, posB.fieldRef[1], f"{posB.fieldRef[1]:.1f})")
+        self.adapter.set(StraightAttributeID.X1, posA.fieldRef[0], formatInches(posA.fieldRef[0]))
+        self.adapter.set(StraightAttributeID.Y1, posA.fieldRef[1], formatInches(posA.fieldRef[1]))
+        self.adapter.set(StraightAttributeID.X2, posB.fieldRef[0], formatInches(posB.fieldRef[0]))
+        self.adapter.set(StraightAttributeID.Y2, posB.fieldRef[1], formatInches(posB.fieldRef[1]))
 
         distance = (posB - posA).magnitude(Ref.FIELD)
         if self.segment.getDirection() == SegmentDirection.REVERSE:
             distance *= -1
-        self.adapter.set(StraightAttributeID.DISTANCE, distance, f"{distance:.1f}\"")
+        self.adapter.set(StraightAttributeID.DISTANCE, distance, formatInches(distance))
 
         self.adapter.setIconStateID(self.segment.getDirection())
 

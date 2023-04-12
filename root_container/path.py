@@ -171,19 +171,19 @@ class Path(Observer):
         segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer, self)
         self.pathList.insertAfter(afterPath, segment)
 
-        # create segment command and add entity
-        segmentCommand = self.commandFactory.create(afterCommand, self, segment.getAdapter())
-        self.commandList.insertAfter(afterCommand, segmentCommand)
+        for adapter in segment.getAllAdapters():
+            segmentCommand = self.commandFactory.create(afterCommand, self, adapter)
+            self.commandList.insertAfter(afterCommand, segmentCommand)
+            afterCommand = self._addInserter(segmentCommand)
 
         # maintain a relationship between the segment and segment command
-        self.dict[segment] = segmentCommand
+        self.dict[segment] = afterCommand
 
         return segment
 
     # return the created PathNodenEntity
     def addNode(self, nodePosition: PointRef, isTemporary: bool = False) -> PathNodeEntity:
         segment = self._addRawSegment()
-        self._addInserter()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
         self._addInserter()
 
@@ -196,7 +196,6 @@ class Path(Observer):
         node = self._addRawNode(position, segment, self.dict[segment].getNext(), isTemporary = isTemporary)
         inserter = self._addInserter(self.dict[node])
         segment = self._addRawSegment(node, inserter)
-        self._addInserter(self.dict[segment])
 
         self.onChangeInCommandPositionOrHeight()
         node.updateAdapter()
@@ -209,7 +208,6 @@ class Path(Observer):
         node = self._addRawNodeToBeginning(position, isTemporary = isTemporary)
         inserter = self._addInserter(self.dict[node])
         segment = self._addRawSegment(node, inserter)
-        self._addInserter(self.dict[segment])
 
         self.onChangeInCommandPositionOrHeight()
         node.updateAdapter()

@@ -180,6 +180,12 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, LinkedListNode['Path
     def getAdapter(self) -> PathAdapter:
         return self.getState().getAdapter()
     
+    def getAllAdapters(self) -> list[PathAdapter]:
+        adapters = []
+        for state in self.states:
+            adapters.append(self.states[state].getAdapter())
+        return adapters
+    
     def updateAdapter(self) -> None:
 
         # initailize arc node

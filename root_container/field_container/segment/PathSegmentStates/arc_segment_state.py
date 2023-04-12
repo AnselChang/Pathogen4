@@ -214,6 +214,11 @@ class ArcSegmentState(PathSegmentState):
         self.adapter.set(ArcAttributeID.THETA1, self.THETA1, formatDegrees(self.THETA1))
         self.adapter.set(ArcAttributeID.THETA2, self.THETA2, formatDegrees(self.THETA2))
 
+        if self.segment.getDirection() == SegmentDirection.FORWARD:
+            icon = ArcIconID.FORWARD_LEFT if self.POSITIVE else ArcIconID.FORWARD_RIGHT
+        else:
+            icon = ArcIconID.REVERSE_LEFT if self.POSITIVE else ArcIconID.REVERSE_RIGHT
+        self.adapter.setIconStateID(icon)
 
     def getStartTheta(self) -> float:
         return self.THETA1

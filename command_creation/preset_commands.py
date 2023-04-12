@@ -69,6 +69,54 @@ class CommandDefinitionPresets:
         builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
         builder.addWidget(CheckboxWidgetDefinition("Invert direction?", False))
         return builder.build()
+    
+    @preset
+    def goArc(self) -> CommandDefinition:
+        from adapter.arc_adapter import ArcAttributeID
+        builder = CommandDefinitionBuilder(CommandType.ARC)
+        builder.setName("goArc")
+        builder.addReadout("Arc length", ArcAttributeID.ARC_LENGTH)
+        builder.addReadout("Initial angle", ArcAttributeID.THETA1)
+        builder.addReadout("Final angle", ArcAttributeID.THETA2)
+        builder.addReadout("Radius", ArcAttributeID.RADIUS)
+        builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
+        builder.addWidget(CheckboxWidgetDefinition("IMU correction?", False))
+        return builder.build()
+    
+    @preset
+    def goPurePursuit(self) -> CommandDefinition:
+        from adapter.bezier_adapter import BezierAttributeID
+        builder = CommandDefinitionBuilder(CommandType.BEZIER)
+        builder.setName("goPurePursuit")
+        builder.addReadout("Initial angle", BezierAttributeID.THETA1)
+        builder.addReadout("Final angle", BezierAttributeID.THETA2)
+        builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
+        builder.addWidget(ValueTextboxWidgetDefinition("Lookahead Distance", 10))
+        return builder.build()
+    
+    @preset
+    def goStanley(self) -> CommandDefinition:
+        from adapter.bezier_adapter import BezierAttributeID
+        builder = CommandDefinitionBuilder(CommandType.BEZIER)
+        builder.setName("goStanley")
+        builder.addReadout("Initial angle", BezierAttributeID.THETA1)
+        builder.addReadout("Final angle", BezierAttributeID.THETA2)
+        builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
+        builder.addWidget(ValueTextboxWidgetDefinition("Cross-track gain", 1))
+        builder.addWidget(ValueTextboxWidgetDefinition("Heading gain", 5))
+        return builder.build()
+    
+    @preset
+    def goRamsete(self) -> CommandDefinition:
+        from adapter.bezier_adapter import BezierAttributeID
+        builder = CommandDefinitionBuilder(CommandType.BEZIER)
+        builder.setName("goRamsete")
+        builder.addReadout("Initial angle", BezierAttributeID.THETA1)
+        builder.addReadout("Final angle", BezierAttributeID.THETA2)
+        builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
+        builder.addWidget(ValueTextboxWidgetDefinition("B parameter", 2))
+        builder.addWidget(ValueTextboxWidgetDefinition("Zeta parameter", 0.7))
+        return builder.build()
 
     @preset
     def code(self) -> CommandDefinition:
