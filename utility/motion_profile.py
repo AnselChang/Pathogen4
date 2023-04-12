@@ -15,6 +15,8 @@ class MotionProfile:
         self._currentValue = endValue
         self._threshold = threshold
 
+        self._previous = None
+
         self.setEndValue(endValue)
 
     def setEndValue(self, endValue):
@@ -39,6 +41,9 @@ class MotionProfile:
             return False
 
     def tick(self) -> float:
+
+        self._previous = self._currentValue
+
         # Calculate the distance remaining
         distanceRemaining = self._endValue - self._currentValue
 
@@ -50,3 +55,6 @@ class MotionProfile:
         self._currentValue += (self._endValue - self._currentValue) * self._speed
 
         return self._currentValue
+    
+    def wasChange(self) -> bool:
+        return self._previous != self._currentValue

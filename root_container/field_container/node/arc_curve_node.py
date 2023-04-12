@@ -116,9 +116,7 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         # prevent arc from ever being perfectly straight, which causes division issues
         #print(perpDistance)
         MIN_MAGNITUDE = 0.003 * lineDistance
-        print(perpDistance, MIN_MAGNITUDE)
         if abs(perpDistance) < MIN_MAGNITUDE:
-            print("as")
             perpDistance = MIN_MAGNITUDE if perpDistance > 0 else -MIN_MAGNITUDE
 
         self.perpDistance = perpDistance

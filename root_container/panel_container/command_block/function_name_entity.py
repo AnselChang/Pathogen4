@@ -33,23 +33,27 @@ class FunctionNameEntity(Entity, Observer):
 
         self.CORNER_RADIUS = 5
         
+        names = self._getDefinitionFunctionNames()
+        self.dropdown = DropdownContainer(self, names,
+                          FontID.FONT_NORMAL, 18,
+                          (0,0,0), (0,0,0), (0,0,0), (0,0,0),
+                          dynamicWidth = True, dynamicBorderOpacity = True, centered = False,
+                          iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, verticalTextPadding = 0)
+        self.updateColor()
+        self.recomputePosition()
+
+        # Whenever the name changes, notify the commmand block entity to update the command
+        self.dropdown.subscribe(self, onNotify = self.parentCommand.onFunctionChange)
+
+    def updateColor(self):
+
         color = self.parentCommand.getColor()
         colorSelectedHovered = shade(color, 0.975)
         colorSelected = shade(color, 1)
         colorHovered = shade(color, 1.1)
         colorOff = shade(color, 1.3)
-        
-        names = self._getDefinitionFunctionNames()
-        self.dropdown = DropdownContainer(self, names,
-                          FontID.FONT_NORMAL, 18,
-                          colorSelectedHovered, colorSelected, colorHovered, colorOff,
-                          dynamicWidth = True, dynamicBorderOpacity = True, centered = False,
-                          iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, verticalTextPadding = 0)
-        
-        self.recomputePosition()
+        self.dropdown.setColor(colorSelectedHovered, colorSelected, colorHovered, colorOff)
 
-        # Whenever the name changes, notify the commmand block entity to update the command
-        self.dropdown.subscribe(self, onNotify = self.parentCommand.onFunctionChange)
 
     def getFunctionName(self):
         return self.dropdown.getSelectedOptionText()

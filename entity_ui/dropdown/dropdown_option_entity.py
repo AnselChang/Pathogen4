@@ -16,6 +16,12 @@ import pygame
 
 class DropdownOptionEntity(Entity):
 
+    def setColor(self, colorSelectedHovered, colorSelected, colorHovered, colorOff):
+        self.colorSelectedHovered = colorSelectedHovered
+        self.colorSelected = colorSelected
+        self.colorHovered = colorHovered
+        self.colorOff = colorOff
+
     # i is used for positioning. Active option is 0, after that it's 1, 2, ...
     # For active option, pass in dynamic text. Otherwise, pass in static text
     def __init__(self, dropdownContainer: DropdownContainer, i: int, font: DynamicFont,
@@ -27,10 +33,7 @@ class DropdownOptionEntity(Entity):
         else:
             self.getText = dynamicText
 
-        self.colorSelectedHovered = colorSelectedHovered
-        self.colorSelected = colorSelected
-        self.colorHovered = colorHovered
-        self.colorOff = colorOff
+        self.setColor(colorSelectedHovered, colorSelected, colorHovered, colorOff)
 
         self.font = font
         t = self.getText

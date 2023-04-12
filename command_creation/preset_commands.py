@@ -127,6 +127,6 @@ class CommandDefinitionPresets:
     def wait(self) -> CommandDefinition:
         builder = CommandDefinitionBuilder(CommandType.CUSTOM)
         builder.setName("wait")
-        builder.setColor((138, 138, 138))
+        builder.setColor((140, 135, 130))
         builder.addWidget(ValueTextboxWidgetDefinition("Time (s)", 0.5))
         return builder.build()

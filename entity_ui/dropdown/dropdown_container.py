@@ -108,7 +108,9 @@ class DropdownContainer(Container, Observable):
 
         DropdownIconContainer(self.currentOption, self)
 
-
+    def setColor(self, colorSelectedHovered, colorSelected, colorHovered, colorOff):
+        for option in self.options:
+            option.setColor(colorSelectedHovered, colorSelected, colorHovered, colorOff)
 
     def onOptionClick(self, i, optionText: str):
         self.setSelectedText(optionText)

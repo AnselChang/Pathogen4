@@ -67,7 +67,10 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         # whether to expand by default, ignoring global flags
         self.localExpansion = False
 
-        
+        r,g,b = self.getDefinition().color
+        self.colorR = MotionProfile(r, speed = 0.2)
+        self.colorG = MotionProfile(g, speed = 0.2)
+        self.colorB = MotionProfile(b, speed = 0.2)
         
         # This recomputes position at Entity constructor
         super().__init__(
@@ -116,6 +119,7 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
 
         self.onTurnEnableToggled()
 
+
     def recomputePosition(self):
         # If entire command block is hidden, only recompute position of next inserter/command
         if not self.isVisible():
@@ -145,12 +149,17 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         self.entities.removeEntity(self.elementsContainer)
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), self.pathAdapter)
 
+        r,g,b = self.getDefinition().color
+        self.colorR.setEndValue(r)
+        self.colorG.setEndValue(g)
+        self.colorB.setEndValue(b)
+
         # resize based on new elements container rect
         self.onElementsResize()
 
     # Update animation every tick
     def onTick(self):
-
+        # handle elements visibility
         if self.elementsVisible and self.isFullyCollapsed():
             self.elementsContainer.setInvisible()
             self.elementsVisible = False
@@ -158,12 +167,20 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             self.elementsContainer.setVisible()
             self.elementsVisible = True
 
+        # handle mouse hovering
         if self.getNext() is not None and self.getNext().isSelfOrChildrenHovering():
             self.mouseHoveringCommand = False
         else:
             self.mouseHoveringCommand = self.isSelfOrChildrenHovering()
 
+        self.colorR.tick()
+        self.colorG.tick()
+        self.colorB.tick()
+        # handle color animation
+        if self.colorR.wasChange() or self.colorG.wasChange() or self.colorB.wasChange():
+            self.headerEntity.functionName.updateColor()
 
+        # handle expansion animation
         if not self.animatedExpansion.isDone():
             #self.animatedPosition.tick()
             self.animatedExpansion.tick()
@@ -356,7 +373,10 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             CommandBlockEntity.HIGHLIGHTED = None
 
     def getColor(self) -> tuple:
-        return self.getDefinition().color
+        r = self.colorR.get()
+        g = self.colorG.get()
+        b = self.colorB.get()
+        return (r, g, b)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
