@@ -68,7 +68,7 @@ class ImageEntity(Entity, TooltipOwner):
         if id is None:
             id = self.defaultID
         elif id not in self.states:
-                raise Exception("State not found")  
+                raise Exception("State not found", id, self.states)  
 
         return self.states[id]
 

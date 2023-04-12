@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from common.draw_order import DrawOrder
 from common.reference_frame import *
 from entity_base.entity import Entity
-from root_container.field_container.segment.segment_type import SegmentType
+from root_container.field_container.segment.segment_type import PathSegmentType
 
 from utility.pygame_functions import drawDottedLine, shade
 if TYPE_CHECKING:
@@ -33,7 +33,7 @@ class BezierLines(Entity):
     
     def isVisible(self):
 
-        if self.segment.getSegmentType() != SegmentType.BEZIER:
+        if self.segment.getSegmentType() != PathSegmentType.BEZIER:
             return False
         
         return self.segment.isSelfOrNodesSelected()

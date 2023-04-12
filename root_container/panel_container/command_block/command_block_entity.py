@@ -258,6 +258,9 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
     
     def isFullyExpanded(self) -> bool:
         return self.animatedExpansion.get() == 1
+    
+    def getCommandType(self) -> CommandType:
+        return self.type
 
     # commands are sandwiched by CommandInserters
     def getPreviousCommand(self) -> 'CommandBlockEntity':
@@ -318,16 +321,27 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
     def isDragging(self):
         return False
     
-
+    def isHighlighted(self) -> bool:
+        return CommandBlockEntity.HIGHLIGHTED == self
+    
     # Highlight the command block visually
     # Also, contract all commands except this one
     def highlight(self):
+
+        if self.isHighlighted():
+            CommandBlockEntity.HIGHLIGHTED = None
+            self.localExpansion = False
+            self.path.recalculateTargets()
+            return
+
+        # highlight and expand this command, disabling global flag if need be
         CommandBlockEntity.HIGHLIGHTED = self
         self.path.setAllLocalExpansion(False)
         self.commandExpansion.setForceCollapse(False)
         self.localExpansion = True
         self.path.recalculateTargets()
 
+        # scroll to this command
         tail = self.path.commandList.tail
         contentHeight = 0 if tail is None else tail._getTargetHeight()
         self.path.scrollHandler.setContentHeight(contentHeight)

@@ -3,6 +3,7 @@ import math
 from typing import TYPE_CHECKING
 
 from root_container.field_container.node.node_line import NodeLine
+from root_container.field_container.path_element import PathElement
 from root_container.field_container.segment.segment_direction import SegmentDirection
 if TYPE_CHECKING:
     from root_container.path import Path
@@ -49,7 +50,7 @@ class TurnDirection(Enum):
     LEFT = 1
     RIGHT = 2
 
-class PathNodeEntity(AbstractCircleEntity, AdapterInterface, LinkedListNode[PathSegmentEntity]):
+class PathNodeEntity(AbstractCircleEntity, AdapterInterface, PathElement[PathSegmentEntity]):
 
     TURN_DISABLED_COLOR = (0,0,0)
     BLUE_COLOR = (102, 153, 255)

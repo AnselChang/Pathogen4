@@ -1,9 +1,9 @@
 from common.reference_frame import PointRef, Ref
 from entity_base.image.image_state import ImageStatesFactory
-from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction
+from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction, HighlightID
 from entity_ui.selector_menu.selector_menu_factory import *
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity, SegmentDirection
-from root_container.field_container.segment.segment_type import SegmentType
+from root_container.field_container.segment.segment_type import PathSegmentType
 
 # When clicked, segment toggles forward/reverse direction
 class DirectionButtonID(Enum):
@@ -15,7 +15,7 @@ class InvertDirectionAction(MenuClickAction[PathSegmentEntity]):
 
     # Get the current direction of the segment
     def getStateID(self, targetEntity: PathSegmentEntity) -> Enum:
-        isStraight = (targetEntity.getSegmentType() == SegmentType.STRAIGHT)
+        isStraight = (targetEntity.getSegmentType() == PathSegmentType.STRAIGHT)
         if targetEntity.getDirection() == SegmentDirection.FORWARD:
             return DirectionButtonID.STRAIGHT_FORWARD if isStraight else DirectionButtonID.CURVE_FORWARD
         else:
@@ -41,12 +41,12 @@ class ToggleSegmentTypeAction(MenuClickAction[PathSegmentEntity]):
     def onClick(self, targetEntity: PathSegmentEntity, mouse: tuple):
         current = self.getStateID(targetEntity)
 
-        if current == SegmentType.STRAIGHT:
-            targetEntity.setState(SegmentType.ARC)
-        elif current == SegmentType.ARC:
-            targetEntity.setState(SegmentType.BEZIER)  
-        elif current == SegmentType.BEZIER:
-            targetEntity.setState(SegmentType.STRAIGHT)
+        if current == PathSegmentType.STRAIGHT:
+            targetEntity.setState(PathSegmentType.ARC)
+        elif current == PathSegmentType.ARC:
+            targetEntity.setState(PathSegmentType.BEZIER)  
+        elif current == PathSegmentType.BEZIER:
+            targetEntity.setState(PathSegmentType.STRAIGHT)
         else:
             raise Exception("Invalid segment type")      
 
@@ -62,7 +62,8 @@ def configureSegmentMenu() -> MenuDefinition:
 
     # Reveals the corresponding command
     states = ImageStatesFactory()
-    states.addState(0, ImageID.REVEAL_COMMAND, "Jump to the corresponding command")
+    states.addState(HighlightID.START_HIGHLIGHTING, ImageID.REVEAL_COMMAND, "Highlight the corresponding command")
+    states.addState(HighlightID.STOP_HIGHLIGHTING, ImageID.REVEAL_COMMAND, "Stop highlighting the corresponding command")
     segmentDefinition.add(states.create(), HighlightCommandAction())
     
     # Add a button that toggles the direction of the segment
@@ -75,9 +76,9 @@ def configureSegmentMenu() -> MenuDefinition:
 
     # Add a button that toggles segment type
     states = ImageStatesFactory()
-    states.addState(SegmentType.STRAIGHT, ImageID.STRAIGHT_SEGMENT, "Segment type: straight")
-    states.addState(SegmentType.ARC, ImageID.ARC_SEGMENT, "Segment type: arc")
-    states.addState(SegmentType.BEZIER, ImageID.CURVE_SEGMENT, "Segment type: bezier")
+    states.addState(PathSegmentType.STRAIGHT, ImageID.STRAIGHT_SEGMENT, "Segment type: straight")
+    states.addState(PathSegmentType.ARC, ImageID.ARC_SEGMENT, "Segment type: arc")
+    states.addState(PathSegmentType.BEZIER, ImageID.CURVE_SEGMENT, "Segment type: bezier")
     segmentDefinition.add(states.create(), ToggleSegmentTypeAction())
 
     # Inserts a node which splits this segment into two. New node is set to temporary and following mouse position

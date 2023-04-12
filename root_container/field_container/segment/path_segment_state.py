@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from data_structures.observer import Observable
 
-from root_container.field_container.segment.segment_type import SegmentType
+from root_container.field_container.segment.segment_type import PathSegmentType
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
     from root_container.field_container.node.path_node_entity import PathNodeEntity
@@ -21,7 +21,7 @@ Also provides an interface for getting thetas at both sides, and holding referen
 """
 
 class PathSegmentState(ABC, Observable):
-    def __init__(self, type: SegmentType, segment: PathSegmentEntity | LinkedListNode) -> None:
+    def __init__(self, type: PathSegmentType, segment: PathSegmentEntity | LinkedListNode) -> None:
         self.type = type
         self.segment = segment # type PathSegmentEntity (the parent)
 

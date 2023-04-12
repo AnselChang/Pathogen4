@@ -8,7 +8,7 @@ from entity_base.listeners.drag_listener import DragLambda
 
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
 from root_container.field_container.node.arc_node_line import ArcNodeLine
-from root_container.field_container.segment.segment_type import SegmentType
+from root_container.field_container.segment.segment_type import PathSegmentType
 from utility.math_functions import distancePointToLine
 from utility.pygame_functions import shade
 if TYPE_CHECKING:
@@ -61,7 +61,7 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
             return False
         
         # If segment is not arc, then no theta control
-        if self.segment.getSegmentType() != SegmentType.ARC:
+        if self.segment.getSegmentType() != PathSegmentType.ARC:
             return False
         
         # If segment or neighboring nodes are not selected, then no theta control

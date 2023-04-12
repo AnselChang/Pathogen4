@@ -6,7 +6,7 @@ from data_structures.observer import Observer
 from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
 import constants
-from root_container.field_container.segment.segment_type import SegmentType
+from root_container.field_container.segment.segment_type import PathSegmentType
 from utility.bezier_functions import generate_cubic_points
 from utility.bezier_functions_2 import fast_points_cubic_bezier, normalized_points_cubic_bezier
 from utility.format_functions import formatDegrees, formatInches
@@ -35,7 +35,7 @@ class BezierIconID(Enum):
 
 class BezierSegmentState(PathSegmentState, Observer):
     def __init__(self, segment: PathSegmentEntity | LinkedListNode) -> None:
-        super().__init__(SegmentType.BEZIER, segment)
+        super().__init__(PathSegmentType.BEZIER, segment)
         self.adapter = BezierAdapter([
             ImageState(BezierIconID.BEZIER, ImageID.BEZIER),
         ])
@@ -102,7 +102,7 @@ class BezierSegmentState(PathSegmentState, Observer):
             self.recomputeMouseDetectionPoints()
 
     def onScreenRefChange(self):
-        if self.segment.getSegmentType() == SegmentType.BEZIER:
+        if self.segment.getSegmentType() == PathSegmentType.BEZIER:
             self.recomputeMouseDetectionPoints()
 
     # called anytime the bezier nodes are shifted IN SCREEN COORDINATES

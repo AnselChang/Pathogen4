@@ -6,7 +6,7 @@ from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
 
-from root_container.field_container.segment.segment_type import SegmentType
+from root_container.field_container.segment.segment_type import PathSegmentType
 from utility.angle_functions import deltaInHeading, headingDiff
 from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import arcCenterFromTwoPointsAndTheta, arcFromThreePoints, distancePointToLine, distanceTuples, getArcMidpoint, pointTouchingLine, thetaFromArc, thetaFromPoints
@@ -38,7 +38,7 @@ class ArcIconID(Enum):
 
 class ArcSegmentState(PathSegmentState):
     def __init__(self, segment: PathSegmentEntity | LinkedListNode) -> None:
-        super().__init__(SegmentType.ARC, segment)
+        super().__init__(PathSegmentType.ARC, segment)
         self.adapter = ArcAdapter([
             ImageState(ArcIconID.FORWARD_LEFT, ImageID.CURVE_LEFT_FORWARD),
             ImageState(ArcIconID.FORWARD_RIGHT, ImageID.CURVE_RIGHT_FORWARD),

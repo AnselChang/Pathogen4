@@ -5,8 +5,9 @@ from entity_base.listeners.tick_listener import TickLambda
 from root_container.field_container.node.arc_curve_node import ArcCurveNode
 from root_container.field_container.node.bezier_lines import BezierLines
 from root_container.field_container.node.bezier_theta_node import BezierThetaNode
+from root_container.field_container.path_element import PathElement
 
-from root_container.field_container.segment.segment_type import SegmentType
+from root_container.field_container.segment.segment_type import PathSegmentType
 if TYPE_CHECKING:
     from root_container.path import Path
 
@@ -43,7 +44,7 @@ that define behavior for straight/arc/bezier shapes. Easy to switch between stat
 We also define the constants that apply across all segment types here, like color and thickness
 """
 
-class PathSegmentEntity(Entity, AdapterInterface, Observer, LinkedListNode['PathNodeEntity']):
+class PathSegmentEntity(Entity, AdapterInterface, Observer, PathElement['PathNodeEntity']):
     def __init__(self, parent: Entity, path: Path) -> None:
         
         super().__init__(parent = parent,
@@ -61,16 +62,16 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, LinkedListNode['Path
 
         self.path = path
 
-        self.states: dict[SegmentType, PathSegmentState] = {
-            SegmentType.STRAIGHT: StraightSegmentState(self),
-            SegmentType.ARC: ArcSegmentState(self),
-            SegmentType.BEZIER: BezierSegmentState(self)
+        self.states: dict[PathSegmentType, PathSegmentState] = {
+            PathSegmentType.STRAIGHT: StraightSegmentState(self),
+            PathSegmentType.ARC: ArcSegmentState(self),
+            PathSegmentType.BEZIER: BezierSegmentState(self)
         }
         # on state update, recompute itself
         for stateID in self.states:
             self.states[stateID].subscribe(self, onNotify = self.recomputePosition)
 
-        self.currentState: SegmentType = SegmentType.STRAIGHT
+        self.currentState: PathSegmentType = PathSegmentType.STRAIGHT
 
         self.direction: SegmentDirection = SegmentDirection.FORWARD
 
@@ -99,7 +100,7 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, LinkedListNode['Path
     def getState(self) -> PathSegmentState:
         return self.states[self.currentState]
     
-    def setState(self, newState: SegmentType) -> None:
+    def setState(self, newState: PathSegmentType) -> None:
         self.currentState = newState
 
         self.getState().onStateChange()
@@ -190,9 +191,9 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, LinkedListNode['Path
 
         # initailize arc node
         if not self.isFullyInitialized and self.getNext() is not None and self.getPrevious() is not None:
-            self.arcNode = ArcCurveNode(self, self.states[SegmentType.ARC])
-            self.bezierTheta1 = BezierThetaNode(self, self.states[SegmentType.BEZIER], self.getPrevious, True)
-            self.bezierTheta2 = BezierThetaNode(self, self.states[SegmentType.BEZIER], self.getNext, False)
+            self.arcNode = ArcCurveNode(self, self.states[PathSegmentType.ARC])
+            self.bezierTheta1 = BezierThetaNode(self, self.states[PathSegmentType.BEZIER], self.getPrevious, True)
+            self.bezierTheta2 = BezierThetaNode(self, self.states[PathSegmentType.BEZIER], self.getNext, False)
 
             # must call this after initilizing arcNode and bezierThetas,
             # so that position recomputation happens before drawing lines
@@ -216,7 +217,7 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, LinkedListNode['Path
     def getDirection(self):
         return self.direction
     
-    def getSegmentType(self) -> SegmentType:
+    def getSegmentType(self) -> PathSegmentType:
         return self.currentState
 
     def getOther(self, node: PathNodeEntity):

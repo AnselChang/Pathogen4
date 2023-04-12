@@ -5,7 +5,7 @@ from common.draw_order import DrawOrder
 from common.reference_frame import PointRef, Ref, VectorRef
 from entity_base.listeners.drag_listener import DragLambda
 
-from root_container.field_container.segment.segment_type import SegmentType
+from root_container.field_container.segment.segment_type import PathSegmentType
 from utility.math_functions import distanceTuples, thetaFromPoints
 from utility.pygame_functions import shade
 if TYPE_CHECKING:
@@ -65,7 +65,7 @@ class BezierThetaNode(AbstractCircleEntity):
             return False
 
         # If segment is not bezier, then no theta control
-        if self.segment.getSegmentType() != SegmentType.BEZIER:
+        if self.segment.getSegmentType() != PathSegmentType.BEZIER:
             return False
         
         # If neither node nor segment is selected, then no theta control
@@ -92,7 +92,7 @@ class BezierThetaNode(AbstractCircleEntity):
         if self.dx is None:
 
             # delay calculation for initial locations until segment is actually bezier
-            if self.segment.getSegmentType() != SegmentType.BEZIER:
+            if self.segment.getSegmentType() != PathSegmentType.BEZIER:
                 return 0,0
             
             self.dx, self.dy = self.getInitialOffset()

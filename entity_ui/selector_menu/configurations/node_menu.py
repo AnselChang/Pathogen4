@@ -1,6 +1,6 @@
 from common.reference_frame import PointRef, Ref
 from entity_base.image.image_state import ImageStatesFactory
-from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction
+from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction, HighlightID
 from entity_ui.selector_menu.selector_menu_factory import *
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 
@@ -43,7 +43,8 @@ def configureNodeMenu() -> MenuDefinition:
 
     # Reveals the corresponding command
     states = ImageStatesFactory()
-    states.addState(0, ImageID.REVEAL_COMMAND, "Jump to the corresponding command", None, "No turning necessary")
+    states.addState(HighlightID.START_HIGHLIGHTING, ImageID.REVEAL_COMMAND, "Highlight the corresponding command", None, "No turning necessary")
+    states.addState(HighlightID.STOP_HIGHLIGHTING, ImageID.REVEAL_COMMAND, "Stop highlighting the corresponding command")
     segmentDefinition.add(states.create(), HighlightCommandAction())
 
     # Only for first node. Adds a node at the end of the path
