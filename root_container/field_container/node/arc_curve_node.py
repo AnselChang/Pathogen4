@@ -48,7 +48,7 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
 
         # perpendicular distance from midpoint to self, signed
         # in field ref (inches)
-        self.perpDistance = 10
+        self.perpDistance = 1 # initially, we start with a small amount of curve 
         self.recomputePositionRef()
 
         # handles drawing the line from the segment midpoint to this
@@ -108,11 +108,17 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         self.segment.onReshape()
 
     def setPerpDistance(self, perpDistance: float):
+
+        self.A: PointRef = self.segment.getPrevious().getPositionRef()
+        self.B: PointRef = self.segment.getNext().getPositionRef()
+        lineDistance = (self.B - self.A).magnitude(Ref.FIELD)
+
         # prevent arc from ever being perfectly straight, which causes division issues
         #print(perpDistance)
-        MIN_MAGNITUDE = 1e-2
+        MIN_MAGNITUDE = 0.003 * lineDistance
+        print(perpDistance, MIN_MAGNITUDE)
         if abs(perpDistance) < MIN_MAGNITUDE:
-            #print("as")
+            print("as")
             perpDistance = MIN_MAGNITUDE if perpDistance > 0 else -MIN_MAGNITUDE
 
         self.perpDistance = perpDistance

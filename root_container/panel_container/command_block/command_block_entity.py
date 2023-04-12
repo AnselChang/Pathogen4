@@ -67,9 +67,6 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         # whether to expand by default, ignoring global flags
         self.localExpansion = False
 
-        # whether to hide command from list, i.e. when no turn
-        self.hideCommand = False
-
         
         
         # This recomputes position at Entity constructor
@@ -239,7 +236,7 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
     
     def defineHeight(self) -> float:
 
-        if self.hideCommand:
+        if not self.isVisible():
             return 0
 
         if self.path.forceAnimationToEnd:
@@ -293,12 +290,10 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
     def onTurnEnableToggled(self):
         if self.pathAdapter.type == CommandType.TURN:
             turnAdapter: TurnAdapter = self.pathAdapter
-            self.hideCommand = not turnAdapter.isTurnEnabled()
-
-            if self.hideCommand:
-                self.setInvisible()
-            else:
+            if turnAdapter.isTurnEnabled():
                 self.setVisible()
+            else:
+                self.setInvisible()
 
             self.path.onChangeInCommandPositionOrHeight()
 
