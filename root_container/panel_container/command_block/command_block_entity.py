@@ -120,12 +120,8 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         self.onTurnEnableToggled()
 
     def recomputePosition(self):
-
         # If entire command block is hidden, only recompute position of next inserter/command
         if not self.isVisible():
-            #print("recompute next")
-            #print(self.getNext())
-            #print(self._children)
             super().recomputePosition(excludeChildIf = 
                 lambda child: child is not self.getNext()           
             )

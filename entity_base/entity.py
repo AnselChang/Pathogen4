@@ -264,6 +264,9 @@ class Entity(ABC, Observable):
         for child in self._children:
             if not excludeChildIf(child):
                 child.recomputePosition()
+            else:
+                pass
+                #print("excluding child", child)
 
     # THESE ARE UTILITY METHODS THAT CAN BE USED TO SPECIFY RELATIVE POSITIONS ABOVE
 

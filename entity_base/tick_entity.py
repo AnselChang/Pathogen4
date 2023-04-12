@@ -12,5 +12,6 @@ class TickEntity(entity.Entity):
 
         super().__init__(parent = entity.ROOT_CONTAINER,
                          tick = TickLambda(self, FonTick = functionToRun),
-                         drawOrder = drawOrder, initiallyVisible = False
+                         drawOrder = drawOrder, initiallyVisible = False,
+                         recomputeWhenInvisible = True
                          )

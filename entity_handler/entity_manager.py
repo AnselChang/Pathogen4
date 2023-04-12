@@ -132,7 +132,7 @@ class EntityManager:
     def tick(self):
 
         for entity in self.tickEntities:
-            if entity.isVisible():
+            if entity.isVisible() or entity.recomputeWhenInvisible:
                 entity.tick.onTick()
 
     def onKeyDown(self, key):

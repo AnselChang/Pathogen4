@@ -158,7 +158,7 @@ class DropdownContainer(Container, Observable):
 
     def expand(self):
         self.expanded = True
-        for option in self.options:
+        for option in self.options[1:]:
             option.setVisible()
         self.updateProfiles()
         
@@ -182,7 +182,7 @@ class DropdownContainer(Container, Observable):
             self.recomputePosition()
         else:
             if self.stillVisibleWhileCollapsing:
-                for option in self.options:
+                for option in self.options[1:]:
                     option.setInvisible()
                 self.stillVisibleWhileCollapsing = False
 
