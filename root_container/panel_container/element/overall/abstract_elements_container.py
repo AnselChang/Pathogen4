@@ -20,9 +20,6 @@ class AbstractElementsContainer(Container, Observable):
     def getOpacity(self) -> float:
         return self.parentCommand.getAddonsOpacity()
     
-    def isVisible(self) -> bool:
-        return self.parentCommand.isVisible() and not self.parentCommand.isFullyCollapsed()
-    
     def defineCenterX(self) -> float:
         return self._px(0.5)
     

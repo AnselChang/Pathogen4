@@ -17,9 +17,6 @@ class StaticEntity(entity.Entity):
         super().__init__(parent = entity.ROOT_CONTAINER, drawOrder = drawOrder)
         self.Fdraw = Fdraw
         self.recomputePosition()
-        
-    def isVisible(self) -> bool:
-        return True
 
     def isTouching(self, position: tuple) -> bool:
         return False

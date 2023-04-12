@@ -29,6 +29,3 @@ class ElementContainer(Container):
     
     def defineHeight(self) -> float:
         return self._pheight(1)
-    
-    def isVisible(self):
-        return super().isVisible() and not self.parentCommand.isFullyCollapsed()

@@ -1,3 +1,4 @@
+from data_structures.observer import Observer
 from root_container.panel_container.panel_container import PanelContainer
 from root_container.panel_container.tab.abstract_tab_contents_container import AbstractTabContentsContainer
 from root_container.panel_container.tab.tab_entity import TabEntity
@@ -15,7 +16,7 @@ from root_container.panel_container.tab.settings_tab_contents_container import S
 Manage correct instantiation of tabs
 """
 
-class TabHandler:
+class TabHandler(Observer):
 
     def __init__(self, panel: PanelContainer):
 
@@ -28,9 +29,13 @@ class TabHandler:
         self.codeContainer = CodeTabContentsContainer(panel, self)
         self.settingsContainer = SettingsTabContentsContainer(panel, self)
 
+        self.tabContents: list[AbstractTabContentsContainer] = [self.blockContainer, self.codeContainer, self.settingsContainer]
+
+        self.radioToContent: dict[RadioContainer, AbstractTabContentsContainer] = {}
+
         # Create tabs
         self.tabs = TabGroupEntity(panel)
-        for tabContent in [self.blockContainer, self.codeContainer, self.settingsContainer]:
+        for i, tabContent in enumerate(self.tabContents):
 
             text = tabContent.tabName
 
@@ -40,7 +45,17 @@ class TabHandler:
                 onClickFunction = radio.onClick
             )
 
-    def isTabContentsVisible(self, tabContents: AbstractTabContentsContainer) -> bool:
-        if self.tabs is None:
-            return True
-        return self.tabs.isOptionOn(tabContents.tabName)
+            self.radioToContent[radio] = tabContent
+
+            if i != 0:
+                tabContent.setInvisible()
+        
+        self.tabs.subscribe(self, onNotify = self.onTabClicked)
+
+    def onTabClicked(self):
+        activeTabContent = self.radioToContent[self.tabs.getActiveOption()]
+        for tabContent in self.tabContents:
+            if tabContent is activeTabContent:
+                tabContent.setVisible()
+            else:
+                tabContent.setInvisible()

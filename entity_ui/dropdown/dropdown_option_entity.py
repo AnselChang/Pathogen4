@@ -20,7 +20,7 @@ class DropdownOptionEntity(Entity):
     # For active option, pass in dynamic text. Otherwise, pass in static text
     def __init__(self, dropdownContainer: DropdownContainer, i: int, font: DynamicFont,
                  colorSelectedHovered, colorSelected, colorHovered, colorOff, staticText: str = None,
-                 dynamicText: Callable = None, visible = lambda: True, isLast = False):
+                 dynamicText: Callable = None, isLast = False):
 
         if dynamicText is None:
             self.getText = lambda staticText=staticText: staticText
@@ -41,18 +41,12 @@ class DropdownOptionEntity(Entity):
             )
         self.dropdownContainer = dropdownContainer
         self.i = i
-        self.visible = visible
         
         self.isFirst = (i == -1)
         self.isLast = isLast
 
         self.recomputePosition()
-            
 
-        
-    def isVisible(self) -> bool:
-
-        return super().isVisible() and self.visible()
     
     def defineBefore(self):
         surface = getText(self.font.get(), self.getText(), (0,0,0))
@@ -80,6 +74,8 @@ class DropdownOptionEntity(Entity):
     # Higher number is drawn in the front.
     # We want to draw the lowest y coordinate in the front
     def drawOrderTiebreaker(self) -> float:
+        if not self.isVisible():
+            return 0
         return -self.dropdownContainer.TOP_Y
 
     

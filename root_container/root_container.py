@@ -32,9 +32,6 @@ class RootContainer(Container, Observer):
     def defineHeight(self) -> float:
         return self.dimensions.SCREEN_HEIGHT
 
-    def isVisible(self) -> bool:
-        return True
-
     # Draw screen background
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         screen.fill((255,255,255))

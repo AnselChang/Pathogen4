@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from adapter.turn_adapter import TurnAdapter
 from entity_base.listeners.hover_listener import HoverLambda
+from entity_ui.scrollbar.scrolling_content_container import ScrollingContentContainer
+from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
 if TYPE_CHECKING:
     from root_container.path import Path
     from command_creation.command_definition_database import CommandDefinitionDatabase
@@ -44,9 +46,10 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
     HIGHLIGHTED = None
 
 
-    def __init__(self, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
+    def __init__(self, container: BlockTabContentsContainer, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
         self.path = path
+        self.container = container
 
         self.COLLAPSED_HEIGHT = 35
         self.EXPANDED_HEIGHT = 50 
@@ -77,7 +80,8 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             drag = drag,
             hover = HoverLambda(self),
             #select = SelectLambda(self, "command", type = SelectorType.SOLO),
-            drawOrder = DrawOrder.COMMANND_BLOCK
+            drawOrder = DrawOrder.COMMANND_BLOCK,
+            recomputeWhenInvisible = True
         )
 
         CommandOrInserter.__init__(self, True)
@@ -88,6 +92,8 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
 
         self.elementsContainer = None
         self.mouseHoveringCommand = False
+
+        self.elementsVisible = True
 
         self.updateTargetHeight(True)
         self.recomputePosition()
@@ -113,6 +119,28 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
 
         self.onTurnEnableToggled()
 
+    def recomputePosition(self):
+
+        # If entire command block is hidden, only recompute position of next inserter/command
+        if not self.isVisible():
+            #print("recompute next")
+            #print(self.getNext())
+            #print(self._children)
+            super().recomputePosition(excludeChildIf = 
+                lambda child: child is not self.getNext()           
+            )
+        # Otherwise, compute everything that is visible
+        # (note that elements container won't be computed anyways if invisibel)
+        else:
+            super().recomputePosition()
+
+    # normally should never override this. but because of the bad design decision
+    # for inserters/commands to be parent/children of each other, prevent parent
+    # inserter being invisible from making self invisible
+    def isVisible(self) -> bool:
+
+        return self._LOCAL_VISIBLE and self.container.isVisible()
+
     # called when a different name is selected in the dropdown
     def onFunctionChange(self):
 
@@ -129,6 +157,13 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
 
     # Update animation every tick
     def onTick(self):
+
+        if self.elementsVisible and self.isFullyCollapsed():
+            self.elementsContainer.setInvisible()
+            self.elementsVisible = False
+        elif not self.elementsVisible and not self.isFullyCollapsed():
+            self.elementsContainer.setVisible()
+            self.elementsVisible = True
 
         if self.getNext() is not None and self.getNext().isSelfOrChildrenHovering():
             self.mouseHoveringCommand = False
@@ -202,8 +237,6 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         self.draggingY = self._py(1) if self.dragPosition is None else self.dragPosition
         return self._px(0), self.draggingY
     
-    def isVisible(self) -> bool:
-        return not self.hideCommand
 
     def defineWidth(self) -> float:
         return self._pwidth(1)
@@ -262,6 +295,12 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         if self.pathAdapter.type == CommandType.TURN:
             turnAdapter: TurnAdapter = self.pathAdapter
             self.hideCommand = not turnAdapter.isTurnEnabled()
+
+            if self.hideCommand:
+                self.setInvisible()
+            else:
+                self.setVisible()
+
             self.path.onChangeInCommandPositionOrHeight()
 
     def getOpacity(self) -> float:

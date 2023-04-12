@@ -35,7 +35,9 @@ class CommandInserter(Entity, CommandOrInserter):
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
             click = ClickLambda(self, FonLeftClick = lambda mouse: onInsert(self)),
             select = SelectLambda(self, "inserter", type = SelectorType.SOLO),
-            drawOrder = DrawOrder.COMMAND_INSERTER)
+            drawOrder = DrawOrder.COMMAND_INSERTER,
+            recomputeWhenInvisible = True
+            )
         CommandOrInserter.__init__(self, False)
 
         self.path = path

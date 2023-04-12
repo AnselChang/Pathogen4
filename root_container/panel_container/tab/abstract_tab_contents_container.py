@@ -30,10 +30,6 @@ class AbstractTabContentsContainer(Container):
         self.tabName = tabName
         self.recomputePosition()
 
-    # only the currently-selected tab is visible
-    def isVisible(self) -> bool:
-        return self.tabHandler.isTabContentsVisible(self)
-
     # Sits right below where the tabs are
     def defineTopLeft(self) -> tuple:
         return self._px(0), self._py(0.05)

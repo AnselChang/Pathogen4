@@ -83,7 +83,9 @@ class DropdownContainer(Container, Observable):
 
         self.widthProfile = None
         self.heightProfile = None
-        self.borderProfile = None
+        self.borderProfile = MotionProfile(0 if dynamicBorderOpacity else 1, 0.4)
+
+        self.stillVisibleWhileCollapsing = False
 
         self.optionTexts = options
         self.selectedOptionText = None
@@ -98,17 +100,14 @@ class DropdownContainer(Container, Observable):
             o = DropdownOptionEntity(self, i, self.font,
                                  colorSelectedHovered, colorSelected, colorHovered, colorOff,
                                  dynamicText = lambda i=i: self.getOptionText(i),
-                                 visible = lambda: not self.isFullyCollapsed(),
                                  isLast = (i == len(self.otherOptions)-1)
                                  )
+            o.setInvisible()
             self.options.append(o)
         self.recomputePosition()
 
         DropdownIconContainer(self.currentOption, self)
 
-        self.heightProfile = MotionProfile(self.optionHeight, 0.4, 1)
-        self.widthProfile = MotionProfile(self.getFullWidth(), 0.4)
-        self.borderProfile = MotionProfile(0 if dynamicBorderOpacity else 1, 0.4)
 
 
     def onOptionClick(self, i, optionText: str):
@@ -159,10 +158,13 @@ class DropdownContainer(Container, Observable):
 
     def expand(self):
         self.expanded = True
+        for option in self.options:
+            option.setVisible()
         self.updateProfiles()
         
     def collapse(self):
         self.expanded = False
+        self.stillVisibleWhileCollapsing = True
         self.updateProfiles()
     
     def isFullyCollapsed(self) -> bool:
@@ -170,7 +172,7 @@ class DropdownContainer(Container, Observable):
 
     def onTick(self):
 
-        recompute = (not self.heightProfile.isDone() and not self.widthProfile.isDone())
+        recompute = (not self.heightProfile.isDone() or not self.widthProfile.isDone())
         
         self.heightProfile.tick()
         self.widthProfile.tick()
@@ -178,6 +180,11 @@ class DropdownContainer(Container, Observable):
 
         if recompute:
             self.recomputePosition()
+        else:
+            if self.stillVisibleWhileCollapsing:
+                for option in self.options:
+                    option.setInvisible()
+                self.stillVisibleWhileCollapsing = False
 
         width = self.widthProfile.get()
         height = self.heightProfile.get()
@@ -213,6 +220,10 @@ class DropdownContainer(Container, Observable):
         
         self.optionHeight = max([option.getTextHeight() for option in self.options])
         self.optionHeight += 2 * self._awidth(self.VERTICAL_TEXT_PADDING)
+
+        if self.heightProfile is None:
+            self.heightProfile = MotionProfile(self.optionHeight, 0.4, 1)
+            self.widthProfile = MotionProfile(self.getFullWidth(), 0.4)
 
         if self.dimensions.RESIZED_THIS_FRAME:
             self.updateProfiles(True)
@@ -263,4 +274,6 @@ class DropdownContainer(Container, Observable):
     # Higher number is drawn in the front.
     # We want to draw the lowest y coordinate in the front
     def drawOrderTiebreaker(self) -> float:
+        if not self.isVisible():
+            return 0
         return -self.TOP_Y

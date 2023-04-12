@@ -1,4 +1,5 @@
 from common.draw_order import DrawOrder
+from data_structures.observer import Observable
 from entity_base.entity import Entity
 from entity_ui.group.radio_container import RadioContainer
 from entity_ui.group.linear_group_container import LinearGroupContainer
@@ -9,7 +10,7 @@ from typing import TypeVar, Generic
 If allowNoSelect is True, then no option being selected is allowed
 """
 T = TypeVar('T')
-class RadioGroupContainer(Generic[T], LinearGroupContainer[RadioContainer | T]):
+class RadioGroupContainer(Generic[T], LinearGroupContainer[RadioContainer | T], Observable):
 
     def __init__(self, parent: Entity, isHorizontal: bool, allowNoSelect: bool = False, drawOrder: DrawOrder = DrawOrder.PANEL_BACKGROUND):
         
@@ -39,7 +40,12 @@ class RadioGroupContainer(Generic[T], LinearGroupContainer[RadioContainer | T]):
         if self.allowNoSelect and option is self.active:
             self.active = None
         else:
+            # option is already set
+            if self.active is option:
+                return
+
             self.active = option
+        self.notify()
 
     # get the active option
     def getActiveOption(self) -> RadioContainer | T:

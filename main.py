@@ -87,7 +87,7 @@ def main():
     # initialize commands
     database = CommandDefinitionDatabase()
     commandExpansion = CommandExpansionContainer(tabHandler.blockContainer)
-    commandEntityFactory = CommandBlockEntityFactory(database, commandExpansion)
+    commandEntityFactory = CommandBlockEntityFactory(database, tabHandler.blockContainer, commandExpansion)
 
     # Create path
     path = Path(fieldContainer, tabHandler.blockContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))

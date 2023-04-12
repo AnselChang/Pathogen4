@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
 if TYPE_CHECKING:
     from root_container.path import Path
 
@@ -30,9 +32,9 @@ CustomCommands have two additonal features compared to regular commands
 
 class CustomCommandBlockEntity(CommandBlockEntity):
 
-    def __init__(self, parent: Entity, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionContainer):
+    def __init__(self, container: BlockTabContentsContainer, parent: Entity, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionContainer):
         
-        super().__init__(parent, path, pathAdapter, database, commandExpansion,
+        super().__init__(container, parent, path, pathAdapter, database, commandExpansion,
                          drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
                          defaultExpand = True,
                          hasTrashCan = True

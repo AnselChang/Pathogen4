@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from entity_handler.entity_manager import EntityManager
@@ -69,7 +69,10 @@ class Entity(ABC, Observable):
                  tick: TickListener = None,
                  hover: HoverListener = None,
                  key: KeyListener = None,
-                 drawOrder: int = 0) -> None:
+                 drawOrder: int = 0,
+                 initiallyVisible: bool = True,
+                 recomputeWhenInvisible: bool = False
+                 ) -> None:
                 
         self.drawOrder = drawOrder
         self.drag = drag
@@ -78,6 +81,9 @@ class Entity(ABC, Observable):
         self.tick = tick
         self.hover = hover
         self.key = key
+        self._LOCAL_VISIBLE = initiallyVisible
+        self.recomputeWhenInvisible = recomputeWhenInvisible
+
 
         self.entities = _entities
         self.interactor = _interactor
@@ -138,10 +144,23 @@ class Entity(ABC, Observable):
     def defineOther(self) -> None:
         return
         
-    # override
+    # DO NOT OVERRIDE. Call setVisible() and setInvisible() instead.
+    # Through this function, a parent entity that is invisible
+    # will make all its children invisible as well, and prevent redundant computation
     def isVisible(self) -> bool:
-        #print("isVisible", self, self._parent)
-        return self._parent.isVisible()
+
+        if self._parent is None:
+            return True
+
+        return self._LOCAL_VISIBLE and self._parent.isVisible()
+    
+    def setVisible(self):
+        self._LOCAL_VISIBLE = True
+        self.recomputePosition()
+
+    def setInvisible(self):
+        self._LOCAL_VISIBLE = False
+
     
     def isSelfOrChildrenHovering(self):
         if self.hover is not None and self.hover.isHovering:
@@ -159,6 +178,7 @@ class Entity(ABC, Observable):
 
     # override. By default, is set to mouse inside the entity rect
     def isTouching(self, mouse: tuple) -> float:
+        #print(self, self._LOCAL_VISIBLE, self.isVisible(), self._parent)
         self._isTouching = isInsideBox2(*mouse, *self.RECT)
         return self._isTouching
     
@@ -176,7 +196,12 @@ class Entity(ABC, Observable):
         pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], 1)
 
     # Must call recomputePosition every time the entity changes its position or dimensions
-    def recomputePosition(self):
+    def recomputePosition(self, excludeChildIf: Callable[['Entity'], bool] = lambda entity: False):
+
+        # only recompute when visible. Otherwise, the position is not defined
+        # When the entity is made visible, it will recompute its position
+        if not self.isVisible() and not self.recomputeWhenInvisible:
+            return
 
         self.defineBefore()
 
@@ -237,7 +262,8 @@ class Entity(ABC, Observable):
 
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:
-            child.recomputePosition()
+            if not excludeChildIf(child):
+                child.recomputePosition()
 
     # THESE ARE UTILITY METHODS THAT CAN BE USED TO SPECIFY RELATIVE POSITIONS ABOVE
 
