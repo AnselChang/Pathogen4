@@ -15,33 +15,19 @@ Passing in "None" indicates it is a code command
 
 class CommandDefinitionBuilder:
 
-    def __init__(self, type: CommandType | None):
+    def __init__(self, type: CommandType, isCodeEditor: bool = False):
 
         self.type = type
+        self.isCodeEditor = isCodeEditor
         self.elements: list[ElementDefinition] = []
-
-        if type is None:
-            self.type = CommandType.CUSTOM
-            self._isCode = True
-            self.name = "code()"
-            self.templateText = "// [default text]"
-        else:
-            self._isCode = False
-            self.name = "untitledFunction"
-            self.templateText = "// [Code template unspecified]"
+        self.name = "untitledFunction()"
+        self.templateText = "// [Code template unspecified]"
 
         # set to default color
         self.color = COMMAND_INFO[self.type].color
 
     def setName(self, name: str):
-
-        if self._isCode:
-            raise Exception("Cannot set variable name for code commands")
-        
-        if not name[0:1].isalpha() or not name.isalnum():
-            raise Exception("String must be alphanumeric and start with a letter")
-
-        self.name = name + "()"
+        self.name = name
 
     def setColor(self, hueOrColor):
         if not self.type == CommandType.CUSTOM:
@@ -55,22 +41,22 @@ class CommandDefinitionBuilder:
 
     def setTemplateText(self, templateText: str):
 
-        if self._isCode:
+        if self.isCodeEditor:
             raise Exception("Cannot set template text to code commands")
 
         self.templateText = templateText
 
     def addWidget(self, widget: WidgetDefinition):
-        if self._isCode:
+        if self.isCodeEditor:
             raise Exception("Cannot add widgets to code commands")
         
         self.elements.append(widget)
 
     def addReadout(self, variableName: str, attribute: Enum):
-        if self._isCode:
+        if self.isCodeEditor:
             raise Exception("Cannot add widgets to code commands")
         
-        if not self._isCode:
+        if not self.isCodeEditor:
             self.elements.append(ReadoutDefinition(attribute, variableName))
 
     def build(self) -> CommandDefinition:
@@ -81,5 +67,5 @@ class CommandDefinitionBuilder:
             color = self.color,
             elements = self.elements,
             templateText = self.templateText,
-            isCode = self._isCode
+            isCode = self.isCodeEditor
         )
