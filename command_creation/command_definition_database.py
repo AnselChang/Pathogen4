@@ -39,3 +39,10 @@ class CommandDefinitionDatabase:
     
     def getDefinition(self, type: CommandType, index: int = 0) -> CommandDefinition:
         return self.definitions[type][index]
+    
+    def getDefinitionIndexByName(self, type: CommandType, name: str) -> int:
+        definitions = self.definitions[type]
+        for i in range(len(definitions)):
+            if definitions[i].name == name:
+                return i
+        raise Exception("CommandDefinitionDatabase: No definition found with name " + name)

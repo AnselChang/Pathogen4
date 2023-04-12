@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from data_structures.observer import Observer
 from entity_base.listeners.tick_listener import TickLambda
 from root_container.field_container.node.arc_curve_node import ArcCurveNode
 from root_container.field_container.node.bezier_lines import BezierLines
@@ -42,7 +43,7 @@ that define behavior for straight/arc/bezier shapes. Easy to switch between stat
 We also define the constants that apply across all segment types here, like color and thickness
 """
 
-class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity']):
+class PathSegmentEntity(Entity, AdapterInterface, Observer, LinkedListNode['PathNodeEntity']):
     def __init__(self, parent: Entity, path: Path) -> None:
         
         super().__init__(parent = parent,
@@ -67,7 +68,7 @@ class PathSegmentEntity(Entity, AdapterInterface, LinkedListNode['PathNodeEntity
         }
         # on state update, recompute itself
         for stateID in self.states:
-            self.states[stateID].subscribe(self.recomputePosition)
+            self.states[stateID].subscribe(self, onNotify = self.recomputePosition)
 
         self.currentState: SegmentType = SegmentType.STRAIGHT
 

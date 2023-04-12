@@ -1,15 +1,16 @@
+from data_structures.observer import Observer
 from entity_base.container_entity import Container
 from entity_ui.scrollbar.scrollbar_entity import ScrollbarEntity
 from root_container.panel_container.command_scrolling.command_scrollbar import AbstractScrollbarContainer
 
-class ScrollingContentContainer(Container):
+class ScrollingContentContainer(Container, Observer):
 
     def __init__(self, parentContainer, scrollbarContainer: AbstractScrollbarContainer):
         
         super().__init__(parent = parentContainer)
 
         self.scrollbar = scrollbarContainer.scrollbar
-        self.scrollbar.subscribe(onNotify = self.recomputePosition)
+        self.scrollbar.subscribe(self, onNotify = self.recomputePosition)
 
         self.recomputePosition()
 

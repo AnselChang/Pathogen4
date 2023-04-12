@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from data_structures.observer import Observer
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -14,7 +15,7 @@ For the special case of code command block, where, instead of a list of rows
 of elements, we have a single code element that is a text box
 """
 
-class CodeElementContainer(AbstractElementsContainer):
+class CodeElementContainer(AbstractElementsContainer, Observer):
     
     def __init__(self, parentCommand: CommandBlockEntity, commandDefinition: CommandDefinition, pathAdapter: PathAdapter):
 
@@ -33,7 +34,7 @@ class CodeElementContainer(AbstractElementsContainer):
             defaultText = "// [Enter code here]"
         )
 
-        self.textEditor.subscribe(onNotify = self.notify)
+        self.textEditor.subscribe(self, onNotify = self.notify)
 
 
     # This container is dynamically fit to DynamicGroupContainer

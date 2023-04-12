@@ -33,6 +33,11 @@ class DropdownContainer(Container, Observable):
     # In addition to setting option text, update the other options
     # to include the old selected option but exclude the new selected option
     def setSelectedText(self, selectedText: str):
+
+        # selected same text, no change
+        if self.selectedOptionText == selectedText:
+            return
+
         self.selectedOptionText = selectedText
         self.otherOptions = [text for text in self.optionTexts if text != selectedText]
         self.recomputePosition()
@@ -44,6 +49,7 @@ class DropdownContainer(Container, Observable):
         else:
             return self.otherOptions[i]
 
+    # Precondition: each option string is unique
     def __init__(self, parent: Entity, options: list[str], fontID: FontID, fontSize: int,
                  colorSelectedHovered, colorSelected, colorHovered, colorOff,
                  dynamicWidth: bool = False, dynamicBorderOpacity: bool = False, centered: bool = True,
@@ -80,6 +86,7 @@ class DropdownContainer(Container, Observable):
         self.borderProfile = None
 
         self.optionTexts = options
+        self.selectedOptionText = None
         self.setSelectedText(options[0]) # recomputes position from this call
 
         self.currentOption = DropdownOptionEntity(self, -1, self.font, 

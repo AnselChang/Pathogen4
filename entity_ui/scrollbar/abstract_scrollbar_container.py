@@ -3,7 +3,7 @@ from entity_ui.scrollbar.scrollbar_entity import ScrollbarEntity
 
 from common.draw_order import DrawOrder
 
-from data_structures.observer import Observable
+from data_structures.observer import Observable, Observer
 from utility.math_functions import isInsideBox2
 
 import pygame
@@ -12,7 +12,7 @@ import pygame
 Subclass this with define[Position] functions for concrete scroller containers
 Subscribers will be notified when scrollbar position changes
 """
-class AbstractScrollbarContainer(Container, Observable):
+class AbstractScrollbarContainer(Container, Observable, Observer):
 
     def __init__(self, parent):
 
@@ -23,7 +23,7 @@ class AbstractScrollbarContainer(Container, Observable):
         self.scrollbar = ScrollbarEntity(self)
 
         # anyone who subscribes to scrollbar container is essentially subscribed to scrollbar entity
-        self.scrollbar.subscribe(onNotify = self.notify)
+        self.scrollbar.subscribe(self, onNotify = self.notify)
         
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 

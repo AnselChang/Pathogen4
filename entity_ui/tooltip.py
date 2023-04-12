@@ -1,6 +1,7 @@
 #from pygame_functions import FONT15
 from common.font_manager import DynamicFont
 from common.dimensions import Dimensions
+from data_structures.observer import Observer
 import pygame
 from abc import ABC, abstractmethod
 
@@ -17,12 +18,12 @@ when the mouse is hovering over the object
 BACKGROUND_COLOR = [220, 220, 200]
 TEXT_COLOR = [0,0,0]
 
-class Tooltip:
+class Tooltip(Observer):
 
     def __init__(self, messages: str | list[str]):
 
         self.font = _tooltipFont
-        self.font.subscribe(onNotify = self.recalculateTooltipSurface)
+        self.font.subscribe(self, onNotify = self.recalculateTooltipSurface)
         
         if type(messages) == str:
             messages = [messages]

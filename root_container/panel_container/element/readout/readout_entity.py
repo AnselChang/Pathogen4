@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from data_structures.observer import Observer
 from entity_base.listeners.hover_listener import HoverLambda
 
 from root_container.panel_container.element.row.element_entity import ElementContainer
@@ -23,17 +24,17 @@ Belongs to a specific CommandBlockEntity.
 Owns a DefinedReadout which stores information about the widget's context for all commands of that type
 """
 
-class ReadoutEntity(ElementContainer):
+class ReadoutEntity(ElementContainer, Observer):
     def __init__(self, parent, parentCommand: CommandBlockEntity, pathAdapter: PathAdapter, readoutDefinition: ReadoutDefinition):
 
         self.border = TextBorder()
 
         self.font: DynamicFont = parentCommand.fonts.getDynamicFont(readoutDefinition.LABEL_FONT, readoutDefinition.LABEL_SIZE)
-        self.font.subscribe(onNotify = self.recomputePosition)
+        self.font.subscribe(self, onNotify = self.recomputePosition)
 
         self.definition = readoutDefinition
         self.pathAdapter = pathAdapter
-        self.pathAdapter.subscribe(onNotify = self.recomputePosition)
+        self.pathAdapter.subscribe(self, onNotify = self.recomputePosition)
 
         super().__init__(parent, parentCommand)
         

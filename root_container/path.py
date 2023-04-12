@@ -1,5 +1,6 @@
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from common.draw_order import DrawOrder
+from data_structures.observer import Observer
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
 from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
@@ -31,7 +32,7 @@ import entity_base.entity as entity
 A class storing state for a segment and the node after it.
 Also stores the relevant commands, and facilitates their interface through Adapter design pattern
 """
-class Path:
+class Path(Observer):
 
     def __init__(self,
                  field: FieldContainer,
@@ -57,7 +58,7 @@ class Path:
         self.dict: dict[PathNodeEntity | PathSegmentEntity, CommandBlockEntity] = {}
 
         self.scrollHandler = CommandScrollingHandler(panel)
-        self.dimensions.subscribe(onNotify = self.onWindowResize)
+        self.dimensions.subscribe(self, onNotify = self.onWindowResize)
 
         self.shouldRecomputeY = True
         self.forceAnimationToEnd = False
@@ -73,7 +74,7 @@ class Path:
         TickEntity(self.onTick, drawOrder=DrawOrder.FRONT)
 
         # On command expansion button click, recalculate targets
-        commandExpansion.subscribe(onNotify = self.recalculateTargets)
+        commandExpansion.subscribe(self, onNotify = self.recalculateTargets)
 
     # called every tick, specifically AFTER all the target heights for commands/inserters are computed
     def onTick(self):

@@ -25,7 +25,7 @@ from root_container.panel_container.element.overall.elements_container_factory i
 
 from common.font_manager import FontID
 from common.draw_order import DrawOrder
-from data_structures.observer import NotifyType
+from data_structures.observer import NotifyType, Observer
 from utility.pygame_functions import shade, drawText, drawTransparentRect
 from utility.motion_profile import MotionProfile
 import pygame, re
@@ -39,7 +39,7 @@ The WidgetEntities and pathAdapters hold the informatino for this specific insta
 Position calculation is offloaded to CommandBlockPosition
 """
 
-class CommandBlockEntity(Entity, CommandOrInserter):
+class CommandBlockEntity(Entity, CommandOrInserter, Observer):
 
     HIGHLIGHTED = None
 
@@ -84,7 +84,7 @@ class CommandBlockEntity(Entity, CommandOrInserter):
 
         # whenever a global expansion flag is changed, recompute each individual command expansion
         self.commandExpansion = commandExpansion
-        self.commandExpansion.subscribe(onNotify = self.path.recalculateTargets)
+        self.commandExpansion.subscribe(self, onNotify = self.path.recalculateTargets)
 
         self.elementsContainer = None
         self.mouseHoveringCommand = False
@@ -102,16 +102,30 @@ class CommandBlockEntity(Entity, CommandOrInserter):
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), pathAdapter)
         
         # on element container resize, recompute target height
-        self.elementsContainer.subscribe(onNotify = self.onElementsResize)
+        self.elementsContainer.subscribe(self, onNotify = self.onElementsResize)
 
         # For turn commands: if turn is enabled/disabled, command is shown/hidden
         if self.pathAdapter.type == CommandType.TURN:
-            self.pathAdapter.subscribe(id = NotifyType.TURN_ENABLE_TOGGLED, onNotify = self.onTurnEnableToggled)
+            self.pathAdapter.subscribe(self, id = NotifyType.TURN_ENABLE_TOGGLED, onNotify = self.onTurnEnableToggled)
 
         self.updateTargetHeight(True)
         self.recomputePosition()
 
         self.onTurnEnableToggled()
+
+    # called when a different name is selected in the dropdown
+    def onFunctionChange(self):
+
+        # First, get the definition for the new function
+        functionName = self.headerEntity.functionName.getFunctionName()
+        self.definitionIndex = self.database.getDefinitionIndexByName(self.type, functionName)
+
+        # Delete old elements container and assign new one
+        self.entities.removeEntity(self.elementsContainer)
+        self.elementsContainer = createElementsContainer(self, self.getDefinition(), self.pathAdapter)
+
+        # resize based on new elements container rect
+        self.onElementsResize()
 
     # Update animation every tick
     def onTick(self):

@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from adapter.arc_adapter import ArcAdapter
 from common.image_manager import ImageID
+from data_structures.observer import Observer
 from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
 import constants
@@ -34,7 +35,7 @@ class ArcIconID(Enum):
     REVERSE_LEFT = auto()
     REVERSE_RIGHT = auto()
 
-class BezierSegmentState(PathSegmentState):
+class BezierSegmentState(PathSegmentState, Observer):
     def __init__(self, segment: PathSegmentEntity | LinkedListNode) -> None:
         super().__init__(SegmentType.BEZIER, segment)
         self.adapter = ArcAdapter([
@@ -56,7 +57,7 @@ class BezierSegmentState(PathSegmentState):
         
 
         # every time the screen shifts, recompute the mouse detection points
-        self.segment.transform.subscribe(onNotify = self.onScreenRefChange)
+        self.segment.transform.subscribe(self, onNotify = self.onScreenRefChange)
 
     def getAdapter(self) -> PathAdapter:
         return self.adapter

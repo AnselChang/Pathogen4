@@ -1,4 +1,5 @@
 import math
+from data_structures.observer import Observer
 from entity_base.entity import Entity
 from entity_base.image.image_entity import ImageEntity
 from entity_base.image.image_state import ImageState
@@ -31,7 +32,7 @@ Composition structure:
             - etc.
 """
 
-class SelectorMenuEntity(Entity):
+class SelectorMenuEntity(Entity, Observer):
 
     def __init__(self, fieldContainer: FieldContainer, selectedEntity: Entity, menuDefinition: MenuDefinition):
         self.BUTTON_SIZE = 20 # LinearContainers should be BUTTON_SIZE x BUTTON_SIZE. Relative pixel units
@@ -41,7 +42,7 @@ class SelectorMenuEntity(Entity):
         self.BORDER_RADIUS = 5
 
         self.selectedEntity = selectedEntity
-        selectedEntity.subscribe(onNotify = self.recomputePosition)
+        selectedEntity.subscribe(self, onNotify = self.recomputePosition)
 
         # Both this object and the individual menu images have this lambda.
         # So, when either the menu background or menu buttons are dragged,

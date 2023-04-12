@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from data_structures.observer import Observer
 if TYPE_CHECKING:
     from root_container.path import Path
 
@@ -22,7 +24,7 @@ An entity for the field.
 Passes events to fieldTransform, and subscribes to it to update entities on field
 """
 
-class FieldContainer(entity.Entity):
+class FieldContainer(entity.Entity, Observer):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
     def __init__(self, fieldTransform: FieldTransform):
@@ -40,7 +42,7 @@ class FieldContainer(entity.Entity):
         self.recomputePosition()
 
         # Whenever field is dragged, update entities on field
-        self.fieldTransform.subscribe(onNotify = self.recomputePosition)
+        self.fieldTransform.subscribe(self, onNotify = self.recomputePosition)
 
     def initPath(self, path: Path):
         self.path = path

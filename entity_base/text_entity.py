@@ -1,3 +1,4 @@
+from data_structures.observer import Observer
 from entity_base.entity import Entity
 
 from common.font_manager import DynamicFont, FontID
@@ -15,7 +16,7 @@ class TextAlign(enum.Enum):
     CENTER = 2
     RIGHT = 3
 
-class TextEntity(Entity):
+class TextEntity(Entity, Observer):
     
     # if align center, then center of text will be aligned with center of parent
     # if not align center, then left of text will be aligned with left of parent
@@ -37,7 +38,7 @@ class TextEntity(Entity):
         self.textFunction = textFunction
 
         self.font: DynamicFont = self.fonts.getDynamicFont(fontID, fontSize)
-        self.font.subscribe(onNotify = self.recomputePosition)
+        self.font.subscribe(self, onNotify = self.recomputePosition)
 
         self.recomputePosition()
 

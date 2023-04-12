@@ -1,4 +1,4 @@
-from data_structures.observer import Observable
+from data_structures.observer import Observable, Observer
 from common.dimensions import Dimensions
 from utility.math_functions import clamp
 import pygame
@@ -17,7 +17,7 @@ _fontPaths: dict[FontID, str] = {
 
 # A font class which changes size based on the window resolution
 # subscribes to dimensions, which notifies on window rescale
-class DynamicFont(Observable):
+class DynamicFont(Observable, Observer):
     def __init__(self, dimensions: Dimensions, fontSizes: dict[int, pygame.font.Font], widths: dict[int, float], heights: dict[int, float], smallest: int, largest: int, baseFontSize: float):
         self._dimensions = dimensions
         self._fontSizes = fontSizes
@@ -27,8 +27,10 @@ class DynamicFont(Observable):
         self._largest = largest
         self._baseFontSize = baseFontSize
 
+        super().__init__()
+
         # Subscribe to window changes
-        self._dimensions.subscribe(onNotify = self.notify)
+        self._dimensions.subscribe(self, onNotify = self.notify)
 
 
     # Get the font for the given window resolution ratio

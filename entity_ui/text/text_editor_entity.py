@@ -1,6 +1,6 @@
 from entity_base.entity import Entity
 
-from data_structures.observer import Observable
+from data_structures.observer import Observable, Observer
 from entity_base.listeners.hover_listener import HoverLambda
 
 from entity_ui.text.text_handler import TextHandler
@@ -38,7 +38,7 @@ class CursorBlink:
         return self.i < self.numOn
 
 # notifies observers whenever resized from text (isDynamic)
-class TextEditorEntity(Entity, Observable):
+class TextEditorEntity(Entity, Observable, Observer):
 
     def __init__(self, parent: Entity, fontID: FontID, fontSize: int, isDynamic: bool = False, isNumOnly: bool = False, isCentered: bool = True, isFixedWidth: bool = False, defaultText: str = ""):
         
@@ -64,7 +64,7 @@ class TextEditorEntity(Entity, Observable):
         self.border = TextBorder()
 
         self.rows = 1
-        self.font.subscribe(onNotify = self.onFontUpdate)
+        self.font.subscribe(self, onNotify = self.onFontUpdate)
 
         self.textHandler = TextHandler(self, defaultText = defaultText)
         self.cursorBlink = CursorBlink(35, 33)

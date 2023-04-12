@@ -1,3 +1,4 @@
+from data_structures.observer import Observer
 from entity_base.entity import Entity
 from root_container.root_container import RootContainer
 from entity_ui.tooltip import TooltipOwner
@@ -63,12 +64,17 @@ class EntityManager:
             entity._parent._children.remove(entity)
 
         self.entities.remove(entity)
+
         if entity in self.tickEntities:
             self.tickEntities.remove(entity)
         if entity in self.keyEntities:
             self.keyEntities.remove(entity)
         if entity in self.clickEntities:
             self.clickEntities.remove(entity)
+
+        # entity unsubscribes to any observables
+        if isinstance(entity, Observer):
+            entity.unsubscribeAll()
 
 
     def getEntityAtPosition(self, position: tuple) -> Entity:

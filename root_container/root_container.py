@@ -3,6 +3,7 @@ from enum import Enum
 from common.reference_frame import PointRef, Ref
 
 from common.dimensions import Dimensions
+from data_structures.observer import Observer
 
 from entity_base.container_entity import Container
 from common.draw_order import DrawOrder
@@ -15,11 +16,11 @@ The entity that holds all other entities. Set to dimensions size, and recomputes
 children when dimensions change
 """
 
-class RootContainer(Container):
+class RootContainer(Container, Observer):
 
     def __init__(self):
         super().__init__(None, drawOrder = DrawOrder.BACKGROUND)
-        self.dimensions.subscribe(onNotify = self.recomputePosition)
+        self.dimensions.subscribe(self, onNotify = self.recomputePosition)
         self.recomputePosition()
 
     def defineTopLeft(self) -> tuple:
