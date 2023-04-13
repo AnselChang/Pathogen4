@@ -149,10 +149,19 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         self.entities.removeEntity(self.elementsContainer)
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), self.pathAdapter)
 
+        # switch to the new definition color (animated)
         r,g,b = self.getDefinition().color
         self.colorR.setEndValue(r)
         self.colorG.setEndValue(g)
         self.colorB.setEndValue(b)
+
+        # set initial visibility for new elements container
+        if self.isFullyCollapsed():
+            self.elementsContainer.setInvisible()
+            self.elementsVisible = False
+        else:
+            self.elementsContainer.setVisible()
+            self.elementsVisible = True
 
         # resize based on new elements container rect
         self.onElementsResize()
