@@ -97,13 +97,23 @@ def main():
     fieldContainer.initPath(path)
 
     # test VariableGroupContainer
-    group = VariableGroupContainer(fieldContainer, False, 5)
-    for i in range(4):
-        entityContainer = VariableContainer(group, False)
-        group.containers.addToEnd(entityContainer)
-        entity = TestRectEntity(entityContainer, 50, 50, (0, 50, 100))
-        entityContainer.setChild(entity)
-    group.recomputePosition()
+
+    group0 = VariableGroupContainer(fieldContainer, False, innerMargin = 4, outerMargin = 3, name = "parent")
+    for name in ["1", "2"]:
+        vc0 = VariableContainer(group0, False)
+        group0.containers.addToEnd(vc0)
+
+        group = VariableGroupContainer(vc0, False, innerMargin = 5, outerMargin = 3, name = "child"+name)
+        for j in range(3):
+            vc = VariableContainer(group, False)
+            group.containers.addToEnd(vc)
+            entity = TestRectEntity(vc, 30, 30, (0, 50, 100))
+            vc.setChild(entity)
+
+        vc0.setChild(group)
+
+    
+    group0.recomputePosition()
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")

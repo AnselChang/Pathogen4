@@ -195,6 +195,12 @@ class Entity(ABC, Observable):
     def drawRect(self, screen: pygame.Surface):
         pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], 1)
 
+    # propagate notification up the chain.
+    # Useful for when parent rect is defined by child rect, and child rect changes
+    def onChangeInParent(self):
+        if self._parent is not None:
+            self._parent.onChangeInParent()
+
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self, excludeChildIf: Callable[['Entity'], bool] = lambda entity: False):
 

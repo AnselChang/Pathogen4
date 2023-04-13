@@ -1,3 +1,4 @@
+from typing import Callable
 from data_structures.linked_list import LinkedList
 from entity_base.container_entity import Container
 from entity_base.entity import Entity
@@ -17,33 +18,43 @@ in a single tick should only require a single recomputePosition() call.
 This should also cache the total width/height of the VariableContainers
 Use cases: Command blocks, CommandGroup block
 
+If isHorizontal:
+- VGC is defined at x = 0, y = center
+If not isHorizontal:
+- VGC is defined at x = center, y = 0
+
 Calling recomputePosition() on this class does the following things in this order:
-1. update VarialbleGroupContainer position, and height (if isHorizontal) or width (if not)
-2. In defineAfter(), update VariableContainer positions through container.setPosition()
+1. Get the left x (for horizontal) or top y (for vertical) of parent to define VGC position
+2. In defineBefore(), update VariableContainer positions through container.setPosition()
+3. Update width/height of VGC
 3. Call recomputePosition() on all VariableContainers as specified in Entity class
 It is an expensive operation. Attempt not to call this more than once per tick.
 """
 
 class VariableGroupContainer(Container):
 
-    def __init__(self, parent: Entity, isHorizontal: bool, margin: int = 0):
+    def __init__(self, parent: Entity, isHorizontal: bool, innerMargin: int = 0, outerMargin: int = 0, name: str = ""):
 
+        self.name = name
         self.isHorizontal = isHorizontal
 
         # linked list makes it easy to insert/remove VariableContainers
         self.containers: LinkedList[VariableContainer] = LinkedList()
         self.TOTAL_SIZE = 0
-        self.margin = margin
+        self.innerMargin = innerMargin
+        self.outerMargin = outerMargin
 
         super().__init__(parent = parent, tick = TickLambda(self, FonTickEnd = self.onTickEnd))
         self.needToRecompute = False
 
     # VariableContainer should call this whenever its size changes. O(1), so call as many
     # times as you want in a single tick
-    def onChangeInContainerSize(self):
+    def onChangeInParent(self):
         # Instead of calling updateContainerPositions() directly, set a flag
         # so it will be called on tick end
         self.needToRecompute = True
+
+        super().onChangeInParent()
         
     # onTickEnd guarantees that, if there's nesting, children VGCs will update
     # before parent VGCs
@@ -52,22 +63,35 @@ class VariableGroupContainer(Container):
             self.recomputePosition() # this calls updateContainerPositions() at some point
             self.needToRecompute = False
 
-    # after VariableGroupContainer's position has been changed, recompute the position of
-    # all VariableContainers
-    def defineAfter(self) -> None:
+    def recomputePosition(self):
+        # recompute own VGC position, as well of width/height of children
+        super().recomputePosition(excludeChildIf = lambda child: True)
+
         self.updateContainerPositions()
+        # recompute children, this time with correct position
+        super().recomputePosition()
+
+    def _getMargin(self, margin):
+        return self._awidth(margin) if self.isHorizontal else self._aheight(margin)
+
 
     # Iteratively update the position of each VariableContainer
     def updateContainerPositions(self):
 
-        startPos = self.LEFT_X if self.isHorizontal else self.TOP_Y
-        pos = startPos
+        inner = self._getMargin(self.innerMargin)
+        outer = self._getMargin(self.outerMargin)
+
+        startPos = self._px(0) if self.isHorizontal else self._py(0)
+
+        # add upper outer margin
+        pos = startPos + outer
+
         container = self.containers.head
         while True:
 
             # set the position of the container
             container.setPosition(pos)
-
+            
             # use container size to find position of next container
             pos += container.defineWidth() if self.isHorizontal else container.defineHeight()
 
@@ -77,9 +101,62 @@ class VariableGroupContainer(Container):
             if container is None:
                 break
             else:
-                pos += self._awidth(self.margin) if self.isHorizontal else self._aheight(self.margin)
+                pos += inner
+
+        # add lower outer margin
+        pos += outer
 
         # Now that we're at the end, we know the total width/height of the group
         self.TOTAL_SIZE = pos - startPos
 
+    def getSize(self):
+
+        inner = self._getMargin(self.innerMargin)
+        outer = self._getMargin(self.outerMargin)
+
+        size = 2 * outer
+        container = self.containers.head
+        while True:
+            size += container.defineWidth() if self.isHorizontal else container.defineHeight()
+            container = container.getNext()
+
+            if container is None:
+                break
+            else:
+                size += inner
+        return size
+
+    def defineLeftX(self) -> float:
+        if self.isHorizontal:
+            return self._px(0)
+        return None
     
+    def defineCenterX(self) -> float:
+        if not self.isHorizontal:
+            return self._px(0.5)
+        return None
+    
+    def defineTopY(self) -> float:
+        if not self.isHorizontal:
+            return self._py(0)
+        return None
+    
+    def defineCenterY(self) -> float:
+        if self.isHorizontal:
+            return self._py(0.5)
+        return None
+
+    def defineWidth(self) -> float:
+        if self.isHorizontal:
+            return self.getSize()
+        else:
+            return self._pwidth(1)
+        
+    def defineHeight(self) -> float:
+        if not self.isHorizontal:
+            return self.getSize()
+        else:
+            return self._pheight(1)
+    
+    def draw(self, screen, a, b):
+        self.drawRect(screen)

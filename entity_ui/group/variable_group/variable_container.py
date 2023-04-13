@@ -26,16 +26,13 @@ class VariableContainer(Container, LinkedListNode, ABC):
         self.isHorizontal = isHorizontal
         self.group: VariableGroupContainer = parent
         self.child = None
+        self._POSITION_FROM_VGC = 0
 
         super().__init__(parent = parent)
         LinkedListNode.__init__(self)
 
     def setChild(self, child: Entity):
         self.child = child
-
-    # call this function whenever object size changes
-    def onChangeInContainerSize(self):
-        self.group.onChangeInContainerSize()
     
     # set by VariableGroupContainer. Size refers to x if isHorizontal, else y
     def setPosition(self, position: int):
