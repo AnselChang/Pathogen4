@@ -105,7 +105,7 @@ class BezierThetaNode(AbstractCircleEntity):
     # whenever the position of this node has been recomputed, we send
     # a notification to the segment subscribed to this to recalculate
     # the bezier curve
-    def defineOther(self):
+    def defineAfter(self):
         self.notify()
     
     

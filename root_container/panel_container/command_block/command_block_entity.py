@@ -76,7 +76,7 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         super().__init__(
             parent = parent,
             click = ClickLambda(self, FonLeftClick = self.onClick, FOnMouseDown = self.onMouseDown),
-            tick = TickLambda(self, FonTick = self.onTick),
+            tick = TickLambda(self, FonTickStart = self.onTick),
             drag = drag,
             hover = HoverLambda(self),
             #select = SelectLambda(self, "command", type = SelectorType.SOLO),

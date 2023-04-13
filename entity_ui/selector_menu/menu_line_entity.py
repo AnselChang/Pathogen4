@@ -38,7 +38,7 @@ class MenuLineEntity(Entity):
     # position is defined to be identical to parent menu
 
     # calculate bezier curve
-    def defineOther(self):
+    def defineAfter(self):
         # first and third point is the closest corner on the menu to the entity
         # second point is the closest corner plus delta in that direction
         ep = [self.entity.CENTER_X, self.entity.CENTER_Y]

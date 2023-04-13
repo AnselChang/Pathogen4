@@ -8,10 +8,10 @@ Used when you want to run some function every tick at some specific order
 
 class TickEntity(entity.Entity):
 
-    def __init__(self, functionToRun, drawOrder: DrawOrder = DrawOrder.BACK):
+    def __init__(self, onTickStart = lambda: None, onTickEnd = lambda: None, drawOrder: DrawOrder = DrawOrder.BACK):
 
         super().__init__(parent = entity.ROOT_CONTAINER,
-                         tick = TickLambda(self, FonTick = functionToRun),
+                         tick = TickLambda(self, FonTickStart = onTickEnd, FonTickEnd = onTickEnd),
                          drawOrder = drawOrder, initiallyVisible = False,
                          recomputeWhenInvisible = True
                          )

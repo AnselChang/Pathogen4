@@ -92,7 +92,7 @@ class ImageEntity(Entity, TooltipOwner):
         return self._pheight(self.pheight)
 
     # define the scaled image surfaces given the parent rect
-    def defineOther(self) -> None:
+    def defineAfter(self) -> None:
         # only recalculate if the parent width or height has changed
         if self.oldWidth != self.WIDTH or self.oldHeight != self.HEIGHT:
             self.oldWidth = self.WIDTH

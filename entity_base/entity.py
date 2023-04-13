@@ -141,7 +141,7 @@ class Entity(ABC, Observable):
         return
 
     # override this to define anything else after the position is recomputed
-    def defineOther(self) -> None:
+    def defineAfter(self) -> None:
         return
         
     # DO NOT OVERRIDE. Call setVisible() and setInvisible() instead.
@@ -258,7 +258,7 @@ class Entity(ABC, Observable):
 
         self.RECT = [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT]
 
-        self.defineOther()
+        self.defineAfter()
 
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:

@@ -69,7 +69,7 @@ class DropdownContainer(Container, Observable):
         self.centered = centered
         
         super().__init__(parent,
-                         tick = TickLambda(self, FonTick = self.onTick),
+                         tick = TickLambda(self, FonTickStart = self.onTick),
                          click = ClickLambda(self, FOnMouseDownAny = self.onMouseDown),
                          drawOrder = DrawOrder.DROPDOWN
                          )
@@ -255,7 +255,7 @@ class DropdownContainer(Container, Observable):
     def defineTopY(self) -> float:
         return self._py(0.5) - self.optionHeight / 2
     
-    def defineOther(self):
+    def defineAfter(self):
         self.updateProfiles()
     
     

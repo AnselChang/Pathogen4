@@ -1,7 +1,10 @@
 from entity_base.entity import Entity
 from entity_base.static_entity import StaticEntity
 from entity_base.entity import initEntityClass, setRootContainer
+from entity_base.test_entity import TestRectEntity
 from entity_ui.dropdown.dropdown_container import DropdownContainer
+from entity_ui.group.variable_group.variable_container import VariableContainer
+from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
 from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
@@ -92,6 +95,15 @@ def main():
     # Create path
     path = Path(fieldContainer, tabHandler.blockContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)
+
+    # test VariableGroupContainer
+    group = VariableGroupContainer(fieldContainer, False, 5)
+    for i in range(4):
+        entityContainer = VariableContainer(group, False)
+        group.containers.addToEnd(entityContainer)
+        entity = TestRectEntity(entityContainer, 50, 50, (0, 50, 100))
+        entityContainer.setChild(entity)
+    group.recomputePosition()
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")

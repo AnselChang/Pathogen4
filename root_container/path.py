@@ -72,7 +72,7 @@ class Path(Observer):
         node.updateAdapter()
 
         # register onTick() to be called at end of every tick
-        TickEntity(self.onTick, drawOrder=DrawOrder.FRONT)
+        TickEntity(onTickEnd = self.onTick, drawOrder=DrawOrder.FRONT)
 
         # On command expansion button click, recalculate targets
         commandExpansion.subscribe(self, onNotify = self.recalculateTargets)

@@ -16,8 +16,6 @@ class EntityManager:
 
         self.entities: list[Entity] = []
 
-        # entities that own Tick (must call onTick() every tick)
-        self.tickEntities: list[Entity] = []
         self.keyEntities: list[Entity] = []        
         self.clickEntities: list[Entity] = []
 
@@ -42,8 +40,6 @@ class EntityManager:
         self.entities.append(entity)
         self.sortEntities(False)
 
-        if entity.tick is not None:
-            self.tickEntities.append(entity)
         if entity.key is not None:
             self.keyEntities.append(entity)
         if entity.click is not None:
@@ -65,8 +61,6 @@ class EntityManager:
 
         self.entities.remove(entity)
 
-        if entity in self.tickEntities:
-            self.tickEntities.remove(entity)
         if entity in self.keyEntities:
             self.keyEntities.remove(entity)
         if entity in self.clickEntities:
@@ -128,12 +122,26 @@ class EntityManager:
             if isinstance(entity, TooltipOwner) and entity.isVisible() and entity is interactor.hoveredEntity:
                 entity.drawTooltip(screen, mousePosition, dimensions)
 
-    # call onTick() for every entity with tick object
+    """
+    Tick callbacks are invoked on a recursive manner. onTickStart() callbacks
+    are invoked on the parent entities before children, while onTickEnd() callbacks
+    are invoked on the children before the parent.
+    """
     def tick(self):
+        self._tick(self.rootContainer)
 
-        for entity in self.tickEntities:
-            if entity.isVisible() or entity.recomputeWhenInvisible:
-                entity.tick.onTick()
+    def _tick(self, entity: Entity):
+
+        tickable = (entity.tick is not None) and (entity.isVisible() or entity.recomputeWhenInvisible)
+
+        if tickable:
+            entity.tick.onTickStart()
+        
+        for child in entity._children:
+            self._tick(child)
+
+        if tickable:
+            entity.tick.onTickEnd()
 
     def onKeyDown(self, key):
         for entity in self.keyEntities:

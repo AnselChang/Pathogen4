@@ -42,7 +42,7 @@ class TextEntity(Entity, Observer):
 
         self.recomputePosition()
 
-    def defineOther(self):
+    def defineAfter(self):
         self.surface = getText(self.font.get(), self.getText(), (0,0,0), 1)
 
     def getTextWidth(self):

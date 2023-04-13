@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 
-# onTick() is called every tick
+"""
+Tick callbacks are invoked on a recursive manner. onTickStart() callbacks
+are invoked on the parent entities before children, while onTickEnd() callbacks
+are invoked on the children before the parent.
+"""
 
 class TickListener(ABC):
 
@@ -8,16 +12,24 @@ class TickListener(ABC):
         self.entity = entity
 
     @abstractmethod
-    def onTick(self):
+    def onTickStart(self):
+        pass
+
+    @abstractmethod
+    def onTickEnd(self):
         pass
 
 
 class TickLambda(TickListener):
 
-    def __init__(self, entity, FonTick = lambda: None):
+    def __init__(self, entity, FonTickStart = lambda: None, FonTickEnd = lambda: None):
         super().__init__(entity)
 
-        self.FonTick = FonTick
+        self.FonTickStart = FonTickStart
+        self.FonTickEnd = FonTickEnd
 
-    def onTick(self):
-        self.FonTick()
+    def onTickStart(self):
+        self.FonTickStart()
+
+    def onTickEnd(self):
+        self.FonTickEnd()
