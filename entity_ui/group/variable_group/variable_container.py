@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Generic, TypeVar
 from data_structures.linked_list import LinkedListNode
 
 from entity_base.entity import Entity
@@ -19,19 +19,19 @@ AVC as parent of your entity. Make sure to set AVC's child as yourself.
 Then, call AVC.onChangeInContainerSize() whenever the size of your entity changes.
 This will cause the VGC to recompute the position
 """
-
-class VariableContainer(Container, LinkedListNode, ABC):
+T = TypeVar('T')
+class VariableContainer(Container, LinkedListNode, ABC, Generic[T]):
 
     def __init__(self, parent: VariableGroupContainer, isHorizontal: bool):
         self.isHorizontal = isHorizontal
         self.group: VariableGroupContainer = parent
-        self.child = None
+        self.child: T = None
         self._POSITION_FROM_VGC = 0
 
         super().__init__(parent = parent)
         LinkedListNode.__init__(self)
 
-    def setChild(self, child: Entity):
+    def setChild(self, child: T):
         self.child = child
     
     # set by VariableGroupContainer. Size refers to x if isHorizontal, else y

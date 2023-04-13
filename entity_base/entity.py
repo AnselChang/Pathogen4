@@ -197,9 +197,9 @@ class Entity(ABC, Observable):
 
     # propagate notification up the chain.
     # Useful for when parent rect is defined by child rect, and child rect changes
-    def onChangeInParent(self):
+    def propagateChange(self):
         if self._parent is not None:
-            self._parent.onChangeInParent()
+            self._parent.propagateChange()
 
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputePosition(self, excludeChildIf: Callable[['Entity'], bool] = lambda entity: False):

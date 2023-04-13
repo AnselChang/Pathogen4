@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 
 from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
 if TYPE_CHECKING:
-    from root_container.path import Path
+    from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
+
 
 from entity_base.entity import Entity
 from adapter.path_adapter import PathAdapter
@@ -34,7 +35,7 @@ class CommandBlockEntityFactory:
         self.expansion = commandExpansion
         self.container = container
 
-    def create(self, parent: Entity, path: Path, adapter: PathAdapter) -> CommandBlockEntity:
+    def create(self, parent: Entity, commandHandler: CommandSequenceHandler, adapter: PathAdapter) -> CommandBlockEntity:
         if adapter.type == CommandType.CUSTOM:
             return CustomCommandBlockEntity(self.container, parent, path, adapter, self.database, self.expansion)
         else:

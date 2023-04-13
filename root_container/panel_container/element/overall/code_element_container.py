@@ -49,3 +49,6 @@ class CodeElementContainer(AbstractElementsContainer, Observer):
 
     def defineLeftX(self) -> float:
         return self._px(0.05)
+
+    def getGeneratedText(self) -> str:
+        return self.textEditor.getText()

@@ -24,11 +24,11 @@ class TestRectEntity(Entity):
 
     def onHoverOn(self):
         self.height = self.baseHeight * 1.5
-        self.onChangeInParent()
+        self.propagateChange()
 
     def onHoverOff(self):
         self.height = self.baseHeight
-        self.parentContainer.onChangeInParent()
+        self.parentContainer.propagateChange()
 
     def defineWidth(self) -> float:
         return self._awidth(self.width)

@@ -3,10 +3,11 @@ from typing import TYPE_CHECKING
 from adapter.turn_adapter import TurnAdapter
 from entity_base.listeners.hover_listener import HoverLambda
 from entity_ui.scrollbar.scrolling_content_container import ScrollingContentContainer
-from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
+
 if TYPE_CHECKING:
-    from root_container.path import Path
     from command_creation.command_definition_database import CommandDefinitionDatabase
+    from root_container.panel_container.command_block.command_block_container import CommandBlockContainer
+from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
 
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
@@ -46,10 +47,11 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
     HIGHLIGHTED = None
 
 
-    def __init__(self, container: BlockTabContentsContainer, parent: CommandOrInserter, path: Path, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
+    def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
-        self.path = path
-        self.container = container
+        CommandOrInserter.__init__(self, parent)
+        
+        self.handler = handler
 
         self.COLLAPSED_HEIGHT = 35
         self.EXPANDED_HEIGHT = 50 
@@ -79,23 +81,18 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             tick = TickLambda(self, FonTickStart = self.onTick),
             drag = drag,
             hover = HoverLambda(self),
-            #select = SelectLambda(self, "command", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMANND_BLOCK,
             recomputeWhenInvisible = True
         )
 
-        CommandOrInserter.__init__(self, True)
-
         # whenever a global expansion flag is changed, recompute each individual command expansion
         self.commandExpansion = commandExpansion
-        self.commandExpansion.subscribe(self, onNotify = self.path.recalculateTargets)
 
         self.elementsContainer = None
         self.mouseHoveringCommand = False
 
         self.elementsVisible = True
 
-        self.updateTargetHeight(True)
         self.recomputePosition()
         self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
 
@@ -114,29 +111,7 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         if self.pathAdapter.type == CommandType.TURN:
             self.pathAdapter.subscribe(self, id = NotifyType.TURN_ENABLE_TOGGLED, onNotify = self.onTurnEnableToggled)
 
-        self.updateTargetHeight(True)
-        self.recomputePosition()
-
         self.onTurnEnableToggled()
-
-
-    def recomputePosition(self):
-        # If entire command block is hidden, only recompute position of next inserter/command
-        if not self.isVisible():
-            super().recomputePosition(excludeChildIf = 
-                lambda child: child is not self.getNext()           
-            )
-        # Otherwise, compute everything that is visible
-        # (note that elements container won't be computed anyways if invisibel)
-        else:
-            super().recomputePosition()
-
-    # normally should never override this. but because of the bad design decision
-    # for inserters/commands to be parent/children of each other, prevent parent
-    # inserter being invisible from making self invisible
-    def isVisible(self) -> bool:
-
-        return self._LOCAL_VISIBLE and self.container.isVisible()
 
     # called when a different name is selected in the dropdown
     def onFunctionChange(self):
@@ -163,8 +138,7 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             self.elementsContainer.setVisible()
             self.elementsVisible = True
 
-        # resize based on new elements container rect
-        self.onElementsResize()
+        self.propagateChange()
 
     # Update animation every tick
     def onTick(self):
@@ -176,11 +150,7 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             self.elementsContainer.setVisible()
             self.elementsVisible = True
 
-        # handle mouse hovering
-        if self.getNext() is not None and self.getNext().isSelfOrChildrenHovering():
-            self.mouseHoveringCommand = False
-        else:
-            self.mouseHoveringCommand = self.isSelfOrChildrenHovering()
+        self.mouseHoveringCommand = self.isSelfOrChildrenHovering()
 
         self.colorR.tick()
         self.colorG.tick()
@@ -194,7 +164,7 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             #self.animatedPosition.tick()
             self.animatedExpansion.tick()
 
-            self.path.onChangeInCommandPositionOrHeight()
+            self.propagateChange()
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinition(self.type, self.definitionIndex)
@@ -215,47 +185,6 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             return True
         return self.localExpansion
 
-    def onElementsResize(self):
-        self.updateTargetHeight()
-        self.path.onChangeInCommandPositionOrHeight()
-    
-    # Call this whenever there might be a change to target height
-    def updateTargetHeight(self, isFirst: bool = False):
-        #print(self, "update target height")
-
-        expanded = self.isActuallyExpanded()
-        
-        self.ACTUAL_COLLAPSED_HEIGHT = self._aheight(self.COLLAPSED_HEIGHT)
-        self.ACTUAL_EXPANDED_HEIGHT = self._aheight(self.EXPANDED_HEIGHT) + self.getElementStretch()
-        self.ACTUAL_HEIGHT = self.ACTUAL_EXPANDED_HEIGHT if expanded else self.ACTUAL_COLLAPSED_HEIGHT
-
-        self.animatedExpansion.setEndValue(1 if expanded else 0)
-           
-        if isFirst:
-            self.animatedExpansion.forceToEndValue()
-
-    def updateTargetY(self, force: bool = False):
-        pass
-        #self.targetY = self._py(1) - self._parent.dragOffset + self.dragOffset
-        #self.animatedPosition.setEndValue(self.targetY)
-        #if force:
-        #    self.animatedPosition.forceToEndValue()
-
-    def defineBefore(self):
-        pass
-        #self.updateTargetHeight()
-        #self.updateTargetY()
-
-    def defineTopLeft(self) -> tuple:
-
-        #if self.path.forceAnimationToEnd:
-        #        self.animatedPosition.forceToEndValue()
-
-        # right below the previous CommandOrInserter
-        self.normalY = self._py(1)
-        self.draggingY = self._py(1) if self.dragPosition is None else self.dragPosition
-        return self._px(0), self.draggingY
-    
 
     def defineWidth(self) -> float:
         return self._pwidth(1)
@@ -264,9 +193,15 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
 
         if not self.isVisible():
             return 0
+        
+        # calculate target height
+        expanded = self.isActuallyExpanded()
+        
+        self.ACTUAL_COLLAPSED_HEIGHT = self._aheight(self.COLLAPSED_HEIGHT)
+        self.ACTUAL_EXPANDED_HEIGHT = self._aheight(self.EXPANDED_HEIGHT) + self.getElementStretch()
+        self.ACTUAL_HEIGHT = self.ACTUAL_EXPANDED_HEIGHT if expanded else self.ACTUAL_COLLAPSED_HEIGHT
 
-        if self.path.forceAnimationToEnd:
-                self.animatedExpansion.forceToEndValue()
+        self.animatedExpansion.setEndValue(1 if expanded else 0)
         
         # current animated height
         ratio = self.animatedExpansion.get()
@@ -284,13 +219,6 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
     
     def getCommandType(self) -> CommandType:
         return self.type
-
-    # commands are sandwiched by CommandInserters
-    def getPreviousCommand(self) -> 'CommandBlockEntity':
-        return self.getPrevious().getPrevious()
-    
-    def getNextCommand(self) -> 'CommandBlockEntity':
-        return self.getNext().getNext()
     
     # Set the local expansion of the command without modifying global expansion flags
     def setLocalExpansion(self, isExpanded):
@@ -303,15 +231,15 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             # If all are being forced to contract right now, disable forceContract, but 
             # all other commands should retain being contracted except this one
             if self.commandExpansion.getForceCollapse():
-                self.path.setAllLocalExpansion(False)
+                self.handler.setAllLocalExpansion(False)
                 self.commandExpansion.setForceCollapse(False)
         else:
             if self.commandExpansion.getForceExpand():
-                self.path.setAllLocalExpansion(True)
+                self.handler.setAllLocalExpansion(True)
                 self.commandExpansion.setForceExpand(False)
 
         self.localExpansion = not self.localExpansion
-        self.path.recalculateTargets()
+        self.propagateChange()
 
     def onTurnEnableToggled(self):
         if self.pathAdapter.type == CommandType.TURN:
@@ -321,7 +249,7 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
             else:
                 self.setInvisible()
 
-            self.path.onChangeInCommandPositionOrHeight()
+            self.propagateChange()
 
     def getOpacity(self) -> float:
         if self.isDragging():
@@ -352,29 +280,22 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         if self.isHighlighted():
             CommandBlockEntity.HIGHLIGHTED = None
             self.localExpansion = False
-            self.path.recalculateTargets()
+            self.propagateChange()
             return
 
         # highlight and expand this command, disabling global flag if need be
         CommandBlockEntity.HIGHLIGHTED = self
-        self.path.setAllLocalExpansion(False)
+        self.handler.setAllLocalExpansion(False)
         self.commandExpansion.setForceCollapse(False)
         self.localExpansion = True
-        self.path.recalculateTargets()
+        self.propagateChange()
 
-        # scroll to this command
-        tail = self.path.commandList.tail
-        contentHeight = 0 if tail is None else tail._getTargetHeight()
-        self.path.scrollHandler.setContentHeight(contentHeight)
-        # cursed number to make scrollbar go down a little more
-        self.path.scrollHandler.setManualScrollbarPosition(self._getTargetHeight() - self.ACTUAL_COLLAPSED_HEIGHT*5)
+        self.handler.scrollToCommand(self)
 
     # Called when the highlight button in the command block is clicked.
     # Should highlight the corresponding node or segment in the path
     def onHighlightPath(self, mouse: tuple):
-        pathEntity = self.path.getPathEntityFromCommand(self)
-        self.interactor.removeAllEntities()
-        self.interactor.addEntity(pathEntity)
+        self.handler.highlightPathFromCommand(self)
 
     # if mouse down on different command, clear highlight
     def onMouseDown(self, mouse: tuple):
@@ -416,34 +337,3 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
 
     def toString(self) -> str:
         return "Command Block Entity"
-
-     # Try to find variable name in self.adapter and self.widgets and replace with value
-    def _replaceWithValue(self, token: str) -> str:
-        if token.startswith("$") and token.endswith("$"):
-            variableName = token[1:-1]
-
-            value = self.pathAdapter.get(variableName)
-            if value is not None:
-                return value
-            
-            for widgetEntity in self.widgetEntities:
-                if variableName == widgetEntity.getName():
-                    return widgetEntity.getValue()
-                
-        # No variable found. return string as-is
-        return token
-
-    # recalculate final text from template
-    # Given pathAdapter and widgetAdapter specific to the command block
-    def getCodeText(self):
-
-        result = ""
-
-        # Split each $variable$ into tokens
-        tokens = re.split(r'(\$[^\$]+\$)', self.getDefinition().templateText)
-
-        # replace each $variable$ with value
-        for token in tokens:
-            result += self._replaceWithValue(token)
-
-        return result

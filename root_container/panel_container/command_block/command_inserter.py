@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
+
 if TYPE_CHECKING:
-    from root_container.path import Path
+    from entity_ui.group.variable_group.variable_container import VariableContainer
+    from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
+
 
 from entity_base.entity import Entity
 from entity_base.listeners.hover_listener import HoverLambda
@@ -9,7 +14,6 @@ from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
-from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
 
 from entity_handler.interactor import Interactor
 
@@ -29,7 +33,7 @@ A "plus" button that, when clicked, inserts a custom command there
 
 class CommandInserter(Entity, CommandOrInserter):
 
-    def __init__(self, parent: CommandOrInserter, path: Path, onInsert = lambda: None, isFirst: bool = False):
+    def __init__(self, parent: VariableContainer, handler: CommandSequenceHandler, onInsert = lambda: None, isFirst: bool = False):
         super().__init__(
             parent = parent,
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
@@ -38,9 +42,9 @@ class CommandInserter(Entity, CommandOrInserter):
             drawOrder = DrawOrder.COMMAND_INSERTER,
             recomputeWhenInvisible = True
             )
-        CommandOrInserter.__init__(self, False)
-
-        self.path = path
+        
+        CommandOrInserter.__init__(self, parent)
+        self.handler = handler
         self.isFirst = isFirst
 
         self.START_Y = 43

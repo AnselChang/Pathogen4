@@ -48,3 +48,6 @@ class RowElementsContainer(AbstractElementsContainer):
     # Element and label define their own x positions along width of command block
     def defineWidth(self) -> float:
         return self._pwidth(1)
+    
+    def getGeneratedText(self) -> str:
+        return "[TODO]"

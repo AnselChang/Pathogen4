@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Generic, TypeVar
 from data_structures.linked_list import LinkedList
 from entity_base.container_entity import Container
 from entity_base.entity import Entity
@@ -30,8 +30,8 @@ Calling recomputePosition() on this class does the following things in this orde
 3. Call recomputePosition() on all VariableContainers as specified in Entity class
 It is an expensive operation. Attempt not to call this more than once per tick.
 """
-
-class VariableGroupContainer(Container):
+T = TypeVar('T')
+class VariableGroupContainer(Container, Generic[T]):
 
     def __init__(self, parent: Entity, isHorizontal: bool, innerMargin: int = 0, outerMargin: int = 0, name: str = ""):
 
@@ -39,7 +39,7 @@ class VariableGroupContainer(Container):
         self.isHorizontal = isHorizontal
 
         # linked list makes it easy to insert/remove VariableContainers
-        self.containers: LinkedList[VariableContainer] = LinkedList()
+        self.containers: LinkedList[VariableContainer[T]] = LinkedList()
         self.TOTAL_SIZE = 0
         self.innerMargin = innerMargin
         self.outerMargin = outerMargin
@@ -49,12 +49,12 @@ class VariableGroupContainer(Container):
 
     # VariableContainer should call this whenever its size changes. O(1), so call as many
     # times as you want in a single tick
-    def onChangeInParent(self):
+    def propagateChange(self):
         # Instead of calling updateContainerPositions() directly, set a flag
         # so it will be called on tick end
         self.needToRecompute = True
 
-        super().onChangeInParent()
+        super().propagateChange()
         
     # onTickEnd guarantees that, if there's nesting, children VGCs will update
     # before parent VGCs
