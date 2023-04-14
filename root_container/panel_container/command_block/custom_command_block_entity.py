@@ -1,9 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
+
 if TYPE_CHECKING:
     from root_container.path import Path
+    from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
+    from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
+    from root_container.panel_container.command_block.command_block_container import CommandBlockContainer
+
 
 from entity_base.listeners.drag_listener import DragLambda
 from entity_base.entity import Entity
@@ -32,9 +36,9 @@ CustomCommands have two additonal features compared to regular commands
 
 class CustomCommandBlockEntity(CommandBlockEntity):
 
-    def __init__(self, container: BlockTabContentsContainer, parent: Entity, path: Path, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionContainer):
+    def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionContainer):
         
-        super().__init__(container, parent, path, pathAdapter, database, commandExpansion,
+        super().__init__(parent, handler, pathAdapter, database, commandExpansion,
                          drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
                          defaultExpand = True,
                          hasTrashCan = True
@@ -43,7 +47,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         self.dragging = False
 
     def onDelete(self, mouse: tuple):
-        self.path.deleteCommand(self)
+        self.handler.deleteCommand(self)
 
     def onStartDrag(self, mouse: tuple):
         self.dragging = True
@@ -52,7 +56,6 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     def onStopDrag(self):
         self.dragging = False
         self.dragPosition = None
-        self.path.onChangeInCommandPositionOrHeight()
 
     # return 1 if not dragging, and dragged opacity if dragging
     # not applicable for regular command blocks
@@ -61,11 +64,10 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     
     def onDrag(self, mouse: tuple):
         self.dragPosition = mouse[1] + self.mouseOffset
-        inserter: CommandInserter = self.path.getClosestInserter(mouse)
+        inserter: CommandInserter = self.handler.getClosestInserter(mouse)
 
         # no change in position if dragging to immediate neighbor inserter
-        if self.getNext() is inserter or self.getPrevious() is inserter:
-            self.path.onChangeInCommandPositionOrHeight()
+        if self.getNextInserter() is inserter or self.getNextInserter() is inserter:
             return
         
         self.moveAfter(inserter)

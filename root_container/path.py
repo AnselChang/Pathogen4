@@ -3,6 +3,7 @@ from common.draw_order import DrawOrder
 from data_structures.observer import Observer
 from root_container.field_container.segment.segment_type import PathSegmentType
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
 from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
@@ -48,6 +49,7 @@ class Path(Observer):
 
         self.fieldContainer = field
 
+        self.commandHandler = CommandSequenceHandler(panel, self, database)
         self.pathList = LinkedList[PathNodeEntity | PathSegmentEntity]() # linked list of nodes and segments
 
         # store a dict that maintains a mapping from PathNodeEntity | PathSegmentEntity to CommandBlockEntity
@@ -63,16 +65,15 @@ class Path(Observer):
 
         if afterPath is None:
             afterPath = self.pathList.tail
-        if afterCommand is None:
-            afterCommand = self.commandList.tail
 
         # create node and add entity
         node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
         self.pathList.insertAfter(afterPath, node)
 
-        # create turn command and add entity
-        turnCommand = self.commandFactory.create(afterCommand, self, node.getAdapter())
-        self.commandList.insertAfter(afterCommand, turnCommand)
+        if afterCommand is None:
+            turnCommand = self.commandHandler.insertCommandAtEnd(node.getAdapter())
+        else:
+            turnCommand = self.commandHandler.insertCommandAfter(afterCommand, node.getAdapter())
 
         # maintain a relationship between the node and turn command
         self.linker.linkNode(node, turnCommand)
@@ -86,8 +87,7 @@ class Path(Observer):
         self.pathList.addToBeginning(node)
 
         # create turn command and add entity
-        turnCommand = self.commandFactory.create(self.commandList.head, self, node.getAdapter())
-        self.commandList.insertAfter(self.commandList.head, turnCommand)
+        turnCommand = self.commandHandler.insertCommandAtBeginning(node.getAdapter())
 
         # maintain a relationship between the node and turn command
         self.linker.linkNode(node, turnCommand)
@@ -99,67 +99,68 @@ class Path(Observer):
 
         if afterPath is None:
             afterPath = self.pathList.tail
-        if afterCommand is None:
-            afterCommand = self.commandList.tail
 
         # create segment and add entity
         segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer, self)
         self.pathList.insertAfter(afterPath, segment)
 
         for i, adapter in enumerate(segment.getAllAdapters()):
-            segmentCommand = self.commandFactory.create(afterCommand, self, adapter)
-            self.commandList.insertAfter(afterCommand, segmentCommand)
+
+            segmentCommand = self.commandHandler.insertCommandAfter(afterCommand, adapter)
             self.linker.linkSegment(segment, segmentCommand)
 
             # Hide all but the first (straight) command
             if i != 0:
                 segmentCommand.setInvisible()
 
+            afterCommand = segmentCommand
+
         return segment
 
-    # return the created PathNodenEntity
+    # adds segment and node to the end of the path
+    # return the created PathNodeEntity
     def addNode(self, nodePosition: PointRef, isTemporary: bool = False) -> PathNodeEntity:
         segment = self._addRawSegment()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
 
-        self.onChangeInCommandPositionOrHeight()
         node.onNodeMove()
 
         return node
     
+    # insert node to split up given segment
     def insertNode(self, segment: PathSegmentEntity, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
-        command = self.linker.getLastCommandFromSegment(segment)
-        node = self._addRawNode(position, segment, command.getNext(), isTemporary = isTemporary)
+        previousCommand = self.linker.getLastCommandFromSegment(segment)
+        node = self._addRawNode(position, segment, previousCommand, isTemporary = isTemporary)
         
         command = self.linker.getCommandFromPath(node)
-        segment = self._addRawSegment(node, command.getNext())
+        segment = self._addRawSegment(node, command)
 
-        self.onChangeInCommandPositionOrHeight()
         node.updateAdapter()
         node.getNext().onNodeMove(node)
         node.getPrevious().onNodeMove(node)
 
         return node
     
+    # insert a node and segment at the beginning of the path
     def addNodeToBeginning(self, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
         node = self._addRawNodeToBeginning(position, isTemporary = isTemporary)
         
         command = self.linker.getCommandFromPath(node)
-        segment = self._addRawSegment(node, command.getNext())
+        segment = self._addRawSegment(node, command)
 
-        self.onChangeInCommandPositionOrHeight()
         node.updateAdapter()
         node.getNext().onNodeMove(node)
 
         return node
     
+    # Removing a node involves removing a node and a neighboring segment
     def removeNode(self, node: PathNodeEntity):
 
         # remove the node
         self.pathList.remove(node)
-        self.entities.removeEntity(node, excludeChildrenIf = lambda child: isinstance(child, CommandOrInserter))
+        self.entities.removeEntity(node)
         
-        self.deleteCommand(self.linker.getCommandFromPath(node))
+        self.commandHandler.deleteCommand(self.linker.getCommandFromPath(node))
         self.linker.deleteNode(node)
 
         # remove the next segment, unless its the last segment, in which case remove the previous segment
@@ -171,10 +172,10 @@ class Path(Observer):
             otherSegment = node.getPrevious()
         
         self.pathList.remove(segment)
-        self.entities.removeEntity(segment, excludeChildrenIf = lambda child: isinstance(child, CommandOrInserter))
+        self.entities.removeEntity(segment)
         
         for command in self.linker.getCommandsFromSegment(segment):
-            self.deleteCommand(command)
+            self.commandHandler.deleteCommand(command)
         self.linker.deleteSegment(segment)
 
         # the other segment is the only node/segment affected by this
@@ -186,9 +187,6 @@ class Path(Observer):
             node.getNext().getNext().onAngleChange()
         if node.getPrevious() is not None:
             node.getPrevious().getPrevious().onAngleChange()
-
-        # changed command list, so recompute y
-        self.onChangeInCommandPositionOrHeight()
 
 
     def getPathEntityFromCommand(self, command: CommandBlockEntity) -> PathSegmentEntity | PathNodeEntity:
@@ -212,5 +210,3 @@ class Path(Observer):
         # if old command was highlighted, then highlight the new command
         if oldCommand.isHighlighted():
             commandToShow.highlight()
-
-        self.onChangeInCommandPositionOrHeight()

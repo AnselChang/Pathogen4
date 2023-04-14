@@ -37,6 +37,6 @@ class CommandBlockEntityFactory:
 
     def create(self, parent: Entity, commandHandler: CommandSequenceHandler, adapter: PathAdapter) -> CommandBlockEntity:
         if adapter.type == CommandType.CUSTOM:
-            return CustomCommandBlockEntity(self.container, parent, path, adapter, self.database, self.expansion)
+            return CustomCommandBlockEntity(self.container, parent, commandHandler, adapter, self.database, self.expansion)
         else:
-            return CommandBlockEntity(self.container, parent, path, adapter, self.database, self.expansion)
+            return CommandBlockEntity(self.container, parent, commandHandler, adapter, self.database, self.expansion)

@@ -43,7 +43,7 @@ class CommandInserter(Entity, CommandOrInserter):
             recomputeWhenInvisible = True
             )
         
-        CommandOrInserter.__init__(self, parent)
+        self.container = parent
         self.handler = handler
         self.isFirst = isFirst
 

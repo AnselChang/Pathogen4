@@ -20,7 +20,7 @@ Then, call AVC.onChangeInContainerSize() whenever the size of your entity change
 This will cause the VGC to recompute the position
 """
 T = TypeVar('T')
-class VariableContainer(Container, LinkedListNode, ABC, Generic[T]):
+class VariableContainer(Container, LinkedListNode['T'], ABC, Generic[T]):
 
     def __init__(self, parent: VariableGroupContainer, isHorizontal: bool):
         self.isHorizontal = isHorizontal

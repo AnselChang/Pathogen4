@@ -7,7 +7,7 @@ from entity_ui.scrollbar.scrolling_content_container import ScrollingContentCont
 if TYPE_CHECKING:
     from command_creation.command_definition_database import CommandDefinitionDatabase
     from root_container.panel_container.command_block.command_block_container import CommandBlockContainer
-from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
+    from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
 
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
@@ -49,7 +49,7 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
 
     def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
         
-        CommandOrInserter.__init__(self, parent)
+        self.container = parent
         
         self.handler = handler
 
@@ -337,3 +337,23 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
 
     def toString(self) -> str:
         return "Command Block Entity"
+    
+    def getNextInserter(self) -> CommandBlockEntity:
+        return self.handler.getNext(self)
+    
+    def getPreviousInserter(self) -> CommandBlockEntity:
+        return self.handler.getPrevious(self)
+    
+    def getNextCommand(self) -> CommandBlockEntity:
+        inserter = self.getNextInserter()
+        if inserter is None:
+            return None
+        else:
+            return self.handler.getNext(inserter)
+    
+    def getPreviousCommand(self) -> CommandBlockEntity:
+        inserter = self.getPreviousInserter()
+        if inserter is None:
+            return None
+        else:
+            return self.handler.getPrevious(inserter)
