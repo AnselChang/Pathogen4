@@ -1,3 +1,11 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from root_container.path import Path
+    from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
+
+
 from adapter.path_adapter import NullPathAdapter, PathAdapter
 from command_creation.command_block_entity_factory import CommandBlockEntityFactory
 from command_creation.command_definition_database import CommandDefinitionDatabase
@@ -9,8 +17,7 @@ from root_container.panel_container.command_block.command_block_entity import Co
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
 from root_container.panel_container.command_scrolling.command_scrolling_handler import CommandScrollingHandler
-from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
-from root_container.path import Path
+
 
 
 """
@@ -26,18 +33,19 @@ Element =  CommandBlockContainer | CommandInserter
 
 class CommandSequenceHandler:
 
-    def __init__(self, panel: BlockTabContentsContainer, path: Path, database: CommandDefinitionDatabase):
+    def initPath(self, path: Path):
+        self.path = path
+
+    def initCommandExpansion(self, commandExpansion: CommandExpansionContainer):
+        self.commandExpansion = commandExpansion
+        self.factory = CommandBlockEntityFactory(self.database, self.panel, commandExpansion)
+
+    def __init__(self, panel: BlockTabContentsContainer, database: CommandDefinitionDatabase):
 
         self.panel = panel
-        self.path = path
         self.database = database
 
-        self.vgc: VariableGroupContainer[Element] = VariableGroupContainer(self)
-
-        # On command expansion button click, recalculate targets
-        self.commandExpansion = CommandExpansionContainer(panel)
-        self.commandExpansion.subscribe(self, onNotify = self.vgc.propagateChange)
-        self.factory = CommandBlockEntityFactory(database, panel, self.commandExpansion)
+        self.vgc: VariableGroupContainer[Element] = VariableGroupContainer(panel, isHorizontal = False)
 
         self.scrollHandler = CommandScrollingHandler(panel)
 
@@ -203,3 +211,6 @@ class CommandSequenceHandler:
                 return previousVariableContainer.child.commandBlock
         else:
             raise Exception("Invalid element type")
+        
+    def onGlobalCommandExpansionChange(self):
+        self.vgc.propagateChange()

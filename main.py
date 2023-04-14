@@ -82,18 +82,18 @@ def main():
     menuManager = SelectorMenuManager(fieldContainer)
     interactor.initInteractor(menuManager, fieldContainer)
 
-    # create tabs
-    tabHandler = TabHandler(panelContainer)
+    
 
     StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX)
 
     # initialize commands
     database = CommandDefinitionDatabase()
-    commandExpansion = CommandExpansionContainer(tabHandler.blockContainer)
-    commandEntityFactory = CommandBlockEntityFactory(database, tabHandler.blockContainer, commandExpansion)
+
+    # create tabs
+    tabHandler = TabHandler(panelContainer, database)
 
     # Create path
-    path = Path(fieldContainer, tabHandler.blockContainer, database, commandEntityFactory, commandExpansion, PointRef(Ref.FIELD, (24,24)))
+    path = Path(fieldContainer, tabHandler.blockContainer, database, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)
 
     # test VariableGroupContainer

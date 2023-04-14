@@ -49,7 +49,8 @@ class Path(Observer):
 
         self.fieldContainer = field
 
-        self.commandHandler = CommandSequenceHandler(panel, self, database)
+        self.commandHandler = panel.commandHandler
+        self.commandHandler.initPath(self)
         self.pathList = LinkedList[PathNodeEntity | PathSegmentEntity]() # linked list of nodes and segments
 
         # store a dict that maintains a mapping from PathNodeEntity | PathSegmentEntity to CommandBlockEntity
@@ -70,10 +71,7 @@ class Path(Observer):
         node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
         self.pathList.insertAfter(afterPath, node)
 
-        if afterCommand is None:
-            turnCommand = self.commandHandler.insertCommandAtEnd(node.getAdapter())
-        else:
-            turnCommand = self.commandHandler.insertCommandAfter(afterCommand, node.getAdapter())
+        turnCommand = self.commandHandler.insertCommandAfter(afterCommand, node.getAdapter())
 
         # maintain a relationship between the node and turn command
         self.linker.linkNode(node, turnCommand)

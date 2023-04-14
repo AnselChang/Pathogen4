@@ -1,3 +1,4 @@
+from command_creation.command_definition_database import CommandDefinitionDatabase
 from data_structures.observer import Observer
 from root_container.panel_container.panel_container import PanelContainer
 from root_container.panel_container.tab.abstract_tab_contents_container import AbstractTabContentsContainer
@@ -18,14 +19,14 @@ Manage correct instantiation of tabs
 
 class TabHandler(Observer):
 
-    def __init__(self, panel: PanelContainer):
+    def __init__(self, panel: PanelContainer, database: CommandDefinitionDatabase):
 
         FONT_ID = FontID.FONT_TITLE
         FONT_SIZE = 15
 
         self.tabs = None
 
-        self.blockContainer = BlockTabContentsContainer(panel, self)
+        self.blockContainer = BlockTabContentsContainer(panel, self, database)
         self.codeContainer = CodeTabContentsContainer(panel, self)
         self.settingsContainer = SettingsTabContentsContainer(panel, self)
 

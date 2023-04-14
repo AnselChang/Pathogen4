@@ -31,8 +31,10 @@ class VariableContainer(Container, LinkedListNode['T'], ABC, Generic[T]):
         super().__init__(parent = parent)
         LinkedListNode.__init__(self)
 
+        self.recomputePosition()
+
     def setChild(self, child: T):
-        self.child = child
+        self.child: T = child
     
     # set by VariableGroupContainer. Size refers to x if isHorizontal, else y
     def setPosition(self, position: int):
@@ -53,7 +55,7 @@ class VariableContainer(Container, LinkedListNode['T'], ABC, Generic[T]):
     def defineWidth(self) -> float:
         if self.isHorizontal:
             if self.child is None:
-                raise Exception("Child not set")
+                return 0
             else:
                 return self.child.defineWidth()
         else:
@@ -62,7 +64,7 @@ class VariableContainer(Container, LinkedListNode['T'], ABC, Generic[T]):
     def defineHeight(self) -> float:
         if not self.isHorizontal:
             if self.child is None:
-                raise Exception("Child not set")
+                return 0
             else:
                 return self.child.defineHeight()
         else:

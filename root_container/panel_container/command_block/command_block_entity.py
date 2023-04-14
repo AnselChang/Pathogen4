@@ -22,7 +22,6 @@ from command_creation.command_definition import CommandDefinition
 
 from root_container.panel_container.command_block.command_block_header import CommandBlockHeader
 from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
-from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
 
 from root_container.panel_container.element.overall.elements_container_factory import createElementsContainer
 
@@ -42,7 +41,7 @@ The WidgetEntities and pathAdapters hold the informatino for this specific insta
 Position calculation is offloaded to CommandBlockPosition
 """
 
-class CommandBlockEntity(Entity, CommandOrInserter, Observer):
+class CommandBlockEntity(Entity, Observer):
 
     HIGHLIGHTED = None
 
@@ -103,9 +102,6 @@ class CommandBlockEntity(Entity, CommandOrInserter, Observer):
         This will be changed in the future.
         """
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), pathAdapter)
-        
-        # on element container resize, recompute target height
-        self.elementsContainer.subscribe(self, onNotify = self.onElementsResize)
 
         # For turn commands: if turn is enabled/disabled, command is shown/hidden
         if self.pathAdapter.type == CommandType.TURN:

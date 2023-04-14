@@ -10,7 +10,7 @@ from command_creation.command_definition import CommandDefinition
 from entity_base.container_entity import Container
 from abc import ABC, abstractmethod
 
-class AbstractElementsContainer(Container, Observable, ABC):
+class AbstractElementsContainer(Container, ABC, Observable):
     
     def __init__(self, parentCommand: CommandBlockEntity, commandDefinition: CommandDefinition, pathAdapter: PathAdapter):
         

@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
+    from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
 
 
 from entity_base.entity import Entity
@@ -37,6 +37,6 @@ class CommandBlockEntityFactory:
 
     def create(self, parent: Entity, commandHandler: CommandSequenceHandler, adapter: PathAdapter) -> CommandBlockEntity:
         if adapter.type == CommandType.CUSTOM:
-            return CustomCommandBlockEntity(self.container, parent, commandHandler, adapter, self.database, self.expansion)
+            return CustomCommandBlockEntity(parent, commandHandler, adapter, self.database, self.expansion)
         else:
-            return CommandBlockEntity(self.container, parent, commandHandler, adapter, self.database, self.expansion)
+            return CommandBlockEntity(parent, commandHandler, adapter, self.database, self.expansion)

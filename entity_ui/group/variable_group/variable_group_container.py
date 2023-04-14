@@ -47,6 +47,8 @@ class VariableGroupContainer(Container, Generic[T]):
         super().__init__(parent = parent, tick = TickLambda(self, FonTickEnd = self.onTickEnd))
         self.needToRecompute = False
 
+        super().recomputePosition()
+
     # VariableContainer should call this whenever its size changes. O(1), so call as many
     # times as you want in a single tick
     def propagateChange(self):
@@ -116,7 +118,7 @@ class VariableGroupContainer(Container, Generic[T]):
 
         size = 2 * outer
         container = self.containers.head
-        while True:
+        while container is not None:
             size += container.defineWidth() if self.isHorizontal else container.defineHeight()
             container = container.getNext()
 

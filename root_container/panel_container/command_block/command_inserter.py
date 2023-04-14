@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from root_container.panel_container.command_block.command_or_inserter import CommandOrInserter
-
 if TYPE_CHECKING:
     from entity_ui.group.variable_group.variable_container import VariableContainer
     from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
@@ -31,7 +29,7 @@ Appears between each command
 A "plus" button that, when clicked, inserts a custom command there
 """
 
-class CommandInserter(Entity, CommandOrInserter):
+class CommandInserter(Entity):
 
     def __init__(self, parent: VariableContainer, handler: CommandSequenceHandler, onInsert = lambda: None, isFirst: bool = False):
         super().__init__(
@@ -68,17 +66,8 @@ class CommandInserter(Entity, CommandOrInserter):
 
         self.recomputePosition()
 
-    def defineTopLeft(self) -> tuple:
-
-        # This prevents the ripple effect when inserting a command
-        # by using the parent's target position directly instead of their current
-        if not self.isFirst:
-            y = self._parent.normalY + self._pheight(1)
-        else:
-            y = self._py(0)
-
-        # right below the previous CommandOrInserter
-        return self._px(0), y
+    def defineCenterX(self) -> tuple:
+        return self._px(0.5)
 
     def defineWidth(self) -> float:
         # 95% of the panel
@@ -86,20 +75,17 @@ class CommandInserter(Entity, CommandOrInserter):
     
     def defineHeight(self) -> float:
 
-        if not self.isFirst and self.getPrevious() is not None and not self.getPrevious().isVisible():
+        if not self.isFirst and self.getPreviousCommand() is not None and not self.getPreviousCommand().isVisible():
             return 0
 
         HEIGHT_MIN = 5
         HEIGHT_MAX = 12
         return self._aheight(HEIGHT_MAX if self.isActive else HEIGHT_MIN)
     
-    def defineAfter(self):
-        if self.getNext() is None:
-            self.path.onRecalculatedAllCommands()
 
     def setActive(self, isActive):
         self.isActive = isActive
-        self.path.onChangeInCommandPositionOrHeight()
+        self.propagateChange()
 
     def onHoverOn(self):
 
@@ -130,3 +116,9 @@ class CommandInserter(Entity, CommandOrInserter):
             x,y = self.CENTER_X, self.CENTER_Y
             pygame.draw.rect(screen, [255,255,255], [x - self.THICK, y - self.THIN, self.THICK*2, self.THIN*2])
             pygame.draw.rect(screen, [255,255,255], [x - self.THIN, y - self.THICK, self.THIN*2, self.THICK*2])
+
+    def getPreviousCommand(self):
+        return self.handler.getPrevious(self)
+    
+    def getNextCommand(self):
+        return self.handler.getNext(self)
