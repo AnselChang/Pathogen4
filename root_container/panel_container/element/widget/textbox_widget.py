@@ -22,7 +22,6 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
         super().__init__(parent, parentCommand, definition)
 
         self.textEditor = None
-        self.recomputePosition()
 
         fontID = definition.fontID
         fontSize = definition.fontSize

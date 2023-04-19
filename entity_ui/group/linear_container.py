@@ -24,7 +24,6 @@ class LinearContainer(Container, Generic[T]):
         self.percent = percent
         
         self.i = group.add(self)
-        self.group.recomputePosition()
 
         
 

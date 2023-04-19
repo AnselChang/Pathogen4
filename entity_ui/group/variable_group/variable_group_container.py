@@ -47,7 +47,6 @@ class VariableGroupContainer(Container, Generic[T]):
         super().__init__(parent = parent, tick = TickLambda(self, FonTickEnd = self.onTickEnd))
         self.needToRecompute = False
 
-        super().recomputePosition()
 
     # VariableContainer should call this whenever its size changes. O(1), so call as many
     # times as you want in a single tick
@@ -63,18 +62,14 @@ class VariableGroupContainer(Container, Generic[T]):
     def onTickEnd(self):
         if self.needToRecompute:
             self.recomputePosition() # this calls updateContainerPositions() at some point
+            print("recompute vgc")
             self.needToRecompute = False
-
-    def recomputePosition(self):
-        # recompute own VGC position, as well of width/height of children
-        super().recomputePosition(excludeChildIf = lambda child: True)
-
-        self.updateContainerPositions()
-        # recompute children, this time with correct position
-        super().recomputePosition()
 
     def _getMargin(self, margin):
         return self._awidth(margin) if self.isHorizontal else self._aheight(margin)
+    
+    def defineBefore(self) -> None:
+        self.updateContainerPositions()
 
 
     # Iteratively update the position of each VariableContainer
@@ -89,7 +84,7 @@ class VariableGroupContainer(Container, Generic[T]):
         pos = startPos + outer
 
         container = self.containers.head
-        while True:
+        while container is not None:
 
             # set the position of the container
             container.setPosition(pos)

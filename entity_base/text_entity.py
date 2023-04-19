@@ -40,7 +40,6 @@ class TextEntity(Entity, Observer):
         self.font: DynamicFont = self.fonts.getDynamicFont(fontID, fontSize)
         self.font.subscribe(self, onNotify = self.recomputePosition)
 
-        self.recomputePosition()
 
     def defineAfter(self):
         self.surface = getText(self.font.get(), self.getText(), (0,0,0), 1)

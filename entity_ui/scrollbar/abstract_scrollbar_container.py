@@ -17,7 +17,6 @@ class AbstractScrollbarContainer(Container, Observable, Observer):
     def __init__(self, parent):
 
         super().__init__(parent = parent, drawOrder = DrawOrder.SCROLLBAR_BORDER)
-        self.recomputePosition()
 
         # after position of container has been computed, add scrollbar entity
         self.scrollbar = ScrollbarEntity(self)

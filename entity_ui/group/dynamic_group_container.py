@@ -22,8 +22,6 @@ class DynamicGroupContainer(LinearGroupContainer['T']):
 
         super().__init__(parent, isHorizontal)
 
-        self.recomputePosition()
-
     # add linear entity to group. returns the linear entity's location
     def add(self, entity: LinearContainer):
         result = super().add(entity)

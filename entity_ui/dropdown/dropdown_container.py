@@ -32,7 +32,7 @@ class DropdownContainer(Container, Observable):
 
     # In addition to setting option text, update the other options
     # to include the old selected option but exclude the new selected option
-    def setSelectedText(self, selectedText: str):
+    def setSelectedText(self, selectedText: str, recompute: bool = True):
 
         # selected same text, no change
         if self.selectedOptionText == selectedText:
@@ -40,8 +40,10 @@ class DropdownContainer(Container, Observable):
 
         self.selectedOptionText = selectedText
         self.otherOptions = [text for text in self.optionTexts if text != selectedText]
-        self.recomputePosition()
-        self.notify()
+        
+        if recompute:
+            self.recomputePosition()
+            self.notify()
 
     def getOptionText(self, i: int) -> str:
         if i == -1:
@@ -89,7 +91,7 @@ class DropdownContainer(Container, Observable):
 
         self.optionTexts = options
         self.selectedOptionText = None
-        self.setSelectedText(options[0]) # recomputes position from this call
+        self.setSelectedText(options[0], False) # recomputes position from this call
 
         self.currentOption = DropdownOptionEntity(self, -1, self.font, 
                                                   colorSelectedHovered, colorSelected, colorHovered, colorOff,
@@ -104,7 +106,6 @@ class DropdownContainer(Container, Observable):
                                  )
             o.setInvisible()
             self.options.append(o)
-        self.recomputePosition()
 
         DropdownIconContainer(self.currentOption, self)
 
@@ -216,7 +217,7 @@ class DropdownContainer(Container, Observable):
             return
 
         for option in self.options:
-            option.recomputePosition()
+            option.defineBefore()
 
         self.maxOptionWidth = max([option.getTextWidth() for option in self.options])
         

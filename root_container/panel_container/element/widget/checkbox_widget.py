@@ -25,8 +25,6 @@ class CheckboxWidgetContainer(WidgetContainer['CheckboxWidgetDefinition']):
         super().__init__(parent, parentCommand, definition)
 
         self.value = definition.defaultOn
-
-        self.recomputePosition()
         
         states = [
             ImageState(True, ImageID.CHECKBOX_ON),

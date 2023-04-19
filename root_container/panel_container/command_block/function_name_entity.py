@@ -29,7 +29,6 @@ class FunctionNameEntity(Entity, Observer):
         
         self.dx = 19 # delta for text from left edge
         self.textEntity = None
-        self.recomputePosition()
 
         self.CORNER_RADIUS = 5
         
@@ -40,7 +39,6 @@ class FunctionNameEntity(Entity, Observer):
                           dynamicWidth = True, dynamicBorderOpacity = True, centered = False,
                           iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, verticalTextPadding = 0)
         self.updateColor()
-        self.recomputePosition()
 
         # Whenever the name changes, notify the commmand block entity to update the command
         self.dropdown.subscribe(self, onNotify = self.parentCommand.onFunctionChange)

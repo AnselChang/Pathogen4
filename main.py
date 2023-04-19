@@ -119,6 +119,9 @@ def main():
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
     clock = pygame.time.Clock()
 
+    # initialize everything
+    rootContainer.recomputePosition()
+
     # Main game loop
     while True:
 

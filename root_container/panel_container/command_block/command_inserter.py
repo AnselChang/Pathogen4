@@ -15,6 +15,8 @@ from root_container.panel_container.command_block.command_block_entity import Co
 
 from entity_handler.interactor import Interactor
 
+from root_container.panel_container.command_block.command_block_constants import CommandBlockConstants as Constants
+
 from common.dimensions import Dimensions
 from data_structures.linked_list import LinkedListNode
 from common.reference_frame import PointRef, Ref
@@ -64,8 +66,6 @@ class CommandInserter(Entity):
         self.currentY = self.START_Y
         self.isActive = False
 
-        self.recomputePosition()
-
     def defineCenterX(self) -> tuple:
         return self._px(0.5)
 
@@ -110,7 +110,7 @@ class CommandInserter(Entity):
             color = [140, 140, 140] if isActive else [160, 160, 160]
 
             # draw shaded area
-            pygame.draw.rect(screen, color, rect, border_radius = self.CORNER_RADIUS)
+            pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)
 
             # draw cross
             x,y = self.CENTER_X, self.CENTER_Y

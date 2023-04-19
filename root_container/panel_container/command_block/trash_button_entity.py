@@ -26,7 +26,7 @@ class TrashEntity(Container):
     def __init__(self, parentHeader, onDelete = lambda: None):
         
         super().__init__(parent = parentHeader)
-        self.recomputePosition()
+
         state = ImageState(0, ImageID.TRASH_OFF, imageOnHoveredID = ImageID.TRASH_ON)
         ImageEntity(self, state, drawOrder = DrawOrder.WIDGET, onClick = onDelete)
 

@@ -38,17 +38,14 @@ class ReadoutEntity(ElementContainer, Observer):
 
         super().__init__(parent, parentCommand)
         
-        self.recomputePosition()
-
     def updateText(self) -> str:
         self.textString = str(self.pathAdapter.getString(self.definition.getAttribute()))
         textSurface = getText(self.font.get(), self.textString, (0,0,0), 1)
         self.textWidth = textSurface.get_width()
         self.textHeight = textSurface.get_height()
 
-    def recomputePosition(self):
+    def defineBefore(self):
         self.updateText()
-        return super().recomputePosition()
 
     
     def defineWidth(self) -> float:

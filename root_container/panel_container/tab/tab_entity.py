@@ -28,7 +28,6 @@ class TabEntity(Entity):
         self.isOn = isOnFunction
         self.r = 5
 
-        self.recomputePosition()
         TextEntity(self, fontID, fontSize, staticText = text)
 
     def defineWidth(self) -> float:

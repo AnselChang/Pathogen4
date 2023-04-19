@@ -31,8 +31,6 @@ class VariableContainer(Container, LinkedListNode['T'], ABC, Generic[T]):
         super().__init__(parent = parent)
         LinkedListNode.__init__(self)
 
-        self.recomputePosition()
-
     def setChild(self, child: T):
         self.child: T = child
     

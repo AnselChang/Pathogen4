@@ -24,7 +24,6 @@ class RowElementsContainer(AbstractElementsContainer):
         super().__init__(parentCommand, commandDefinition, pathAdapter)
 
         self.group = None
-        self.recomputePosition()
 
         # Create the container that will store the rows
         self.group = DynamicGroupContainer(self, False, entitySizePixels = 28)

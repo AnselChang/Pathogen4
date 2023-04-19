@@ -56,8 +56,6 @@ class ImageEntity(Entity, TooltipOwner):
         self.onClick = onClick
         self.isOn = isOn
 
-        self.recomputePosition()
-
     def addState(self, state: ImageState):
         self.states[state.id] = state
         if self.defaultID is None:

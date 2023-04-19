@@ -45,9 +45,11 @@ class CommandSequenceHandler:
         self.panel = panel
         self.database = database
 
-        self.vgc: VariableGroupContainer[Element] = VariableGroupContainer(panel, isHorizontal = False)
-
         self.scrollHandler = CommandScrollingHandler(panel)
+        scrollingContainer = self.scrollHandler.getScrollingContainer()
+        self.vgc: VariableGroupContainer[Element] = VariableGroupContainer(scrollingContainer, isHorizontal = False)
+
+        
 
         # Should be initialized with a single inserter in the beginning
         variableContainer = self._createInserter()
@@ -57,6 +59,9 @@ class CommandSequenceHandler:
     def getList(self) -> LinkedList[VariableContainer[Element]]:
         return self.vgc.containers
     
+    def recomputePosition(self):
+        self.vgc.recomputePosition()
+    
     # Set up the command block entity and tie it to the VariableGroupContainer
     def _createCommand(self, adapter: PathAdapter) -> tuple[VariableContainer, CommandBlockEntity]:
         # Create the variable container tied to the VariableGroupContainer
@@ -64,9 +69,11 @@ class CommandSequenceHandler:
 
         # Create the CommandBlockContainer, which holds the CommandBlockEntity
         commandContainer = CommandBlockContainer(variableContainer)
+        variableContainer.setChild(commandContainer)
 
         # Create the CommandBlockEntity, which is inside CommandBLockContainer, and holds the command definition
         commandBlock = self.factory.create(commandContainer, self, adapter)
+        commandContainer.initCommandBlock(commandBlock)
         
         return variableContainer, commandBlock
     
@@ -76,6 +83,7 @@ class CommandSequenceHandler:
 
         # create the CommandInserter
         inserter = CommandInserter(variableContainer, self, onInsert = lambda inserter: self.insertCustomCommand(inserter))
+        variableContainer.setChild(inserter)
 
         return variableContainer
     
@@ -97,7 +105,6 @@ class CommandSequenceHandler:
         self.getList().insertAfter(self.getList().head, variableContainer)
         self._insertCommandInserterAfter(variableContainer)
 
-        self.vgc.recomputePosition()
         return commandBlock
     
     # create and insert command after given command block entity and path adapter
@@ -109,11 +116,14 @@ class CommandSequenceHandler:
         if after is None:
             self.getList().addToEnd(variableContainer)
         else:
-            self.getList().insertAfter(after.container.getNext(), variableContainer)
+            if isinstance(after, CommandBlockEntity):
+                inserterVariableContainer = after.container.variableContainer.getNext()
+            else:
+                inserterVariableContainer = after.container
+            self.getList().insertAfter(inserterVariableContainer, variableContainer)
 
         self._insertCommandInserterAfter(variableContainer)
 
-        self.vgc.recomputePosition()
         return commandBlock
         
     def deleteCommand(self, command: CommandBlockEntity):
@@ -128,7 +138,6 @@ class CommandSequenceHandler:
         self.getList().remove(inserterVariableContainer)
         command.entities.removeEntity(inserterVariableContainer)
 
-        self.vgc.recomputePosition()
         
     # set the local expansion flag for each command to isExpand
     def setAllLocalExpansion(self, isExpand: bool):

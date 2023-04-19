@@ -121,6 +121,8 @@ class Path(Observer):
         segment = self._addRawSegment()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
 
+        self.commandHandler.recomputePosition()
+
         node.onNodeMove()
 
         return node
@@ -132,6 +134,8 @@ class Path(Observer):
         
         command = self.linker.getCommandFromPath(node)
         segment = self._addRawSegment(node, command)
+
+        self.commandHandler.recomputePosition()
 
         node.updateAdapter()
         node.getNext().onNodeMove(node)
@@ -145,6 +149,8 @@ class Path(Observer):
         
         command = self.linker.getCommandFromPath(node)
         segment = self._addRawSegment(node, command)
+
+        self.commandHandler.recomputePosition()
 
         node.updateAdapter()
         node.getNext().onNodeMove(node)
@@ -175,6 +181,8 @@ class Path(Observer):
         for command in self.linker.getCommandsFromSegment(segment):
             self.commandHandler.deleteCommand(command)
         self.linker.deleteSegment(segment)
+
+        self.commandHandler.recomputePosition()
 
         # the other segment is the only node/segment affected by this
         if otherSegment is not None: # it's none if there are only two nodes total and remove last one

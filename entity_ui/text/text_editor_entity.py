@@ -82,7 +82,6 @@ class TextEditorEntity(Entity, Observable, Observer):
             }
         }
 
-        self.recomputePosition()
 
 
     def onFontUpdate(self):

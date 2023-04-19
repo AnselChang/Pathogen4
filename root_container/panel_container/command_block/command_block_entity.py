@@ -25,6 +25,7 @@ from root_container.panel_container.command_expansion.command_expansion_containe
 
 from root_container.panel_container.element.overall.elements_container_factory import createElementsContainer
 
+from root_container.panel_container.command_block.command_block_constants import CommandBlockConstants as Constants
 from common.font_manager import FontID
 from common.draw_order import DrawOrder
 from data_structures.observer import NotifyType, Observer
@@ -92,7 +93,6 @@ class CommandBlockEntity(Entity, Observer):
 
         self.elementsVisible = True
 
-        self.recomputePosition()
         self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
 
         """
@@ -320,12 +320,12 @@ class CommandBlockEntity(Entity, Observer):
             color = shade(color, 1.1)
 
         if self.isDragging():
-            drawTransparentRect(screen, *self.RECT, color, alpha = self.DRAG_OPACITY*255, radius = self.CORNER_RADIUS)
+            drawTransparentRect(screen, *self.RECT, color, alpha = self.DRAG_OPACITY*255, radius = Constants.CORNER_RADIUS)
         else:
-            pygame.draw.rect(screen, color, self.RECT, border_radius = self.CORNER_RADIUS)
+            pygame.draw.rect(screen, color, self.RECT, border_radius = Constants.CORNER_RADIUS)
 
         if isHighlighted:
-            pygame.draw.rect(screen, (0,0,0), self.RECT, border_radius = self.CORNER_RADIUS, width = 2)
+            pygame.draw.rect(screen, (0,0,0), self.RECT, border_radius = Constants.CORNER_RADIUS, width = 2)
 
         # draw function name
         text = self.getDefinition().name + "()"

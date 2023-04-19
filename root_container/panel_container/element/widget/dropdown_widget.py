@@ -25,8 +25,6 @@ class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition']):
     def __init__(self, parent, parentCommand: CommandBlockEntity, definition: 'DropdownWidgetDefinition'):
 
         super().__init__(parent, parentCommand, definition)
-
-        self.recomputePosition()
         
         colorSelectedHovered = [176, 200, 250]
         colorSelected = [176, 200, 250]

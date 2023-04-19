@@ -19,8 +19,6 @@ class LinearGroupContainer(Container, Generic[T]):
 
         self.N = 0
 
-        self.recomputePosition()
-
     # add linear entity to group. returns the linear entity's location
     def add(self, entity: LinearContainer):
         self.groupEntities.append(entity)

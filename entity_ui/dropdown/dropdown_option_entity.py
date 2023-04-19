@@ -48,8 +48,6 @@ class DropdownOptionEntity(Entity):
         self.isFirst = (i == -1)
         self.isLast = isLast
 
-        self.recomputePosition()
-
     
     def defineBefore(self):
         surface = getText(self.font.get(), self.getText(), (0,0,0))

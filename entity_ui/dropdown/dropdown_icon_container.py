@@ -20,8 +20,6 @@ class DropdownIconContainer(Container):
         super().__init__(parent)
         self.dropdownContainer = dropdownContainer
 
-        self.recomputePosition()
-
         ImageEntity(parent = self, 
             states = ImageState(0, ImageID.DROPDOWN_ICON),
             drawOrder = DrawOrder.DROPDOWN,

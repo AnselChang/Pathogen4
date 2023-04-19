@@ -25,7 +25,6 @@ class HighlightPathEntity(Container):
     def __init__(self, parentHeader, onHighlight = lambda: None):
         
         super().__init__(parent = parentHeader)
-        self.recomputePosition()
         state = ImageState(0, ImageID.REVEAL_COMMAND)
         ImageEntity(self, state, drawOrder = DrawOrder.WIDGET, onClick = onHighlight)
 

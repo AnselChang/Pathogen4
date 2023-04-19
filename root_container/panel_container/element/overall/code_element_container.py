@@ -22,7 +22,6 @@ class CodeElementContainer(AbstractElementsContainer, Observer):
         super().__init__(parentCommand, commandDefinition, pathAdapter)
 
         self.textEditor = None
-        self.recomputePosition()
 
         self.textEditor = TextEditorEntity(self,
             fontID = FontID.FONT_CODE,

@@ -20,8 +20,6 @@ class CommandBlockHeader(Container):
 
         self.parentCommand = parentCommand
 
-        # recompute position BEFORE creating child entity
-        self.recomputePosition()
         
         self.commandIcon = CommandBlockIcon(self, pathAdapter)
         self.functionName = FunctionNameEntity(self, parentCommand)
