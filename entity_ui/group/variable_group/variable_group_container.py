@@ -62,7 +62,6 @@ class VariableGroupContainer(Container, Generic[T]):
     def onTickEnd(self):
         if self.needToRecompute:
             self.recomputePosition() # this calls updateContainerPositions() at some point
-            print("recompute vgc")
             self.needToRecompute = False
 
     def _getMargin(self, margin):

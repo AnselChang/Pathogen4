@@ -21,6 +21,11 @@ class Observer:
 
 
     def unsubscribeAll(self):
+
+        if "observablesIAmSubscribedTo" not in self.__dict__:
+            return
+        
+        
         for observable in self.observablesIAmSubscribedTo:
             observable.unsubscribe(self)
 

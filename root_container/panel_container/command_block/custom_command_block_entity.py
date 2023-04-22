@@ -48,6 +48,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
 
     def onDelete(self, mouse: tuple):
         self.handler.deleteCommand(self)
+        self.handler.recomputePosition()
 
     def onStartDrag(self, mouse: tuple):
         self.dragging = True
