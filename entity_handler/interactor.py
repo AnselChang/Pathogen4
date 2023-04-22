@@ -307,7 +307,6 @@ class Interactor:
                 if entityToStartDragging is not None and entityToStartDragging.drag is not None:
                     self.leftDragging = True
                     self.removeAllEntities(forceRemove = True)
-
                     self.addEntity(entityToStartDragging)
                     self.draggingEntities = [entityToStartDragging]
                     self.hoveredEntity = entityToStartDragging

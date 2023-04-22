@@ -227,8 +227,9 @@ class DropdownContainer(Container, Observable):
         if self.heightProfile is None:
             self.heightProfile = MotionProfile(self.optionHeight, 0.4, 1)
             self.widthProfile = MotionProfile(self.getFullWidth(), 0.4)
+            self.updateProfiles(True)
 
-        if self.dimensions.RESIZED_THIS_FRAME:
+        elif self.dimensions.RESIZED_THIS_FRAME:
             self.updateProfiles(True)
 
     def defineWidth(self):

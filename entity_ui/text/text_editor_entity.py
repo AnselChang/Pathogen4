@@ -38,7 +38,7 @@ class CursorBlink:
         return self.i < self.numOn
 
 # notifies observers whenever resized from text (isDynamic)
-class TextEditorEntity(Entity, Observable, Observer):
+class TextEditorEntity(Entity, Observer):
 
     def __init__(self, parent: Entity, fontID: FontID, fontSize: int, isDynamic: bool = False, isNumOnly: bool = False, isCentered: bool = True, isFixedWidth: bool = False, defaultText: str = ""):
         
@@ -180,7 +180,7 @@ class TextEditorEntity(Entity, Observable, Observer):
         self.textHandler.onKeyDown(key)
 
         if self.defineHeight() != oldHeight:
-            self.notify()
+            self.propagateChange()
 
     def onKeyUp(self, key):
         pass

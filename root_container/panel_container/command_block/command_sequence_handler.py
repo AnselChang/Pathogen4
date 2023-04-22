@@ -82,7 +82,7 @@ class CommandSequenceHandler:
         variableContainer = VariableContainer(self.vgc, False)
 
         # create the CommandInserter
-        inserter = CommandInserter(variableContainer, self, onInsert = lambda inserter: self.insertCustomCommand(inserter))
+        inserter = CommandInserter(variableContainer, self, onInsert = lambda inserter: self._onInsert(inserter))
         variableContainer.setChild(inserter)
 
         return variableContainer
@@ -97,6 +97,11 @@ class CommandSequenceHandler:
     # and not through path, as does not affect the path
     def insertCustomCommand(self, inserter: CommandInserter) -> CommandBlockEntity:
         return self.insertCommandAfter(inserter, NullPathAdapter())
+    
+    # version of insertCustomCommand without return for onClick lambda
+    def _onInsert(self, inserter: CommandInserter) -> None:
+        self.insertCustomCommand(inserter)
+        self.recomputePosition()
     
     # create and insert command at beginning of list given path adapter
     # make sure to add after the first insreter
