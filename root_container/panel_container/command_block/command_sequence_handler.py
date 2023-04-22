@@ -143,6 +143,25 @@ class CommandSequenceHandler:
         self.getList().remove(inserterVariableContainer)
         command.entities.removeEntity(inserterVariableContainer)
 
+    # move command from current location to the after inserter
+    # move the inserter after the command as well
+    def moveCommand(self, command: CommandBlockEntity, inserter: CommandInserter):
+
+        commandVariableContainer = command.container.variableContainer
+        
+        # remove command from the current position, without deleting from entities list
+        self.getList().remove(commandVariableContainer)
+
+        # Remove next inserter entirely
+        inserterVariableContainer = commandVariableContainer.getNext()
+        self.getList().remove(inserterVariableContainer)
+        command.entities.removeEntity(inserterVariableContainer)
+
+        # insert command after the given inserter
+        self.getList().insertAfter(inserter.container, commandVariableContainer)
+
+        # create and insert new inserter
+        self._insertCommandInserterAfter(commandVariableContainer)
         
     # set the local expansion flag for each command to isExpand
     def setAllLocalExpansion(self, isExpand: bool):

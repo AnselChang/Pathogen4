@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.tick_listener import TickLambda
-from entity_base.listeners.drag_listener import DragListener
+from entity_base.listeners.drag_listener import DragLambda, DragListener
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
 from adapter.path_adapter import PathAdapter
@@ -73,6 +73,9 @@ class CommandBlockEntity(Entity, Observer):
         self.colorR = MotionProfile(r, speed = 0.2)
         self.colorG = MotionProfile(g, speed = 0.2)
         self.colorB = MotionProfile(b, speed = 0.2)
+
+        if drag is None:
+            drag = DragLambda(self)
         
         # This recomputes position at Entity constructor
         super().__init__(
@@ -264,7 +267,7 @@ class CommandBlockEntity(Entity, Observer):
     # return 1 if not dragging, and dragged opacity if dragging
     # not applicable for regular command blocks
     def isDragging(self):
-        return False
+        return self.drag.isDragging
     
     def isHighlighted(self) -> bool:
         return CommandBlockEntity.HIGHLIGHTED == self

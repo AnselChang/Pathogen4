@@ -96,25 +96,6 @@ def main():
     path = Path(fieldContainer, tabHandler.blockContainer, database, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)
 
-    # test VariableGroupContainer
-
-    group0 = VariableGroupContainer(fieldContainer, False, innerMargin = 4, outerMargin = 3, name = "parent")
-    for name in ["1", "2"]:
-        vc0 = VariableContainer(group0, False)
-        group0.containers.addToEnd(vc0)
-
-        group = VariableGroupContainer(vc0, False, innerMargin = 5, outerMargin = 3, name = "child"+name)
-        for j in range(3):
-            vc = VariableContainer(group, False)
-            group.containers.addToEnd(vc)
-            entity = TestRectEntity(vc, 30, 30, (0, 50, 100))
-            vc.setChild(entity)
-
-        vc0.setChild(group)
-
-    
-    group0.recomputePosition()
-
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
     clock = pygame.time.Clock()

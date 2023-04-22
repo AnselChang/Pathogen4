@@ -51,69 +51,25 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         self.handler.recomputePosition()
 
     def onStartDrag(self, mouse: tuple):
-        self.dragging = True
         self.mouseOffset = self.CENTER_Y - mouse[1]
 
     def onStopDrag(self):
-        self.dragging = False
         self.dragPosition = None
-
-    # return 1 if not dragging, and dragged opacity if dragging
-    # not applicable for regular command blocks
-    def isDragging(self):
-        return self.dragging
+        self.recomputePosition()
     
     def onDrag(self, mouse: tuple):
         self.dragPosition = mouse[1] + self.mouseOffset
         inserter: CommandInserter = self.handler.getClosestInserter(mouse)
 
-        # no change in position if dragging to immediate neighbor inserter
-        if self.getNextInserter() is inserter or self.getNextInserter() is inserter:
-            return
-        
-        self.moveAfter(inserter)
-
-    def moveAfter(self, inserter: CommandInserter):
-
-        if inserter._next is None:
-            oldPrev = self._prev
-            oldNext = self._next._next
-            oldPrev._next = oldNext
-            oldNext._prev = oldPrev
-
-            oldTail = inserter
-            self.path.commandList.tail = self._next
-            self._next._next = None
-            self._prev = oldTail
-            oldTail._next = self
-
+        # if dragged to a different position to swap commands
+        if self.getNextInserter() is not inserter and self.getNextInserter() is not inserter:
+            self.handler.moveCommand(self, inserter)
+            self.handler.recomputePosition()
         else:
+            self.recomputePosition()
 
-            if self._next is self.path.commandList.tail:
-                self.path.commandList.tail = self._prev
-
-            oldPrev = self._prev
-            oldNext = self._next._next
-
-            newNext = inserter._next
-            self._prev = inserter
-            inserter._next = self
-            self._next._next = newNext
-            newNext._prev = self._next
-
-            oldPrev._next = oldNext
-            if oldNext is not None:
-                oldNext._prev = oldPrev
-
-        oldPrev.onUpdateLinkedListPosition()
-        inserter.onUpdateLinkedListPosition()
-        self.onUpdateLinkedListPosition()
-
-        if oldNext is not None:
-            oldNext.onUpdateLinkedListPosition()
-
-        self._next.onUpdateLinkedListPosition()
-        if self._next._next is not None:
-            self._next._next.onUpdateLinkedListPosition()
-
-        self.path.onChangeInCommandPositionOrHeight()
+    def defineCenterY(self):
+        if self.drag.isDragging:
+            return self.dragPosition
+        else:
+            return None

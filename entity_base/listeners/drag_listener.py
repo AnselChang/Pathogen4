@@ -13,10 +13,10 @@ class DragListener(ABC):
     def __init__(self, entity, selectEntityNotThis):
         self.entity = entity
         self.selectEntityNotThis = selectEntityNotThis
+        self.isDragging = False
     
-    @abstractmethod
     def onStartDrag(self, mouse: tuple):
-        pass
+        self.isDragging = True
 
     @abstractmethod
     def canDrag(self, mouse: tuple) -> bool:
@@ -26,9 +26,8 @@ class DragListener(ABC):
     def onDrag(self, mouse: tuple):
         pass
 
-    @abstractmethod
     def onStopDrag(self):
-        pass
+        self.isDragging = False
 
 class DragLambda(DragListener):
 
@@ -40,6 +39,7 @@ class DragLambda(DragListener):
         self.FonStopDrag = FonStopDrag
 
     def onStartDrag(self, mouse: tuple):
+        super().onStartDrag(mouse)
         self.FonStartDrag(mouse)
 
     def canDrag(self, mouse: tuple) -> bool:
@@ -49,4 +49,5 @@ class DragLambda(DragListener):
         self.FonDrag(mouse)
 
     def onStopDrag(self):
+        super().onStopDrag()
         self.FonStopDrag()

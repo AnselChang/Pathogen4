@@ -153,6 +153,3 @@ class VariableGroupContainer(Container, Generic[T]):
             return self.getSize()
         else:
             return self._pheight(1)
-    
-    def draw(self, screen, a, b):
-        self.drawRect(screen)
