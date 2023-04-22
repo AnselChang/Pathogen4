@@ -9,5 +9,5 @@ class TextBorder:
 
         self.BORDER_RADIUS = 3
         self.OUTER_X_MARGIN = 6
-        self.OUTER_Y_MARGIN = 4
+        self.OUTER_Y_MARGIN = 2
         self.INNER_Y_MARGIN = 0

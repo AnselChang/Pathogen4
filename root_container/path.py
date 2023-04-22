@@ -216,3 +216,5 @@ class Path(Observer):
         # if old command was highlighted, then highlight the new command
         if oldCommand.isHighlighted():
             commandToShow.highlight()
+
+        commandToShow.onFunctionChange()

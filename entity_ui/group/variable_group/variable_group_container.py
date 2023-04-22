@@ -1,5 +1,6 @@
 from typing import Callable, Generic, TypeVar
 from data_structures.linked_list import LinkedList
+from data_structures.observer import Observable
 from entity_base.container_entity import Container
 from entity_base.entity import Entity
 from entity_base.listeners.tick_listener import TickLambda
@@ -31,16 +32,16 @@ Calling recomputePosition() on this class does the following things in this orde
 It is an expensive operation. Attempt not to call this more than once per tick.
 """
 T = TypeVar('T')
-class VariableGroupContainer(Container, Generic[T]):
+class VariableGroupContainer(Container, Generic[T], Observable):
 
-    def __init__(self, parent: Entity, isHorizontal: bool, innerMargin: int = 0, outerMargin: int = 0, name: str = ""):
+    def __init__(self, parent: Entity, isHorizontal: bool, innerMargin: int = 0, outerMargin: int = 0,
+                 name: str = ""):
 
         self.name = name
         self.isHorizontal = isHorizontal
 
         # linked list makes it easy to insert/remove VariableContainers
         self.containers: LinkedList[VariableContainer[T]] = LinkedList()
-        self.TOTAL_SIZE = 0
         self.innerMargin = innerMargin
         self.outerMargin = outerMargin
 
@@ -63,6 +64,7 @@ class VariableGroupContainer(Container, Generic[T]):
         if self.needToRecompute:
             self.recomputePosition() # this calls updateContainerPositions() at some point
             self.needToRecompute = False
+            self.notify()
 
     def _getMargin(self, margin):
         return self._awidth(margin) if self.isHorizontal else self._aheight(margin)
@@ -98,12 +100,6 @@ class VariableGroupContainer(Container, Generic[T]):
                 break
             else:
                 pos += inner
-
-        # add lower outer margin
-        pos += outer
-
-        # Now that we're at the end, we know the total width/height of the group
-        self.TOTAL_SIZE = pos - startPos
 
     def getSize(self):
 

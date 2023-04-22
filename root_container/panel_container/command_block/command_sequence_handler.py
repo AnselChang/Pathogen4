@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from data_structures.observer import Observer
+
 if TYPE_CHECKING:
     from root_container.path import Path
     from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
@@ -31,7 +33,7 @@ Whenever a command is added or deleted, the inserter after it is added/deleted a
 
 Element =  CommandBlockContainer | CommandInserter
 
-class CommandSequenceHandler:
+class CommandSequenceHandler(Observer):
 
     def initPath(self, path: Path):
         self.path = path
@@ -49,7 +51,7 @@ class CommandSequenceHandler:
         scrollingContainer = self.scrollHandler.getScrollingContainer()
         self.vgc: VariableGroupContainer[Element] = VariableGroupContainer(scrollingContainer, isHorizontal = False)
 
-        
+        self.vgc.subscribe(self, onNotify = lambda: self.scrollHandler.setContentHeight(self.vgc.HEIGHT))        
 
         # Should be initialized with a single inserter in the beginning
         variableContainer = self._createInserter()
