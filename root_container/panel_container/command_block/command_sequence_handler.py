@@ -167,9 +167,9 @@ class CommandSequenceHandler:
     def setAllLocalExpansion(self, isExpand: bool):
         node: VariableContainer[Element] = self.getList().head
         while node is not None:
-            maybeCommandBlock = node.child.commandBlock
-            if isinstance(maybeCommandBlock, CommandBlockEntity):
-                maybeCommandBlock.setLocalExpansion(isExpand)
+            maybeCommandContainer = node.child
+            if isinstance(maybeCommandContainer, CommandBlockContainer):
+                maybeCommandContainer.commandBlock.setLocalExpansion(isExpand)
             node = node.getNext()
 
     def scrollToCommand(self, command: CommandBlockEntity):
