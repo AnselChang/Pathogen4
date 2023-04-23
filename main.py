@@ -65,7 +65,7 @@ def main():
     fieldTransform: FieldTransform = FieldTransform(images, dimensions)
     initReferenceframe(dimensions, fieldTransform)
     
-    initTooltipFont(fontManager.getDynamicFont(FontID.FONT_NORMAL, 15))
+    initTooltipFont(fontManager.getDynamicFont(FontID.FONT_NORMAL, 10))
     
     # Initialize entities
     interactor = Interactor(dimensions, fieldTransform)

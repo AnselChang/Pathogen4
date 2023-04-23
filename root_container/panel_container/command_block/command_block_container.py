@@ -26,7 +26,7 @@ class CommandBlockContainer(Container):
         self.commandBlock: CommandBlockEntity = None
 
     def initCommandBlock(self, command: CommandBlockEntity):
-            self.commandBlock = command
+        self.commandBlock = command
 
     def defineHeight(self) -> float:
          return self.commandBlock.defineHeight()

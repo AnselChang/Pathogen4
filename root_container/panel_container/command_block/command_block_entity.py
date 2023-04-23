@@ -47,7 +47,7 @@ class CommandBlockEntity(Entity, Observer):
     HIGHLIGHTED = None
 
 
-    def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, hasTrashCan: bool = False):
+    def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, isCustom: bool = False):
         
         self.container = parent
         
@@ -96,7 +96,7 @@ class CommandBlockEntity(Entity, Observer):
 
         self.elementsVisible = True
 
-        self.headerEntity = CommandBlockHeader(self, pathAdapter, hasTrashCan)
+        self.headerEntity = CommandBlockHeader(self, pathAdapter, isCustom)
 
         """
         Right now, this means that the command block is hardcoded to
@@ -136,6 +136,9 @@ class CommandBlockEntity(Entity, Observer):
         else:
             self.elementsContainer.setVisible()
             self.elementsVisible = True
+
+        # update header entity. Need to show/hide wait entity
+        self.headerEntity.onFunctionChange()
 
         self.propagateChange()
 

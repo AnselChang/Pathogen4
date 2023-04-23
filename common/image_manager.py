@@ -37,6 +37,8 @@ class ImageID(Enum):
     ARC_SEGMENT = auto()
     CURVE_SEGMENT = auto()
     DROPDOWN_ICON = auto()
+    WAIT = auto()
+    NO_WAIT = auto()
 
 class Image:
 
@@ -106,3 +108,6 @@ class ImageManager:
         self.images[ImageID.CURVE_SEGMENT] = Image("menu/curve_type.png")
 
         self.images[ImageID.DROPDOWN_ICON] = Image("widgets/dropdown.png")
+
+        self.images[ImageID.WAIT] = Image("OtherIcons/wait.png")
+        self.images[ImageID.NO_WAIT] = Image("OtherIcons/nowait.png")

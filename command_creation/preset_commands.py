@@ -44,11 +44,7 @@ class CommandDefinitionPresets:
             builder.setName("[manual set]")
             command = builder.build()
 
-            if commandType == CommandType.CUSTOM:
-                # code editor is default for custom commands
-                self.presets.insert(0, command)
-            else:
-                self.presets.append(command)
+            self.presets.append(command)
 
     @preset
     def goForward(self) -> CommandDefinition:
