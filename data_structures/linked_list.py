@@ -68,9 +68,13 @@ class LinkedList(Generic[T]):
 
     def insertAfter(self, node: LinkedListNode, newNode: LinkedListNode):
 
-        if self.tail is node:
+        if self.tail is node or node is None:
             self.addToEnd(newNode)
             return
+        
+        self.printList()
+        print(node)
+        assert(self.contains(node))
 
         newNode._next = node._next
         node._next._prev = newNode
@@ -99,6 +103,14 @@ class LinkedList(Generic[T]):
             node._next._prev = node._prev
             node._prev.onUpdateLinkedListPosition()
             node._next.onUpdateLinkedListPosition()
+
+    def contains(self, node: LinkedListNode):
+        current = self.head
+        while current is not None:
+            if current is node:
+                return True
+            current = current.getNext()
+        return False
 
     def printList(self):
         current = self.head

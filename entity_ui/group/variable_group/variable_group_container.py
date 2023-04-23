@@ -149,10 +149,3 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         else:
             return self._pheight(1)
         
-    def contains(self, v: VariableContainer):
-        current = self.containers.head
-        while current is not None:
-            if current is v:
-                return True
-            current = current.getNext()
-        return False

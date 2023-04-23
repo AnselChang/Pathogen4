@@ -49,7 +49,7 @@ class CommandSequenceHandler(Observer):
 
         self.scrollHandler = CommandScrollingHandler(panel)
         scrollingContainer = self.scrollHandler.getScrollingContainer()
-        self.vgc: VariableGroupContainer[Element] = VariableGroupContainer(scrollingContainer, isHorizontal = False)
+        self.vgc: VariableGroupContainer[Element] = VariableGroupContainer(scrollingContainer, isHorizontal = False, name = "main")
 
         self.vgc.subscribe(self, onNotify = lambda: self.scrollHandler.setContentHeight(self.vgc.HEIGHT))        
 
@@ -57,34 +57,41 @@ class CommandSequenceHandler(Observer):
         variableContainer = self._createInserter()
         self.getList().addToBeginning(variableContainer)
 
+    def getList(self, commandOrInserter: CommandBlockEntity | CommandInserter = None) -> LinkedList[VariableContainer[Element]]:
+        return self.getVGC(commandOrInserter).containers
+
     # get the mutable linked list in order to add/remove commands
     # if a variable container is passed in, get the list containing it.
-    def getList(self, commandOrInserter: CommandBlockEntity | CommandInserter = None) -> LinkedList[VariableContainer[Element]]:
+    def getVGC(self, commandOrInserter: CommandBlockEntity | CommandInserter = None) -> VariableGroupContainer[Element]:
         
         # main list
-        if commandOrInserter is None or self.vgc.contains(commandOrInserter):
-            return self.vgc.containers
-        
-        print("list inside task")
-        
+        if commandOrInserter is None or self.vgc.containers.contains(commandOrInserter):
+            return self.vgc
+                
         # list inside a task
         if isinstance(commandOrInserter, CommandBlockEntity):
             vc = commandOrInserter.container.variableContainer
         elif isinstance(commandOrInserter, CommandInserter):
             vc = commandOrInserter.container
+        elif isinstance(commandOrInserter, VariableContainer):
+            vc = commandOrInserter
         else:
             raise Exception("Invalid type passed to getList")
-        
-        return vc.group.containers
+
+        return vc.group
 
     
     def recomputePosition(self):
         self.vgc.recomputePosition()
     
     # Set up the command block entity and tie it to the VariableGroupContainer
-    def _createCommand(self, adapter: PathAdapter) -> tuple[VariableContainer, CommandBlockEntity]:
+    def _createCommand(self, adapter: PathAdapter, vgc: VariableGroupContainer = None) -> tuple[VariableContainer, CommandBlockEntity]:
+        
+        if vgc is None:
+            vgc = self.vgc
+        
         # Create the variable container tied to the VariableGroupContainer
-        variableContainer = VariableContainer(self.vgc, False)
+        variableContainer = VariableContainer(vgc, False)
 
         # Create the CommandBlockContainer, which holds the CommandBlockEntity
         commandContainer = CommandBlockContainer(variableContainer)
@@ -103,7 +110,8 @@ class CommandSequenceHandler(Observer):
             vgc = self.vgc
 
         # create the variable container that holds the CommandInserter
-        variableContainer = VariableContainer(self.vgc, False)
+        print("create inserter", vgc.name)
+        variableContainer = VariableContainer(vgc, False)
 
         # create the CommandInserter
         inserter = CommandInserter(variableContainer, self, onInsert = lambda inserter: self._onInsert(inserter))
@@ -114,8 +122,8 @@ class CommandSequenceHandler(Observer):
     # Set up the inserter and tie it to the VariableGroupContainer
     def _insertCommandInserterAfter(self, commandVariableContainer: VariableContainer) -> VariableContainer:
         
-        variableContainer = self._createInserter()
-        self.getList().insertAfter(commandVariableContainer, variableContainer)
+        variableContainer = self._createInserter(self.getVGC(commandVariableContainer))
+        self.getList(commandVariableContainer).insertAfter(commandVariableContainer, variableContainer)
 
     # Insert custom command at location of inserter. Handled directly here
     # and not through path, as does not affect the path
@@ -129,8 +137,8 @@ class CommandSequenceHandler(Observer):
     
     # create and insert command at beginning of list given path adapter
     # make sure to add after the first insreter
-    def insertCommandAtBeginning(self, adapter: PathAdapter) -> CommandBlockEntity:
-        variableContainer, commandBlock = self._createCommand(adapter)
+    def insertCommandAtBeginning(self, adapter: PathAdapter, vgc: VariableGroupContainer = None) -> CommandBlockEntity:
+        variableContainer, commandBlock = self._createCommand(adapter, vgc)
         self.getList().insertAfter(self.getList().head, variableContainer)
         self._insertCommandInserterAfter(variableContainer)
 
@@ -140,7 +148,7 @@ class CommandSequenceHandler(Observer):
     # make sure to add after the inserter AFTER the command block
     # if after is None, add to end
     def insertCommandAfter(self, after: CommandBlockEntity, adapter: PathAdapter) -> CommandBlockEntity:
-        variableContainer, commandBlock = self._createCommand(adapter)
+        variableContainer, commandBlock = self._createCommand(adapter, self.getVGC(after))
 
         if after is None:
             self.getList(after).addToEnd(variableContainer)

@@ -51,6 +51,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
 
     def onStartDrag(self, mouse: tuple):
         self.mouseOffset = self.CENTER_Y - mouse[1]
+        self.dragPosition = mouse[1] + self.mouseOffset
 
     def onStopDrag(self):
         self.dragPosition = None

@@ -23,7 +23,7 @@ class TaskCommandsContainer(AbstractElementsContainer):
         super().__init__(parentCommand, commandDefinition, pathAdapter)
 
         self.handler = parentCommand.handler
-        self.vgc = VariableGroupContainer(self, False, 5, 5)
+        self.vgc = VariableGroupContainer(self, False, name = "task")
 
         # initialize first inserter inside task commands container
         inserterVariableContainer = self.handler._createInserter(self.vgc)
@@ -37,7 +37,7 @@ class TaskCommandsContainer(AbstractElementsContainer):
     
     # Element and label define their own x positions along width of command block
     def defineWidth(self) -> float:
-        return self._pwidth(1)
+        return self._pwidth(0.95)
     
     def getGeneratedText(self) -> str:
         return "[TODO]"
