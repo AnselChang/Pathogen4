@@ -155,10 +155,20 @@ class Entity(ABC, Observable):
         return self._LOCAL_VISIBLE and self._parent.isVisible()
     
     def setVisible(self):
+
+        # if already visible, don't do anything
+        if self._LOCAL_VISIBLE:
+            return
+
         self._LOCAL_VISIBLE = True
         self.recomputePosition()
 
     def setInvisible(self):
+
+        # if already invisible, don't do anything
+        if not self._LOCAL_VISIBLE:
+            return
+
         self._LOCAL_VISIBLE = False
 
     

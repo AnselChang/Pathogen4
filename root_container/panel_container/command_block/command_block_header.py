@@ -29,23 +29,22 @@ class CommandBlockHeader(Container):
         if isCustom:
             self.trashEntity = TrashEntity(self, onDelete = parentCommand.onDelete)
             self.highlightEntity = None
-            self.waitEntity = WaitEntity(self)
         else:
             self.trashEntity = None
             self.highlightEntity = HighlightPathEntity(self, onHighlight = parentCommand.onHighlightPath)
-            self.waitEntity = None
         
+        self.waitEntity = WaitEntity(self)
+        
+        # initially set whether to hide wait entity
         self.onFunctionChange()
 
-    # It doesn't make sense for wait() functions to be non-blocking
+    # Determine whether command nonblocking is enabled, and if so, show wait entity
     def onFunctionChange(self):
 
-        if self.waitEntity is not None:
-            functionName = self.functionName.getFunctionName()
-            if functionName == "wait()":
-                self.waitEntity.setInvisible()
-            else:
-                self.waitEntity.setVisible()
+        if self.parentCommand.getDefinition().nonblockingEnabled:
+            self.waitEntity.setVisible()
+        else:
+            self.waitEntity.setInvisible()
 
 
     def defineTopLeft(self) -> tuple:

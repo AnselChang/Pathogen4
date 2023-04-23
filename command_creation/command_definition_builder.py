@@ -23,6 +23,8 @@ class CommandDefinitionBuilder:
         self.name = "untitledFunction()"
         self.templateText = "// [Code template unspecified]"
 
+        self.nonblockingEnabled = (type == CommandType.CUSTOM)
+
         # set to default color
         self.color = COMMAND_INFO[self.type].color
 
@@ -59,6 +61,9 @@ class CommandDefinitionBuilder:
         if not self.isCodeEditor:
             self.elements.append(ReadoutDefinition(attribute, variableName))
 
+    def disableNonblocking(self):        
+        self.nonblockingEnabled = False
+
     def build(self) -> CommandDefinition:
 
         return CommandDefinition(
@@ -67,5 +72,6 @@ class CommandDefinitionBuilder:
             color = self.color,
             elements = self.elements,
             templateText = self.templateText,
-            isCode = self.isCodeEditor
+            isCode = self.isCodeEditor,
+            nonblockingEnabled = self.nonblockingEnabled
         )

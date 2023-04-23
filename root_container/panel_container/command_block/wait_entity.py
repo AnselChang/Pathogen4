@@ -26,7 +26,9 @@ class WaitID(Enum):
     NO_WAIT = 1
 
 """
-Wait-for-complete entity for custom commands
+Wait-for-complete entity for custom commands.
+If set to WAIT, command will wait for completion before executing next command.
+If set to NO_WAIT, command will run this command and the next concurrently through multithreading.
 """
 class WaitEntity(Container):
 

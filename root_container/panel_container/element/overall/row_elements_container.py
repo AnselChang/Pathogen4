@@ -26,10 +26,10 @@ class RowElementsContainer(AbstractElementsContainer):
         self.group = None
 
         # Create the container that will store the rows
-        self.group = DynamicGroupContainer(self, False, entitySizePixels = 28)
+        self.group = DynamicGroupContainer(self, False, entitySizePixels = 22)
 
         # Create the rows
-        ROW_SPACING = 0.95
+        ROW_SPACING = 1
         for i, elementDefinition in enumerate(commandDefinition.elements):
             row = LinearContainer(self.group, i, ROW_SPACING)
 

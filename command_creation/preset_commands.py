@@ -132,4 +132,5 @@ class CommandDefinitionPresets:
         builder.setName("wait()")
         builder.setColor((140, 135, 130))
         builder.addWidget(ValueTextboxWidgetDefinition("Time (s)", 0.5))
+        builder.disableNonblocking()
         return builder.build()
