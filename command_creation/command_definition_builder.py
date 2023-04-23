@@ -15,10 +15,11 @@ Passing in "None" indicates it is a code command
 
 class CommandDefinitionBuilder:
 
-    def __init__(self, type: CommandType, isCodeEditor: bool = False):
+    def __init__(self, type: CommandType, isCodeEditor: bool = False, isTask: bool = False):
 
         self.type = type
         self.isCodeEditor = isCodeEditor
+        self.isTask = isTask
         self.elements: list[ElementDefinition] = []
         self.name = "untitledFunction()"
         self.templateText = "// [Code template unspecified]"
@@ -43,19 +44,19 @@ class CommandDefinitionBuilder:
 
     def setTemplateText(self, templateText: str):
 
-        if self.isCodeEditor:
+        if self.isCodeEditor or self.isTask:
             raise Exception("Cannot set template text to code commands")
 
         self.templateText = templateText
 
     def addWidget(self, widget: WidgetDefinition):
-        if self.isCodeEditor:
+        if self.isCodeEditor or self.isTask:
             raise Exception("Cannot add widgets to code commands")
         
         self.elements.append(widget)
 
     def addReadout(self, variableName: str, attribute: Enum):
-        if self.isCodeEditor:
+        if self.isCodeEditor or self.isTask:
             raise Exception("Cannot add widgets to code commands")
         
         if not self.isCodeEditor:
@@ -73,5 +74,6 @@ class CommandDefinitionBuilder:
             elements = self.elements,
             templateText = self.templateText,
             isCode = self.isCodeEditor,
-            nonblockingEnabled = self.nonblockingEnabled
+            nonblockingEnabled = self.nonblockingEnabled,
+            isTask = self.isTask
         )

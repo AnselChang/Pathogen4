@@ -55,7 +55,6 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         # Instead of calling updateContainerPositions() directly, set a flag
         # so it will be called on tick end
         self.needToRecompute = True
-
         super().propagateChange()
         
     # onTickEnd guarantees that, if there's nesting, children VGCs will update
@@ -149,3 +148,11 @@ class VariableGroupContainer(Container, Generic[T], Observable):
             return self.getSize()
         else:
             return self._pheight(1)
+        
+    def contains(self, v: VariableContainer):
+        current = self.containers.head
+        while current is not None:
+            if current is v:
+                return True
+            current = current.getNext()
+        return False

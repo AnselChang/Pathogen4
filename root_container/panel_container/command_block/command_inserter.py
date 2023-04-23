@@ -48,8 +48,6 @@ class CommandInserter(Entity):
         self.isFirst = isFirst
 
         self.START_Y = 43
-        self.Y_MIN = 6
-        self.Y_MAX = 15
 
         # shaded area specs
         self.X_MARGIN_LEFT = 6
@@ -65,6 +63,7 @@ class CommandInserter(Entity):
 
         self.currentY = self.START_Y
         self.isActive = False
+        self.hovering = False
 
     def defineCenterX(self) -> tuple:
         return self._px(0.5)
@@ -78,25 +77,37 @@ class CommandInserter(Entity):
         if not self.isFirst and self.getPreviousCommand() is not None and not self.getPreviousCommand().isVisible():
             return 0
 
-        HEIGHT_MIN = 5
-        HEIGHT_MAX = 12
-        return self._aheight(HEIGHT_MAX if self.isActive else HEIGHT_MIN)
+        if self.handler.isOnlyInserter(self):
+            HEIGHT_MIN = 30
+            HEIGHT_MAX = 30
+        else:
+            HEIGHT_MIN = 5
+            HEIGHT_MAX = 12
+        return self._aheight(HEIGHT_MAX if self.hovering else HEIGHT_MIN)
     
 
     def setActive(self, isActive):
         self.isActive = isActive
         self.propagateChange()
 
+    def defineBefore(self):
+        if self.getPreviousCommand() is None or self.getPreviousCommand().isVisible():
+            self.setActive(True)
+        else:
+            self.setActive(False)
+
     def onHoverOn(self):
 
         if len(self.interactor.selected.entities) > 1 or self.interactor.leftDragging or self.interactor.rightDragging:
             return
 
-        self.setActive(True)
+        if self.isActive:
+            self.hovering = True
+            self.propagateChange()
 
     def onHoverOff(self):
-        if self.isActive:
-            self.setActive(False)
+        self.hovering = False
+        self.propagateChange()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
@@ -105,9 +116,12 @@ class CommandInserter(Entity):
         Y_MARGIN = 2
         rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
         
-        if isActive or self.isActive:
+        isOnlyInserter = self.handler.isOnlyInserter(self)
+        if self.hovering:
+            print(isOnlyInserter)
+        if self.isActive and (self.hovering or isOnlyInserter):
             
-            color = [140, 140, 140] if isActive else [160, 160, 160]
+            color = [140, 140, 140] if (self.hovering) else [160, 160, 160]
 
             # draw shaded area
             pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)

@@ -58,8 +58,25 @@ class CommandSequenceHandler(Observer):
         self.getList().addToBeginning(variableContainer)
 
     # get the mutable linked list in order to add/remove commands
-    def getList(self) -> LinkedList[VariableContainer[Element]]:
-        return self.vgc.containers
+    # if a variable container is passed in, get the list containing it.
+    def getList(self, commandOrInserter: CommandBlockEntity | CommandInserter = None) -> LinkedList[VariableContainer[Element]]:
+        
+        # main list
+        if commandOrInserter is None or self.vgc.contains(commandOrInserter):
+            return self.vgc.containers
+        
+        print("list inside task")
+        
+        # list inside a task
+        if isinstance(commandOrInserter, CommandBlockEntity):
+            vc = commandOrInserter.container.variableContainer
+        elif isinstance(commandOrInserter, CommandInserter):
+            vc = commandOrInserter.container
+        else:
+            raise Exception("Invalid type passed to getList")
+        
+        return vc.group.containers
+
     
     def recomputePosition(self):
         self.vgc.recomputePosition()
@@ -79,7 +96,12 @@ class CommandSequenceHandler(Observer):
         
         return variableContainer, commandBlock
     
-    def _createInserter(self) -> VariableContainer:
+    def _createInserter(self, vgc: VariableGroupContainer = None) -> VariableContainer:
+
+        # by default, create the inserter in the main list
+        if vgc is None:
+            vgc = self.vgc
+
         # create the variable container that holds the CommandInserter
         variableContainer = VariableContainer(self.vgc, False)
 
@@ -121,13 +143,13 @@ class CommandSequenceHandler(Observer):
         variableContainer, commandBlock = self._createCommand(adapter)
 
         if after is None:
-            self.getList().addToEnd(variableContainer)
+            self.getList(after).addToEnd(variableContainer)
         else:
             if isinstance(after, CommandBlockEntity):
                 inserterVariableContainer = after.container.variableContainer.getNext()
             else:
                 inserterVariableContainer = after.container
-            self.getList().insertAfter(inserterVariableContainer, variableContainer)
+            self.getList(after).insertAfter(inserterVariableContainer, variableContainer)
 
         self._insertCommandInserterAfter(variableContainer)
 
@@ -249,3 +271,16 @@ class CommandSequenceHandler(Observer):
         
     def onGlobalCommandExpansionChange(self):
         self.vgc.propagateChange()
+
+    # returns true if the inserter is the only inserter in the list (whether it is main list or task command)
+    def isOnlyInserter(self, inserter: CommandInserter) -> bool:
+        list = self.getList(inserter)
+
+        current = list.head
+        while current is not None:
+            if isinstance(current.child, CommandBlockContainer):
+                if current.child.commandBlock.isVisible():
+                    return False
+            current = current.getNext()
+
+        return inserter is list.head.child

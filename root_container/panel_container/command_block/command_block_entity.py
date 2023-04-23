@@ -8,6 +8,8 @@ if TYPE_CHECKING:
     from command_creation.command_definition_database import CommandDefinitionDatabase
     from root_container.panel_container.command_block.command_block_container import CommandBlockContainer
     from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
+    from root_container.panel_container.command_block.command_inserter import CommandInserter
+
 
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
@@ -340,7 +342,7 @@ class CommandBlockEntity(Entity, Observer):
     def toString(self) -> str:
         return "Command Block Entity"
     
-    def getNextInserter(self) -> CommandBlockEntity:
+    def getNextInserter(self) -> CommandInserter:
         return self.handler.getNext(self)
     
     def getPreviousInserter(self) -> CommandBlockEntity:

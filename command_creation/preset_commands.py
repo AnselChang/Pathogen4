@@ -127,10 +127,18 @@ class CommandDefinitionPresets:
         return builder.build()
     
     @preset
-    def wait(self) -> CommandDefinition:
+    def a_wait(self) -> CommandDefinition:
         builder = CommandDefinitionBuilder(CommandType.CUSTOM)
         builder.setName("wait()")
         builder.setColor((140, 135, 130))
         builder.addWidget(ValueTextboxWidgetDefinition("Time (s)", 0.5))
+        builder.disableNonblocking()
+        return builder.build()
+    
+    @preset
+    def b_task(self) -> CommandDefinition:
+        builder = CommandDefinitionBuilder(CommandType.CUSTOM, isTask = True)
+        builder.setName("task()")
+        builder.setColor(60)
         builder.disableNonblocking()
         return builder.build()
