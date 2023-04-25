@@ -117,8 +117,7 @@ class CommandInserter(Entity):
         rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
         
         isOnlyInserter = self.handler.isOnlyInserter(self)
-        if self.hovering:
-            print(isOnlyInserter)
+
         if self.isActive and (self.hovering or isOnlyInserter):
             
             color = [140, 140, 140] if (self.hovering) else [160, 160, 160]

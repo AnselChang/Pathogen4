@@ -110,7 +110,6 @@ class CommandSequenceHandler(Observer):
             vgc = self.vgc
 
         # create the variable container that holds the CommandInserter
-        print("create inserter", vgc.name)
         variableContainer = VariableContainer(vgc, False)
 
         # create the CommandInserter

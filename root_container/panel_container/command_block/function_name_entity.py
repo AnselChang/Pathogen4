@@ -24,8 +24,7 @@ class FunctionNameEntity(Entity, Observer):
         
         self.parentCommand = parentCommand
         super().__init__(parent = parentHeader,
-                         hover = HoverLambda(self),
-                         drawOrder = DrawOrder.FUNCTION_NAME_BACKGROUND)
+                         hover = HoverLambda(self))
         
         self.dx = 19 # delta for text from left edge
         self.textEntity = None

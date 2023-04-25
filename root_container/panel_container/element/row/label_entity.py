@@ -14,7 +14,7 @@ class LabelEntity(TextEntity):
 
     def __init__(self, parent, font, size, staticText: str = None):
         super().__init__(parent, font, size, staticText,
-                         align = TextAlign.RIGHT, drawOrder = DrawOrder.WIDGET)
+                         align = TextAlign.RIGHT)
 
     def defineRightX(self) -> tuple:
         return self._px(0.5)

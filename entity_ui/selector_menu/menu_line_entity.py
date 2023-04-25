@@ -28,6 +28,9 @@ class MenuLineEntity(Entity):
 
         self.recomputePosition()
 
+    def isTouching(self, mouse: tuple) -> float:
+        return False
+
     # Draws the background of the menu
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
 

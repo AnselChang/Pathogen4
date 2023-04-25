@@ -25,6 +25,9 @@ class LinearContainer(Container, Generic[T]):
         
         self.i = group.add(self)
 
+    # draw the upper/leftmost entities in the front
+    def drawOrderTiebreaker(self) -> float:
+        return -self.i
         
 
     def defineCenter(self) -> tuple:

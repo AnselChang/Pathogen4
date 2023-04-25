@@ -67,3 +67,7 @@ class VariableContainer(Container, LinkedListNode['T'], ABC, Generic[T]):
                 return self.child.defineHeight()
         else:
             return self._pheight(1)
+        
+    # draw the upper/leftmost entities in the front
+    def drawOrderTiebreaker(self) -> float:
+        return -self._POSITION_FROM_VGC

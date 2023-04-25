@@ -51,9 +51,7 @@ class TextEditorEntity(Entity, Observer):
                 FonSelect = self.onSelect,
                 FonDeselect = self.onDeselect
             ),
-            hover = HoverLambda(self),
-            drawOrder = DrawOrder.WIDGET)
-
+            hover = HoverLambda(self))
         self.font = self.fonts.getDynamicFont(fontID, fontSize)
         
         self.dynamic = isDynamic

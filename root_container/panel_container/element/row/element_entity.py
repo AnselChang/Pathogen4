@@ -17,7 +17,7 @@ class ElementContainer(Container):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity):
         self.parentCommand = parentCommand
-        super().__init__(parent, hover = HoverLambda(self), drawOrder = DrawOrder.WIDGET)
+        super().__init__(parent, hover = HoverLambda(self))
 
     def defineCenter(self) -> tuple:
         return self._px(0.75), self._py(0.5)

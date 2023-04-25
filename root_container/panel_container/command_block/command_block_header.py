@@ -17,7 +17,7 @@ from common.draw_order import DrawOrder
 class CommandBlockHeader(Container):
 
     def __init__(self, parentCommand: CommandBlockEntity | CustomCommandBlockEntity, pathAdapter: PathAdapter, isCustom: bool):
-        super().__init__(parentCommand, drawOrder = DrawOrder.WIDGET)
+        super().__init__(parentCommand, drawOrder = DrawOrder.COMMAND_HEADER)
 
         self.parentCommand = parentCommand
 

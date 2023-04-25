@@ -18,7 +18,7 @@ Is drawn to fit inside parent entity's rect
 class ImageEntity(Entity, TooltipOwner):
 
     # px, py, pwidth, pheight set by default to the dimensions of the parent
-    def __init__(self, parent, states: ImageState | list[ImageState], drawOrder: DrawOrder,
+    def __init__(self, parent, states: ImageState | list[ImageState], drawOrder: DrawOrder = DrawOrder.FRONT,
                  onClick = lambda mouse: None, dimOnHover: bool = True,
                  center_px = 0.5, center_py = 0.5, pwidth = 1, pheight = 1,
                  isOn = lambda: True,

@@ -1,5 +1,7 @@
+from typing import Iterator
 from data_structures.observer import Observer
 from entity_base.entity import Entity
+from entity_handler.entity_traversal import traverseEntities, TraversalOrder
 from root_container.root_container import RootContainer
 from entity_ui.tooltip import TooltipOwner
 from common.dimensions import Dimensions
@@ -23,22 +25,12 @@ class EntityManager:
         self.rootContainer = RootContainer()
         return self.rootContainer
     
-    def sortEntities(self, useTiebreaker: bool):
-    
-        if useTiebreaker:
-            key = lambda entity: (entity.drawOrder, -entity.drawOrderTiebreaker())
-        else:
-            key = lambda entity: entity.drawOrder
-
-        self.entities.sort(key = key, reverse = True)
-
 
     # by setting a parent, it will be removed when parent is removed
     # SHOULD ONLY BE CALLED WITHIN BASE ENTITY CLASS
     def _addEntity(self, entity: Entity):
         
         self.entities.append(entity)
-        self.sortEntities(False)
 
         if entity.key is not None:
             self.keyEntities.append(entity)
@@ -70,21 +62,24 @@ class EntityManager:
         if isinstance(entity, Observer):
             entity.unsubscribeAll()
 
-
     def getEntityAtPosition(self, position: tuple) -> Entity:
 
+        parent = None
         drawOrder: DrawOrder = None
-        self.touching: list[Entity] = []
-        for entity in self.entities:
-            if entity.isVisible() and entity.isTouching(position):
-                drawOrder = entity.drawOrder
-                self.touching.append(entity)
+        tiebreaker = None
 
-        # At this point, drawOrder is set to entity with highest priority
-        # We delete all entities from self.touching that are not this priority
-        self.touching = [entity for entity in self.touching if entity.drawOrder == drawOrder]
-        self.touching.sort(key = lambda entity: -entity.drawOrderTiebreaker())
-        self.touching = [entity for entity in self.touching if entity.drawOrderTiebreaker() == self.touching[0].drawOrderTiebreaker()]
+        self.touching: list[Entity] = []
+        for entity in traverseEntities(TraversalOrder.POSTFIX):
+            if entity.isVisible() and entity.isTouching(position):
+
+                if drawOrder is None:
+                    parent = entity._parent
+                    drawOrder = entity.drawOrder
+                    tiebreaker = entity.drawOrderTiebreaker()
+                elif parent != entity._parent or entity.drawOrder != drawOrder or tiebreaker != entity.drawOrderTiebreaker():
+                    break
+                
+                self.touching.append(entity)
 
         # Now we find the winning entity from the list.
         if len(self.touching) == 0:
@@ -105,8 +100,7 @@ class EntityManager:
             return closest
     
     def drawEntities(self, interactor, screen: pygame.Surface, mousePosition: tuple, dimensions: Dimensions):
-        self.sortEntities(True)
-        for entity in self.entities:
+        for entity in traverseEntities(TraversalOrder.PREFIX):
             if entity.isVisible():
                 selected = entity in interactor.selected.entities
                 hovering = entity is interactor.hoveredEntity and (selected or not (interactor.leftDragging or interactor.rightDragging))

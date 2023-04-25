@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from common.draw_order import DrawOrder
 
 from data_structures.observer import Observable
 if TYPE_CHECKING:
@@ -14,7 +15,7 @@ class AbstractElementsContainer(Container, ABC, Observable):
     
     def __init__(self, parentCommand: CommandBlockEntity, commandDefinition: CommandDefinition, pathAdapter: PathAdapter):
         
-        super().__init__(parentCommand)
+        super().__init__(parentCommand, drawOrder = DrawOrder.COMMAND_ELEMENTS)
         self.parentCommand = parentCommand
         self.commandDefinition = commandDefinition
 

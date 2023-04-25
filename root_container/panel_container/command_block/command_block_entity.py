@@ -142,6 +142,9 @@ class CommandBlockEntity(Entity, Observer):
         # update header entity. Need to show/hide wait entity
         self.headerEntity.onFunctionChange()
 
+        # whenever changing function, expand function
+        self.localExpansion = True
+
         self.propagateChange()
 
     # Update animation every tick

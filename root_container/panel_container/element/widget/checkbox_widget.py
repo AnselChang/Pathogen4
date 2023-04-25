@@ -34,7 +34,6 @@ class CheckboxWidgetContainer(WidgetContainer['CheckboxWidgetDefinition']):
             states = states,
             getStateID = self.getValue,
             onClick = self.onLeftClick,
-            drawOrder = DrawOrder.WIDGET
         )
 
     def getValue(self) -> bool:

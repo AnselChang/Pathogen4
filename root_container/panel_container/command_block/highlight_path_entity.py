@@ -26,7 +26,7 @@ class HighlightPathEntity(Container):
         
         super().__init__(parent = parentHeader)
         state = ImageState(0, ImageID.REVEAL_COMMAND)
-        ImageEntity(self, state, drawOrder = DrawOrder.WIDGET, onClick = onHighlight)
+        ImageEntity(self, state, onClick = onHighlight)
 
     def defineCenter(self) -> tuple:
         return self._px(1) - self._awidth(20), self._py(0.5)

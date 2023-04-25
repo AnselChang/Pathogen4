@@ -38,7 +38,7 @@ class WaitEntity(Container):
 
         stateWait = ImageState(WaitID.WAIT, ImageID.WAIT, "Wait for completion: Enabled")
         stateNoWait = ImageState(WaitID.NO_WAIT, ImageID.NO_WAIT, "Wait for completion: Disabled")
-        ImageEntity(self, [stateWait, stateNoWait], drawOrder = DrawOrder.WIDGET,
+        ImageEntity(self, [stateWait, stateNoWait], 
                     onClick = self.onClick,
                     getStateID = self.getStateID
                     )

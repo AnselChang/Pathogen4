@@ -19,7 +19,6 @@ class CommandBlockIcon(Container):
         self.image = ImageEntity(parent = self,
             states = pathAdapter.iconImageStates,
             getStateID = pathAdapter.getIconStateID,
-            drawOrder = DrawOrder.WIDGET,
             dimOnHover = False,
             disableTouching = True
         )
