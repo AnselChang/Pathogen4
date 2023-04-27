@@ -139,6 +139,6 @@ class CommandDefinitionPresets:
     def b_task(self) -> CommandDefinition:
         builder = CommandDefinitionBuilder(CommandType.CUSTOM, isTask = True)
         builder.setName("task()")
-        builder.setColor(60)
-        builder.disableNonblocking()
+        builder.setColor(100)
+        builder.disallowInTask() # no recursion
         return builder.build()

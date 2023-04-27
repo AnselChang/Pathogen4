@@ -191,7 +191,16 @@ class CommandBlockEntity(Entity, Observer):
         elif self.commandExpansion.getForceExpand():
             return True
         return self.localExpansion
-
+    
+    # whether this command block is inside a task
+    def isInsideTask(self) -> bool:
+        print(self.handler.getVGC(self) is not self.handler.vgc)
+        return self.handler.getVGC(self) is not self.handler.vgc
+    
+    # Return the list of possible function names for this block
+    # If inside a task and is a custom block, cannot contain task
+    def getFunctionNames(self) -> list[str]:
+        return self.database.getDefinitionNames(self.type, self.isInsideTask())
 
     def defineWidth(self) -> float:
         return self._pwidth(1)

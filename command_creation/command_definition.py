@@ -15,7 +15,9 @@ This object holds DefinedWidget and DefinedReadout which store relative location
 
 class CommandDefinition:
 
-    def __init__(self, type: CommandType, name: str, color: tuple, elements: list[ElementDefinition] = [], templateText: str = "// [default text]", isCode: bool = False, nonblockingEnabled: bool = False, isTask: bool = False):
+    def __init__(self, type: CommandType, name: str, color: tuple, elements: list[ElementDefinition] = [],
+                 templateText: str = "// [default text]", isCode: bool = False, nonblockingEnabled: bool = False,
+                 isTask: bool = False, allowedInTask: bool = True):
 
         self.type = type
         self.name = name
@@ -25,3 +27,4 @@ class CommandDefinition:
         self.isCode = isCode
         self.isTask = isTask
         self.nonblockingEnabled = nonblockingEnabled
+        self.allowedInTask = allowedInTask

@@ -173,6 +173,8 @@ class TextEditorEntity(Entity, Observer):
         if self.mode == TextEditorMode.READ:
             return
         
+        print(key)
+        
         oldHeight = self.defineHeight()
         
         self.textHandler.onKeyDown(key)

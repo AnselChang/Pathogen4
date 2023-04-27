@@ -31,7 +31,7 @@ class FunctionNameEntity(Entity, Observer):
 
         self.CORNER_RADIUS = 5
         
-        names = self._getDefinitionFunctionNames()
+        names = self.parentCommand.getFunctionNames()
         self.dropdown = DropdownContainer(self, names,
                           FontID.FONT_NORMAL, 18,
                           (0,0,0), (0,0,0), (0,0,0), (0,0,0),
@@ -51,12 +51,8 @@ class FunctionNameEntity(Entity, Observer):
         colorOff = shade(color, 1.3)
         self.dropdown.setColor(colorSelectedHovered, colorSelected, colorHovered, colorOff)
 
-
     def getFunctionName(self):
         return self.dropdown.getSelectedOptionText()
-
-    def _getDefinitionFunctionNames(self) -> list[str]:
-        return self.parentCommand.database.getDefinitionNames(self.parentCommand.type)
 
     def defineLeftX(self) -> tuple:
         return self._px(0) + self._pheight(1)

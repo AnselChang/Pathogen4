@@ -31,8 +31,9 @@ class CommandDefinitionDatabase:
     def registerDefinition(self, command: CommandDefinition):
         self.definitions[command.type].append(command)
 
-    def getDefinitionNames(self, type: CommandType) -> list[str]:
-        return [definition.name for definition in self.definitions[type]]
+    def getDefinitionNames(self, type: CommandType, isInTask: bool = False) -> list[str]:
+        return [definition.name for definition in self.definitions[type]
+                if (not isInTask or definition.allowedInTask)]
     
     def getNumDefitions(self, type: CommandType) -> int:
         return len(self.definitions[type])

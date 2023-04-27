@@ -164,14 +164,14 @@ class CommandSequenceHandler(Observer):
         
     def deleteCommand(self, command: CommandBlockEntity):
         # remove from linked list
-        self.getList().remove(command.container.variableContainer)
+        self.getList(command).remove(command.container.variableContainer)
 
         # remove from global entities list
         command.entities.removeEntity(command.container)
 
         # Remove inserter as well
         inserterVariableContainer = command.container.variableContainer.getNext()
-        self.getList().remove(inserterVariableContainer)
+        self.getList(inserterVariableContainer).remove(inserterVariableContainer)
         command.entities.removeEntity(inserterVariableContainer)
 
     # move command from current location to the after inserter
