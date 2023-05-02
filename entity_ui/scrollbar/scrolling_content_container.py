@@ -1,3 +1,4 @@
+from common.draw_order import DrawOrder
 from data_structures.observer import Observer
 from entity_base.container_entity import Container
 from entity_ui.scrollbar.scrollbar_entity import ScrollbarEntity
@@ -5,9 +6,9 @@ from root_container.panel_container.command_scrolling.command_scrollbar import A
 
 class ScrollingContentContainer(Container, Observer):
 
-    def __init__(self, parentContainer, scrollbarContainer: AbstractScrollbarContainer):
+    def __init__(self, parentContainer, scrollbarContainer: AbstractScrollbarContainer, drawOrder = DrawOrder.FRONT):
         
-        super().__init__(parent = parentContainer)
+        super().__init__(parent = parentContainer, drawOrder = drawOrder)
 
         self.scrollbar = scrollbarContainer.scrollbar
         self.scrollbar.subscribe(self, onNotify = self.recomputePosition)

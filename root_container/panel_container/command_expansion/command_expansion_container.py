@@ -25,7 +25,7 @@ class CommandExpansionContainer(Container, Observable):
 
     def __init__(self, panelEntity):
 
-        super().__init__(panelEntity)
+        super().__init__(panelEntity, drawOrder = DrawOrder.UI_BUTTON)
         self.recomputePosition()
 
         info = [

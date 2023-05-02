@@ -12,10 +12,7 @@ class LinkedListNode(Generic[T]):
     
     def getNext(self) -> T | 'LinkedListNode':
         return self._next
-    
-    # override this
-    def onUpdateLinkedListPosition(self):
-        pass
+
 
 class LinkedList(Generic[T]):
     def __init__(self):
@@ -31,8 +28,6 @@ class LinkedList(Generic[T]):
             node._next = self.head
             self.head._prev = node
             self.head = node
-            node._next.onUpdateLinkedListPosition()
-        node.onUpdateLinkedListPosition()
 
     def addToEnd(self, node: LinkedListNode):
 
@@ -43,8 +38,6 @@ class LinkedList(Generic[T]):
             self.tail._next = node
             node._prev = self.tail
             self.tail = node
-            node._prev.onUpdateLinkedListPosition()
-        node.onUpdateLinkedListPosition()
 
     def insertBeforeEnd(self, node: LinkedListNode):
         self.insertBefore(self.tail, node)
@@ -62,28 +55,18 @@ class LinkedList(Generic[T]):
         newNode._next = node
         node._prev = newNode
 
-        newNode._prev.onUpdateLinkedListPosition()
-        newNode.onUpdateLinkedListPosition()
-        newNode._next.onUpdateLinkedListPosition()
-
     def insertAfter(self, node: LinkedListNode, newNode: LinkedListNode):
 
         if self.tail is node or node is None:
             self.addToEnd(newNode)
             return
         
-        self.printList()
-        print(node)
         assert(self.contains(node))
 
         newNode._next = node._next
         node._next._prev = newNode
         node._next = newNode
         newNode._prev = node
-
-        newNode._prev.onUpdateLinkedListPosition()
-        newNode.onUpdateLinkedListPosition()
-        newNode._next.onUpdateLinkedListPosition()
 
     def remove(self, node: LinkedListNode):
 
@@ -93,16 +76,17 @@ class LinkedList(Generic[T]):
         elif self.head is node:
             self.head = self.head._next
             self.head._prev = None
-            self.head.onUpdateLinkedListPosition()
         elif self.tail is node:
             self.tail = self.tail._prev
             self.tail._next = None
-            self.tail.onUpdateLinkedListPosition()
         else:
             node._prev._next = node._next
             node._next._prev = node._prev
-            node._prev.onUpdateLinkedListPosition()
-            node._next.onUpdateLinkedListPosition()
+
+            if node is self.tail:
+                self.tail = node._prev
+            if node is self.head:
+                self.head = node._next
 
     def contains(self, node: LinkedListNode):
         current = self.head

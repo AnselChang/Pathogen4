@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from common.draw_order import DrawOrder
 if TYPE_CHECKING:
     from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
 
@@ -17,7 +18,7 @@ Subscribers recieve a notification when scroller moves
 
 class CommandScrollingHandler(Observable):
     
-    def __init__(self, panel: BlockTabContentsContainer):
+    def __init__(self, panel: BlockTabContentsContainer, contentDrawOrder = DrawOrder.FRONT):
 
         # The scrollbar component and entity itself on the right of the panel
         self._commandScrollbar = CommandScrollbar(panel)
@@ -27,7 +28,7 @@ class CommandScrollingHandler(Observable):
         self._staticContainer = StaticCommandContentContainer(panel)
 
         # Scrolling container starts off the same location as static container, but is y offset by scrollbar realtime
-        self._scrollingContainer = ScrollingContentContainer(self._staticContainer, self._commandScrollbar)
+        self._scrollingContainer = ScrollingContentContainer(self._staticContainer, self._commandScrollbar, contentDrawOrder)
         
     # Get the scrolling container, which should be set as parent of first CommandInserter
     # That way, the commands move with the scrolling container

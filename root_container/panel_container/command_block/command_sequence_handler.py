@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from common.draw_order import DrawOrder
 
 from data_structures.observer import Observer
 
@@ -47,7 +48,7 @@ class CommandSequenceHandler(Observer):
         self.panel = panel
         self.database = database
 
-        self.scrollHandler = CommandScrollingHandler(panel)
+        self.scrollHandler = CommandScrollingHandler(panel, DrawOrder.COMMANDS)
         scrollingContainer = self.scrollHandler.getScrollingContainer()
         self.vgc: VariableGroupContainer[Element] = VariableGroupContainer(scrollingContainer, isHorizontal = False, name = "main")
 
@@ -178,18 +179,20 @@ class CommandSequenceHandler(Observer):
     # move the inserter after the command as well
     def moveCommand(self, command: CommandBlockEntity, inserter: CommandInserter):
 
+        vgcList = self.getList(inserter)
+
         commandVariableContainer = command.container.variableContainer
         
         # remove command from the current position, without deleting from entities list
-        self.getList().remove(commandVariableContainer)
+        vgcList.remove(commandVariableContainer)
 
         # Remove next inserter entirely
         inserterVariableContainer = commandVariableContainer.getNext()
-        self.getList().remove(inserterVariableContainer)
+        vgcList.remove(inserterVariableContainer)
         command.entities.removeEntity(inserterVariableContainer)
 
         # insert command after the given inserter
-        self.getList().insertAfter(inserter.container, commandVariableContainer)
+        vgcList.insertAfter(inserter.container, commandVariableContainer)
 
         # create and insert new inserter
         self._insertCommandInserterAfter(commandVariableContainer)
