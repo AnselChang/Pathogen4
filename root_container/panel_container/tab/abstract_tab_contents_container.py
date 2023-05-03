@@ -23,7 +23,7 @@ class AbstractTabContentsContainer(Container):
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
     def __init__(self, parentPanel, tabHandler: TabHandler, tabName: str) -> None:
         
-        super().__init__(parent = parentPanel)
+        super().__init__(parent = parentPanel, drawOrder = DrawOrder.TAB_CONTENTS)
         
         self.tabHandler = tabHandler
         self.color = parentPanel.color

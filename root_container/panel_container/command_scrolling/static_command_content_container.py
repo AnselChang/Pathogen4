@@ -1,10 +1,11 @@
+from common.draw_order import DrawOrder
 from entity_base.container_entity import Container
 from entity_base.entity import Entity
 
 class StaticCommandContentContainer(Container):
 
-    def __init__(self, parent: Entity):
-        super().__init__(parent)
+    def __init__(self, parent: Entity, drawOrder: DrawOrder):
+        super().__init__(parent, drawOrder = drawOrder)
         self.recomputePosition()
 
     def defineLeftX(self) -> float:

@@ -14,7 +14,7 @@ class TabGroupEntity(RadioGroupContainer):
     def __init__(self, parentPanel: PanelContainer):
         self.parentPanel = parentPanel
         super().__init__(parentPanel, isHorizontal = True, allowNoSelect = False,
-                         drawOrder = DrawOrder.TAB_BACKGROUND
+                         drawOrder = DrawOrder.TABS
                          )
         
     def defineTopLeft(self) -> tuple:

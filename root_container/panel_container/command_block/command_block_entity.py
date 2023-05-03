@@ -198,9 +198,9 @@ class CommandBlockEntity(Entity, Observer):
     
     # whether this command block is inside a task
     def isInsideTask(self) -> bool:
-        print(self.handler.getVGC(self) is not self.handler.vgc)
         return self.handler.getVGC(self) is not self.handler.vgc
     
+    # whether this is a task command
     def isTask(self) -> bool:
         return isinstance(self.elementsContainer, TaskCommandsContainer)
     
@@ -286,7 +286,7 @@ class CommandBlockEntity(Entity, Observer):
         if self.isDragging():
             return 0.7 # drag opacity
         else:
-            return 1
+            return self._parent.getOpacity()
     
     # return 0 if minimized, 1 if maximized, and in between
     def getAddonsOpacity(self) -> float:
@@ -294,7 +294,7 @@ class CommandBlockEntity(Entity, Observer):
             return self.getOpacity()
         else:
             ratio = self.getPercentExpanded()
-            return ratio ** 2 # square for steeper opacity animation
+            return ratio ** 2 * self.getOpacity() # square for steeper opacity animation
     
     # return 1 if not dragging, and dragged opacity if dragging
     # not applicable for regular command blocks
@@ -354,17 +354,11 @@ class CommandBlockEntity(Entity, Observer):
         else:
             color = shade(color, 1.1)
 
-        if self.isDragging():
-            drawTransparentRect(screen, *self.RECT, color, alpha = self.DRAG_OPACITY*255, radius = Constants.CORNER_RADIUS)
-        else:
-            pygame.draw.rect(screen, color, self.RECT, border_radius = Constants.CORNER_RADIUS)
+        drawTransparentRect(screen, *self.RECT, color, alpha = self.getOpacity()*255, radius = Constants.CORNER_RADIUS)
 
         if isHighlighted:
             pygame.draw.rect(screen, (0,0,0), self.RECT, border_radius = Constants.CORNER_RADIUS, width = 2)
 
-        # draw function name
-        text = self.getDefinition().name + "()"
-        x = self.dimensions.FIELD_WIDTH + 40
 
     def toString(self) -> str:
         return "Command Block Entity"
