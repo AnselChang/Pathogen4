@@ -72,11 +72,16 @@ class EntityManager:
         for entity in traverseEntities(TraversalOrder.POSTFIX):
             if entity.isVisible() and entity.isTouching(position):
 
+                currentTiebreaker = entity.drawOrderTiebreaker()
+                if currentTiebreaker is None:
+                    currentTiebreaker = 0
+
                 if drawOrder is None:
                     parent = entity._parent
                     drawOrder = entity.drawOrder
-                    tiebreaker = entity.drawOrderTiebreaker()
-                elif parent != entity._parent or entity.drawOrder != drawOrder or tiebreaker != entity.drawOrderTiebreaker():
+                    tiebreaker = currentTiebreaker
+
+                elif parent != entity._parent or entity.drawOrder != drawOrder or tiebreaker != currentTiebreaker:
                     break
                 
                 self.touching.append(entity)

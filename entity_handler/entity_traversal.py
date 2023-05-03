@@ -17,7 +17,7 @@ def _traverseEntities(current: entity.Entity, order: TraversalOrder) -> Iterator
         yield current
 
     current._children.sort(
-        key = lambda entity: (entity.drawOrder, -entity.drawOrderTiebreaker()),
+        key = lambda entity: (entity.drawOrder, 0 if entity.drawOrderTiebreaker() is None else (-entity.drawOrderTiebreaker())),
         reverse = (order == TraversalOrder.PREFIX)
     )
 

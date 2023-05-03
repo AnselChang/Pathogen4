@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from command_creation.command_type import CommandType
 
 
 if TYPE_CHECKING:
@@ -58,8 +59,12 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         self.recomputePosition()
     
     def onDrag(self, mouse: tuple):
+
+        # if not custom and not task
+        considerInsertersInsideTask = self.type != CommandType.CUSTOM or not self.isTask()
+
         self.dragPosition = mouse[1] + self.mouseOffset
-        inserter: CommandInserter = self.handler.getClosestInserter(mouse)
+        inserter: CommandInserter = self.handler.getClosestInserter(mouse, considerInsertersInsideTask)
 
         # if dragged to a different position to swap commands
         if self.getNextInserter() is not inserter and self.getNextInserter() is not inserter:

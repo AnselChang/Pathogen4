@@ -77,16 +77,12 @@ class LinkedList(Generic[T]):
             self.head = self.head._next
             self.head._prev = None
         elif self.tail is node:
+            print("removeend")
             self.tail = self.tail._prev
             self.tail._next = None
         else:
             node._prev._next = node._next
             node._next._prev = node._prev
-
-            if node is self.tail:
-                self.tail = node._prev
-            if node is self.head:
-                self.head = node._next
 
     def contains(self, node: LinkedListNode):
         current = self.head
@@ -97,6 +93,10 @@ class LinkedList(Generic[T]):
         return False
 
     def printList(self):
+
+        print("Head:", self.head)
+        print("Tail:", self.tail)
+
         current = self.head
         while current is not None:
             print(current)

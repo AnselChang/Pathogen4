@@ -25,14 +25,14 @@ class VariableContainer(Container, LinkedListNode['T'], ABC, Generic[T]):
     def __init__(self, parent: VariableGroupContainer, isHorizontal: bool):
         self.isHorizontal = isHorizontal
         self.group: VariableGroupContainer = parent
-        self.child: T = None
+        self.child: T | Entity = None
         self._POSITION_FROM_VGC = 0
 
         super().__init__(parent = parent)
         LinkedListNode.__init__(self)
 
     def setChild(self, child: T):
-        self.child: T = child
+        self.child: T | Entity = child
     
     # set by VariableGroupContainer. Size refers to x if isHorizontal, else y
     def setPosition(self, position: int):
@@ -69,5 +69,15 @@ class VariableContainer(Container, LinkedListNode['T'], ABC, Generic[T]):
             return self._pheight(1)
         
     # draw the upper/leftmost entities in the front
+    # Sort by leftmost/topmost position, unless overriden by child
     def drawOrderTiebreaker(self) -> float:
+
+        childTiebreaker = self.child.drawOrderTiebreaker()
+        if childTiebreaker is not None:
+            return childTiebreaker
+
         return -self._POSITION_FROM_VGC
+    
+    # override to add more information when logging entity
+    def logMoreInfo(self) -> str:
+        return self.child.__repr__()

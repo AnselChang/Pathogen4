@@ -30,3 +30,10 @@ class CommandBlockContainer(Container):
 
     def defineHeight(self) -> float:
          return self.commandBlock.defineHeight()
+    
+    # if command is being dragged, always show in front of other commands
+    def drawOrderTiebreaker(self) -> float:
+        if self.commandBlock.drag.isDragging:
+            return self.dimensions.SCREEN_HEIGHT
+        else:
+            return None

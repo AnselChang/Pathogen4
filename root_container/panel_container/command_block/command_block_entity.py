@@ -1,8 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from adapter.turn_adapter import TurnAdapter
+from data_structures.linked_list import LinkedList
 from entity_base.listeners.hover_listener import HoverLambda
+from entity_ui.group.variable_group.variable_container import VariableContainer
+from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
 from entity_ui.scrollbar.scrolling_content_container import ScrollingContentContainer
+from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
 if TYPE_CHECKING:
     from command_creation.command_definition_database import CommandDefinitionDatabase
@@ -69,7 +73,7 @@ class CommandBlockEntity(Entity, Observer):
         # controls height animatino
         self.animatedExpansion = MotionProfile(0, speed = 0.4)
         # whether to expand by default, ignoring global flags
-        self.localExpansion = False
+        self.localExpansion = self.type == CommandType.CUSTOM
 
         r,g,b = self.getDefinition().color
         self.colorR = MotionProfile(r, speed = 0.2)
@@ -196,6 +200,17 @@ class CommandBlockEntity(Entity, Observer):
     def isInsideTask(self) -> bool:
         print(self.handler.getVGC(self) is not self.handler.vgc)
         return self.handler.getVGC(self) is not self.handler.vgc
+    
+    def isTask(self) -> bool:
+        return isinstance(self.elementsContainer, TaskCommandsContainer)
+    
+    def getTaskList(self) -> LinkedList[VariableContainer]:
+
+        if not self.isTask():
+            return None
+
+        taskContainer: TaskCommandsContainer = self.elementsContainer
+        return taskContainer.vgc.containers
     
     # Return the list of possible function names for this block
     # If inside a task and is a custom block, cannot contain task

@@ -195,7 +195,7 @@ class Entity(ABC, Observable):
     # override
     # with entities of equal DrawOrder, the largest number is drawn in the front 
     def drawOrderTiebreaker(self) -> float:
-        return 0
+        return None
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
@@ -345,8 +345,19 @@ class Entity(ABC, Observable):
             
         return False
     
+    # override to add more information when logging entity
+    def logMoreInfo(self) -> str:
+        return None
+    
     def __repr__(self):
+
+        moreInfo = self.logMoreInfo()
+        if  moreInfo is None:
+            info = ""
+        else:
+            info = f"[{moreInfo}] "
+
         try:
-            return f"{self.__class__.__name__} ({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)})"
+            return f"{self.__class__.__name__} {info}({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)})"
         except:
             return f"{self.__class__.__name__} (Undefined)"

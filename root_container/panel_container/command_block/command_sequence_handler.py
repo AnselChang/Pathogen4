@@ -179,20 +179,23 @@ class CommandSequenceHandler(Observer):
     # move the inserter after the command as well
     def moveCommand(self, command: CommandBlockEntity, inserter: CommandInserter):
 
-        vgcList = self.getList(inserter)
+        oldVgcList = self.getList(command)
+        newVgcList = self.getList(inserter)
 
         commandVariableContainer = command.container.variableContainer
         
         # remove command from the current position, without deleting from entities list
-        vgcList.remove(commandVariableContainer)
+        print("old is main", oldVgcList is self.getList())
+        print("new is main", newVgcList is self.getList())
+        oldVgcList.remove(commandVariableContainer)
 
         # Remove next inserter entirely
         inserterVariableContainer = commandVariableContainer.getNext()
-        vgcList.remove(inserterVariableContainer)
+        oldVgcList.remove(inserterVariableContainer)
         command.entities.removeEntity(inserterVariableContainer)
 
         # insert command after the given inserter
-        vgcList.insertAfter(inserter.container, commandVariableContainer)
+        newVgcList.insertAfter(inserter.container, commandVariableContainer)
 
         # create and insert new inserter
         self._insertCommandInserterAfter(commandVariableContainer)
@@ -221,8 +224,15 @@ class CommandSequenceHandler(Observer):
         self.forceAnimationToEnd = False
         self.scrollHandler.setContentHeight(self.vgc.HEIGHT)
 
+    def _updateClosestInserter(self, inserter: CommandInserter, mouseY: int, closestInserter: CommandInserter, closestDistance: float) -> tuple:
+        distance = abs(inserter.CENTER_Y - mouseY)
+        if distance < closestDistance:
+            closestDistance = distance
+            closestInserter = inserter
+        return closestInserter, closestDistance
+
     # When dragging a custom command. Gets the closest inserter object to the mouse
-    def getClosestInserter(self, mouse: tuple) -> CommandInserter:
+    def getClosestInserter(self, mouse: tuple, considerInsertersInsideTask: bool) -> CommandInserter:
 
         mx, my = mouse
 
@@ -232,13 +242,17 @@ class CommandSequenceHandler(Observer):
         closestDistance = abs(closestInserter.CENTER_Y - my)
         while element is not None:
 
+            # iterate through each top-level inserter
             if isinstance(element.child, CommandInserter):
+                closestInserter, closestDistance = self._updateClosestInserter(element.child, my, closestInserter, closestDistance)
 
-                inserter = element.child
-                distance = abs(inserter.CENTER_Y - my)
-                if distance < closestDistance:
-                    closestDistance = distance
-                    closestInserter = inserter
+            # iterate through each inserter inside the task
+            elif considerInsertersInsideTask and isinstance(element.child, CommandBlockContainer) and element.child.commandBlock.isTask():
+                taskElement = element.child.commandBlock.getTaskList().head
+                while taskElement is not None:
+                    if isinstance(taskElement.child, CommandInserter):
+                        closestInserter, closestDistance = self._updateClosestInserter(taskElement.child, my, closestInserter, closestDistance)
+                    taskElement = taskElement.getNext()
 
             element = element.getNext()
 
