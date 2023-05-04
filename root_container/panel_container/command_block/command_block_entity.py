@@ -125,6 +125,8 @@ class CommandBlockEntity(Entity, Observer):
     # called when a different name is selected in the dropdown
     def onFunctionChange(self):
 
+        print("on function hange")
+
         # First, get the definition for the new function
         functionName = self.headerEntity.functionName.getFunctionName()
         self.definitionID = self.database.getDefinitionIDByName(self.type, functionName)
@@ -132,6 +134,7 @@ class CommandBlockEntity(Entity, Observer):
         # Delete old elements container and assign new one
         self.entities.removeEntity(self.elementsContainer)
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), self.pathAdapter)
+        self.elementsContainer.recomputePosition()
 
         # switch to the new definition color (animated)
         r,g,b = self.getDefinition().color

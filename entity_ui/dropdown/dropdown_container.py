@@ -175,19 +175,17 @@ class DropdownContainer(Container, Observable):
 
     def onTick(self):
 
-        recompute = (not self.heightProfile.isDone() or not self.widthProfile.isDone())
-        
-        self.heightProfile.tick()
-        self.widthProfile.tick()
-        self.borderProfile.tick()
-
-        if recompute:
+        if self.heightProfile.isDone() or not self.widthProfile.isDone():
             self.recomputePosition()
         else:
             if self.stillVisibleWhileCollapsing:
                 for option in self.options[1:]:
                     option.setInvisible()
                 self.stillVisibleWhileCollapsing = False
+
+        self.heightProfile.tick()
+        self.widthProfile.tick()
+        self.borderProfile.tick()
 
         width = self.widthProfile.get()
         height = self.heightProfile.get()
@@ -227,9 +225,8 @@ class DropdownContainer(Container, Observable):
         if self.heightProfile is None:
             self.heightProfile = MotionProfile(self.optionHeight, 0.4, 1)
             self.widthProfile = MotionProfile(self.getFullWidth(), 0.4)
-            self.updateProfiles(True)
 
-        elif self.dimensions.RESIZED_THIS_FRAME:
+        if self.dimensions.RESIZED_THIS_FRAME:
             self.updateProfiles(True)
 
     def defineWidth(self):
