@@ -39,7 +39,7 @@ class ReadoutEntity(ElementContainer, Observer):
         super().__init__(parent, parentCommand)
         
     def updateText(self) -> str:
-        self.textString = str(self.pathAdapter.getString(self.definition.getAttribute()))
+        self.textString = str(self.pathAdapter.getString(self.definition.getPathAttributeID()))
         textSurface = getText(self.font.get(), self.textString, (0,0,0), 1)
         self.textWidth = textSurface.get_width()
         self.textHeight = textSurface.get_height()

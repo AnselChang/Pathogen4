@@ -6,6 +6,7 @@ from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 
 class PathAttributeID(Enum):
+    NONE = auto()
     X1 = auto()
     Y1 = auto()
     X2 = auto()
@@ -18,6 +19,42 @@ class PathAttributeID(Enum):
     RADIUS = auto()
     ARC_LENGTH = auto()
 
+legalAttributesForType: dict[CommandType, list[PathAttributeID]] = {
+    CommandType.STRAIGHT: [
+        PathAttributeID.X1,
+        PathAttributeID.Y1,
+        PathAttributeID.X2,
+        PathAttributeID.Y2,
+        PathAttributeID.DISTANCE
+    ],
+    CommandType.TURN: [
+        PathAttributeID.THETA1,
+        PathAttributeID.THETA2
+    ],
+    CommandType.BEZIER: [
+        PathAttributeID.X1,
+        PathAttributeID.Y1,
+        PathAttributeID.X2,
+        PathAttributeID.Y2,
+        PathAttributeID.THETA1,
+        PathAttributeID.THETA2
+    ],
+    CommandType.ARC: [
+        PathAttributeID.X1,
+        PathAttributeID.Y1,
+        PathAttributeID.X2,
+        PathAttributeID.Y2,
+        PathAttributeID.XCENTER,
+        PathAttributeID.YCENTER,
+        PathAttributeID.RADIUS,
+        PathAttributeID.ARC_LENGTH,
+        PathAttributeID.THETA1,
+        PathAttributeID.THETA2
+    ],
+    CommandType.CUSTOM: []
+}
+
+
 
 """
 Abstract class that facilitates communication between Commands and Path entities
@@ -25,7 +62,7 @@ Abstract class that facilitates communication between Commands and Path entities
 
 class PathAdapter(ABC, Observable):
 
-    def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState, attributes: list[PathAttributeID]):
+    def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState):
         self.type = type
 
         self.iconImageStates = iconImageStates
@@ -33,7 +70,8 @@ class PathAdapter(ABC, Observable):
 
         self._dictValue: dict[Enum, float] = {}
         self._dictStr: dict[Enum, str] = {}
-        for attribute in attributes:
+
+        for attribute in legalAttributesForType[type]:
             self._dictValue[attribute] = -1
             self._dictStr[attribute] = ""
 

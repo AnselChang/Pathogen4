@@ -1,3 +1,4 @@
+from adapter.path_adapter import PathAttributeID, legalAttributesForType
 from command_creation.command_definition import CommandDefinition
 
 from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
@@ -61,9 +62,12 @@ class CommandDefinitionBuilder:
         
         self.elements.append(widget)
 
-    def addReadout(self, variableName: str, attribute: Enum):
+    def addReadout(self, variableName: str, attribute: PathAttributeID):
         if self.isCodeEditor or self.isTask:
             raise Exception("Cannot add readouts to code commands")
+        
+        if not attribute in legalAttributesForType[self.type]:
+            raise Exception(f"Cannot add readout for {attribute} for this type of command")
         
         readout = ReadoutDefinition(attribute, variableName)
         

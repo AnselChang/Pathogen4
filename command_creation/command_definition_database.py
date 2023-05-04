@@ -6,9 +6,12 @@ from root_container.panel_container.command_block.custom_command_block_entity im
 from entity_handler.interactor import Interactor
 from entity_handler.entity_manager import EntityManager
 
-from adapter.path_adapter import PathAdapter, NullPathAdapter
+from adapter.path_adapter import PathAdapter, NullPathAdapter, PathAttributeID
 from common.image_manager import ImageManager
 from common.dimensions import Dimensions
+from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
+from root_container.panel_container.element.row.element_definition import ElementDefinition, ElementType
+import json
 
 """
 Stores all the different CommandDefinitions
@@ -53,4 +56,47 @@ class CommandDefinitionDatabase:
         raise Exception("No definition with name " + name + " found")
 
     # generate a dictionary of all the command definitions, and convert to json
-    def exportToJson():
+    def exportToJson(self) -> dict:
+
+        dictionary = {}
+        for type in self.definitions:
+            definitions = self.definitions[type]
+
+            commandDict = {}
+            for commandID in definitions:
+                commandDefinition = definitions[commandID]
+                commandDict[commandID] = self.encodeCommandDefinition(commandDefinition)
+            dictionary[type.name] = commandDict
+
+        return dictionary
+    
+    def encodeCommandElements(self, elements: list[ElementDefinition]) -> list:
+        elementList = []
+        for elementDefinition in elements:
+
+            elementID: int = elementDefinition.id # numeric id of element
+            elementType: ElementType = elementDefinition.elementType # readout/textbox/checkbox/etc
+            variableName: str = elementDefinition.variableName # label name
+            pathAttributeID: PathAttributeID = elementDefinition.pathAttributeID
+
+            elementList.append({
+                "id": elementID,
+                "type": elementType.name,
+                "name": variableName,
+                "pathAttributeID": pathAttributeID.name
+            })
+        return elementList
+    
+    def encodeCommandDefinition(self, commandDefinition: CommandDefinition):
+
+        elementList = self.encodeCommandElements(commandDefinition.elements)
+
+        return {
+            "name": commandDefinition.name,
+            "elements": elementList,
+            "templateText": commandDefinition.templateText,
+            "isCode": commandDefinition.isCode,
+            "isTask": commandDefinition.isTask,
+            "nonblockingEnabled": commandDefinition.nonblockingEnabled,
+            "allowedInTask": commandDefinition.allowedInTask
+        }

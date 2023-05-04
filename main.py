@@ -37,7 +37,7 @@ from common.dimensions import Dimensions
 from common.draw_order import DrawOrder
 from utility.pygame_functions import getGradientSurface
 from utility.math_functions import isInsideBox2
-import pygame, random, threading, time
+import pygame, random, threading, time, json
 import sys
 
 import cProfile
@@ -51,10 +51,15 @@ GREEN = [0,255,0]
 BLUE = [0,0,255]
 
 # Define the I/O handling function
-def io_handler():
+def io_handler(database: CommandDefinitionDatabase):
     while True:
-        user_input = input("Enter some text: ")
-        print(f"You entered: {user_input}")
+        cmd = input("Enter some text: ")
+        
+        if cmd == "json":
+            commandJSON: dict = database.exportToJson()
+            print(json.dumps(commandJSON, indent = 4))
+
+
 
 def main():
 
@@ -110,7 +115,7 @@ def main():
     rootContainer.recomputeEntity()
 
         # Create a new thread for the I/O handling function
-    io_thread = threading.Thread(target=io_handler, daemon=True)
+    io_thread = threading.Thread(target=io_handler, args = (database,), daemon=True)
 
     # Start the I/O handling thread
     io_thread.start()

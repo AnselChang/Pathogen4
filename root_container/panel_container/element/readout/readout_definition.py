@@ -9,14 +9,10 @@ A defined readout holds information for position relative to command
 
 class ReadoutDefinition(ElementDefinition):
 
-    def __init__(self, attributeID: Enum, variableName: str):
-        self.attributeID = attributeID
+    def __init__(self, pathAttributeID: Enum, variableName: str):
 
-        super().__init__(ElementType.READOUT, variableName)
+        super().__init__(ElementType.READOUT, variableName, pathAttributeID)
 
     # overriding
     def makeElement(self, parent, parentCommand, pathAdapter) -> ReadoutEntity:
         return ReadoutEntity(parent, parentCommand, pathAdapter, self)
-
-    def getAttribute(self) -> Enum:
-        return self.attributeID

@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from adapter.path_adapter import PathAttributeID
 if TYPE_CHECKING:
     from root_container.panel_container.element.row.element_entity import ElementContainer
 
@@ -25,9 +27,10 @@ A list of element definitions are used to convert into a list of rows
 
 class ElementDefinition(ABC):
 
-    def __init__(self, elementType: ElementType, variableName):
+    def __init__(self, elementType: ElementType, variableName, pathAttributeID: PathAttributeID = PathAttributeID.NONE):
         self.elementType = elementType
         self.variableName = variableName
+        self.pathAttributeID = pathAttributeID
 
 
         self.LABEL_FONT = FontID.FONT_NORMAL
@@ -35,6 +38,9 @@ class ElementDefinition(ABC):
 
     def setID(self, id):
         self.id = id
+
+    def getPathAttributeID(self) -> PathAttributeID:
+        return self.pathAttributeID
 
     @abstractmethod
     def makeElement(self, parent, parentCommand, pathAdapter) -> ElementContainer:

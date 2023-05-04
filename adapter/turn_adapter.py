@@ -6,16 +6,11 @@ from enum import Enum, auto
 
 from entity_base.image.image_state import ImageState
 
-TurnAttributeIDs = [
-    PathAttributeID.THETA1,
-    PathAttributeID.THETA2
-]
-
 class TurnAdapter(PathAdapter):
 
     def __init__(self, iconImageStates: list[ImageState]):
 
-        super().__init__(CommandType.TURN, iconImageStates, TurnAttributeIDs)
+        super().__init__(CommandType.TURN, iconImageStates)
 
         self.turnEnabled: bool = None # if set to false, means THETA1 ~= THETA2)
 

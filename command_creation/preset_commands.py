@@ -4,6 +4,7 @@ from command_creation.command_type import CommandType
 from root_container.panel_container.element.widget.checkbox_widget import CheckboxWidgetDefinition
 from root_container.panel_container.element.widget.dropdown_widget import DropdownWidgetDefinition
 from root_container.panel_container.element.widget.textbox_widget import CodeTextboxWidgetDefinition, ValueTextboxWidgetDefinition
+from adapter.path_adapter import PathAttributeID
 from functools import wraps
 import inspect
 
@@ -48,10 +49,9 @@ class CommandDefinitionPresets:
 
     @preset
     def goForward(self) -> CommandDefinition:
-        from adapter.straight_adapter import StraightAttributeID
         builder = CommandDefinitionBuilder(CommandType.STRAIGHT)
         builder.setName("goForward()")
-        builder.addReadout("Distance", StraightAttributeID.DISTANCE)
+        builder.addReadout("Distance", PathAttributeID.DISTANCE)
         builder.addWidget(DropdownWidgetDefinition("Mode", ["Odometry", "IMU+Encoder", "Encoder"]))
         builder.addWidget(DropdownWidgetDefinition("Motion Profile", ["Fast", "Slow", "None"]))
         builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.75))
@@ -59,56 +59,51 @@ class CommandDefinitionPresets:
     
     @preset
     def goForwardTime(self) -> CommandDefinition:
-        from adapter.straight_adapter import StraightAttributeID
         builder = CommandDefinitionBuilder(CommandType.STRAIGHT)
         builder.setName("goForwardTime()")
-        builder.addReadout("Distance", StraightAttributeID.DISTANCE)
+        builder.addReadout("Distance", PathAttributeID.DISTANCE)
         builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.75))
         builder.addWidget(ValueTextboxWidgetDefinition("Time (s)", 1.0))
         return builder.build()
 
     @preset
     def goTurn(self) -> CommandDefinition:
-        from adapter.turn_adapter import TurnAttributeID
         builder = CommandDefinitionBuilder(CommandType.TURN)
         builder.setName("goTurn()")
-        builder.addReadout("Initial angle", TurnAttributeID.THETA1)
-        builder.addReadout("Final angle", TurnAttributeID.THETA2)
+        builder.addReadout("Initial angle", PathAttributeID.THETA1)
+        builder.addReadout("Final angle", PathAttributeID.THETA2)
         builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
         builder.addWidget(CheckboxWidgetDefinition("Invert direction?", False))
         return builder.build()
     
     @preset
     def goArc(self) -> CommandDefinition:
-        from adapter.arc_adapter import ArcAttributeID
         builder = CommandDefinitionBuilder(CommandType.ARC)
         builder.setName("goArc()")
-        builder.addReadout("Arc length", ArcAttributeID.ARC_LENGTH)
-        builder.addReadout("Initial angle", ArcAttributeID.THETA1)
-        builder.addReadout("Final angle", ArcAttributeID.THETA2)
-        builder.addReadout("Radius", ArcAttributeID.RADIUS)
+        builder.addReadout("Arc length", PathAttributeID.ARC_LENGTH)
+        builder.addReadout("Initial angle", PathAttributeID.THETA1)
+        builder.addReadout("Final angle", PathAttributeID.THETA2)
+        builder.addReadout("Radius", PathAttributeID.RADIUS)
         builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
         builder.addWidget(CheckboxWidgetDefinition("IMU correction?", False))
         return builder.build()
     
     @preset
     def goPurePursuit(self) -> CommandDefinition:
-        from adapter.bezier_adapter import BezierAttributeID
         builder = CommandDefinitionBuilder(CommandType.BEZIER)
         builder.setName("goPurePursuit()")
-        builder.addReadout("Initial angle", BezierAttributeID.THETA1)
-        builder.addReadout("Final angle", BezierAttributeID.THETA2)
+        builder.addReadout("Initial angle", PathAttributeID.THETA1)
+        builder.addReadout("Final angle", PathAttributeID.THETA2)
         builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
         builder.addWidget(ValueTextboxWidgetDefinition("Lookahead Distance", 10))
         return builder.build()
     
     @preset
     def goStanley(self) -> CommandDefinition:
-        from adapter.bezier_adapter import BezierAttributeID
         builder = CommandDefinitionBuilder(CommandType.BEZIER)
         builder.setName("goStanley()")
-        builder.addReadout("Initial angle", BezierAttributeID.THETA1)
-        builder.addReadout("Final angle", BezierAttributeID.THETA2)
+        builder.addReadout("Initial angle", PathAttributeID.THETA1)
+        builder.addReadout("Final angle", PathAttributeID.THETA2)
         builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
         builder.addWidget(ValueTextboxWidgetDefinition("Cross-track gain", 1))
         builder.addWidget(ValueTextboxWidgetDefinition("Heading gain", 5))
@@ -116,11 +111,10 @@ class CommandDefinitionPresets:
     
     @preset
     def goRamsete(self) -> CommandDefinition:
-        from adapter.bezier_adapter import BezierAttributeID
         builder = CommandDefinitionBuilder(CommandType.BEZIER)
         builder.setName("goRamsete()")
-        builder.addReadout("Initial angle", BezierAttributeID.THETA1)
-        builder.addReadout("Final angle", BezierAttributeID.THETA2)
+        builder.addReadout("Initial angle", PathAttributeID.THETA1)
+        builder.addReadout("Final angle", PathAttributeID.THETA2)
         builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.85))
         builder.addWidget(ValueTextboxWidgetDefinition("B parameter", 2))
         builder.addWidget(ValueTextboxWidgetDefinition("Zeta parameter", 0.7))
