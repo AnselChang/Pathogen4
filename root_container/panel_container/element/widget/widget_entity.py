@@ -45,9 +45,11 @@ class WidgetContainer(ElementContainer, Observable, Generic[T]):
     def onModifyDefinition(self):
         pass
 
-    @abstractmethod
+    def setValue(self, value: str | float):
+        self.parameters.setValue(self.definition.id, value)
+
     def getValue(self) -> str | float:
-        pass
+        return self.parameters.getValue(self.definition.id)
 
     def getOpacity(self) -> float:
         return self.parentCommand.getAddonsOpacity()

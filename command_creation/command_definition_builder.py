@@ -30,6 +30,8 @@ class CommandDefinitionBuilder:
         # set to default color
         self.color = COMMAND_INFO[self.type].color
 
+        self.currentWidgetID = 0
+
     def setName(self, name: str):
         self.name = name
 
@@ -53,6 +55,9 @@ class CommandDefinitionBuilder:
     def addWidget(self, widget: WidgetDefinition):
         if self.isCodeEditor or self.isTask:
             raise Exception("Cannot add widgets to code commands")
+        
+        widget.setID(self.currentWidgetID)
+        self.currentWidgetID += 1
         
         self.elements.append(widget)
 

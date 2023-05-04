@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from common.draw_order import DrawOrder
 from common.font_manager import FontID
+from data_structures.observer import Observable, Observer
 from entity_base.image.image_state import ImageState
 from entity_ui.dropdown.dropdown_container import DropdownContainer
 if TYPE_CHECKING:
@@ -20,7 +21,7 @@ from entity_base.image.image_entity import ImageEntity
 import pygame
 
 
-class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition']):
+class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition'], Observer):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity, definition: 'DropdownWidgetDefinition'):
 
@@ -33,9 +34,12 @@ class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition']):
         self.dropdown = DropdownContainer(self, definition.options, FontID.FONT_NORMAL, 11,
                                           colorSelectedHovered, colorSelected, colorHovered, colorOff,
                                           dynamicWidth = False, verticalTextPadding = 1)
+        
+        self.setValue(self.dropdown.getSelectedOptionText())
+        self.dropdown.subscribe(self, onNotify = self.onDropdownChange)
 
-    def getValue(self) -> bool:
-        return self.dropdown.getSelectedOptionText()
+    def onDropdownChange(self):
+        self.setValue(self.dropdown.getSelectedOptionText())
 
 class DropdownWidgetDefinition(WidgetDefinition):
 

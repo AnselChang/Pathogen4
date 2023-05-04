@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from data_structures.observer import Observer
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -15,7 +16,7 @@ from common.reference_frame import PointRef, Ref
 
 
 
-class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
+class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition'], Observer):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity, definition: 'TextboxWidgetDefinition'):
 
@@ -39,12 +40,16 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition']):
             defaultText = definition.defaultText
         )
 
+        self.setValue(definition.defaultText)
+
+        self.textEditor.subscribe(self, onNotify = self.onTextChange)
+
     # for dynamic widgets. how much to stretch command height by
     def getCommandStretch(self) -> int:
         return self.textEditor.getHeightOffset()
     
-    def getValue(self) -> bool:
-        return self.textEditor.getText()
+    def onTextChange(self):
+        self.setValue(self.textEditor.getText())
     
     def defineWidth(self) -> float:
         if self.textEditor is None:

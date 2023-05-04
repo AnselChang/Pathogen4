@@ -19,31 +19,35 @@ class CommandDefinitionDatabase:
     def __init__(self):
 
         # initialize empty list for each command type
-        self.definitions : dict[CommandType, list[CommandDefinition]] = {}
+        self.definitions : dict[CommandType, dict[str, CommandDefinition]] = {}
         for type in CommandType:
-            self.definitions[type] = []
+            self.definitions[type] = {}
 
         # initially populate with preset commands. make sure there's one command per type at least
         presets = CommandDefinitionPresets()
         for preset in presets.getPresets():
             self.registerDefinition(preset)
 
+    # add a (id, command) pair to definitions
     def registerDefinition(self, command: CommandDefinition):
-        self.definitions[command.type].append(command)
+        self.definitions[command.type][command.id] = command
 
     def getDefinitionNames(self, type: CommandType, isInTask: bool = False) -> list[str]:
-        return [definition.name for definition in self.definitions[type]
+        return [definition.name for definition in self.definitions[type].values()
                 if (not isInTask or definition.allowedInTask)]
     
     def getNumDefitions(self, type: CommandType) -> int:
         return len(self.definitions[type])
     
-    def getDefinition(self, type: CommandType, index: int = 0) -> CommandDefinition:
-        return self.definitions[type][index]
+    def getDefinitionByIndex(self, type: CommandType, index: int = 0) -> CommandDefinition:
+        return list(self.definitions[type].values())[index]
     
-    def getDefinitionIndexByName(self, type: CommandType, name: str) -> int:
+    def getDefinitionByID(self, type: CommandType, id: str) -> CommandDefinition:
+        return self.definitions[type][id]
+    
+    def getDefinitionIDByName(self, type: CommandType, name: str) -> int:
         definitions = self.definitions[type]
-        for i in range(len(definitions)):
-            if definitions[i].name == name:
-                return i
-        raise Exception("CommandDefinitionDatabase: No definition found with name " + name)
+        for id in definitions:
+            if definitions[id].name == name:
+                return id
+        raise Exception("No definition with name " + name + " found")

@@ -14,3 +14,6 @@ class WidgetDefinition(ElementDefinition):
 
     def __init__(self, variableName: str):
         super().__init__(variableName)
+
+    def setID(self, id: int):
+        self.id = id

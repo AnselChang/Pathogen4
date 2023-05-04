@@ -6,6 +6,7 @@ from entity_base.listeners.hover_listener import HoverLambda
 from entity_ui.group.variable_group.variable_container import VariableContainer
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
 from entity_ui.scrollbar.scrolling_content_container import ScrollingContentContainer
+from root_container.panel_container.command_block.parameter_state import ParameterState
 from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
 if TYPE_CHECKING:
@@ -65,7 +66,6 @@ class CommandBlockEntity(Entity, Observer):
         self.DRAG_OPACITY = 0.7
         self.dragOffset = 0
 
-        self.definitionIndex: int = 0
         self.database = database
         self.pathAdapter = pathAdapter
         self.type = self.pathAdapter.type
@@ -74,6 +74,10 @@ class CommandBlockEntity(Entity, Observer):
         self.animatedExpansion = MotionProfile(0, speed = 0.4)
         # whether to expand by default, ignoring global flags
         self.localExpansion = self.type == CommandType.CUSTOM
+
+        # initialize default command definition to be the first one
+        self.definitionID = self.database.getDefinitionByIndex(self.type).id
+        self.parameters = ParameterState(self)
 
         r,g,b = self.getDefinition().color
         self.colorR = MotionProfile(r, speed = 0.2)
@@ -123,7 +127,7 @@ class CommandBlockEntity(Entity, Observer):
 
         # First, get the definition for the new function
         functionName = self.headerEntity.functionName.getFunctionName()
-        self.definitionIndex = self.database.getDefinitionIndexByName(self.type, functionName)
+        self.definitionID = self.database.getDefinitionIDByName(self.type, functionName)
 
         # Delete old elements container and assign new one
         self.entities.removeEntity(self.elementsContainer)
@@ -178,7 +182,7 @@ class CommandBlockEntity(Entity, Observer):
             self.propagateChange()
 
     def getDefinition(self) -> CommandDefinition:
-        return self.database.getDefinition(self.type, self.definitionIndex)
+        return self.database.getDefinitionByID(self.type, self.definitionID)
     
     def getFunctionName(self) -> str:
         return self.getDefinition().name

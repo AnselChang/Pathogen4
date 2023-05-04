@@ -24,7 +24,7 @@ class CheckboxWidgetContainer(WidgetContainer['CheckboxWidgetDefinition']):
 
         super().__init__(parent, parentCommand, definition)
 
-        self.value = definition.defaultOn
+        self.setValue(definition.defaultOn)
         
         states = [
             ImageState(True, ImageID.CHECKBOX_ON),
@@ -36,12 +36,9 @@ class CheckboxWidgetContainer(WidgetContainer['CheckboxWidgetDefinition']):
             onClick = self.onLeftClick,
         )
 
-    def getValue(self) -> bool:
-        return self.value
-
+    # toggle boolean value on left click
     def onLeftClick(self, mouse: tuple):
-        
-        self.value = not self.value
+        self.setValue(not self.getValue())
 
     # widgets and readouts should not use ElementEntity width
     # because they are dynamic
