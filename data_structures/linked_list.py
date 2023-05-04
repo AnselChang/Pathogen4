@@ -77,7 +77,6 @@ class LinkedList(Generic[T]):
             self.head = self.head._next
             self.head._prev = None
         elif self.tail is node:
-            print("removeend")
             self.tail = self.tail._prev
             self.tail._next = None
         else:

@@ -33,6 +33,10 @@ class VariableContainer(Container, LinkedListNode['T'], ABC, Generic[T]):
 
     def setChild(self, child: T):
         self.child: T | Entity = child
+
+    def changeParent(self, newParent: Entity):
+        super().changeParent(newParent)
+        self.group = newParent
     
     # set by VariableGroupContainer. Size refers to x if isHorizontal, else y
     def setPosition(self, position: int):

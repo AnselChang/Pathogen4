@@ -121,8 +121,8 @@ class CommandSequenceHandler(Observer):
     
     # Set up the inserter and tie it to the VariableGroupContainer
     def _insertCommandInserterAfter(self, commandVariableContainer: VariableContainer) -> VariableContainer:
-        
-        variableContainer = self._createInserter(self.getVGC(commandVariableContainer))
+        vgc = self.getVGC(commandVariableContainer)
+        variableContainer = self._createInserter(vgc)
         self.getList(commandVariableContainer).insertAfter(commandVariableContainer, variableContainer)
 
     # Insert custom command at location of inserter. Handled directly here
@@ -179,14 +179,14 @@ class CommandSequenceHandler(Observer):
     # move the inserter after the command as well
     def moveCommand(self, command: CommandBlockEntity, inserter: CommandInserter):
 
+        oldVgc = self.getVGC(command)
         oldVgcList = self.getList(command)
+        newVgc = self.getVGC(inserter)
         newVgcList = self.getList(inserter)
 
         commandVariableContainer = command.container.variableContainer
         
         # remove command from the current position, without deleting from entities list
-        print("old is main", oldVgcList is self.getList())
-        print("new is main", newVgcList is self.getList())
         oldVgcList.remove(commandVariableContainer)
 
         # Remove next inserter entirely
@@ -195,6 +195,7 @@ class CommandSequenceHandler(Observer):
         command.entities.removeEntity(inserterVariableContainer)
 
         # insert command after the given inserter
+        commandVariableContainer.changeParent(newVgc)
         newVgcList.insertAfter(inserter.container, commandVariableContainer)
 
         # create and insert new inserter

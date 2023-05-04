@@ -204,6 +204,7 @@ class CommandBlockEntity(Entity, Observer):
     def isTask(self) -> bool:
         return isinstance(self.elementsContainer, TaskCommandsContainer)
     
+    # call only if this is a task command. Get the list of commands inside task
     def getTaskList(self) -> LinkedList[VariableContainer]:
 
         if not self.isTask():

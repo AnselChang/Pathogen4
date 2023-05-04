@@ -135,3 +135,8 @@ class CommandInserter(Entity):
     
     def getNextCommand(self):
         return self.handler.getNext(self)
+    
+    # whether this command block is inside a task
+    def isInsideTask(self) -> bool:
+        return self.handler.getVGC(self) is not self.handler.vgc
+    
