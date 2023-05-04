@@ -133,9 +133,7 @@ class Path(Observer):
         node = self._addRawNode(position, segment, previousCommand, isTemporary = isTemporary)
         
         command = self.linker.getCommandFromPath(node)
-        segment = self._addRawSegment(node, command)
-
-        self.commandHandler.recomputePosition()
+        newSegment = self._addRawSegment(node, command)
 
         node.updateAdapter()
         node.getNext().onNodeMove(node)

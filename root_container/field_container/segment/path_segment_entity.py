@@ -100,6 +100,9 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, PathElement['PathNod
     def getState(self) -> PathSegmentState:
         return self.states[self.currentState]
     
+    def getStateType(self) -> PathSegmentType:
+        return self.currentState
+    
     def setState(self, newState: PathSegmentType) -> None:
         oldState = self.currentState
         self.currentState = newState

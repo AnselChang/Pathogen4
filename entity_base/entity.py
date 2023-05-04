@@ -283,11 +283,10 @@ class Entity(ABC, Observable):
 
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:
-            if not excludeChildIf(child):
-                child.recomputePosition()
-            else:
+            if excludeChildIf(child):
                 pass
-                #print("excluding child", child)
+            else:
+                child.recomputePosition()
 
     # THESE ARE UTILITY METHODS THAT CAN BE USED TO SPECIFY RELATIVE POSITIONS ABOVE
 

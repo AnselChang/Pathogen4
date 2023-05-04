@@ -22,8 +22,8 @@ class Dimensions(Observable):
         self.ANSEL_START_WIDTH = 800
         self.ANSEL_START_HEIGHT = 600
 
-        self.DEFAULT_SCREEN_WIDTH = display_info.current_w
-        self.DEFAULT_SCREEN_HEIGHT = display_info.current_h
+        self.DEFAULT_SCREEN_WIDTH = display_info.current_w * 0.8
+        self.DEFAULT_SCREEN_HEIGHT = display_info.current_h * 0.8
 
     def setFieldSizePixels(self, pixels: int):
         self.FIELD_SIZE_IN_PIXELS = pixels

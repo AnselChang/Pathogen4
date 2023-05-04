@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
+import random
 from root_container.panel_container.element.overall.abstract_elements_container import AbstractElementsContainer
 
 from adapter.path_adapter import PathAdapter
