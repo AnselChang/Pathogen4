@@ -56,7 +56,7 @@ class BezierThetaNode(AbstractCircleEntity):
 
         self.positionRef: PointRef = None
 
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def isVisible(self) -> bool:
 
@@ -136,7 +136,7 @@ class BezierThetaNode(AbstractCircleEntity):
         self.setRelativeFromAbsolutePosition(absolutePosition)
 
         # calculate bezier curve but fast while dragging (not equidistant points)
-        self.recomputePosition()
+        self.recomputeEntity()
         self.constrain()
         self.bezier.recomputeBezier(True)
         self.segment.onReshape()
@@ -144,7 +144,7 @@ class BezierThetaNode(AbstractCircleEntity):
     # reclculate bezier curve but with equidistant points
     def onStopDrag(self):
         self.bezier.recomputeBezier(False)
-        self.segment.recomputePosition()
+        self.segment.recomputeEntity()
 
     
     # attempt to constrain the angle to match previous/next angle
@@ -185,4 +185,4 @@ class BezierThetaNode(AbstractCircleEntity):
 
             # convert from absolute position to relative offset
             self.setRelativeFromAbsolutePosition(absolutePosition)
-            self.recomputePosition()
+            self.recomputeEntity()

@@ -23,21 +23,34 @@ class RowElementsContainer(AbstractElementsContainer):
     def __init__(self, parentCommand: CommandBlockEntity, commandDefinition: CommandDefinition, pathAdapter: PathAdapter):
 
         super().__init__(parentCommand, commandDefinition, pathAdapter)
+        self.parentCommand = parentCommand
+        self.commandDefinition = commandDefinition
+        self.pathAdapter = pathAdapter
 
-        self.group = None
+        self.initRowElements()
+
+    def initRowElements(self):
 
         # Create the container that will store the rows
         self.group = DynamicGroupContainer(self, False, entitySizePixels = 22)
 
         # Create the rows
         ROW_SPACING = 1
-        for i, elementDefinition in enumerate(commandDefinition.elements):
+        for i, elementDefinition in enumerate(self.commandDefinition.elements):
             row = LinearContainer(self.group, i, ROW_SPACING)
 
             # For each row, add label and widget/readout
             # No need to store references after created for now. But could if neededs
             label = elementDefinition.makeLabel(row)
-            element = elementDefinition.makeElement(row, parentCommand, pathAdapter)
+            element = elementDefinition.makeElement(row, self.parentCommand, self.pathAdapter)
+
+    # Called when database entry for definition has changed
+    def onDefinitionChange(self):
+        # remove old group
+        self.entities.removeEntity(self.group)
+
+        # create new group
+        self.initRowElements()
 
     # This container is dynamically fit to DynamicGroupContainer
     def defineHeight(self) -> float:

@@ -61,7 +61,7 @@ class VariableGroupContainer(Container, Generic[T], Observable):
     # before parent VGCs
     def onTickEnd(self):
         if self.needToRecompute:
-            self.recomputePosition() # this calls updateContainerPositions() at some point
+            self.recomputeEntity() # this calls updateContainerPositions() at some point
             self.needToRecompute = False
             self.notify()
 

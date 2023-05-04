@@ -42,7 +42,7 @@ class SelectorMenuEntity(Entity, Observer):
         self.BORDER_RADIUS = 5
 
         self.selectedEntity = selectedEntity
-        selectedEntity.subscribe(self, onNotify = self.recomputePosition)
+        selectedEntity.subscribe(self, onNotify = self.recomputeEntity)
 
         # Both this object and the individual menu images have this lambda.
         # So, when either the menu background or menu buttons are dragged,
@@ -63,7 +63,7 @@ class SelectorMenuEntity(Entity, Observer):
         self.relY = 0
 
         self.group: DynamicGroupContainer = None
-        self.recomputePosition()
+        self.recomputeEntity()
         
         self.group = DynamicGroupContainer(self, True, self.BUTTON_SIZE)
 
@@ -86,7 +86,7 @@ class SelectorMenuEntity(Entity, Observer):
             )
         
         # need to recompute position again to determine correct width
-        self.recomputePosition()
+        self.recomputeEntity()
 
         MenuLineEntity(self, selectedEntity)
 
@@ -133,7 +133,7 @@ class SelectorMenuEntity(Entity, Observer):
         deltaX, deltaY = mouse[0] - self.startMouseX, mouse[1] - self.startMouseY
         self.relX = self.startRelX + self._inverse_awidth(deltaX)
         self.relY = self.startRelY + self._inverse_aheight(deltaY)
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def onStopDrag(self):
         pass

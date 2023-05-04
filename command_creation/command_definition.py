@@ -34,3 +34,9 @@ class CommandDefinition:
         self.isTask = isTask
         self.nonblockingEnabled = nonblockingEnabled
         self.allowedInTask = allowedInTask
+
+    def getElementDefinitionByID(self, id) -> ElementDefinition:
+        for element in self.elements:
+            if element.id == id:
+                return element
+        return None

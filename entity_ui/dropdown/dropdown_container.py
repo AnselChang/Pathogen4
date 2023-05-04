@@ -42,7 +42,7 @@ class DropdownContainer(Container, Observable):
         self.otherOptions = [text for text in self.optionTexts if text != selectedText]
         
         if recompute:
-            self.recomputePosition()
+            self.recomputeEntity()
             self.notify()
 
     def getOptionText(self, i: int) -> str:
@@ -176,7 +176,7 @@ class DropdownContainer(Container, Observable):
     def onTick(self):
 
         if self.heightProfile.isDone() or not self.widthProfile.isDone():
-            self.recomputePosition()
+            self.recomputeEntity()
         else:
             if self.stillVisibleWhileCollapsing:
                 for option in self.options[1:]:

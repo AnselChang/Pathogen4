@@ -17,8 +17,8 @@ from entity_base.entity import Entity
 
 from data_structures.linked_list import LinkedListNode
 
-from adapter.path_adapter import PathAdapter
-from adapter.straight_adapter import StraightAdapter, StraightAttributeID
+from adapter.path_adapter import PathAdapter, PathAttributeID
+from adapter.straight_adapter import StraightAdapter
 
 from common.image_manager import ImageID
 
@@ -48,15 +48,15 @@ class StraightSegmentState(PathSegmentState):
         posA = self.segment.getPrevious().getPositionRef()
         posB = self.segment.getNext().getPositionRef()
 
-        self.adapter.set(StraightAttributeID.X1, posA.fieldRef[0], formatInches(posA.fieldRef[0]))
-        self.adapter.set(StraightAttributeID.Y1, posA.fieldRef[1], formatInches(posA.fieldRef[1]))
-        self.adapter.set(StraightAttributeID.X2, posB.fieldRef[0], formatInches(posB.fieldRef[0]))
-        self.adapter.set(StraightAttributeID.Y2, posB.fieldRef[1], formatInches(posB.fieldRef[1]))
+        self.adapter.set(PathAttributeID.X1, posA.fieldRef[0], formatInches(posA.fieldRef[0]))
+        self.adapter.set(PathAttributeID.Y1, posA.fieldRef[1], formatInches(posA.fieldRef[1]))
+        self.adapter.set(PathAttributeID.X2, posB.fieldRef[0], formatInches(posB.fieldRef[0]))
+        self.adapter.set(PathAttributeID.Y2, posB.fieldRef[1], formatInches(posB.fieldRef[1]))
 
         distance = (posB - posA).magnitude(Ref.FIELD)
         if self.segment.getDirection() == SegmentDirection.REVERSE:
             distance *= -1
-        self.adapter.set(StraightAttributeID.DISTANCE, distance, formatInches(distance))
+        self.adapter.set(PathAttributeID.DISTANCE, distance, formatInches(distance))
 
         self.adapter.setIconStateID(self.segment.getDirection())
 

@@ -23,7 +23,7 @@ class AbstractGradientSeparator(Entity):
         self.percent = percentFullyOpaque
 
         super().__init__(parentPanel, drawOrder = DrawOrder.GRADIENT_SEPARATOR)
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def isVisible(self) -> bool:
         return True
@@ -45,7 +45,7 @@ class TabsCommandsSeparator(AbstractGradientSeparator):
 
     def __init__(self, parent: BlockTabContentsContainer):
         super().__init__(parent, False, percentFullyOpaque = 0.2)
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def defineTopLeft(self) -> tuple:
         return self._px(0), self._py(0)

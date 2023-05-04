@@ -30,11 +30,11 @@ class ReadoutEntity(ElementContainer, Observer):
         self.border = TextBorder()
 
         self.font: DynamicFont = parentCommand.fonts.getDynamicFont(readoutDefinition.LABEL_FONT, readoutDefinition.LABEL_SIZE)
-        self.font.subscribe(self, onNotify = self.recomputePosition)
+        self.font.subscribe(self, onNotify = self.recomputeEntity)
 
         self.definition = readoutDefinition
         self.pathAdapter = pathAdapter
-        self.pathAdapter.subscribe(self, onNotify = self.recomputePosition)
+        self.pathAdapter.subscribe(self, onNotify = self.recomputeEntity)
 
         super().__init__(parent, parentCommand)
         

@@ -24,8 +24,8 @@ from common.draw_order import DrawOrder
 from entity_handler.interactor import Interactor
 from entity_handler.entity_manager import EntityManager
 
-from adapter.path_adapter import AdapterInterface
-from adapter.turn_adapter import TurnAdapter, TurnAttributeID
+from adapter.path_adapter import AdapterInterface, PathAttributeID
+from adapter.turn_adapter import TurnAdapter
 
 from root_container.field_container.node.constraints import Constraints
 from root_container.field_container.node.bezier_theta_node import BezierThetaNode
@@ -97,7 +97,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, PathElement[PathSeg
 
         self.updateAdapter()
 
-        self.recomputePosition()
+        self.recomputeEntity()
 
         NodeLine(self)
         
@@ -148,15 +148,15 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, PathElement[PathSeg
 
         self.START_THETA, self.END_THETA = start, end
             
-        self.adapter.set(TurnAttributeID.THETA1, start, formatDegrees(start, 1))
-        self.adapter.set(TurnAttributeID.THETA2, end, formatDegrees(end, 1))
+        self.adapter.set(PathAttributeID.THETA1, start, formatDegrees(start, 1))
+        self.adapter.set(PathAttributeID.THETA2, end, formatDegrees(end, 1))
 
         direction = deltaInHeading(start, end)
         self.adapter.setIconStateID(TurnDirection.RIGHT if direction >= 0 else TurnDirection.LEFT)
 
         self.adapter.setTurnEnabled(self.isTurnEnabled())
 
-        self.recomputePosition()
+        self.recomputeEntity()
 
     # gets the start theta, adjusted for segment direction.
     # returns None if there is no previous node

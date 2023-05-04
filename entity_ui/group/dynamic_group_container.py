@@ -31,7 +31,7 @@ class DynamicGroupContainer(LinearGroupContainer['T']):
     def remove(self, entity: LinearContainer):
         super().remove(entity)
         self.groupSize -= self.pixels
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def defineWidth(self) -> float:
         if not self.isHorizontal:

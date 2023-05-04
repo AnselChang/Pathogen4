@@ -40,7 +40,7 @@ class Constraints(Entity):
         self.visiblePosition = False
         self.visibleTheta = False
 
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def clear(self):
         self.clearThetaConstraints()

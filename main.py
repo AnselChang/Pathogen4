@@ -37,7 +37,7 @@ from common.dimensions import Dimensions
 from common.draw_order import DrawOrder
 from utility.pygame_functions import getGradientSurface
 from utility.math_functions import isInsideBox2
-import pygame, random
+import pygame, random, threading, time
 import sys
 
 import cProfile
@@ -49,6 +49,12 @@ pygame.key.set_repeat(400, 70)
 RED = [255,0,0]
 GREEN = [0,255,0]
 BLUE = [0,0,255]
+
+# Define the I/O handling function
+def io_handler():
+    while True:
+        user_input = input("Enter some text: ")
+        print(f"You entered: {user_input}")
 
 def main():
 
@@ -101,7 +107,13 @@ def main():
     clock = pygame.time.Clock()
 
     # initialize everything
-    rootContainer.recomputePosition()
+    rootContainer.recomputeEntity()
+
+        # Create a new thread for the I/O handling function
+    io_thread = threading.Thread(target=io_handler, daemon=True)
+
+    # Start the I/O handling thread
+    io_thread.start()
 
     # Main game loop
     while True:

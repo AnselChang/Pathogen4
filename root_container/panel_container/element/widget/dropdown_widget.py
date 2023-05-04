@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 from entity_base.listeners.click_listener import ClickLambda
 from root_container.panel_container.element.widget.widget_entity import WidgetContainer
 from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
+from root_container.panel_container.element.row.element_definition import ElementType
+
 
 from common.image_manager import ImageID
 from common.reference_frame import PointRef, Ref
@@ -35,7 +37,6 @@ class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition'], Obser
                                           colorSelectedHovered, colorSelected, colorHovered, colorOff,
                                           dynamicWidth = False, verticalTextPadding = 1)
         
-        self.setValue(self.dropdown.getSelectedOptionText())
         self.dropdown.subscribe(self, onNotify = self.onDropdownChange)
 
     def onDropdownChange(self):
@@ -44,7 +45,7 @@ class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition'], Obser
 class DropdownWidgetDefinition(WidgetDefinition):
 
     def __init__(self, variableName: str, options: list[str]):
-        super().__init__(variableName)
+        super().__init__(ElementType.DROPDOWN, variableName)
         self.options = options
 
     def makeElement(self, parent, parentCommand, pathAdapter) -> DropdownWidgetContainer:

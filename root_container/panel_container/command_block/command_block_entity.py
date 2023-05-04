@@ -7,6 +7,7 @@ from entity_ui.group.variable_group.variable_container import VariableContainer
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
 from entity_ui.scrollbar.scrolling_content_container import ScrollingContentContainer
 from root_container.panel_container.command_block.parameter_state import ParameterState
+from root_container.panel_container.element.overall.row_elements_container import RowElementsContainer
 from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
 if TYPE_CHECKING:
@@ -134,7 +135,7 @@ class CommandBlockEntity(Entity, Observer):
         # Delete old elements container and assign new one
         self.entities.removeEntity(self.elementsContainer)
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), self.pathAdapter)
-        self.elementsContainer.recomputePosition()
+        self.elementsContainer.recomputeEntity()
 
         # switch to the new definition color (animated)
         r,g,b = self.getDefinition().color
@@ -263,6 +264,19 @@ class CommandBlockEntity(Entity, Observer):
     def setLocalExpansion(self, isExpanded):
         self.localExpansion = isExpanded
 
+    def onCommandDefinitionChange(self, commandID: str):
+
+        # If id is not command's id, this is not applicable
+        if commandID != self.definitionID:
+            return
+        
+        # only commands consisting of widgets and readouts can have their definition changed
+        assert(isinstance(self.elementsContainer, RowElementsContainer))
+
+        # update container with new database info
+        container: RowElementsContainer = self.elementsContainer
+        container.onDefinitionChange()
+
     # Toggle command expansion. Modify global expansion flags if needed
     def onClick(self, mouse: tuple):
 
@@ -390,3 +404,6 @@ class CommandBlockEntity(Entity, Observer):
             return None
         else:
             return self.handler.getPrevious(inserter)
+        
+    def __repr__(self):
+        return self.getDefinition().id

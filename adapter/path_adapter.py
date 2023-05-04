@@ -1,9 +1,23 @@
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import Enum, auto
 from data_structures.observer import Observable
 from command_creation.command_type import CommandType
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
+
+class PathAttributeID(Enum):
+    X1 = auto()
+    Y1 = auto()
+    X2 = auto()
+    Y2 = auto()
+    DISTANCE = auto()
+    THETA1 = auto()
+    THETA2 = auto()
+    XCENTER = auto()
+    YCENTER = auto()
+    RADIUS = auto()
+    ARC_LENGTH = auto()
+
 
 """
 Abstract class that facilitates communication between Commands and Path entities
@@ -11,7 +25,7 @@ Abstract class that facilitates communication between Commands and Path entities
 
 class PathAdapter(ABC, Observable):
 
-    def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState, attributes: type[Enum]):
+    def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState, attributes: list[PathAttributeID]):
         self.type = type
 
         self.iconImageStates = iconImageStates
@@ -29,6 +43,10 @@ class PathAdapter(ABC, Observable):
     # value: the raw numerical value to be used in generated code
     # string: to be displayed by readouts, etc.
     def set(self, attribute: Enum, value: float, string: str):
+
+        # make sure the attribute belongs to the corresponding type of adapter
+        assert(attribute in self._dictValue)
+
         self._dictValue[attribute] = round(value, 3)
         self._dictStr[attribute] = string
         self.notify()

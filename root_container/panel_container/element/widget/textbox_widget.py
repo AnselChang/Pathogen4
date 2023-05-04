@@ -6,6 +6,8 @@ if TYPE_CHECKING:
 
 from root_container.panel_container.element.widget.widget_entity import WidgetContainer
 from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
+from root_container.panel_container.element.row.element_definition import ElementType
+
 
 from entity_ui.text.text_editor_entity import TextEditorEntity, TextEditorMode
 
@@ -40,8 +42,6 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition'], Observe
             defaultText = definition.defaultText
         )
 
-        self.setValue(definition.defaultText)
-
         self.textEditor.subscribe(self, onNotify = self.onTextChange)
 
     # for dynamic widgets. how much to stretch command height by
@@ -65,7 +65,7 @@ class TextboxWidgetDefinition(WidgetDefinition):
 
     # set fontID and fontSize to None to use defaults
     def __init__(self, variableName: str, fontID: FontID, fontSize: float, defaultText: str, isDynamic: bool, isNumOnly: bool):
-        super().__init__(variableName)
+        super().__init__(ElementType.TEXTBOX, variableName)
 
         self.fontID = fontID
         self.fontSize = fontSize

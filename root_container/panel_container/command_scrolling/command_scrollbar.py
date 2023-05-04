@@ -12,7 +12,7 @@ class CommandScrollbar(AbstractScrollbarContainer):
         self.RIGHT_MARGIN = 4
         
         super().__init__(parent)
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def defineRightX(self) -> float:
         return self._px(1) - self._awidth(self.RIGHT_MARGIN)

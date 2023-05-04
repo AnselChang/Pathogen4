@@ -85,11 +85,11 @@ class TextEditorEntity(Entity, Observer, Observable):
 
     def onFontUpdate(self):
         self.textHandler.update()
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def setRows(self, rows):
         self.rows = rows
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def addRow(self):
         self.setRows(self.rows + 1)

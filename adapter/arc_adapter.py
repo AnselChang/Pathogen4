@@ -1,27 +1,28 @@
-from adapter.path_adapter import PathAdapter
+from adapter.path_adapter import PathAdapter, PathAttributeID
 from command_creation.command_type import CommandType
 
 from enum import Enum, auto
 
 from entity_base.image.image_state import ImageState
 
-class ArcAttributeID(Enum):
-    X1 = auto()
-    Y1 = auto()
-    X2 = auto()
-    Y2 = auto()
-    XCENTER = auto()
-    YCENTER = auto()
-    RADIUS = auto()
-    ARC_LENGTH = auto()
-    THETA1 = auto()
-    THETA2 = auto()
+ArcAttributeIDs = [
+    PathAttributeID.X1,
+    PathAttributeID.Y1,
+    PathAttributeID.X2,
+    PathAttributeID.Y2,
+    PathAttributeID.XCENTER,
+    PathAttributeID.YCENTER,
+    PathAttributeID.RADIUS,
+    PathAttributeID.ARC_LENGTH,
+    PathAttributeID.THETA1,
+    PathAttributeID.THETA2
+]
 
 class ArcAdapter(PathAdapter):
 
     def __init__(self, iconImageStates: list[ImageState]):
 
-        super().__init__(CommandType.ARC, iconImageStates, ArcAttributeID)
+        super().__init__(CommandType.ARC, iconImageStates, ArcAttributeIDs)
 
-    def set(self, attribute: ArcAttributeID, value: float, string: str):
+    def set(self, attribute: PathAttributeID, value: float, string: str):
         super().set(attribute, value, string)

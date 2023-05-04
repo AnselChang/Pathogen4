@@ -20,8 +20,8 @@ class RootContainer(Container, Observer):
 
     def __init__(self):
         super().__init__(None, drawOrder = DrawOrder.BACKGROUND)
-        self.dimensions.subscribe(self, onNotify = self.recomputePosition)
-        self.recomputePosition()
+        self.dimensions.subscribe(self, onNotify = self.recomputeEntity)
+        self.recomputeEntity()
 
     def defineTopLeft(self) -> tuple:
         return 0, 0

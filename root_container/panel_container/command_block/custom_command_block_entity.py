@@ -56,7 +56,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
 
     def onStopDrag(self):
         self.dragPosition = None
-        self.recomputePosition()
+        self.recomputeEntity()
     
     def onDrag(self, mouse: tuple):
 
@@ -71,7 +71,7 @@ class CustomCommandBlockEntity(CommandBlockEntity):
             self.handler.moveCommand(self, inserter)
             self.handler.recomputePosition()
         else:
-            self.recomputePosition()
+            self.recomputeEntity()
 
     def defineCenterY(self):
         if self.drag.isDragging:

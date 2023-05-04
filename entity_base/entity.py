@@ -166,7 +166,7 @@ class Entity(ABC, Observable):
             return
 
         self._LOCAL_VISIBLE = True
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def setInvisible(self):
 
@@ -216,18 +216,12 @@ class Entity(ABC, Observable):
         if self._parent is not None:
             self._parent.propagateChange()
 
-    # Must call recomputePosition every time the entity changes its position or dimensions
-    def recomputePosition(self, excludeChildIf: Callable[['Entity'], bool] = lambda entity: False):
-
-        # only recompute when visible. Otherwise, the position is not defined
-        # When the entity is made visible, it will recompute its position
-        if not self.isVisible() and not self.recomputeWhenInvisible:
-            return
-
-        self.defineBefore()
+    def recomputeSize(self):
 
         self.WIDTH = self.defineWidth()
         self.HEIGHT = self.defineHeight()
+
+    def recomputePosition(self):
         self.CENTER_X, self.CENTER_Y = self.defineCenter()
         self.LEFT_X, self.TOP_Y = self.defineTopLeft()
         self.RIGHT_X = self.defineRightX()
@@ -279,6 +273,21 @@ class Entity(ABC, Observable):
 
         self.RECT = [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT]
 
+    # Must call recomputePosition every time the entity changes its position or dimensions
+    def recomputeEntity(self, excludeChildIf: Callable[['Entity'], bool] = lambda entity: False, skipRecomputeSize: bool = False):
+
+        # only recompute when visible. Otherwise, the position is not defined
+        # When the entity is made visible, it will recompute its position
+        if not self.isVisible() and not self.recomputeWhenInvisible:
+            return
+        
+        self.defineBefore()
+
+        if not skipRecomputeSize:
+            self.recomputeSize()
+        
+        self.recomputePosition()
+
         self.defineAfter()
 
         # Now that this entity position is recomputed, make sure children recompute too
@@ -286,7 +295,7 @@ class Entity(ABC, Observable):
             if excludeChildIf(child):
                 pass
             else:
-                child.recomputePosition()
+                child.recomputeEntity()
 
     # THESE ARE UTILITY METHODS THAT CAN BE USED TO SPECIFY RELATIVE POSITIONS ABOVE
 

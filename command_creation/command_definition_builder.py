@@ -30,7 +30,7 @@ class CommandDefinitionBuilder:
         # set to default color
         self.color = COMMAND_INFO[self.type].color
 
-        self.currentWidgetID = 0
+        self.currentElementID = 0
 
     def setName(self, name: str):
         self.name = name
@@ -56,17 +56,21 @@ class CommandDefinitionBuilder:
         if self.isCodeEditor or self.isTask:
             raise Exception("Cannot add widgets to code commands")
         
-        widget.setID(self.currentWidgetID)
-        self.currentWidgetID += 1
+        widget.setID(self.currentElementID)
+        self.currentElementID += 1
         
         self.elements.append(widget)
 
     def addReadout(self, variableName: str, attribute: Enum):
         if self.isCodeEditor or self.isTask:
-            raise Exception("Cannot add widgets to code commands")
+            raise Exception("Cannot add readouts to code commands")
         
-        if not self.isCodeEditor:
-            self.elements.append(ReadoutDefinition(attribute, variableName))
+        readout = ReadoutDefinition(attribute, variableName)
+        
+        readout.setID(self.currentElementID)
+        self.currentElementID += 1
+        
+        self.elements.append(readout)
 
     def disableNonblocking(self):        
         self.nonblockingEnabled = False

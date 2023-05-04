@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 from entity_base.listeners.click_listener import ClickLambda
 from root_container.panel_container.element.widget.widget_entity import WidgetContainer
 from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
+from root_container.panel_container.element.row.element_definition import ElementType
 
 from common.image_manager import ImageID
 from common.reference_frame import PointRef, Ref
@@ -23,8 +24,6 @@ class CheckboxWidgetContainer(WidgetContainer['CheckboxWidgetDefinition']):
     def __init__(self, parent, parentCommand: CommandBlockEntity, definition: 'CheckboxWidgetDefinition'):
 
         super().__init__(parent, parentCommand, definition)
-
-        self.setValue(definition.defaultOn)
         
         states = [
             ImageState(True, ImageID.CHECKBOX_ON),
@@ -57,7 +56,7 @@ class CheckboxWidgetContainer(WidgetContainer['CheckboxWidgetDefinition']):
 class CheckboxWidgetDefinition(WidgetDefinition):
 
     def __init__(self, variableName: str, defaultOn: bool, tooltipOn: str = None, tooltipOff: str = None):
-        super().__init__(variableName)
+        super().__init__(ElementType.CHECKBOX, variableName)
         self.defaultOn = defaultOn
         self.tooltipOn = tooltipOn
         self.tooltipOff = tooltipOff

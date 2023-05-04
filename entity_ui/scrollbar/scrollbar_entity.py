@@ -65,13 +65,13 @@ class ScrollbarEntity(Entity, Observable):
             self.percent = (self.TOP_Y - self._py(0)) / moveableDistance
             self.percent = clamp(self.percent, 0, 1)
 
-        self.recomputePosition()
+        self.recomputeEntity()
         self.notify()
 
     def setManualOffset(self, y):
         self.percent = (y - self._py(0)) / (self.contentHeight - self._pheight(1))
         self.percent = clamp(self.percent, 0, 1)
-        self.recomputePosition()
+        self.recomputeEntity()
         self.notify()
 
     def onStartDrag(self, mouse: tuple):
@@ -87,7 +87,7 @@ class ScrollbarEntity(Entity, Observable):
         else:
             self.percent = (absoluteDragY - self._py(0)) / moveableDistance
             self.percent = clamp(self.percent, 0, 1)
-        self.recomputePosition()
+        self.recomputeEntity()
         self.notify()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

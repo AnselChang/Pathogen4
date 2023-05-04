@@ -79,7 +79,7 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         # Theta from M to P (position)
         theta = (self.B - self.A).theta() + math.pi/2
         self.positionRef = self.segmentMidpoint + VectorRef(Ref.FIELD, magnitude = self.perpDistance, heading = theta)
-        self.recomputePosition()
+        self.recomputeEntity()
 
     # return cached position in screen coordinates
     def defineCenter(self) -> tuple:

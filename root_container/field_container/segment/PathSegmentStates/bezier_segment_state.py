@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from adapter.bezier_adapter import BezierAdapter, BezierAttributeID
+from adapter.bezier_adapter import BezierAdapter
 from common.image_manager import ImageID
 from data_structures.observer import Observer
 from entity_base.image.image_state import ImageState
@@ -21,7 +21,7 @@ from enum import Enum, auto
 from common.reference_frame import PointRef, Ref
 from entity_base.entity import Entity
 from data_structures.linked_list import LinkedListNode
-from adapter.path_adapter import PathAdapter
+from adapter.path_adapter import PathAdapter, PathAttributeID
 from root_container.field_container.segment.path_segment_state import PathSegmentState
 
 import pygame
@@ -61,15 +61,15 @@ class BezierSegmentState(PathSegmentState, Observer):
     # In this case, recompute bezier but with equidistant points
     def onNodeStopDrag(self):
         self.recomputeBezier(False)
-        self.segment.recomputePosition()
+        self.segment.recomputeEntity()
     
     # compute bezier curve purely through field ref. but store points as PointRef
     # fast is not normalized. Used when dragging
     # slow is normalized. Used when mouse released
     def recomputeBezier(self, fast: bool = True):
         # sometimes redundant, but must guarantee that the bezier nodes are initialized
-        self.segment.bezierTheta1.recomputePosition()
-        self.segment.bezierTheta2.recomputePosition()
+        self.segment.bezierTheta1.recomputeEntity()
+        self.segment.bezierTheta2.recomputeEntity()
 
         # get the four control points
         p0 = self.segment.getPrevious().getPositionRef().fieldRef
@@ -118,13 +118,13 @@ class BezierSegmentState(PathSegmentState, Observer):
     def updateAdapter(self) -> None:
         self.recomputeBezier()
 
-        self.adapter.set(BezierAttributeID.X1, self.START_POINT[0], formatInches(self.START_POINT[0]))
-        self.adapter.set(BezierAttributeID.Y1, self.START_POINT[1], formatInches(self.START_POINT[1]))
-        self.adapter.set(BezierAttributeID.X2, self.END_POINT[0], formatInches(self.END_POINT[0]))
-        self.adapter.set(BezierAttributeID.Y2, self.END_POINT[1], formatInches(self.END_POINT[1]))
+        self.adapter.set(PathAttributeID.X1, self.START_POINT[0], formatInches(self.START_POINT[0]))
+        self.adapter.set(PathAttributeID.Y1, self.START_POINT[1], formatInches(self.START_POINT[1]))
+        self.adapter.set(PathAttributeID.X2, self.END_POINT[0], formatInches(self.END_POINT[0]))
+        self.adapter.set(PathAttributeID.Y2, self.END_POINT[1], formatInches(self.END_POINT[1]))
 
-        self.adapter.set(BezierAttributeID.THETA1, self.THETA1, formatDegrees(self.THETA1))
-        self.adapter.set(BezierAttributeID.THETA2, self.THETA2, formatDegrees(self.THETA2))
+        self.adapter.set(PathAttributeID.THETA1, self.THETA1, formatDegrees(self.THETA1))
+        self.adapter.set(PathAttributeID.THETA2, self.THETA2, formatDegrees(self.THETA2))
 
         self.adapter.setIconStateID(BezierIconID.BEZIER)
 

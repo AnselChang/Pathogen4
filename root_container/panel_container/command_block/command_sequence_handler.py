@@ -83,7 +83,7 @@ class CommandSequenceHandler(Observer):
 
     
     def recomputePosition(self):
-        self.vgc.recomputePosition()
+        self.vgc.recomputeEntity()
     
     # Set up the command block entity and tie it to the VariableGroupContainer
     def _createCommand(self, adapter: PathAdapter, vgc: VariableGroupContainer = None) -> tuple[VariableContainer, CommandBlockEntity]:
@@ -221,7 +221,7 @@ class CommandSequenceHandler(Observer):
     def onWindowResize(self):
 
         self.forceAnimationToEnd = True
-        self.vgc.recomputePosition()
+        self.vgc.recomputeEntity()
         self.forceAnimationToEnd = False
         self.scrollHandler.setContentHeight(self.vgc.HEIGHT)
 

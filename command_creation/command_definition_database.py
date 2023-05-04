@@ -51,3 +51,6 @@ class CommandDefinitionDatabase:
             if definitions[id].name == name:
                 return id
         raise Exception("No definition with name " + name + " found")
+
+    # generate a dictionary of all the command definitions, and convert to json
+    def exportToJson():

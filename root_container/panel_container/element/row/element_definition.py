@@ -12,6 +12,12 @@ from common.font_manager import FontID
 
 from abc import ABC, abstractmethod
 
+class ElementType(Enum):
+    READOUT = 1
+    CHECKBOX = 2
+    DROPDOWN = 3
+    TEXTBOX = 4
+
 """
 An element is either a widget or a readout.
 A list of element definitions are used to convert into a list of rows
@@ -19,12 +25,16 @@ A list of element definitions are used to convert into a list of rows
 
 class ElementDefinition(ABC):
 
-    def __init__(self, variableName):
+    def __init__(self, elementType: ElementType, variableName):
+        self.elementType = elementType
         self.variableName = variableName
 
 
         self.LABEL_FONT = FontID.FONT_NORMAL
         self.LABEL_SIZE = 11
+
+    def setID(self, id):
+        self.id = id
 
     @abstractmethod
     def makeElement(self, parent, parentCommand, pathAdapter) -> ElementContainer:

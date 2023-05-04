@@ -1,7 +1,7 @@
 from __future__ import annotations
 import math
 from typing import TYPE_CHECKING
-from adapter.arc_adapter import ArcAdapter, ArcAttributeID
+from adapter.arc_adapter import ArcAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 from root_container.field_container.segment.segment_direction import SegmentDirection
@@ -20,7 +20,7 @@ from enum import Enum, auto
 from common.reference_frame import PointRef, Ref, ScalarRef, VectorRef
 from entity_base.entity import Entity
 from data_structures.linked_list import LinkedListNode
-from adapter.path_adapter import PathAdapter
+from adapter.path_adapter import PathAdapter, PathAttributeID
 from root_container.field_container.segment.path_segment_state import PathSegmentState
 
 import pygame
@@ -200,19 +200,19 @@ class ArcSegmentState(PathSegmentState):
         self.recalculateArcFromArcCurveNode()
 
         # Set positions
-        self.adapter.set(ArcAttributeID.X1, self.p1.fieldRef[0], formatInches(self.p1.fieldRef[0]))
-        self.adapter.set(ArcAttributeID.Y1, self.p1.fieldRef[1], formatInches(self.p1.fieldRef[1]))
-        self.adapter.set(ArcAttributeID.X2, self.p3.fieldRef[0], formatInches(self.p3.fieldRef[0]))
-        self.adapter.set(ArcAttributeID.Y2, self.p3.fieldRef[1], formatInches(self.p3.fieldRef[1]))
+        self.adapter.set(PathAttributeID.X1, self.p1.fieldRef[0], formatInches(self.p1.fieldRef[0]))
+        self.adapter.set(PathAttributeID.Y1, self.p1.fieldRef[1], formatInches(self.p1.fieldRef[1]))
+        self.adapter.set(PathAttributeID.X2, self.p3.fieldRef[0], formatInches(self.p3.fieldRef[0]))
+        self.adapter.set(PathAttributeID.Y2, self.p3.fieldRef[1], formatInches(self.p3.fieldRef[1]))
 
-        self.adapter.set(ArcAttributeID.XCENTER, self.CENTER.fieldRef[0], formatInches(self.CENTER.fieldRef[0]))
-        self.adapter.set(ArcAttributeID.YCENTER, self.CENTER.fieldRef[1], formatInches(self.CENTER.fieldRef[1]))
-        self.adapter.set(ArcAttributeID.RADIUS, self.RADIUS.fieldRef, formatInches(self.RADIUS.fieldRef))
+        self.adapter.set(PathAttributeID.XCENTER, self.CENTER.fieldRef[0], formatInches(self.CENTER.fieldRef[0]))
+        self.adapter.set(PathAttributeID.YCENTER, self.CENTER.fieldRef[1], formatInches(self.CENTER.fieldRef[1]))
+        self.adapter.set(PathAttributeID.RADIUS, self.RADIUS.fieldRef, formatInches(self.RADIUS.fieldRef))
 
-        self.adapter.set(ArcAttributeID.ARC_LENGTH, self.ARC_LENGTH.fieldRef, formatInches(self.ARC_LENGTH.fieldRef))
+        self.adapter.set(PathAttributeID.ARC_LENGTH, self.ARC_LENGTH.fieldRef, formatInches(self.ARC_LENGTH.fieldRef))
 
-        self.adapter.set(ArcAttributeID.THETA1, self.THETA1, formatDegrees(self.THETA1))
-        self.adapter.set(ArcAttributeID.THETA2, self.THETA2, formatDegrees(self.THETA2))
+        self.adapter.set(PathAttributeID.THETA1, self.THETA1, formatDegrees(self.THETA1))
+        self.adapter.set(PathAttributeID.THETA2, self.THETA2, formatDegrees(self.THETA2))
 
         if self.segment.getDirection() == SegmentDirection.FORWARD:
             icon = ArcIconID.FORWARD_LEFT if self.POSITIVE else ArcIconID.FORWARD_RIGHT

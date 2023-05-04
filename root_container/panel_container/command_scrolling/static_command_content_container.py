@@ -6,7 +6,7 @@ class StaticCommandContentContainer(Container):
 
     def __init__(self, parent: Entity, drawOrder: DrawOrder):
         super().__init__(parent, drawOrder = drawOrder)
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def defineLeftX(self) -> float:
         return self._px(0.025)

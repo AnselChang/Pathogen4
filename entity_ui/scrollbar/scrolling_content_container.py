@@ -11,7 +11,7 @@ class ScrollingContentContainer(Container, Observer):
         super().__init__(parent = parentContainer, drawOrder = drawOrder)
 
         self.scrollbar = scrollbarContainer.scrollbar
-        self.scrollbar.subscribe(self, onNotify = self.recomputePosition)
+        self.scrollbar.subscribe(self, onNotify = self.recomputeEntity)
 
     def defineTopLeft(self) -> tuple:
         return self._px(0), self._py(0) + self.scrollbar.getScrollOffset()

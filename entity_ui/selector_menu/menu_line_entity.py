@@ -26,7 +26,7 @@ class MenuLineEntity(Entity):
 
         self.COLOR = [50]*3
 
-        self.recomputePosition()
+        self.recomputeEntity()
 
     def isTouching(self, mouse: tuple) -> float:
         return False

@@ -22,7 +22,7 @@ class PanelContainer(entity.Entity):
         super().__init__(parent = entity.ROOT_CONTAINER, drawOrder = DrawOrder.PANEL_BACKGROUND)
         
         self.color = (100,100,100)
-        self.recomputePosition()
+        self.recomputeEntity()
 
     # override
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

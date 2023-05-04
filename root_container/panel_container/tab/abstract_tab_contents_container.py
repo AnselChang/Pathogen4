@@ -28,7 +28,7 @@ class AbstractTabContentsContainer(Container):
         self.tabHandler = tabHandler
         self.color = parentPanel.color
         self.tabName = tabName
-        self.recomputePosition()
+        self.recomputeEntity()
 
     # Sits right below where the tabs are
     def defineTopLeft(self) -> tuple:

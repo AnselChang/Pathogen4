@@ -69,7 +69,7 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, PathElement['PathNod
         }
         # on state update, recompute itself
         for stateID in self.states:
-            self.states[stateID].subscribe(self, onNotify = self.recomputePosition)
+            self.states[stateID].subscribe(self, onNotify = self.recomputeEntity)
 
         self.currentState: PathSegmentType = PathSegmentType.STRAIGHT
 
@@ -90,7 +90,7 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, PathElement['PathNod
         self.isFullyInitialized = False
 
         self.updateAdapter()
-        self.recomputePosition()
+        self.recomputeEntity()
 
         
     def tick(self):
@@ -169,7 +169,7 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, PathElement['PathNod
 
     def onNodeMove(self, node: Entity):
         self.updateAdapter()
-        self.recomputePosition()
+        self.recomputeEntity()
         self.arcNode.recomputePositionRef()
         if node is self.getPrevious():
             self.getNext().onAngleChange()
@@ -178,7 +178,7 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, PathElement['PathNod
 
     def onReshape(self):
         self.updateAdapter()
-        self.recomputePosition()
+        self.recomputeEntity()
         self.getNext().onAngleChange()
         self.getPrevious().onAngleChange()
         
@@ -207,7 +207,7 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, PathElement['PathNod
             self.isFullyInitialized = True
 
         self.getState().updateAdapter()
-        self.recomputePosition()
+        self.recomputeEntity()
 
 
     def toggleDirection(self):

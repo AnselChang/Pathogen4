@@ -12,9 +12,15 @@ class ParameterState:
 
     def __init__(self, command: CommandBlockEntity):
         self.command = command
+        self.database = command.database
         self.hashmap: dict[str, Any] = {}
 
-    def getValue(self, id: str):
+    def getValue(self, id):
+
+        # if parameter is not in hashmap, assign to default value
+        if id not in self.hashmap:
+            self.hashmap[id] = self.command.getDefinition().getElementDefinitionByID(id)
+
         return self.hashmap[id]
     
     def setValue(self, id: str, value: Any):
