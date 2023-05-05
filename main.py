@@ -18,6 +18,7 @@ from entity_handler.interactor import Interactor
 from root_container.path import Path
 
 from command_creation.command_definition_database import CommandDefinitionDatabase
+from command_creation.test_commands import *
 from command_creation.command_block_entity_factory import CommandBlockEntityFactory
 
 from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
@@ -58,6 +59,8 @@ def io_handler(database: CommandDefinitionDatabase):
         if cmd == "json":
             commandJSON: dict = database.exportToJson()
             print(json.dumps(commandJSON, indent = 4))
+        elif cmd == "forward":
+            database.registerDefinition(goToPoint())
 
 
 

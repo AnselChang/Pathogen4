@@ -1,5 +1,6 @@
 from command_creation.command_definition import CommandType, CommandDefinition
 from command_creation.preset_commands import CommandDefinitionPresets
+from data_structures.observer import Observable
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 
@@ -17,7 +18,7 @@ import json
 Stores all the different CommandDefinitions
 """
 
-class CommandDefinitionDatabase:
+class CommandDefinitionDatabase(Observable):
 
     def __init__(self):
 
@@ -29,11 +30,22 @@ class CommandDefinitionDatabase:
         # initially populate with preset commands. make sure there's one command per type at least
         presets = CommandDefinitionPresets()
         for preset in presets.getPresets():
-            self.registerDefinition(preset)
+            self.registerDefinition(preset, False)
+
+        self.lastUpdatedCommandID: str = None
+        self.lastUpdatedCommandType: CommandType = None
 
     # add a (id, command) pair to definitions
-    def registerDefinition(self, command: CommandDefinition):
+    # notify observers for any new definitions except for the initial preset commands
+    def registerDefinition(self, command: CommandDefinition, notifyObservers: bool = True):
         self.definitions[command.type][command.id] = command
+
+        self.lastUpdatedCommandID = command.id
+        self.lastUpdatedCommandType = command.type
+
+        if notifyObservers:
+            print("registered", command)
+            self.notify()
 
     def getDefinitionNames(self, type: CommandType, isInTask: bool = False) -> list[str]:
         return [definition.name for definition in self.definitions[type].values()

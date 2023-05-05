@@ -117,11 +117,49 @@ class CommandBlockEntity(Entity, Observer):
         """
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), pathAdapter)
 
+        # subscribe to changes in the database
+        self.database.subscribe(self, onNotify = self.onCommandDefinitionChange)
+
         # For turn commands: if turn is enabled/disabled, command is shown/hidden
         if self.pathAdapter.type == CommandType.TURN:
             self.pathAdapter.subscribe(self, id = NotifyType.TURN_ENABLE_TOGGLED, onNotify = self.onTurnEnableToggled)
 
         self.onTurnEnableToggled()
+
+    # update components based on new command definition
+    def onCommandDefinitionChange(self):
+
+        # not the same type. doesn't even affect function dropdown
+        if self.type != self.database.lastUpdatedCommandType:
+            return
+        
+        # Update function dropdown
+        self.headerEntity.functionName.onDatabaseChange()
+
+        # If id is not command's id, this is not applicable as there are no relevant changes
+        if self.definitionID != self.database.lastUpdatedCommandID:
+            return
+        
+        print("change")
+        
+        # only commands consisting of widgets and readouts can have their definition changed
+        assert(isinstance(self.elementsContainer, RowElementsContainer))
+
+        self.onColorChange()
+
+        # update container with new database info
+        container: RowElementsContainer = self.elementsContainer
+        container.onDefinitionChange()
+
+        self.propagateChange()
+    
+    # call whenever database command color changes
+    def onColorChange(self):
+        # switch to the new definition color (animated)
+        r,g,b = self.getDefinition().color
+        self.colorR.setEndValue(r)
+        self.colorG.setEndValue(g)
+        self.colorB.setEndValue(b)
 
     # called when a different name is selected in the dropdown
     def onFunctionChange(self):
@@ -135,11 +173,7 @@ class CommandBlockEntity(Entity, Observer):
         self.elementsContainer = createElementsContainer(self, self.getDefinition(), self.pathAdapter)
         self.elementsContainer.recomputeEntity()
 
-        # switch to the new definition color (animated)
-        r,g,b = self.getDefinition().color
-        self.colorR.setEndValue(r)
-        self.colorG.setEndValue(g)
-        self.colorB.setEndValue(b)
+        self.onColorChange()
 
         # set initial visibility for new elements container
         if self.isFullyCollapsed():
@@ -261,19 +295,6 @@ class CommandBlockEntity(Entity, Observer):
     # Set the local expansion of the command without modifying global expansion flags
     def setLocalExpansion(self, isExpanded):
         self.localExpansion = isExpanded
-
-    def onCommandDefinitionChange(self, commandID: str):
-
-        # If id is not command's id, this is not applicable
-        if commandID != self.definitionID:
-            return
-        
-        # only commands consisting of widgets and readouts can have their definition changed
-        assert(isinstance(self.elementsContainer, RowElementsContainer))
-
-        # update container with new database info
-        container: RowElementsContainer = self.elementsContainer
-        container.onDefinitionChange()
 
     # Toggle command expansion. Modify global expansion flags if needed
     def onClick(self, mouse: tuple):

@@ -42,6 +42,10 @@ class FunctionNameEntity(Entity, Observer):
         # Whenever the name changes, notify the commmand block entity to update the command
         self.dropdown.subscribe(self, onNotify = self.parentCommand.onFunctionChange)
 
+    def onDatabaseChange(self):
+        self.dropdown.updateOptions(self.parentCommand.getFunctionNames())
+        self.updateColor()
+
     def updateColor(self):
 
         color = self.parentCommand.getColor()

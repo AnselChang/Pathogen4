@@ -93,21 +93,56 @@ class DropdownContainer(Container, Observable):
         self.selectedOptionText = None
         self.setSelectedText(options[0], False) # recomputes position from this call
 
+        self.colors = [colorSelectedHovered, colorSelected, colorHovered, colorOff]
+
         self.currentOption = DropdownOptionEntity(self, -1, self.font, 
                                                   colorSelectedHovered, colorSelected, colorHovered, colorOff,
                                                   dynamicText = self.getSelectedOptionText)
 
         self.options: list[DropdownOptionEntity] = [self.currentOption]
         for i in range(len(self.otherOptions)):
-            o = DropdownOptionEntity(self, i, self.font,
-                                 colorSelectedHovered, colorSelected, colorHovered, colorOff,
+            self._addOption(i)
+
+        DropdownIconContainer(self.currentOption, self)
+
+    def _addOption(self, i):
+        o = DropdownOptionEntity(self, i, self.font,
+                                 *self.colors,
                                  dynamicText = lambda i=i: self.getOptionText(i),
                                  isLast = (i == len(self.otherOptions)-1)
                                  )
-            o.setInvisible()
-            self.options.append(o)
+        o.setInvisible()
+        self.options.append(o)
+        return o
 
-        DropdownIconContainer(self.currentOption, self)
+    # update the dropdown with a new list of options.
+    # attempt to keep the current option if it exists in the new list
+    # need to delete all the old options and rebuild the DropdownOptionEntities
+    def updateOptions(self, options: list[str]):
+
+        currentText = self.getSelectedOptionText()
+        
+
+        # adjust number of dropdown elements to length of options list
+        newIndex = len(self.options)
+        while len(self.options) > len(options):
+            self.entities.removeEntity(self.options.pop())
+        while len(self.options) < len(options):
+            self._addOption(len(self.options)-1)
+
+        # update selected text. attempt to maintain same text
+        self.optionTexts = options
+        if currentText not in self.optionTexts:
+            currentText = self.optionTexts[0]
+        self.selectedOptionText = None
+        self.setSelectedText(currentText)
+
+        # make any new options visible if the dropdown is expanded
+        if self.expanded:
+            while newIndex < len(self.options):
+                self.options[newIndex].setVisible()
+                newIndex += 1
+
 
     def setColor(self, colorSelectedHovered, colorSelected, colorHovered, colorOff):
         for option in self.options:
