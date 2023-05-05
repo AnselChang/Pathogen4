@@ -126,8 +126,6 @@ class CommandBlockEntity(Entity, Observer):
     # called when a different name is selected in the dropdown
     def onFunctionChange(self):
 
-        print("on function hange")
-
         # First, get the definition for the new function
         functionName = self.headerEntity.functionName.getFunctionName()
         self.definitionID = self.database.getDefinitionIDByName(self.type, functionName)

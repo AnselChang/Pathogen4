@@ -175,7 +175,7 @@ class DropdownContainer(Container, Observable):
 
     def onTick(self):
 
-        if self.heightProfile.isDone() or not self.widthProfile.isDone():
+        if not self.heightProfile.isDone() or not self.widthProfile.isDone():
             self.recomputeEntity()
         else:
             if self.stillVisibleWhileCollapsing:
