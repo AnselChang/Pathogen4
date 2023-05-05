@@ -127,6 +127,7 @@ class CommandDefinitionPresets:
         builder.setColor((140, 135, 130))
         builder.addWidget(ValueTextboxWidgetDefinition("Time (s)", 0.5))
         builder.disableNonblocking()
+        builder.setID("WAIT")
         return builder.build()
     
     @preset
@@ -135,4 +136,5 @@ class CommandDefinitionPresets:
         builder.setName("task()")
         builder.setColor(100)
         builder.disallowInTask() # no recursion
+        builder.setID("TASK")
         return builder.build()

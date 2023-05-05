@@ -4,6 +4,8 @@ from command_creation.command_definition import CommandDefinition
 from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
 from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
 from root_container.panel_container.element.row.element_definition import ElementDefinition
+from command_creation.id_generation import generate_random_id
+
 
 from command_creation.command_type import COLOR_THEME, COMMAND_INFO, CommandType
 
@@ -13,10 +15,12 @@ from enum import Enum
 Instantiates a CommandDefinition
 Passing in "None" indicates it is a code command
 """
-
+COMMAND_ID_LENGTH = 10
 class CommandDefinitionBuilder:
 
     def __init__(self, type: CommandType, isCodeEditor: bool = False, isTask: bool = False):
+
+        self.id = generate_random_id(COMMAND_ID_LENGTH)
 
         self.type = type
         self.isCodeEditor = isCodeEditor
@@ -35,6 +39,10 @@ class CommandDefinitionBuilder:
 
     def setName(self, name: str):
         self.name = name
+
+    # set a specific id instead of defaulting to a random one
+    def setID(self, id: str):
+        self.id = id
 
     def setColor(self, hueOrColor):
         if not self.type == CommandType.CUSTOM:
@@ -85,6 +93,7 @@ class CommandDefinitionBuilder:
     def build(self) -> CommandDefinition:
 
         return CommandDefinition(
+            id = self.id,
             type = self.type,
             name = self.name,
             color = self.color,
