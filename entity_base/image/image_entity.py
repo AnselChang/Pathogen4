@@ -43,12 +43,12 @@ class ImageEntity(Entity, TooltipOwner):
         self.center_px, self.center_py = center_px, center_py
         self.pwidth, self.pheight = pwidth, pheight
 
-        self.states: dict[Enum, ImageState] = {}
         self.defaultID = None
+        self.states: dict[Enum, ImageState] = {}
         if isinstance(states, ImageState):
-            self.addState(states)
+            self._addState(states)
         else:
-            [self.addState(state) for state in states]
+            [self._addState(state) for state in states]
 
         self.getStateID = getStateID
         
@@ -56,7 +56,7 @@ class ImageEntity(Entity, TooltipOwner):
         self.onClick = onClick
         self.isOn = isOn
 
-    def addState(self, state: ImageState):
+    def _addState(self, state: ImageState):
         self.states[state.id] = state
         if self.defaultID is None:
             self.defaultID = state.id
@@ -73,7 +73,7 @@ class ImageEntity(Entity, TooltipOwner):
     def setState(self, id):
         if id not in self.states:
             raise Exception("State not found")
-        self.currentID = id
+        self.defaultID = id
 
     def attemptToClick(self, mouse: tuple):
         if self.isOn():

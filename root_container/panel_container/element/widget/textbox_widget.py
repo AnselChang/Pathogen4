@@ -39,7 +39,7 @@ class TextboxWidgetContainer(WidgetContainer['TextboxWidgetDefinition'], Observe
             fontID, fontSize,
             isDynamic = definition.isDynamic,
             isNumOnly = definition.isNumOnly,
-            defaultText = definition.defaultText
+            defaultText = definition.defaultValue
         )
 
         self.textEditor.subscribe(self, onNotify = self.onTextChange)
@@ -65,11 +65,10 @@ class TextboxWidgetDefinition(WidgetDefinition):
 
     # set fontID and fontSize to None to use defaults
     def __init__(self, variableName: str, fontID: FontID, fontSize: float, defaultText: str, isDynamic: bool, isNumOnly: bool):
-        super().__init__(ElementType.TEXTBOX, variableName)
+        super().__init__(ElementType.TEXTBOX, variableName, defaultText)
 
         self.fontID = fontID
         self.fontSize = fontSize
-        self.defaultText = defaultText
         self.isDynamic = isDynamic
         self.isNumOnly = isNumOnly
 

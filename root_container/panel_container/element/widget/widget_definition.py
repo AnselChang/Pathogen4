@@ -5,5 +5,6 @@ from abc import abstractmethod
 
 class WidgetDefinition(ElementDefinition):
 
-    def __init__(self, elementType: ElementType, variableName: str):
+    def __init__(self, elementType: ElementType, variableName: str, defaultValue):
         super().__init__(elementType, variableName)
+        self.defaultValue = defaultValue

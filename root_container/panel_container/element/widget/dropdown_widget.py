@@ -45,7 +45,7 @@ class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition'], Obser
 class DropdownWidgetDefinition(WidgetDefinition):
 
     def __init__(self, variableName: str, options: list[str]):
-        super().__init__(ElementType.DROPDOWN, variableName)
+        super().__init__(ElementType.DROPDOWN, variableName, options[0])
         self.options = options
 
     def makeElement(self, parent, parentCommand, pathAdapter) -> DropdownWidgetContainer:

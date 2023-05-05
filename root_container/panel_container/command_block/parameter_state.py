@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
+
+from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
@@ -19,7 +21,8 @@ class ParameterState:
 
         # if parameter is not in hashmap, assign to default value
         if id not in self.hashmap:
-            self.hashmap[id] = self.command.getDefinition().getElementDefinitionByID(id)
+            widgetDefinition: WidgetDefinition = self.command.getDefinition().getElementDefinitionByID(id)
+            self.hashmap[id] = widgetDefinition.defaultValue
 
         return self.hashmap[id]
     

@@ -56,7 +56,7 @@ class CheckboxWidgetContainer(WidgetContainer['CheckboxWidgetDefinition']):
 class CheckboxWidgetDefinition(WidgetDefinition):
 
     def __init__(self, variableName: str, defaultOn: bool, tooltipOn: str = None, tooltipOff: str = None):
-        super().__init__(ElementType.CHECKBOX, variableName)
+        super().__init__(ElementType.CHECKBOX, variableName, defaultOn)
         self.defaultOn = defaultOn
         self.tooltipOn = tooltipOn
         self.tooltipOff = tooltipOff

@@ -110,7 +110,7 @@ class PathAdapter(ABC, Observable):
 class NullPathAdapter(PathAdapter):
     def __init__(self):
         image = ImageState(0, ImageID.CUSTOM)
-        super().__init__(CommandType.CUSTOM, image, {})
+        super().__init__(CommandType.CUSTOM, image)
 
 
 class AdapterInterface(ABC):
