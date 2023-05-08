@@ -16,6 +16,13 @@ Most likely, if it looks like complex relationships are needed, reach out to me 
 
 ### Follow programming conventions
 In this case, follow *my* conventions :) The gist is just to keep code formatting consistent throughout the codebase.
+* **always use full type hinting**
+* snake case for file names
+* pascal case for classes
+* camel case for functions and variables
+* Top-level multiline comment for classes, and comment function headers
+
+The codebase over the course of its evolution doesn't always follow these conventions perfectly, but the ideal is to reshape and improve the codebase to meet these standards.
 
 ## An Overview
 ![Entity UML diagram](github_images/entity_uml.png)
