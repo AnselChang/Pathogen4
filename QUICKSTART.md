@@ -14,7 +14,7 @@ Try to keep classes <200 LOC if possible, and functions short. The easiest way f
 SOLID and single responsibility, DRY, composition over inheritance, etc.
 Most likely, if it looks like complex relationships are needed, reach out to me first so we can sort things out.
 
-## Follow programming conventions
+### Follow programming conventions
 In this case, follow *my* conventions :) The gist is just to keep code formatting consistent throughout the codebase.
 
 ## An Overview
