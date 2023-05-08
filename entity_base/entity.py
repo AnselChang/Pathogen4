@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 
+from common.draw_order import DrawOrder
+
 if TYPE_CHECKING:
     from entity_handler.entity_manager import EntityManager
     from entity_handler.interactor import Interactor
@@ -32,12 +34,10 @@ import pygame
 
 
 """
-Any graphical or interactable object should subclass Entity. By adding entities to
-EntityManager, it auto-handles all mouse interaction and drawing capabilities through Interactor.
+Any graphical or interactable object should subclass Entity. The constructor of Entity automatically
+adds itself to EntityManager, which auto-handles all mouse interaction and drawing capabilities.
 Optionally pass in drag, select, etc. listeners to recieve mouse interaction callbacks
 for your entity.
-DrawOrder, with enum defined in draw_order.py, specifies the layering of the drawn objects.
-Feel free to add to DrawOrder enum if you want to order a new entity type.
 """
 _entities: EntityManager = None
 _interactor: Interactor = None
@@ -69,7 +69,7 @@ class Entity(ABC, Observable):
                  tick: TickListener = None,
                  hover: HoverListener = None,
                  key: KeyListener = None,
-                 drawOrder: int = 0,
+                 drawOrder: DrawOrder = 0,
                  initiallyVisible: bool = True,
                  recomputeWhenInvisible: bool = False
                  ) -> None:

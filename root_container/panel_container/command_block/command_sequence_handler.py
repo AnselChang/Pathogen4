@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from command_creation.command_type import CommandType
 from common.draw_order import DrawOrder
 
 from data_structures.observer import Observer
@@ -20,7 +21,7 @@ from root_container.panel_container.command_block.command_block_entity import Co
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
 from root_container.panel_container.command_scrolling.command_scrolling_handler import CommandScrollingHandler
-
+import math
 
 
 """
@@ -233,7 +234,7 @@ class CommandSequenceHandler(Observer):
         return closestInserter, closestDistance
 
     # When dragging a custom command. Gets the closest inserter object to the mouse
-    def getClosestInserter(self, mouse: tuple, considerInsertersInsideTask: bool) -> CommandInserter:
+    def getClosestInserterCustom(self, mouse: tuple, considerInsertersInsideTask: bool) -> CommandInserter:
 
         mx, my = mouse
 
@@ -258,6 +259,48 @@ class CommandSequenceHandler(Observer):
             element = element.getNext()
 
         return closestInserter
+    
+    # path commands can be dragged, but only if they don't switch order with other path commands
+    # do not check inserters inside tasks
+    def getClosestInserterPath(self, mouse: tuple, command: CommandBlockEntity) -> CommandInserter | None:
+        mx, my = mouse
+
+        closestInserter = None
+        closestDistance = math.inf
+
+        # check for inserters before command up till the first non-custom command
+        previous = command
+        while True:
+            previous = previous.getPreviousCommand()
+            
+            if previous is None:
+                break
+
+            if not previous.isVisible():
+                continue
+
+            if previous.type != CommandType.CUSTOM:
+                break
+            print("previous", previous)
+            self._updateClosestInserter(previous.getPreviousInserter(), my, closestInserter, closestDistance)
+        # check for inserters after command up till the first non-custom command
+        next = command
+        while True:
+            next = next.getNextCommand()
+
+            if next is None:
+                break
+
+            if not next.isVisible():
+                continue
+
+            if next.type != CommandType.CUSTOM:
+                break
+            print("next", next, next.getNextInserter())
+            self._updateClosestInserter(next.getNextInserter(), my, closestInserter, closestDistance)
+
+        return closestInserter
+
     
     # # if command, gives next inserter. If next inserter, gives next command
     def getNext(self, element: Element) -> Element:

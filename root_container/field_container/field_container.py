@@ -39,10 +39,10 @@ class FieldContainer(entity.Entity, Observer):
             click = ClickLambda(self, FonRightClick = self.onRightClick),
             drawOrder = DrawOrder.FIELD_BACKGROUND)
         self.fieldTransform = fieldTransform
-        self.recomputeEntity()
 
         # Whenever field is dragged, update entities on field
         self.fieldTransform.subscribe(self, onNotify = self.recomputeEntity)
+
 
     def initPath(self, path: Path):
         self.path = path

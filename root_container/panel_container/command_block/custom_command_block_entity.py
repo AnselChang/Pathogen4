@@ -40,41 +40,17 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionContainer):
         
         super().__init__(parent, handler, pathAdapter, database, commandExpansion,
-                         drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
                          defaultExpand = True, isCustom = True
                          )
 
         self.dragging = False
 
+    def _getClosestInserter(self, mouse: tuple) -> CommandInserter | None:
+
+         # if not custom and not task
+        considerInsertersInsideTask = self.type != CommandType.CUSTOM or not self.isTask()
+        return self.handler.getClosestInserterCustom(mouse, considerInsertersInsideTask)
+
     def onDelete(self, mouse: tuple):
         self.handler.deleteCommand(self)
         self.handler.recomputePosition()
-
-    def onStartDrag(self, mouse: tuple):
-        self.mouseOffset = self.CENTER_Y - mouse[1]
-        self.dragPosition = mouse[1] + self.mouseOffset
-
-    def onStopDrag(self):
-        self.dragPosition = None
-        self.recomputeEntity()
-    
-    def onDrag(self, mouse: tuple):
-
-        # if not custom and not task
-        considerInsertersInsideTask = self.type != CommandType.CUSTOM or not self.isTask()
-
-        self.dragPosition = mouse[1] + self.mouseOffset
-        inserter: CommandInserter = self.handler.getClosestInserter(mouse, considerInsertersInsideTask)
-
-        # if dragged to a different position to swap commands
-        if self.getNextInserter() is not inserter and self.getNextInserter() is not inserter:
-            self.handler.moveCommand(self, inserter)
-            self.handler.recomputePosition()
-        else:
-            self.recomputeEntity()
-
-    def defineCenterY(self):
-        if self.drag.isDragging:
-            return self.dragPosition
-        else:
-            return None

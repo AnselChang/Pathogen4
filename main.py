@@ -1,7 +1,6 @@
 from entity_base.entity import Entity
 from entity_base.static_entity import StaticEntity
 from entity_base.entity import initEntityClass, setRootContainer
-from entity_base.test_entity import TestRectEntity
 from entity_ui.dropdown.dropdown_container import DropdownContainer
 from entity_ui.group.variable_group.variable_container import VariableContainer
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer

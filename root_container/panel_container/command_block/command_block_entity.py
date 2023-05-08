@@ -55,7 +55,7 @@ class CommandBlockEntity(Entity, Observer):
     HIGHLIGHTED = None
 
 
-    def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, drag: DragListener = None, defaultExpand: bool = False, isCustom: bool = False):
+    def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, defaultExpand: bool = False, isCustom: bool = False):
         
         self.container = parent
         
@@ -84,16 +84,13 @@ class CommandBlockEntity(Entity, Observer):
         self.colorR = MotionProfile(r, speed = 0.2)
         self.colorG = MotionProfile(g, speed = 0.2)
         self.colorB = MotionProfile(b, speed = 0.2)
-
-        if drag is None:
-            drag = DragLambda(self)
         
         # This recomputes position at Entity constructor
         super().__init__(
             parent = parent,
             click = ClickLambda(self, FonLeftClick = self.onClick, FOnMouseDown = self.onMouseDown),
             tick = TickLambda(self, FonTickStart = self.onTick),
-            drag = drag,
+            drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
             hover = HoverLambda(self),
             drawOrder = DrawOrder.COMMANND_BLOCK,
             recomputeWhenInvisible = True
@@ -374,6 +371,30 @@ class CommandBlockEntity(Entity, Observer):
         if CommandBlockEntity.HIGHLIGHTED is not None and CommandBlockEntity.HIGHLIGHTED is not self:
             CommandBlockEntity.HIGHLIGHTED = None
 
+    def onStartDrag(self, mouse: tuple):
+        self.mouseOffset = self.CENTER_Y - mouse[1]
+        self.dragPosition = mouse[1] + self.mouseOffset
+
+    def onStopDrag(self):
+        self.dragPosition = None
+        self.recomputeEntity()
+
+    def _getClosestInserter(self, mouse: tuple) -> CommandInserter | None:
+        return self.handler.getClosestInserterPath(mouse, self)
+
+    def onDrag(self, mouse: tuple):
+        self.dragPosition = mouse[1] + self.mouseOffset
+
+        inserter = self._getClosestInserter(mouse)
+
+        # if dragged to a different position to swap commands
+        if inserter is not None and self.getNextInserter() is not inserter and self.getNextInserter() is not inserter:
+            print("move")
+            self.handler.moveCommand(self, inserter)
+            self.handler.recomputePosition()
+        else:
+            self.recomputeEntity()
+
     def getColor(self) -> tuple:
         r = self.colorR.get()
         g = self.colorG.get()
@@ -403,6 +424,12 @@ class CommandBlockEntity(Entity, Observer):
 
     def toString(self) -> str:
         return "Command Block Entity"
+    
+    def defineCenterY(self):
+        if self.drag.isDragging:
+            return self.dragPosition
+        else:
+            return None
     
     def getNextInserter(self) -> CommandInserter:
         return self.handler.getNext(self)
