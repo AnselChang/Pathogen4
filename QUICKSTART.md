@@ -216,3 +216,4 @@ You should have a very basic understanding on how this framework works now! Ther
 * look through utility files `math_functions.py` and `pygame_functions.py` for helpful functions that could save painful (redundant) work
 * If you want a callback for an entity to be called every tick of the main loop, look into the `TickListener` and `TickLambda` classes.
 * The observer pattern is used for when an entity needs to send update notifications to other entities, i.e. when an entity is dependent on another entity's state. Entities that observe other entities must extend `Observer`, and entities that are observerable and send pings must extend `Observable`. The `subscribe()` function is used to subscribe to another entity to recieve updates from them.
+* Often times, instead of extending an entity to add functionality, it is preferable to use composition and own that entity as a child to your defined parent entity.
