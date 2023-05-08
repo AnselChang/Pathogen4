@@ -68,8 +68,8 @@ def _aheight(self, pixels) -> float:
 You should read the comments for each of those functions. Essentially, they give you the position relative to the parent. `p` stands for percent, and `a` stands for absolute pixels. For example, to define the child's center x to be at 40% of the parent's horizontal span, write the following code in the child class:
 
 ```python
-def defineWidth(self) -> float:
-        return self._pwidth(0.4)
+def defineCenterX(self) -> float:
+        return self._px(0.4)
 ```
 
 ## Control flow in the Entity class
