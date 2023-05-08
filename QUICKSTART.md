@@ -5,7 +5,7 @@ This guide aims to provide an overview of the Pathogen codebase from the lens of
 To preface any tutorials, I must emphasize that high code quality is required for code contribution! It is tough to maintain a codebase with over 10k lines of code, so we must remain vigilant to keep code as clean and readable as possible. Here are some general coding practices I try to follow.
 
 ### Code purposefully, and comment for "why" not "how".
-Code in a simple, obvious style, using descriptive variable and function names to explain code. It's often a code smell to use commenting to explain complex code, and instead, use commenting to describe high-level behavior and explain its importance.
+Code in a simple, obvious style, using descriptive variable and function names to explain code. If you need to comment code to explain _how_ it works, then the better solution is probably to rewrite the code in a way that is more understandable. Instead, use commenting for the _why_ - to describe high-level behavior and explain its importance.
 
 ### Keep code short
 Try to keep classes <200 LOC if possible, and functions short. The easiest way for code to spiral into an unmaintainable spaghetti mess is for "god" classes to emerge and suddenly take over the entire codebase. Trust me, it's happened so many times in the past and it's a nightmare to clean up.
@@ -13,6 +13,9 @@ Try to keep classes <200 LOC if possible, and functions short. The easiest way f
 ### Follow good OOP practices
 SOLID and single responsibility, DRY, composition over inheritance, etc.
 Most likely, if it looks like complex relationships are needed, reach out to me first so we can sort things out.
+
+## Follow programming conventions
+In this case, follow *my* conventions :) The gist is just to keep code formatting consistent throughout the codebase.
 
 ## An Overview
 ![Entity UML diagram](github_images/entity_uml.png)
