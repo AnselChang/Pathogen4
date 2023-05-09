@@ -65,6 +65,7 @@ class CommandSequenceHandler(Observer):
     def createSection(self) -> VariableContainer[CommandSection]:
         vc = VariableContainer(self.vgc, isHorizontal = False)
         section = CommandSection(self.panel, self)
+        vc.setChild(section)
         return vc
 
 
