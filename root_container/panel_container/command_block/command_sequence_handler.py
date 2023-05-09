@@ -68,7 +68,6 @@ class CommandSequenceHandler(Observer):
         vc.setChild(section)
         return vc
 
-
     def getList(self, commandOrInserter: CommandBlockEntity | CommandInserter = None) -> LinkedList[VariableContainer[Element]]:
         return self.getVGC(commandOrInserter).containers
 
@@ -146,7 +145,8 @@ class CommandSequenceHandler(Observer):
         variableContainer, commandBlock = self._createCommand(adapter, self.getVGC(after))
 
         if after is None:
-            self.getList(after).addToEnd(variableContainer)
+            lastSection: CommandSection = self.vgc.containers.tail.child
+            lastSection.vgc.containers.addToEnd(variableContainer)
         else:
             if isinstance(after, CommandBlockEntity):
                 inserterVariableContainer = after.container.variableContainer.getNext()

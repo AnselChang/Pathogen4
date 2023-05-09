@@ -36,7 +36,8 @@ class FunctionNameEntity(Entity, Observer):
                           FontID.FONT_NORMAL, 18,
                           (0,0,0), (0,0,0), (0,0,0), (0,0,0),
                           dynamicWidth = True, dynamicBorderOpacity = True, centered = False,
-                          iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, verticalTextPadding = 0)
+                          iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, verticalTextPadding = 0,
+                          name = "function dropdown")
         self.updateColor()
 
         # Whenever the name changes, notify the commmand block entity to update the command

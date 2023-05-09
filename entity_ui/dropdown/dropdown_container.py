@@ -55,7 +55,7 @@ class DropdownContainer(Container, Observable):
     def __init__(self, parent: Entity, options: list[str], fontID: FontID, fontSize: int,
                  colorSelectedHovered, colorSelected, colorHovered, colorOff,
                  dynamicWidth: bool = False, dynamicBorderOpacity: bool = False, centered: bool = True,
-                 iconScale = 0.8, verticalTextPadding = 0, textLeftOffset = 14, textRightOffset = 5, cornerRadius = 5):
+                 iconScale = 0.8, verticalTextPadding = 0, textLeftOffset = 14, textRightOffset = 5, cornerRadius = 5, name = ""):
         
         self.CORNER_RADIUS = cornerRadius
         self.VERTICAL_TEXT_PADDING = verticalTextPadding
@@ -69,6 +69,8 @@ class DropdownContainer(Container, Observable):
         
         # if false, align to left
         self.centered = centered
+
+        self.name = name
         
         super().__init__(parent,
                          tick = TickLambda(self, FonTickStart = self.onTick),
@@ -104,6 +106,8 @@ class DropdownContainer(Container, Observable):
             self._addOption(i)
 
         DropdownIconContainer(self.currentOption, self)
+
+        self.surface = None
 
     def _addOption(self, i):
         o = DropdownOptionEntity(self, i, self.font,
@@ -209,6 +213,10 @@ class DropdownContainer(Container, Observable):
         return self.heightProfile.isDone() and not self.expanded
 
     def onTick(self):
+        
+        if self.heightProfile is None:
+            return
+
         if not self.heightProfile.isDone() or not self.widthProfile.isDone():
             self.recomputeEntity()
         else:
@@ -293,6 +301,10 @@ class DropdownContainer(Container, Observable):
     
     
     def draw(self, screen, a, b):
+
+        if self.surface is None:
+            return
+
         #pygame.draw.rect(screen, (0, 0, 0), self.RECT, width = 1)
         screen.blit(self.surface, (self.LEFT_X, self.TOP_Y))
 
