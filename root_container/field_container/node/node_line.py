@@ -25,8 +25,6 @@ class NodeLine(Entity):
 
         super().__init__(parent = pathNode, drawOrder = DrawOrder.THETA_LINE)
 
-        self.recomputeEntity()
-
     def isTouching(self, point: tuple) -> bool:
         return False
 

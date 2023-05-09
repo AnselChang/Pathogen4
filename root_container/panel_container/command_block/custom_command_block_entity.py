@@ -45,12 +45,6 @@ class CustomCommandBlockEntity(CommandBlockEntity):
 
         self.dragging = False
 
-    def _getClosestInserter(self, mouse: tuple) -> CommandInserter | None:
-
-         # if not custom and not task
-        considerInsertersInsideTask = self.type != CommandType.CUSTOM or not self.isTask()
-        return self.handler.getClosestInserterCustom(mouse, considerInsertersInsideTask)
-
     def onDelete(self, mouse: tuple):
         self.handler.deleteCommand(self)
         self.handler.recomputePosition()

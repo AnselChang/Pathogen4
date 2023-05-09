@@ -1,9 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from enum import Enum
+from typing import TYPE_CHECKING, Iterator
 from command_creation.command_type import CommandType
 from common.draw_order import DrawOrder
 
 from data_structures.observer import Observer
+from root_container.panel_container.command_block.command_section import CommandSection
+from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
 if TYPE_CHECKING:
     from root_container.path import Path
@@ -51,13 +54,19 @@ class CommandSequenceHandler(Observer):
 
         self.scrollHandler = CommandScrollingHandler(panel, DrawOrder.COMMANDS)
         scrollingContainer = self.scrollHandler.getScrollingContainer()
-        self.vgc: VariableGroupContainer[Element] = VariableGroupContainer(scrollingContainer, isHorizontal = False, name = "main")
+        self.vgc: VariableGroupContainer[CommandSection] = VariableGroupContainer(scrollingContainer, isHorizontal = False, name = "main")
 
         self.vgc.subscribe(self, onNotify = lambda: self.scrollHandler.setContentHeight(self.vgc.HEIGHT))        
 
-        # Should be initialized with a single inserter in the beginning
-        variableContainer = self._createInserter()
-        self.getList().addToBeginning(variableContainer)
+        # Create first section
+        sectionVC = self.createSection()
+        self.vgc.containers.addToBeginning(sectionVC)
+
+    def createSection(self) -> VariableContainer[CommandSection]:
+        vc = VariableContainer(self.vgc, isHorizontal = False)
+        section = CommandSection(self.panel, self)
+        return vc
+
 
     def getList(self, commandOrInserter: CommandBlockEntity | CommandInserter = None) -> LinkedList[VariableContainer[Element]]:
         return self.getVGC(commandOrInserter).containers
@@ -69,28 +78,16 @@ class CommandSequenceHandler(Observer):
         # main list
         if commandOrInserter is None or self.vgc.containers.contains(commandOrInserter):
             return self.vgc
-                
-        # list inside a task
-        if isinstance(commandOrInserter, CommandBlockEntity):
-            vc = commandOrInserter.container.variableContainer
-        elif isinstance(commandOrInserter, CommandInserter):
-            vc = commandOrInserter.container
         elif isinstance(commandOrInserter, VariableContainer):
-            vc = commandOrInserter
+            return commandOrInserter.group
         else:
-            raise Exception("Invalid type passed to getList")
-
-        return vc.group
-
+            return commandOrInserter.getVGC()
     
     def recomputePosition(self):
         self.vgc.recomputeEntity()
     
     # Set up the command block entity and tie it to the VariableGroupContainer
-    def _createCommand(self, adapter: PathAdapter, vgc: VariableGroupContainer = None) -> tuple[VariableContainer, CommandBlockEntity]:
-        
-        if vgc is None:
-            vgc = self.vgc
+    def _createCommand(self, adapter: PathAdapter, vgc: VariableGroupContainer) -> tuple[VariableContainer, CommandBlockEntity]:
         
         # Create the variable container tied to the VariableGroupContainer
         variableContainer = VariableContainer(vgc, False)
@@ -105,11 +102,7 @@ class CommandSequenceHandler(Observer):
         
         return variableContainer, commandBlock
     
-    def _createInserter(self, vgc: VariableGroupContainer = None) -> VariableContainer:
-
-        # by default, create the inserter in the main list
-        if vgc is None:
-            vgc = self.vgc
+    def _createInserter(self, vgc: VariableGroupContainer) -> VariableContainer:
 
         # create the variable container that holds the CommandInserter
         variableContainer = VariableContainer(vgc, False)
@@ -233,74 +226,79 @@ class CommandSequenceHandler(Observer):
             closestInserter = inserter
         return closestInserter, closestDistance
 
-    # When dragging a custom command. Gets the closest inserter object to the mouse
-    def getClosestInserterCustom(self, mouse: tuple, considerInsertersInsideTask: bool) -> CommandInserter:
 
-        mx, my = mouse
+    # neighbor direction
+    class Direction(Enum):
+        UP = 0
+        DOWN = 1
+    # return next inserter. if end of section of task, go up one level and continue
+    def getNeighborInserterRecursive(self, inserter: CommandInserter, direction: Direction) -> CommandInserter | None:
 
-        element: VariableContainer[Element] = self.getList().head
+        # if there is a next inserter in the same scope, return it
+        inserterVC = inserter.container
+        nextInserterVC = inserterVC.getNext() if direction == self.Direction.DOWN else inserterVC.getPrevious()
+        if nextInserterVC is not None:
+            return nextInserterVC.child
+        
+        # if in task and at end of task, go up one level and return next inserter
+        vgcParent = inserter.getVGC()._parent
+        if isinstance(vgcParent, TaskCommandsContainer):
+            command: CommandBlockEntity = vgcParent._parent
+            nextInserter: CommandInserter = command.getNextInserter() if direction == self.Direction.DOWN else command.getPreviousInserter()
+            assert(nextInserter is not None)
+            return nextInserter
+        
+        # but if at end of section and exists next section, go to next section
+        currentSectionVC: VariableContainer[CommandSection] = inserter.getVGC()._parent
+        assert(isinstance(currentSectionVC, VariableContainer))
 
-        closestInserter = element.child
-        closestDistance = abs(closestInserter.CENTER_Y - my)
-        while element is not None:
-
-            # iterate through each top-level inserter
-            if isinstance(element.child, CommandInserter):
-                closestInserter, closestDistance = self._updateClosestInserter(element.child, my, closestInserter, closestDistance)
-
-            # iterate through each inserter inside the task
-            elif considerInsertersInsideTask and isinstance(element.child, CommandBlockContainer) and element.child.commandBlock.isTask():
-                taskElement = element.child.commandBlock.getTaskList().head
-                while taskElement is not None:
-                    if isinstance(taskElement.child, CommandInserter):
-                        closestInserter, closestDistance = self._updateClosestInserter(taskElement.child, my, closestInserter, closestDistance)
-                    taskElement = taskElement.getNext()
-
-            element = element.getNext()
-
-        return closestInserter
-    
-    # path commands can be dragged, but only if they don't switch order with other path commands
-    # do not check inserters inside tasks
-    def getClosestInserterPath(self, mouse: tuple, command: CommandBlockEntity) -> CommandInserter | None:
-        mx, my = mouse
-
-        closestInserter = None
-        closestDistance = math.inf
+        nextSectionVC = currentSectionVC.getNext() if direction == self.Direction.DOWN else currentSectionVC.getPrevious()
+        if nextSectionVC is not None: # section exists
+            nextSection: CommandSection = nextSectionVC.child
+            firstInserterInNextSection = nextSection.vgc.containers.head.child
+            assert(isinstance(firstInserterInNextSection, CommandInserter))
+            return firstInserterInNextSection
+        else:
+            # no new section, so no next inserter
+            return None
+        
+    def _getClosestInserterInDirection(self, my: int, command: CommandBlockEntity, direction: Direction) -> tuple:
+        isCustom: bool = (command.type == CommandType.CUSTOM)
 
         # check for inserters before command up till the first non-custom command
-        previous = command
-        while True:
-            previous = previous.getPreviousCommand()
+        currentInserter = command.getPreviousInserter()
+        currentCommand = command
+
+        closestInserter = currentInserter
+        closestDistance = abs(currentInserter.CENTER_Y - my)
+
+        while currentInserter is not None:
             
-            if previous is None:
+            newClosestInserter, closestDistance = self._updateClosestInserter(currentInserter, my, closestInserter, closestDistance)
+            if newClosestInserter is closestInserter:
+                break # going further makes no progress, so we've already found the closest inserter on this end
+            else:
+                closestInserter = newClosestInserter
+
+            currentInserter = self.getNeighborInserterRecursive(currentInserter, self.Direction.UP)
+            currentCommand = currentInserter.getNextCommand()
+
+            # path commands cannot be dragged if they switch order with other path commands
+            if not isCustom and currentCommand is not None and  currentCommand.type != CommandType.CUSTOM:
                 break
+    
+    # find closest inserter to mouse position.
+    # if command is not custom, cannot swap order of command with other non-custom commands
+    def getClosestInserter(self, mouse: tuple, command: CommandBlockEntity) -> CommandInserter | None:
+        mx, my = mouse
 
-            if not previous.isVisible():
-                continue
+        closestInserterUp, closestDistanceUp = self._getClosestInserterInDirection(my, command, self.Direction.UP)
+        closestInserterDown, closestDistanceDown = self._getClosestInserterInDirection(my, command, self.Direction.DOWN)
 
-            if previous.type != CommandType.CUSTOM:
-                break
-            print("previous", previous)
-            self._updateClosestInserter(previous.getPreviousInserter(), my, closestInserter, closestDistance)
-        # check for inserters after command up till the first non-custom command
-        next = command
-        while True:
-            next = next.getNextCommand()
-
-            if next is None:
-                break
-
-            if not next.isVisible():
-                continue
-
-            if next.type != CommandType.CUSTOM:
-                break
-            print("next", next, next.getNextInserter())
-            self._updateClosestInserter(next.getNextInserter(), my, closestInserter, closestDistance)
-
-        return closestInserter
-
+        if closestDistanceUp < closestDistanceDown:
+            return closestInserterUp
+        else:
+            return closestInserterDown
     
     # # if command, gives next inserter. If next inserter, gives next command
     def getNext(self, element: Element) -> Element:

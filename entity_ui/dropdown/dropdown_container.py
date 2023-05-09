@@ -209,7 +209,6 @@ class DropdownContainer(Container, Observable):
         return self.heightProfile.isDone() and not self.expanded
 
     def onTick(self):
-
         if not self.heightProfile.isDone() or not self.widthProfile.isDone():
             self.recomputeEntity()
         else:

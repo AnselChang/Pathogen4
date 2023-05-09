@@ -90,7 +90,6 @@ class PathSegmentEntity(Entity, AdapterInterface, Observer, PathElement['PathNod
         self.isFullyInitialized = False
 
         self.updateAdapter()
-        self.recomputeEntity()
 
         
     def tick(self):

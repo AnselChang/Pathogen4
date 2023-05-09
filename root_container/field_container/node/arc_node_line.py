@@ -23,8 +23,6 @@ class ArcNodeLine(Entity):
 
         super().__init__(parent = arcCurveNode, drawOrder = DrawOrder.THETA_LINE)
 
-        self.recomputeEntity()
-
     def isTouching(self, point: tuple) -> bool:
         return False
 

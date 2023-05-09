@@ -56,8 +56,6 @@ class BezierThetaNode(AbstractCircleEntity):
 
         self.positionRef: PointRef = None
 
-        self.recomputeEntity()
-
     def isVisible(self) -> bool:
 
         # If segment itself isn't even visible, then this definitely shouldn't be

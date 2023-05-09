@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from entity_ui.group.variable_group.variable_container import VariableContainer
     from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
-
+    from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
 
 from entity_base.entity import Entity
 from entity_base.listeners.hover_listener import HoverLambda
@@ -64,6 +64,9 @@ class CommandInserter(Entity):
         self.currentY = self.START_Y
         self.isActive = False
         self.hovering = False
+
+    def getVGC(self) -> VariableGroupContainer:
+        return self.container.group
 
     def defineCenterX(self) -> tuple:
         return self._px(0.5)
@@ -130,10 +133,10 @@ class CommandInserter(Entity):
             pygame.draw.rect(screen, [255,255,255], [x - self.THICK, y - self.THIN, self.THICK*2, self.THIN*2])
             pygame.draw.rect(screen, [255,255,255], [x - self.THIN, y - self.THICK, self.THIN*2, self.THICK*2])
 
-    def getPreviousCommand(self):
+    def getPreviousCommand(self) -> CommandBlockEntity:
         return self.handler.getPrevious(self)
     
-    def getNextCommand(self):
+    def getNextCommand(self) -> CommandBlockEntity:
         return self.handler.getNext(self)
     
     # whether this command block is inside a task

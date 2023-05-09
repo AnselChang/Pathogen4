@@ -97,8 +97,6 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, PathElement[PathSeg
 
         self.updateAdapter()
 
-        self.recomputeEntity()
-
         NodeLine(self)
         
 

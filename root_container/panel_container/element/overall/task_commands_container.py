@@ -29,8 +29,6 @@ class TaskCommandsContainer(AbstractElementsContainer):
         inserterVariableContainer = self.handler._createInserter(self.vgc)
         self.vgc.containers.addToBeginning(inserterVariableContainer)
 
-        print("run")
-
     # This container is dynamically fit to VariableGroupContainer
     def defineHeight(self) -> float:
         return self.vgc.defineHeight()

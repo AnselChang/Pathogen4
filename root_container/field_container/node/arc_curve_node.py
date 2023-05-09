@@ -49,7 +49,6 @@ class ArcCurveNode(AbstractCircleEntity, Observable):
         # perpendicular distance from midpoint to self, signed
         # in field ref (inches)
         self.perpDistance = 1 # initially, we start with a small amount of curve 
-        self.recomputePositionRef()
 
         # handles drawing the line from the segment midpoint to this
         ArcNodeLine(self)

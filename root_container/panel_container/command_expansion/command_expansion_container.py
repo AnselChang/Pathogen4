@@ -1,4 +1,5 @@
 from entity_base.container_entity import Container
+from entity_base.entity import Entity
 from entity_base.image.image_entity import ImageEntity
 from entity_base.image.image_state import ImageState
 from entity_ui.group.radio_container import RadioContainer
@@ -8,6 +9,8 @@ from data_structures.observer import Observable
 from common.dimensions import Dimensions
 from common.draw_order import DrawOrder
 from enum import Enum, auto
+import pygame
+
 
 """
 Manage expanding and collapsing commands
@@ -61,10 +64,15 @@ class CommandExpansionContainer(Container, Observable):
                         getStateID = lambda id=id: radio.group.isOptionOn(id)
             )
 
+
+    # draw the grey background
+    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+        pygame.draw.rect(screen, (100, 100, 100), self.RECT)
+
+    # on radio button image click
     def onClick(self, radioButton: RadioContainer, mouse: tuple):
         radioButton.onClick(mouse)
-        self.notify()
-            
+        self.notify() 
 
     def setForceCollapse(self, isCollapse: bool):
 

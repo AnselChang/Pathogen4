@@ -71,7 +71,7 @@ class CommandBlockEntity(Entity, Observer):
         self.pathAdapter = pathAdapter
         self.type = self.pathAdapter.type
 
-        # controls height animatino
+        # controls height animation
         self.animatedExpansion = MotionProfile(0, speed = 0.4)
         # whether to expand by default, ignoring global flags
         self.localExpansion = self.type == CommandType.CUSTOM
@@ -250,6 +250,9 @@ class CommandBlockEntity(Entity, Observer):
         taskContainer: TaskCommandsContainer = self.elementsContainer
         return taskContainer.vgc.containers
     
+    def getVGC(self) -> VariableGroupContainer:
+        return self.container.variableContainer.group
+    
     # Return the list of possible function names for this block
     # If inside a task and is a custom block, cannot contain task
     def getFunctionNames(self) -> list[str]:
@@ -314,7 +317,7 @@ class CommandBlockEntity(Entity, Observer):
         if self.pathAdapter.type == CommandType.TURN:
             turnAdapter: TurnAdapter = self.pathAdapter
             if turnAdapter.isTurnEnabled():
-                self.setVisible()
+                self.setVisible(recompute = False)
             else:
                 self.setInvisible()
 
@@ -380,7 +383,7 @@ class CommandBlockEntity(Entity, Observer):
         self.recomputeEntity()
 
     def _getClosestInserter(self, mouse: tuple) -> CommandInserter | None:
-        return self.handler.getClosestInserterPath(mouse, self)
+        return self.handler.getClosestInserter(mouse, self)
 
     def onDrag(self, mouse: tuple):
         self.dragPosition = mouse[1] + self.mouseOffset

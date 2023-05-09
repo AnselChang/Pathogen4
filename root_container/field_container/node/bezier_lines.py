@@ -26,8 +26,6 @@ class BezierLines(Entity):
 
         super().__init__(parent = segment, drawOrder = DrawOrder.BEFORE_NODE_SEGMENT)
 
-        self.recomputeEntity()
-
     def isTouching(self, point: tuple) -> bool:
         return False
     
