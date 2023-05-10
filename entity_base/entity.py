@@ -303,7 +303,7 @@ class Entity(ABC, Observable):
     def _px(self, px):
         return self._parent.LEFT_X + px * self._parent.WIDTH
     
-    # get relative x as a percent of parent horizontal span
+    # get relative y as a percent of parent horizontal span
     def _py(self, py):
         return self._parent.TOP_Y + py * self._parent.HEIGHT
     
