@@ -1,4 +1,5 @@
 from common.reference_frame import PointRef, Ref
+from entity_base.entity import Entity
 from entity_base.image.image_state import ImageStatesFactory
 from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction, HighlightID
 from entity_ui.selector_menu.selector_menu_factory import *
@@ -29,6 +30,10 @@ class DeleteNodeAction(MenuClickAction[PathNodeEntity]):
     def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
         targetEntity.path.removeNode(targetEntity)
 
+class HideNodeAction(MenuClickAction[PathNodeEntity]):
+
+    def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
+        targetEntity.path.hideNode(targetEntity)
 """
 Menu for path nodes. Functionality for:
     - revealing command associated with node
@@ -61,5 +66,9 @@ def configureNodeMenu() -> MenuDefinition:
     states = ImageStatesFactory()
     states.addState(0, ImageID.DELETE_NODE, "Delete this node", None, "Cannot delete the only node")
     segmentDefinition.add(states.create(), DeleteNodeAction())
+
+    states = ImageStatesFactory()
+    states.addState(0, ImageID.HIDE_NODE, "Hide this node")
+    segmentDefinition.add(states.create(), HideNodeAction())
 
     return segmentDefinition
