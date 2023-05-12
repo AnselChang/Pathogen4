@@ -116,7 +116,7 @@ def main():
     # initialize everything
     rootContainer.recomputeEntity()
 
-        # Create a new thread for the I/O handling function
+    # Create a new thread for the I/O handling function
     io_thread = threading.Thread(target=io_handler, args = (database,), daemon=True)
 
     # Start the I/O handling thread

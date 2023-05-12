@@ -64,7 +64,7 @@ class CommandSequenceHandler(Observer):
 
     def createSection(self) -> VariableContainer[CommandSection]:
         vc = VariableContainer(self.vgc, isHorizontal = False)
-        section = CommandSection(self.panel, self)
+        section = CommandSection(vc, self)
         vc.setChild(section)
         return vc
 
@@ -84,6 +84,7 @@ class CommandSequenceHandler(Observer):
             return commandOrInserter.getVGC()
     
     def recomputePosition(self):
+        print("recompute sequence handler")
         self.vgc.recomputeEntity()
     
     # Set up the command block entity and tie it to the VariableGroupContainer

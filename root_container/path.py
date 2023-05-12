@@ -123,6 +123,8 @@ class Path(Observer):
 
         self.commandHandler.recomputePosition()
 
+        self.commandHandler.vgc.tree()
+
         node.onNodeMove()
 
         return node

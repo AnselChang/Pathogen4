@@ -168,7 +168,11 @@ class Entity(ABC, Observable):
         self._LOCAL_VISIBLE = True
 
         if recompute:
-            self.recomputeEntity()
+            if not self._parent.isVisible():
+                # need to make sure parent rect is updated first if parent not visible
+                self._parent.recomputeEntity()
+            else:
+                self.recomputeEntity()
 
     def setInvisible(self):
 
@@ -376,3 +380,9 @@ class Entity(ABC, Observable):
             return f"{self.__class__.__name__} {info}({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)})"
         except:
             return f"{self.__class__.__name__} (Undefined)"
+        
+    # print tree using indentation to indicate hierarchy
+    def tree(self, indent: int = 0):
+        print("  " * indent + str(self))
+        for child in self._children:
+            child.tree(indent + 1)
