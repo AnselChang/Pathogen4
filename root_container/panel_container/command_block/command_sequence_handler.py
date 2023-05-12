@@ -58,11 +58,20 @@ class CommandSequenceHandler(Observer):
 
         self.vgc.subscribe(self, onNotify = lambda: self.scrollHandler.setContentHeight(self.vgc.HEIGHT))        
 
-        # Create first section
-        sectionVC = self.createSection()
-        self.vgc.containers.addToBeginning(sectionVC)
+        # insert first inserter
+        variableContainer = self._createInserter(self.vgc)
+        self.getList(variableContainer).addToBeginning(variableContainer)
 
-    def createSection(self) -> VariableContainer[CommandSection]:
+        # Create first section
+        self.addSection()
+    
+    # add section to end
+    def addSection(self):
+        sectionVC = self._createSection()
+        self.vgc.containers.addToEnd(sectionVC)
+        self._insertInserterAfter(sectionVC)
+
+    def _createSection(self) -> VariableContainer[CommandSection]:
         vc = VariableContainer(self.vgc, isHorizontal = False)
         section = CommandSection(vc, self)
         vc.setChild(section)
@@ -115,7 +124,7 @@ class CommandSequenceHandler(Observer):
         return variableContainer
     
     # Set up the inserter and tie it to the VariableGroupContainer
-    def _insertCommandInserterAfter(self, commandVariableContainer: VariableContainer) -> VariableContainer:
+    def _insertInserterAfter(self, commandVariableContainer: VariableContainer) -> VariableContainer:
         vgc = self.getVGC(commandVariableContainer)
         variableContainer = self._createInserter(vgc)
         self.getList(commandVariableContainer).insertAfter(commandVariableContainer, variableContainer)
@@ -125,9 +134,15 @@ class CommandSequenceHandler(Observer):
     def insertCustomCommand(self, inserter: CommandInserter) -> CommandBlockEntity:
         return self.insertCommandAfter(inserter, NullPathAdapter())
     
-    # version of insertCustomCommand without return for onClick lambda
+    # when an inserter is clicked
+    # determine whether the inserter is for a command or for a section
     def _onInsert(self, inserter: CommandInserter) -> None:
-        self.insertCustomCommand(inserter)
+        if inserter.getVGC().name == "section":
+            # insert command
+            self.insertCustomCommand(inserter)
+        elif inserter.getVGC().name == "main":
+            # insert section
+            pass
         self.recomputePosition()
     
     # create and insert command at beginning of list given path adapter
@@ -135,7 +150,7 @@ class CommandSequenceHandler(Observer):
     def insertCommandAtBeginning(self, adapter: PathAdapter, vgc: VariableGroupContainer = None) -> CommandBlockEntity:
         variableContainer, commandBlock = self._createCommand(adapter, vgc)
         self.getList().insertAfter(self.getList().head, variableContainer)
-        self._insertCommandInserterAfter(variableContainer)
+        self._insertInserterAfter(variableContainer)
 
         return commandBlock
     
@@ -145,7 +160,9 @@ class CommandSequenceHandler(Observer):
     def insertCommandAfter(self, after: CommandBlockEntity | CommandInserter, adapter: PathAdapter) -> CommandBlockEntity:
         
         if after is None:
-            lastSection: CommandSection = self.vgc.containers.tail.child
+            lastSectionInserterVC: VariableContainer[CommandSection] = self.vgc.containers.tail
+            lastSection = lastSectionInserterVC.getPrevious().child
+            assert(isinstance(lastSection, CommandSection))
             vgc = lastSection.vgc
         else:
             vgc = self.getVGC(after)
@@ -161,7 +178,7 @@ class CommandSequenceHandler(Observer):
                 inserterVariableContainer = after.container
             vgc.containers.insertAfter(inserterVariableContainer, variableContainer)
 
-        self._insertCommandInserterAfter(variableContainer)
+        self._insertInserterAfter(variableContainer)
 
         return commandBlock
         
@@ -201,7 +218,7 @@ class CommandSequenceHandler(Observer):
         newVgcList.insertAfter(inserter.container, commandVariableContainer)
 
         # create and insert new inserter
-        self._insertCommandInserterAfter(commandVariableContainer)
+        self._insertInserterAfter(commandVariableContainer)
         
     # set the local expansion flag for each command to isExpand
     def setAllLocalExpansion(self, isExpand: bool):

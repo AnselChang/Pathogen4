@@ -380,8 +380,9 @@ class Entity(ABC, Observable):
             return f"{self.__class__.__name__} {info}({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)})"
         except:
             return f"{self.__class__.__name__} (Undefined)"
-        
+    
     # print tree using indentation to indicate hierarchy
+    # very useful debugging feature for visualizing parent-child entity relationships
     def tree(self, indent: int = 0):
         print("  " * indent + str(self))
         for child in self._children:

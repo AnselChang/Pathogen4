@@ -24,7 +24,7 @@ class CommandSection(Container):
         super().__init__(parent = parent)
     
         self.handler = handler
-        self.vgc = VariableGroupContainer(parent = parent,
+        self.vgc = VariableGroupContainer(parent = self,
                          isHorizontal = False,
                          innerMargin = 0,
                          outerMargin = 5,
