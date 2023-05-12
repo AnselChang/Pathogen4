@@ -26,8 +26,8 @@ class CommandSection(Container):
         self.handler = handler
         self.vgc = VariableGroupContainer(parent = parent,
                          isHorizontal = False,
-                         innerMargin = 2,
-                         outerMargin = 2,
+                         innerMargin = 0,
+                         outerMargin = 5,
                          name = "section")
         
         # initialize first inserter inside command section
@@ -39,4 +39,4 @@ class CommandSection(Container):
         return self.vgc.defineHeight()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        pygame.draw.rect(screen, (150, 150, 150), self.RECT, 0, border_radius = 5)
+        pygame.draw.rect(screen, (120, 120, 120), self.RECT, 0, border_radius = 5)

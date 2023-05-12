@@ -31,6 +31,12 @@ class CommandBlockContainer(Container):
     def defineHeight(self) -> float:
          return self.commandBlock.defineHeight()
     
+    def defineWidth(self) -> float:
+        return self._mwidth(7)
+    
+    def defineCenterX(self) -> float:
+        return self._px(0.5)
+    
     # if command is being dragged, always show in front of other commands
     def drawOrderTiebreaker(self) -> float:
         if self.commandBlock.drag.isDragging:

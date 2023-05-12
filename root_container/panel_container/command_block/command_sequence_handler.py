@@ -294,6 +294,8 @@ class CommandSequenceHandler(Observer):
             # path commands cannot be dragged if they switch order with other path commands
             if not isCustom and currentCommand is not None and  currentCommand.type != CommandType.CUSTOM:
                 break
+
+        return closestInserter, closestDistance
     
     # find closest inserter to mouse position.
     # if command is not custom, cannot swap order of command with other non-custom commands

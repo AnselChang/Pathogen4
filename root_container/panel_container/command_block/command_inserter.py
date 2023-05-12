@@ -72,8 +72,7 @@ class CommandInserter(Entity):
         return self._px(0.5)
 
     def defineWidth(self) -> float:
-        # 95% of the panel
-        return self._pwidth(1)
+        return self._mwidth(7)
     
     def defineHeight(self) -> float:
 
