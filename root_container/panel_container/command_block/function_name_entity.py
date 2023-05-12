@@ -32,6 +32,7 @@ class FunctionNameEntity(Entity, Observer):
         self.CORNER_RADIUS = 5
         
         names = self.parentCommand.getFunctionNames()
+        print("names", names)
         self.dropdown = DropdownContainer(self, names,
                           FontID.FONT_NORMAL, 18,
                           (0,0,0), (0,0,0), (0,0,0), (0,0,0),

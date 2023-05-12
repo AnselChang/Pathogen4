@@ -141,18 +141,24 @@ class CommandSequenceHandler(Observer):
     # create and insert command after given command block entity and path adapter
     # make sure to add after the inserter AFTER the command block
     # if after is None, add to end
-    def insertCommandAfter(self, after: CommandBlockEntity, adapter: PathAdapter) -> CommandBlockEntity:
-        variableContainer, commandBlock = self._createCommand(adapter, self.getVGC(after))
-
+    def insertCommandAfter(self, after: CommandBlockEntity | CommandInserter, adapter: PathAdapter) -> CommandBlockEntity:
+        
         if after is None:
             lastSection: CommandSection = self.vgc.containers.tail.child
-            lastSection.vgc.containers.addToEnd(variableContainer)
+            vgc = lastSection.vgc
+        else:
+            vgc = self.getVGC(after)
+
+        variableContainer, commandBlock = self._createCommand(adapter, vgc)
+
+        if after is None:
+            vgc.containers.addToEnd(variableContainer)
         else:
             if isinstance(after, CommandBlockEntity):
                 inserterVariableContainer = after.container.variableContainer.getNext()
-            else:
+            elif isinstance(after, CommandInserter):
                 inserterVariableContainer = after.container
-            self.getList(after).insertAfter(inserterVariableContainer, variableContainer)
+            vgc.containers.insertAfter(inserterVariableContainer, variableContainer)
 
         self._insertCommandInserterAfter(variableContainer)
 

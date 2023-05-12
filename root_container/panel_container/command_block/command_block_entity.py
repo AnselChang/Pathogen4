@@ -235,7 +235,7 @@ class CommandBlockEntity(Entity, Observer):
     
     # whether this command block is inside a task
     def isInsideTask(self) -> bool:
-        return self.handler.getVGC(self) is not self.handler.vgc
+        return self.handler.getVGC(self).name == "task"
     
     # whether this is a task command
     def isTask(self) -> bool:
@@ -256,6 +256,7 @@ class CommandBlockEntity(Entity, Observer):
     # Return the list of possible function names for this block
     # If inside a task and is a custom block, cannot contain task
     def getFunctionNames(self) -> list[str]:
+        print("get names", self.type, self.isInsideTask())
         return self.database.getDefinitionNames(self.type, self.isInsideTask())
 
     def defineWidth(self) -> float:
