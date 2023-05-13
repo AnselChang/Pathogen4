@@ -353,7 +353,9 @@ class CommandSequenceHandler(Observer):
                 return None
             else:
                 return previousVariableContainer.child
-        elif isinstance(element, CommandInserter):
+        elif isinstance(element, CommandInserter) and element.getVGC().name == "main":
+            return None
+        elif isinstance(element, CommandInserter) and element.getVGC().name == "section":
             previousVariableContainer: VariableContainer[CommandBlockContainer] = element.container.getPrevious()
             if previousVariableContainer is None:
                 return None
@@ -367,6 +369,10 @@ class CommandSequenceHandler(Observer):
 
     # returns true if the inserter is the only inserter in the list (whether it is main list or task command)
     def isOnlyInserter(self, inserter: CommandInserter) -> bool:
+
+        if inserter.isSectionInserter():
+            return False
+
         list = self.getList(inserter)
 
         current = list.head

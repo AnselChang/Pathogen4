@@ -67,6 +67,9 @@ class CommandInserter(Entity):
 
     def getVGC(self) -> VariableGroupContainer:
         return self.container.group
+    
+    def isSectionInserter(self):
+        return self.getVGC().name == "main"
 
     def defineCenterX(self) -> tuple:
         return self._px(0.5)

@@ -383,7 +383,8 @@ class Entity(ABC, Observable):
     
     # print tree using indentation to indicate hierarchy
     # very useful debugging feature for visualizing parent-child entity relationships
-    def tree(self, indent: int = 0):
-        print("  " * indent + str(self))
+    def tree(self, targetEntity: 'Entity' = None, indent: int = 0, ):
+        targetStr = "(!) " if self is targetEntity else ""
+        print("  " * indent + targetStr + str(self))
         for child in self._children:
-            child.tree(indent + 1)
+            child.tree(targetEntity, indent + 1)
