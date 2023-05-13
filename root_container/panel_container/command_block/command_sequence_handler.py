@@ -5,7 +5,7 @@ from command_creation.command_type import CommandType
 from common.draw_order import DrawOrder
 
 from data_structures.observer import Observer
-from root_container.panel_container.command_block.command_section import CommandSection
+from root_container.panel_container.command_block_section.command_section import CommandSection
 from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
 if TYPE_CHECKING:
@@ -174,7 +174,7 @@ class CommandSequenceHandler(Observer):
             lastSectionInserterVC: VariableContainer[CommandSection] = self.vgc.containers.tail
             lastSection = lastSectionInserterVC.getPrevious().child
             assert(isinstance(lastSection, CommandSection))
-            vgc = lastSection.vgc
+            vgc = lastSection.getVGC()
         else:
             vgc = self.getVGC(after)
 
@@ -291,7 +291,7 @@ class CommandSequenceHandler(Observer):
         nextSectionVC = currentSectionVC.getNext() if direction == self.Direction.DOWN else currentSectionVC.getPrevious()
         if nextSectionVC is not None: # section exists
             nextSection: CommandSection = nextSectionVC.child
-            firstInserterInNextSection = nextSection.vgc.containers.head.child
+            firstInserterInNextSection = nextSection.getVGC().containers.head.child
             assert(isinstance(firstInserterInNextSection, CommandInserter))
             return firstInserterInNextSection
         else:
