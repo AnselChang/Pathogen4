@@ -5,7 +5,7 @@ This guide aims to provide an overview of the Pathogen codebase from the lens of
 To preface any tutorials, I must emphasize that high code quality is required for code contribution! It is tough to maintain a codebase with over 10k lines of code, so we must remain vigilant to keep code as clean and readable as possible. Here are some general coding practices I try to follow.
 
 ### Code purposefully, and comment for "why" not "how".
-Code in a simple, obvious style, using descriptive variable and function names to explain code. It's often a code smell to use commenting to explain complex code, and instead, use commenting to describe high-level behavior and explain its importance.
+Code in a simple, obvious style, using descriptive variable and function names to explain code. If you need to comment code to explain _how_ it works, then the better solution is probably to rewrite the code in a way that is more understandable. Instead, use commenting for the _why_ - to describe high-level behavior and explain its importance.
 
 ### Keep code short
 Try to keep classes <200 LOC if possible, and functions short. The easiest way for code to spiral into an unmaintainable spaghetti mess is for "god" classes to emerge and suddenly take over the entire codebase. Trust me, it's happened so many times in the past and it's a nightmare to clean up.
@@ -13,6 +13,16 @@ Try to keep classes <200 LOC if possible, and functions short. The easiest way f
 ### Follow good OOP practices
 SOLID and single responsibility, DRY, composition over inheritance, etc.
 Most likely, if it looks like complex relationships are needed, reach out to me first so we can sort things out.
+
+### Follow programming conventions
+In this case, follow *my* conventions :) The gist is just to keep code formatting consistent throughout the codebase.
+* **always use full type hinting**
+* snake case for file names
+* pascal case for classes
+* camel case for functions and variables
+* Top-level multiline comment for classes, and comment function headers
+
+The codebase over the course of its evolution doesn't always follow these conventions perfectly, but the ideal is to reshape and improve the codebase to meet these standards.
 
 ## An Overview
 ![Entity UML diagram](github_images/entity_uml.png)
@@ -65,8 +75,8 @@ def _aheight(self, pixels) -> float:
 You should read the comments for each of those functions. Essentially, they give you the position relative to the parent. `p` stands for percent, and `a` stands for absolute pixels. For example, to define the child's center x to be at 40% of the parent's horizontal span, write the following code in the child class:
 
 ```python
-def defineWidth(self) -> float:
-        return self._pwidth(0.4)
+def defineCenterX(self) -> float:
+        return self._px(0.4)
 ```
 
 ## Control flow in the Entity class
@@ -206,3 +216,4 @@ You should have a very basic understanding on how this framework works now! Ther
 * look through utility files `math_functions.py` and `pygame_functions.py` for helpful functions that could save painful (redundant) work
 * If you want a callback for an entity to be called every tick of the main loop, look into the `TickListener` and `TickLambda` classes.
 * The observer pattern is used for when an entity needs to send update notifications to other entities, i.e. when an entity is dependent on another entity's state. Entities that observe other entities must extend `Observer`, and entities that are observerable and send pings must extend `Observable`. The `subscribe()` function is used to subscribe to another entity to recieve updates from them.
+* Often times, instead of extending an entity to add functionality, it is preferable to use composition and own that entity as a child to your defined parent entity.
