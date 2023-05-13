@@ -148,7 +148,7 @@ class CommandSequenceHandler(Observer):
     # when an inserter is clicked
     # determine whether the inserter is for a command or for a section
     def _onInsert(self, inserter: CommandInserter) -> None:
-        if inserter.getVGC().name == "section":
+        if inserter.getVGC().name == "section" or inserter.getVGC().name == "task":
             # insert command
             self.insertCustomCommand(inserter)
         elif inserter.getVGC().name == "main":
@@ -364,15 +364,18 @@ class CommandSequenceHandler(Observer):
                 return None
             else:
                 return previousVariableContainer.child
-        elif isinstance(element, CommandInserter) and element.getVGC().name == "main":
-            return None
-        elif isinstance(element, CommandInserter) and element.getVGC().name == "section":
-            previousVariableContainer: VariableContainer[CommandBlockContainer] = element.container.getPrevious()
-            if previousVariableContainer is None:
+        elif isinstance(element, CommandInserter):
+            if element.getVGC().name == "main":
                 return None
-            else:
-                return previousVariableContainer.child.commandBlock
+            elif element.getVGC().name == "section" or element.getVGC().name == "task":
+                previousVariableContainer: VariableContainer[CommandBlockContainer] = element.container.getPrevious()
+                if previousVariableContainer is None:
+                    return None
+                else:
+                    return previousVariableContainer.child.commandBlock
         else:
+            print("error")
+            self.vgc.tree(element)
             raise Exception("Invalid element type")
         
     def onGlobalCommandExpansionChange(self):
