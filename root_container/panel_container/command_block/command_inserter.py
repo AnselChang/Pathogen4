@@ -75,7 +75,7 @@ class CommandInserter(Entity):
         return self._px(0.5)
 
     def defineWidth(self) -> float:
-        return self._mwidth(7)
+        return self._pwidth(1) if self.isSectionInserter() else self._mwidth(7)
     
     def defineHeight(self) -> float:
 
@@ -87,7 +87,7 @@ class CommandInserter(Entity):
             HEIGHT_MAX = 30
         else:
             HEIGHT_MIN = 5
-            HEIGHT_MAX = 12
+            HEIGHT_MAX = 16 if self.isSectionInserter() else 12
         return self._aheight(HEIGHT_MAX if self.hovering else HEIGHT_MIN)
     
 

@@ -64,18 +64,29 @@ class CommandSequenceHandler(Observer):
 
         # Create first section
         self.addSection()
-    
-    # add section to end
-    def addSection(self):
-        sectionVC = self._createSection()
-        self.vgc.containers.addToEnd(sectionVC)
-        self._insertInserterAfter(sectionVC)
 
     def _createSection(self) -> VariableContainer[CommandSection]:
         vc = VariableContainer(self.vgc, isHorizontal = False)
         section = CommandSection(vc, self)
         vc.setChild(section)
         return vc
+    
+    # add section to end
+    def addSection(self):
+        sectionVC = self._createSection()
+        self.vgc.containers.addToEnd(sectionVC)
+        self._insertInserterAfter(sectionVC)
+    
+    # add section after where section inserter is, and then insert another inserter after that
+    def _insertSectionAt(self, inserter: CommandInserter):
+        assert(inserter.isSectionInserter())
+
+        inserterVC: VariableContainer = inserter._parent
+        assert(self.vgc.containers.contains(inserterVC))
+
+        sectionVC = self._createSection()
+        self.vgc.containers.insertAfter(inserterVC, sectionVC)
+        self._insertInserterAfter(sectionVC)
 
     def getList(self, commandOrInserter: CommandBlockEntity | CommandInserter = None) -> LinkedList[VariableContainer[Element]]:
         return self.getVGC(commandOrInserter).containers
@@ -142,7 +153,7 @@ class CommandSequenceHandler(Observer):
             self.insertCustomCommand(inserter)
         elif inserter.getVGC().name == "main":
             # insert section
-            pass
+            self._insertSectionAt(inserter)
         self.recomputePosition()
     
     # create and insert command at beginning of list given path adapter
