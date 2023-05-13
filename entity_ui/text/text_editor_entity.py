@@ -41,7 +41,22 @@ class CursorBlink:
 # sends notification whenever change in text
 class TextEditorEntity(Entity, Observer, Observable):
 
-    def __init__(self, parent: Entity, fontID: FontID, fontSize: int, isDynamic: bool = False, isNumOnly: bool = False, isCentered: bool = True, isFixedWidth: bool = False, defaultText: str = ""):
+    def __init__(self, parent: Entity,
+                 fontID: FontID,
+                 fontSize: int,
+                 isDynamic: bool = False,
+                 isNumOnly: bool = False,
+                 isCentered: bool = True,
+                 isFixedWidth: bool = False,
+                 defaultText: str = "",
+                 hideTextbox: bool = False,
+                 borderThicknessRead: int = 2,
+                 borderThicknessWrite: int = 2,
+                 readColor = (196, 219, 250),
+                 readColorH = (176, 200, 250),
+                 writeColor = (239, 226, 174),
+                 writeColorH = (239, 226, 174)
+                 ):
         
         super().__init__(parent, 
             key = KeyLambda(self,
@@ -55,12 +70,17 @@ class TextEditorEntity(Entity, Observer, Observable):
             hover = HoverLambda(self))
         self.font = self.fonts.getDynamicFont(fontID, fontSize)
         
-        self.dynamic = isDynamic
-        self.numOnly = isNumOnly
-        self.centered = isCentered
-        self.fixedWidth = isFixedWidth
+        self.dynamic = isDynamic # whether to grow vertically
+        self.numOnly = isNumOnly # whether to only allow numbers
+        self.centered = isCentered # whether to center text
+        self.fixedWidth = isFixedWidth # whether to grow horizontally
+        self.hideTextbox = hideTextbox # whether to hide the textbox when not hovered/selected
 
         self.border = TextBorder()
+        self.borderThickness: dict[TextEditorMode, int] = {
+            TextEditorMode.READ : borderThicknessRead,
+            TextEditorMode.WRITE : borderThicknessWrite
+        }
 
         self.rows = 1
         self.font.subscribe(self, onNotify = self.onFontUpdate)
@@ -72,12 +92,12 @@ class TextEditorEntity(Entity, Observer, Observable):
 
         self.backgroundColor: dict[TextEditorMode, tuple] = {
             TextEditorMode.WRITE : {
-                True: (239, 226, 174),
-                False: (239, 226, 174)
+                True: writeColorH,
+                False: writeColor
             },
             TextEditorMode.READ : {
-                True: (176, 200, 250),
-                False: (196, 219, 250)
+                True: readColorH,
+                False: readColor
             }
         }
 
@@ -141,14 +161,17 @@ class TextEditorEntity(Entity, Observer, Observable):
         outerYMargin = self._aheight(self.border.OUTER_Y_MARGIN)
         innerYMargin = self._aheight(self.border.INNER_Y_MARGIN)
 
-        # draw background
         leftX, topY, width, height = self.RECT
-
         surf = pygame.Surface((width, height))
         
-
-        pygame.draw.rect(surf, self.backgroundColor[self.mode][isHovered], [0,0,width,height], border_radius = self.border.BORDER_RADIUS)
-        pygame.draw.rect(surf, (0,0,0), [0,0,width,height], width = 2, border_radius = self.border.BORDER_RADIUS)
+        # draw background
+        if not self.hideTextbox or self.mode == TextEditorMode.WRITE or isHovered:    
+            pygame.draw.rect(surf, self.backgroundColor[self.mode][isHovered], [0,0,width,height], border_radius = self.border.BORDER_RADIUS)
+            
+            bt = self.borderThickness[self.mode]
+            if bt > 0:
+                pygame.draw.rect(surf, (0,0,0), [0,0,width,height], width = bt, border_radius = self.border.BORDER_RADIUS)
+        
         surf.set_alpha(self.getOpacity() * 255)
 
         # draw text

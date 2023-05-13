@@ -12,9 +12,7 @@ from entity_ui.group.variable_group.variable_group_container import VariableGrou
 import pygame
 
 """
-A command section holds command blocks. Its usefulness lies in being able to
-expand and collapse command sections, as well as show or hide the path section
-pertaining to the command section.
+Contains the command blocks of the section. below the section header
 """
 
 class CommandSectionBody(Container):
