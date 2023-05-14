@@ -19,6 +19,18 @@ class LinkedList(Generic[T]):
         self.head: LinkedListNode | T = None
         self.tail: LinkedListNode | T = None
 
+    def __iter__(self):
+        self.iteratorPointer = self.head
+        return self
+    
+    def __next__(self):
+        if self.iteratorPointer is None:
+            raise StopIteration
+        else:
+            current = self.iteratorPointer
+            self.iteratorPointer = self.iteratorPointer._next
+            return current
+
     def addToBeginning(self, node: LinkedListNode):
         
         if self.head is None:

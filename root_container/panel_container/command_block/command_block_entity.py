@@ -379,6 +379,9 @@ class CommandBlockEntity(Entity, Observer):
         self.mouseOffset = self.CENTER_Y - mouse[1]
         self.dragPosition = mouse[1] + self.mouseOffset
 
+        # cache the existing inserters
+        self.handler.updateActiveCommandInserters()
+
     def onStopDrag(self):
         self.dragPosition = None
         self.recomputeEntity()

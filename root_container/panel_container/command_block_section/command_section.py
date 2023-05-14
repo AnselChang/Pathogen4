@@ -28,6 +28,7 @@ class CommandSection(Container):
         super().__init__(parent = parent)
 
         self.pathVisible = True
+        self.expanded = True
         
         self.body = CommandSectionBody(parent = self)
         self.header = CommandSectionHeader(parent = self)
@@ -37,6 +38,9 @@ class CommandSection(Container):
 
     def getPathVisibility(self) -> bool:
         return self.pathVisible
+    
+    def isExpanded(self) -> bool:
+        return self.expanded
 
     def getVGC(self) -> VariableGroupContainer:
         return self.body.vgc

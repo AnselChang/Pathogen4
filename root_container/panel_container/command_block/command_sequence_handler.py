@@ -213,14 +213,21 @@ class CommandSequenceHandler(Observer):
         oldVgcList = self.getList(command)
         newVgc = self.getVGC(inserter)
         newVgcList = self.getList(inserter)
+        assert(inserter._parent._parent is newVgc)
+        print("MOVE", oldVgc.name, newVgc.name)
+        print(inserter._parent)
+        for inserterVC in newVgcList:
+            print(" ", inserterVC.child)
+        assert(newVgcList.contains(inserter._parent))
 
         commandVariableContainer = command.container.variableContainer
         
         # remove command from the current position, without deleting from entities list
+        inserterVariableContainer = commandVariableContainer.getNext()
         oldVgcList.remove(commandVariableContainer)
 
         # Remove next inserter entirely
-        inserterVariableContainer = commandVariableContainer.getNext()
+        assert(inserter is not inserterVariableContainer.child)
         oldVgcList.remove(inserterVariableContainer)
         command.entities.removeEntity(inserterVariableContainer)
 
@@ -261,82 +268,60 @@ class CommandSequenceHandler(Observer):
             closestDistance = distance
             closestInserter = inserter
         return closestInserter, closestDistance
-
-
-    # neighbor direction
-    class Direction(Enum):
-        UP = 0
-        DOWN = 1
-    # return next inserter. if end of section of task, go up one level and continue
-    def getNeighborInserterRecursive(self, inserter: CommandInserter, direction: Direction) -> CommandInserter | None:
-
-        # if there is a next inserter in the same scope, return it
-        inserterVC = inserter.container
-        nextInserterVC = inserterVC.getNext() if direction == self.Direction.DOWN else inserterVC.getPrevious()
-        if nextInserterVC is not None:
-            return nextInserterVC.child
-        
-        # if in task and at end of task, go up one level and return next inserter
-        vgcParent = inserter.getVGC()._parent
-        if isinstance(vgcParent, TaskCommandsContainer):
-            command: CommandBlockEntity = vgcParent._parent
-            nextInserter: CommandInserter = command.getNextInserter() if direction == self.Direction.DOWN else command.getPreviousInserter()
-            assert(nextInserter is not None)
-            return nextInserter
-        
-        # but if at end of section and exists next section, go to next section
-        currentSectionVC: VariableContainer[CommandSection] = inserter.getVGC()._parent
-        assert(isinstance(currentSectionVC, VariableContainer))
-
-        nextSectionVC = currentSectionVC.getNext() if direction == self.Direction.DOWN else currentSectionVC.getPrevious()
-        if nextSectionVC is not None: # section exists
-            nextSection: CommandSection = nextSectionVC.child
-            firstInserterInNextSection = nextSection.getVGC().containers.head.child
-            assert(isinstance(firstInserterInNextSection, CommandInserter))
-            return firstInserterInNextSection
-        else:
-            # no new section, so no next inserter
-            return None
-        
-    def _getClosestInserterInDirection(self, my: int, command: CommandBlockEntity, direction: Direction) -> tuple:
-        isCustom: bool = (command.type == CommandType.CUSTOM)
-
-        # check for inserters before command up till the first non-custom command
-        currentInserter = command.getPreviousInserter()
-        currentCommand = command
-
-        closestInserter = currentInserter
-        closestDistance = abs(currentInserter.CENTER_Y - my)
-
-        while currentInserter is not None:
-            
-            newClosestInserter, closestDistance = self._updateClosestInserter(currentInserter, my, closestInserter, closestDistance)
-            if newClosestInserter is closestInserter:
-                break # going further makes no progress, so we've already found the closest inserter on this end
-            else:
-                closestInserter = newClosestInserter
-
-            currentInserter = self.getNeighborInserterRecursive(currentInserter, self.Direction.UP)
-            currentCommand = currentInserter.getNextCommand()
-
-            # path commands cannot be dragged if they switch order with other path commands
-            if not isCustom and currentCommand is not None and  currentCommand.type != CommandType.CUSTOM:
-                break
-
-        return closestInserter, closestDistance
     
+    def insertInserterIfNotHidden(self, inserters: list[CommandInserter], inserter: CommandInserter):
+
+        if inserter.getPreviousCommand() is not None and not inserter.getPreviousCommand().isVisible():
+            return
+        
+        inserters.append(inserter)
+
+    # generate a list of inserters that the user can insert a command into
+    def generateActiveCommandInserters(self) -> list[CommandInserter]:
+        inserters: list[CommandInserter] = []
+
+        for sectionOrInserterVC in self.vgc.containers:
+
+            # cannot insert into section inserters
+            if not isinstance(sectionOrInserterVC.child, CommandSection):
+                continue
+
+            section: CommandSection = sectionOrInserterVC.child
+
+            # cannot insert into collapsed section
+            if not section.isExpanded():
+                continue
+
+            for commandOrInserterVC in section.getVGC().containers:
+
+                # regular command inserter inside section
+                if isinstance(commandOrInserterVC.child, CommandInserter):
+                    self.insertInserterIfNotHidden(inserters, commandOrInserterVC.child)
+
+                # task
+                elif isinstance(commandOrInserterVC.child, CommandBlockContainer):
+                    cbc: CommandBlockContainer = commandOrInserterVC.child
+                    cbe: CommandBlockEntity = cbc.commandBlock
+                    if cbe.isTask():
+                        for commandOrInserterVC in cbe.getTaskList():
+                            if isinstance(commandOrInserterVC.child, CommandInserter):
+                                self.insertInserterIfNotHidden(inserters, commandOrInserterVC.child)
+        return inserters
+    
+    def updateActiveCommandInserters(self):
+        self.activeCommandInserters = self.generateActiveCommandInserters()
+
     # find closest inserter to mouse position.
     # if command is not custom, cannot swap order of command with other non-custom commands
     def getClosestInserter(self, mouse: tuple, command: CommandBlockEntity) -> CommandInserter | None:
         mx, my = mouse
 
-        closestInserterUp, closestDistanceUp = self._getClosestInserterInDirection(my, command, self.Direction.UP)
-        closestInserterDown, closestDistanceDown = self._getClosestInserterInDirection(my, command, self.Direction.DOWN)
+        closestInserter = self.activeCommandInserters[0]
+        closestDistance = abs(closestInserter.CENTER_Y - my)
+        for inserter in self.activeCommandInserters[1:]:
+            closestInserter, closestDistance = self._updateClosestInserter(inserter, my, closestInserter, closestDistance)
 
-        if closestDistanceUp < closestDistanceDown:
-            return closestInserterUp
-        else:
-            return closestInserterDown
+        return closestInserter
     
     # # if command, gives next inserter. If next inserter, gives next command
     def getNext(self, element: Element) -> Element:
