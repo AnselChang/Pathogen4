@@ -26,9 +26,17 @@ class CommandSection(Container):
         self.handler = handler
         self.HEADER_HEIGHT = 30
         super().__init__(parent = parent)
+
+        self.pathVisible = True
         
         self.body = CommandSectionBody(parent = self)
         self.header = CommandSectionHeader(parent = self)
+
+    def setPathVisibility(self, isPathVisible: bool):
+        self.pathVisible = isPathVisible
+
+    def getPathVisibility(self) -> bool:
+        return self.pathVisible
 
     def getVGC(self) -> VariableGroupContainer:
         return self.body.vgc

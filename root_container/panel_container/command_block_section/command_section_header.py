@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from root_container.panel_container.command_block_section.command_section_buttons import CommandSectionButtons
+from root_container.panel_container.command_block_section.command_section_folder import CommandSectionFolder
 
 from root_container.panel_container.command_block_section.command_section_name import CommandSectionName
 if TYPE_CHECKING:
@@ -22,11 +24,13 @@ class CommandSectionHeader(Container):
         super().__init__(parent = parent)
         self.section = parent
 
+        self.folder = CommandSectionFolder(parent = self)
         self.sectionName = CommandSectionName(parent = self)
+        self.buttons = CommandSectionButtons(parent = self, section = parent)
     
     # This container is dynamically fit to VariableGroupContainer
     def defineHeight(self) -> float:
         return self._aheight(self.section.HEADER_HEIGHT)
     
     def defineTopY(self) -> float:
-        return self._py(0)
+        return self._py(0) + self._aheight(5)

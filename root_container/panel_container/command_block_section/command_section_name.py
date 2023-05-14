@@ -23,8 +23,8 @@ class CommandSectionName(Container):
         super().__init__(parent = parent)
 
         self.text = TextEditorEntity(parent = self,
-            fontID = FontID.FONT_TITLE,
-            fontSize = 15,
+            fontID = FontID.FONT_NORMAL,
+            fontSize = 16,
             isDynamic = False,
             isNumOnly = False,
             isCentered = False,
@@ -40,8 +40,8 @@ class CommandSectionName(Container):
     
     # left margin from left edge of section header
     def defineLeftX(self) -> float:
-        return self._ax(10)
+        return self._pheight(0.8) + self._ax(17)
     
     # centered vertically to header
     def defineCenterY(self) -> float:
-        return self._py(0.5) + self._aheight(5)
+        return self._py(0.5)
