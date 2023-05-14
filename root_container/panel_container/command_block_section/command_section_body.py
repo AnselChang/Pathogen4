@@ -38,3 +38,6 @@ class CommandSectionBody(Container):
     
     def defineTopY(self) -> float:
         return self._ay(self.section.HEADER_HEIGHT)
+    
+    def getOpacity(self) -> float:
+        return self.section.getCommandOpacity()

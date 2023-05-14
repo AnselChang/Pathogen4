@@ -22,6 +22,9 @@ class MotionProfile:
     def setEndValue(self, endValue):
         self._endValue = endValue
 
+    def getEndValue(self) -> float:
+        return self._endValue
+
     def forceToEndValue(self):
         self._currentValue = self._endValue
     

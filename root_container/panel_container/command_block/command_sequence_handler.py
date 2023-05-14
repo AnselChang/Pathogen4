@@ -217,7 +217,10 @@ class CommandSequenceHandler(Observer):
         print("MOVE", oldVgc.name, newVgc.name)
         print(inserter._parent)
         for inserterVC in newVgcList:
-            print(" ", inserterVC.child)
+            print(inserterVC.child is inserter, inserterVC.child)
+        print("child", inserter)
+        print("parent", inserter._parent)
+        print("gp", inserter._parent._parent)
         assert(newVgcList.contains(inserter._parent))
 
         commandVariableContainer = command.container.variableContainer

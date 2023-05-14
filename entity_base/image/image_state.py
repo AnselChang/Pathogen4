@@ -9,11 +9,13 @@ import pygame
 # At each state, the image can be off, on, and on + hovered.
 class ImageState:
 
-    def __init__(self, id: Enum, imageOnID: ImageID, tooltipOn = None, imageOffID: ImageID = None, tooltipOff = None, imageOnHoveredID: ImageID = None):
+    def __init__(self, id: Enum, imageOnID: ImageID, tooltipOn = None, imageOffID: ImageID = None, tooltipOff = None, imageOnHoveredID: ImageID = None, hoveredBrightenAmount = 40):
         self.id = id
         self.imageOffID = imageOffID
         self.imageOnID = imageOnID
         self.imageOnHoveredID = imageOnHoveredID
+
+        self.hoveredBrightenAmount = hoveredBrightenAmount
 
         self.tooltipOn = None if tooltipOn is None else Tooltip(tooltipOn)
         if tooltipOff is None:
@@ -26,7 +28,7 @@ class ImageState:
 
         self.imageOn = scaleImageToRect(images.get(self.imageOnID), width, height)
         if self.imageOnHoveredID is None:
-            self.imageOnH = brightenSurface(self.imageOn.copy(), 40) # brighten by 40 for hovered
+            self.imageOnH = brightenSurface(self.imageOn.copy(), self.hoveredBrightenAmount) # brighten by 40 for hovered
         else:
             self.imageOnH = scaleImageToRect(images.get(self.imageOnHoveredID), width, height)
 

@@ -24,7 +24,7 @@ class CommandSectionHeader(Container):
         super().__init__(parent = parent)
         self.section = parent
 
-        self.folder = CommandSectionFolder(parent = self)
+        self.folder = CommandSectionFolder(parent = self, section = parent)
         self.sectionName = CommandSectionName(parent = self)
         self.buttons = CommandSectionButtons(parent = self, section = parent)
     

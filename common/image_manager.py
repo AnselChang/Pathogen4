@@ -39,7 +39,8 @@ class ImageID(Enum):
     DROPDOWN_ICON = auto()
     WAIT = auto()
     NO_WAIT = auto()
-    FOLDER = auto()
+    FOLDER_OPEN = auto()
+    FOLDER_CLOSED = auto()
     VISIBLE = auto()
     INVISIBLE = auto()
 
@@ -115,6 +116,7 @@ class ImageManager:
         self.images[ImageID.WAIT] = Image("OtherIcons/wait.png")
         self.images[ImageID.NO_WAIT] = Image("OtherIcons/nowait.png")
 
-        self.images[ImageID.FOLDER] = Image("SectionIcons/folder.png")
+        self.images[ImageID.FOLDER_OPEN] = Image("SectionIcons/folder_open.png")
+        self.images[ImageID.FOLDER_CLOSED] = Image("SectionIcons/folder_closed.png")
         self.images[ImageID.VISIBLE] = Image("SectionIcons/visible.png")
         self.images[ImageID.INVISIBLE] = Image("SectionIcons/invisible.png")

@@ -336,7 +336,7 @@ class CommandBlockEntity(Entity, Observer):
             return self.getOpacity()
         else:
             ratio = self.getPercentExpanded()
-            return ratio ** 2 * self.getOpacity() # square for steeper opacity animation
+            return ratio * self.getOpacity() # square for steeper opacity animation
     
     # return 1 if not dragging, and dragged opacity if dragging
     # not applicable for regular command blocks
