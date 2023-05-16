@@ -85,7 +85,7 @@ class Path(Observer):
         self.pathList.addToBeginning(node)
 
         # create turn command and add entity
-        turnCommand = self.commandHandler.insertCommandAtBeginning(node.getAdapter())
+        turnCommand = self.commandHandler.insertCommandAtBeginning(node.getAdapter(), self.commandHandler.vgc.containers.head.child.getVGC())
 
         # maintain a relationship between the node and turn command
         self.linker.linkNode(node, turnCommand)
