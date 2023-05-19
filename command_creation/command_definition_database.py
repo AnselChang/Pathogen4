@@ -20,6 +20,15 @@ Stores all the different CommandDefinitions
 
 class CommandDefinitionDatabase(Observable):
 
+    _INSTANCE = None
+
+    @classmethod
+    def getInstance(cls) -> 'CommandDefinitionDatabase':
+        if CommandDefinitionDatabase._INSTANCE is None:
+            CommandDefinitionDatabase._INSTANCE = cls()
+        
+        return CommandDefinitionDatabase._INSTANCE
+
     def __init__(self):
 
         # initialize empty list for each command type

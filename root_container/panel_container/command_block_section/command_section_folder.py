@@ -8,7 +8,7 @@ from entity_base.entity import Entity
 from entity_base.image.image_state import ImageState
 if TYPE_CHECKING:
     from root_container.panel_container.command_block_section.command_section_header import CommandSectionHeader
-    from root_container.panel_container.command_block_section.command_section import CommandSection
+    from root_container.panel_container.command_block_section.command_section import SectionEntity
 
 from entity_base.container_entity import Container
 import pygame
@@ -24,7 +24,7 @@ class SectionExpansion(Enum):
 
 class CommandSectionFolder(Container):
 
-    def __init__(self, parent: CommandSectionHeader, section: CommandSection):
+    def __init__(self, parent: CommandSectionHeader, section: SectionEntity):
 
         super().__init__(parent = parent)
 

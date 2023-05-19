@@ -16,14 +16,14 @@ class LinkedListNode(Generic[T]):
 
 class LinkedList(Generic[T]):
     def __init__(self):
-        self.head: LinkedListNode | T = None
-        self.tail: LinkedListNode | T = None
+        self.head: LinkedListNode[T] | T = None
+        self.tail: LinkedListNode[T] | T = None
 
     def __iter__(self):
         self.iteratorPointer = self.head
         return self
     
-    def __next__(self):
+    def __next__(self) -> LinkedListNode[T] | T:
         if self.iteratorPointer is None:
             raise StopIteration
         else:
@@ -94,6 +94,10 @@ class LinkedList(Generic[T]):
         else:
             node._prev._next = node._next
             node._next._prev = node._prev
+
+    def clear(self):
+        self.head = None
+        self.tail = None
 
     def contains(self, node: LinkedListNode):
         current = self.head

@@ -37,6 +37,8 @@ class DropdownContainer(Container, Observable):
         # selected same text, no change
         if self.selectedOptionText == selectedText:
             return
+        
+        assert(selectedText in self.optionTexts)
 
         self.selectedOptionText = selectedText
         self.otherOptions = [text for text in self.optionTexts if text != selectedText]
