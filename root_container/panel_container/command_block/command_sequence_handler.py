@@ -5,7 +5,7 @@ from command_creation.command_type import CommandType
 from common.draw_order import DrawOrder
 
 from data_structures.observer import Observer
-from root_container.panel_container.command_block_section.command_section import SectionEntity
+from root_container.panel_container.command_block_section.section_entity import SectionEntity
 from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
 if TYPE_CHECKING:
