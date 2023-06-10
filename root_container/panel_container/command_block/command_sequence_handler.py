@@ -101,7 +101,7 @@ class CommandSequenceHandler(Observer):
         elif isinstance(commandOrInserter, VariableContainer):
             return commandOrInserter.group
         else:
-            return commandOrInserter.getVGC()
+            return commandOrInserter.getChildVGC()
     
     def recomputePosition(self):
         print("recompute sequence handler")
@@ -129,7 +129,7 @@ class CommandSequenceHandler(Observer):
         variableContainer = VariableContainer(vgc, False)
 
         # create the CommandInserter
-        inserter = CommandInserter(variableContainer, self, onInsert = lambda inserter: self._onInsert(inserter))
+        inserter = CommandInserter(variableContainer, onInsert = lambda inserter: self._onInsert(inserter))
         variableContainer.setChild(inserter)
 
         return variableContainer
@@ -174,7 +174,7 @@ class CommandSequenceHandler(Observer):
             lastSectionInserterVC: VariableContainer[SectionEntity] = self.vgc.containers.tail
             lastSection = lastSectionInserterVC.getPrevious().child
             assert(isinstance(lastSection, SectionEntity))
-            vgc = lastSection.getVGC()
+            vgc = lastSection.getChildVGC()
         else:
             vgc = self.getVGC(after)
 
@@ -295,7 +295,7 @@ class CommandSequenceHandler(Observer):
             if not section.isExpanded():
                 continue
 
-            for commandOrInserterVC in section.getVGC().containers:
+            for commandOrInserterVC in section.getChildVGC().containers:
 
                 # regular command inserter inside section
                 if isinstance(commandOrInserterVC.child, CommandInserter):

@@ -1,6 +1,8 @@
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from common.draw_order import DrawOrder
 from data_structures.observer import Observer
+from models.command_models.command_model import CommandModel
+from models.command_models.full_model import FullModel
 from root_container.field_container.segment.segment_type import PathSegmentType
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
@@ -49,8 +51,7 @@ class Path(Observer):
 
         self.fieldContainer = field
 
-        self.commandHandler = panel.commandHandler
-        self.commandHandler.initPath(self)
+
         self.pathList = LinkedList[PathNodeEntity | PathSegmentEntity]() # linked list of nodes and segments
 
         # store a dict that maintains a mapping from PathNodeEntity | PathSegmentEntity to CommandBlockEntity
@@ -62,7 +63,7 @@ class Path(Observer):
         node.updateAdapter()
 
 
-    def _addRawNode(self, nodePosition: PointRef, afterPath = None, afterCommand = None, isTemporary: bool = False):
+    def _addRawNode(self, nodePosition: PointRef, afterPath = None, afterCommand: CommandModel = None, isTemporary: bool = False):
 
         if afterPath is None:
             afterPath = self.pathList.tail
@@ -71,9 +72,7 @@ class Path(Observer):
         node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
         self.pathList.insertAfter(afterPath, node)
 
-        turnCommand = self.commandHandler.insertCommandAfter(afterCommand, node.getAdapter())
-
-        # maintain a relationship between the node and turn command
+        turnCommand = CommandModel(node.getAdapter())
         self.linker.linkNode(node, turnCommand)
 
         return node
@@ -84,16 +83,13 @@ class Path(Observer):
         node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
         self.pathList.addToBeginning(node)
 
-        # create turn command and add entity
-        turnCommand = self.commandHandler.insertCommandAtBeginning(node.getAdapter(), self.commandHandler.vgc.containers.head.child.getVGC())
-
-        # maintain a relationship between the node and turn command
+        turnCommand = CommandModel(node.getAdapter())
         self.linker.linkNode(node, turnCommand)
 
         return node
 
 
-    def _addRawSegment(self, afterPath = None, afterCommand = None):
+    def _addRawSegment(self, afterPath = None, afterCommand: CommandModel = None):
 
         if afterPath is None:
             afterPath = self.pathList.tail
@@ -102,16 +98,9 @@ class Path(Observer):
         segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer, self)
         self.pathList.insertAfter(afterPath, segment)
 
-        for i, adapter in enumerate(segment.getAllAdapters()):
+        segmentCommand = CommandModel(segment.getAdapter())
+        self.linker.linkSegment(segment, segmentCommand)
 
-            segmentCommand = self.commandHandler.insertCommandAfter(afterCommand, adapter)
-            self.linker.linkSegment(segment, segmentCommand)
-
-            # Hide all but the first (straight) command
-            if i != 0:
-                segmentCommand.setInvisible()
-
-            afterCommand = segmentCommand
 
         return segment
 
@@ -121,9 +110,6 @@ class Path(Observer):
         segment = self._addRawSegment()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
 
-        self.commandHandler.recomputePosition()
-
-        self.commandHandler.vgc.tree()
 
         node.onNodeMove()
 
@@ -136,6 +122,7 @@ class Path(Observer):
         
         command = self.linker.getCommandFromPath(node)
         newSegment = self._addRawSegment(node, command)
+
 
         node.updateAdapter()
         node.getNext().onNodeMove(node)
@@ -150,7 +137,6 @@ class Path(Observer):
         command = self.linker.getCommandFromPath(node)
         segment = self._addRawSegment(node, command)
 
-        self.commandHandler.recomputePosition()
 
         node.updateAdapter()
         node.getNext().onNodeMove(node)
@@ -164,8 +150,6 @@ class Path(Observer):
         self.pathList.remove(node)
         self.entities.removeEntity(node)
         
-        self.commandHandler.deleteCommand(self.linker.getCommandFromPath(node))
-        self.linker.deleteNode(node)
 
         # remove the next segment, unless its the last segment, in which case remove the previous segment
         if node.isLastNode():
@@ -178,11 +162,7 @@ class Path(Observer):
         self.pathList.remove(segment)
         self.entities.removeEntity(segment)
         
-        for command in self.linker.getCommandsFromSegment(segment):
-            self.commandHandler.deleteCommand(command)
-        self.linker.deleteSegment(segment)
 
-        self.commandHandler.recomputePosition()
 
         # the other segment is the only node/segment affected by this
         if otherSegment is not None: # it's none if there are only two nodes total and remove last one
@@ -195,15 +175,14 @@ class Path(Observer):
             node.getPrevious().getPrevious().onAngleChange()
 
 
-    def getPathEntityFromCommand(self, command: CommandBlockEntity) -> PathSegmentEntity | PathNodeEntity:
+    def getPathEntityFromCommand(self, command: CommandModel) -> PathSegmentEntity | PathNodeEntity:
         return self.linker.getPathFromCommand(command)
     
-    def getCommandFromPathEntity(self, pathEntity: PathSegmentEntity | PathNodeEntity) -> CommandBlockEntity:
+    def getCommandFromPathEntity(self, pathEntity: PathSegmentEntity | PathNodeEntity) -> CommandModel:
         return self.linker.getCommandFromPath(pathEntity)
     
     # when the segment type has changed, show the correct command and hide the others
     def onSegmentTypeChange(self, segment: PathSegmentEntity, oldType: PathSegmentType, newType: PathSegmentType):
-        
         oldCommand = self.linker.getCommandFromSegmentAndType(segment, oldType)
         commandToShow = self.linker.getCommandFromSegmentAndType(segment, newType)
 

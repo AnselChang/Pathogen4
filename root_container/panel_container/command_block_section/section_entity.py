@@ -6,7 +6,7 @@ from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.hover_listener import HoverLambda
 from entity_base.listeners.tick_listener import TickLambda
 from entity_ui.group.variable_group.variable_container import VariableContainer
-from models.command_models.buildable_from_command_model import BuildableFromCommandModel
+from models.command_models.model_based_entity import ModelBasedEntity
 from root_container.panel_container.command_block_section.command_section_body import CommandSectionBody
 from root_container.panel_container.command_block_section.command_section_header import CommandSectionHeader
 from utility.motion_profile import MotionProfile
@@ -25,7 +25,7 @@ expand and collapse command sections, as well as show or hide the path section
 pertaining to the command section.
 """
 
-class SectionEntity(Entity, BuildableFromCommandModel):
+class SectionEntity(Entity, ModelBasedEntity):
 
     def __init__(self, parent: Entity, handler: CommandSequenceHandler):
 
@@ -91,7 +91,7 @@ class SectionEntity(Entity, BuildableFromCommandModel):
         else:
             self.setExpansion(False)
 
-    def getVGC(self) -> VariableGroupContainer:
+    def getChildVGC(self) -> VariableGroupContainer:
         return self.body.vgc
 
     # This container is dynamically fit to VariableGroupContainer

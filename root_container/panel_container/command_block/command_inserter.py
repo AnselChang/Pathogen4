@@ -34,6 +34,7 @@ A "plus" button that, when clicked, inserts a custom command there
 class CommandInserter(Entity):
 
     def __init__(self, parent: VariableContainer, onInsert = lambda: None, isFirst: bool = False):
+        assert(False)
         super().__init__(
             parent = parent,
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
@@ -44,7 +45,6 @@ class CommandInserter(Entity):
             )
         
         self.container = parent
-        self.handler = handler
         self.isFirst = isFirst
 
         self.START_Y = 43
@@ -136,10 +136,12 @@ class CommandInserter(Entity):
             pygame.draw.rect(screen, [255,255,255], [x - self.THIN, y - self.THICK, self.THIN*2, self.THICK*2])
 
     def getPreviousCommand(self) -> CommandBlockEntity:
-        return self.handler.getPrevious(self)
+        #return self.handler.getPrevious(self)
+        pass
     
     def getNextCommand(self) -> CommandBlockEntity:
-        return self.handler.getNext(self)
+        #return self.handler.getNext(self)
+        pass
     
     # whether this command block is inside a task
     def isInsideTask(self) -> bool:
