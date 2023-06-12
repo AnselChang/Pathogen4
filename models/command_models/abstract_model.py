@@ -1,8 +1,6 @@
 from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
-from adapter.path_adapter import NullPathAdapter
-from command_creation.command_definition_database import CommandDefinitionDatabase
 
 from data_structures.linked_list import LinkedList, LinkedListNode
 from typing import TypeVar, Generic
@@ -11,8 +9,6 @@ from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 
-if TYPE_CHECKING:
-    from models.command_models.command_model import CommandModel
 
 """
 A single-source-of-truth model storing the internal state of some
@@ -82,9 +78,6 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
 
         self.rebuild(rebuildChildren = False)
         self.ui.propagateChange()
-    
-    def createCustomCommandModel(self) -> CommandModel:
-        return CommandModel(NullPathAdapter())
     
     def createInserterUI(self, elementBeforeInserter: AbstractModel) -> CommandInserter:
         return CommandInserter(self.getParentUI(), lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)

@@ -41,7 +41,7 @@ class CommandBlockHeader(Container):
     # Determine whether command nonblocking is enabled, and if so, show wait entity
     def onFunctionChange(self):
 
-        if self.parentCommand.getDefinition().nonblockingEnabled:
+        if self.parentCommand.model.getDefinition().nonblockingEnabled:
             self.waitEntity.setVisible()
         else:
             self.waitEntity.setInvisible()

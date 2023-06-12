@@ -17,7 +17,7 @@ class ElementContainer(Container):
 
     def __init__(self, parent, parentCommand: CommandBlockEntity):
         self.parentCommand = parentCommand
-        self.parameters = parentCommand.parameters
+        self.parameters = parentCommand.model.getParameters()
         super().__init__(parent, hover = HoverLambda(self))
 
     def defineCenter(self) -> tuple:

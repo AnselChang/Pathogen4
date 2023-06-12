@@ -2,13 +2,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from command_creation.command_type import CommandType
 
-
 if TYPE_CHECKING:
     from root_container.path import Path
     from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
     from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
     from root_container.panel_container.command_block.command_block_container import CommandBlockContainer
-
+    from models.command_models.command_model import CommandModel
 
 from entity_base.listeners.drag_listener import DragLambda
 from entity_base.entity import Entity
@@ -37,14 +36,9 @@ CustomCommands have two additonal features compared to regular commands
 
 class CustomCommandBlockEntity(CommandBlockEntity):
 
-    def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database, commandExpansion: CommandExpansionContainer):
+    def __init__(self, parent: CommandBlockContainer, model: CommandModel):
         
-        super().__init__(parent, handler, pathAdapter, database, commandExpansion,
-                         defaultExpand = True, isCustom = True
-                         )
+        super().__init__(parent, model)
 
-        self.dragging = False
-
-    def onDelete(self, mouse: tuple):
-        self.handler.deleteCommand(self)
-        self.handler.recomputePosition()
+    def onDelete(self):
+        print("on delete")

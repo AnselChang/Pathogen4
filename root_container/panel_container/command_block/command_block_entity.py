@@ -77,7 +77,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         # whether to expand by default, ignoring global flags
         self.localExpansion = self.model.getType() == CommandType.CUSTOM
 
-        r,g,b = self.getDefinition().color
+        r,g,b = self.model.getDefinition().color
         self.colorR = MotionProfile(r, speed = 0.2)
         self.colorG = MotionProfile(g, speed = 0.2)
         self.colorB = MotionProfile(b, speed = 0.2)
@@ -102,7 +102,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
 
         self.headerEntity = CommandBlockHeader(self, self.model.getAdapter(), self.model.getType() == CommandType.CUSTOM)
 
-        self.elementsContainer = createElementsContainer(self, self.getDefinition(), self.model.getAdapter())
+        self.elementsContainer = createElementsContainer(self, self.model.getDefinition(), self.model.getAdapter())
 
     def getChildVGC(self) -> VariableGroupContainer:
         if not isinstance(self.elementsContainer, TaskCommandsContainer):
@@ -213,7 +213,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     # call only if this is a task command. Get the list of commands inside task
     def getTaskList(self) -> LinkedList[VariableContainer]:
 
-        if not self.isTask():
+        if not self.model.isTask():
             return None
 
         taskContainer: TaskCommandsContainer = self.elementsContainer
@@ -223,8 +223,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     # Return the list of possible function names for this block
     # If inside a task and is a custom block, cannot contain task
     def getFunctionNames(self) -> list[str]:
-        print("get names", self.type, self.isInsideTask())
-        return self.database.getDefinitionNames(self.type, self.isInsideTask())
+        return self.database.getDefinitionNames(self.model.getType(), self.model.isTask())
 
     def defineWidth(self) -> float:
         return self._pwidth(1)
@@ -258,7 +257,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         return self.animatedExpansion.get() == 1
     
     def getCommandType(self) -> CommandType:
-        return self.type
+        return self.model.getType()
     
     # Set the local expansion of the command without modifying global expansion flags
     def setLocalExpansion(self, isExpanded):
@@ -266,24 +265,12 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
 
     # Toggle command expansion. Modify global expansion flags if needed
     def onClick(self, mouse: tuple):
-
-        if self.localExpansion:
-            # If all are being forced to contract right now, disable forceContract, but 
-            # all other commands should retain being contracted except this one
-            if self.commandExpansion.getForceCollapse():
-                self.handler.setAllLocalExpansion(False)
-                self.commandExpansion.setForceCollapse(False)
-        else:
-            if self.commandExpansion.getForceExpand():
-                self.handler.setAllLocalExpansion(True)
-                self.commandExpansion.setForceExpand(False)
-
         self.localExpansion = not self.localExpansion
         self.propagateChange()
 
     def onTurnEnableToggled(self):
-        if self.pathAdapter.type == CommandType.TURN:
-            turnAdapter: TurnAdapter = self.pathAdapter
+        if self.model.getType() == CommandType.TURN:
+            turnAdapter: TurnAdapter = self.model.getAdapter()
             if turnAdapter.isTurnEnabled():
                 self.setVisible(recompute = False)
             else:
@@ -317,6 +304,8 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     # Also, contract all commands except this one
     def highlight(self):
 
+        return
+
         if self.isHighlighted():
             CommandBlockEntity.HIGHLIGHTED = None
             self.localExpansion = False
@@ -335,7 +324,8 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     # Called when the highlight button in the command block is clicked.
     # Should highlight the corresponding node or segment in the path
     def onHighlightPath(self, mouse: tuple):
-        self.handler.highlightPathFromCommand(self)
+        pass
+        #self.handler.highlightPathFromCommand(self)
 
     # if mouse down on different command, clear highlight
     def onMouseDown(self, mouse: tuple):
@@ -347,27 +337,15 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         self.dragPosition = mouse[1] + self.mouseOffset
 
         # cache the existing inserters
-        self.handler.updateActiveCommandInserters()
+        #self.handler.updateActiveCommandInserters()
 
     def onStopDrag(self):
         self.dragPosition = None
         self.recomputeEntity()
 
-    def _getClosestInserter(self, mouse: tuple) -> CommandInserter | None:
-        return self.handler.getClosestInserter(mouse, self)
-
     def onDrag(self, mouse: tuple):
         self.dragPosition = mouse[1] + self.mouseOffset
-
-        inserter = self._getClosestInserter(mouse)
-
-        # if dragged to a different position to swap commands
-        if inserter is not None and self.getNextInserter() is not inserter and self.getNextInserter() is not inserter:
-            print("move")
-            self.handler.moveCommand(self, inserter)
-            self.handler.recomputePosition()
-        else:
-            self.recomputeEntity()
+        pass
 
     def getColor(self) -> tuple:
         r = self.colorR.get()
@@ -404,26 +382,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             return self.dragPosition
         else:
             return None
-    
-    def getNextInserter(self) -> CommandInserter:
-        return self.handler.getNext(self)
-    
-    def getPreviousInserter(self) -> CommandBlockEntity:
-        return self.handler.getPrevious(self)
-    
-    def getNextCommand(self) -> CommandBlockEntity:
-        inserter = self.getNextInserter()
-        if inserter is None:
-            return None
-        else:
-            return self.handler.getNext(inserter)
-    
-    def getPreviousCommand(self) -> CommandBlockEntity:
-        inserter = self.getPreviousInserter()
-        if inserter is None:
-            return None
-        else:
-            return self.handler.getPrevious(inserter)
         
     def __repr__(self):
-        return self.getDefinition().id
+        return self.model.getDefinition().id

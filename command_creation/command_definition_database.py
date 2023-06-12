@@ -1,8 +1,6 @@
 from command_creation.command_definition import CommandType, CommandDefinition
 from command_creation.preset_commands import CommandDefinitionPresets
 from data_structures.observer import Observable
-from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
-from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 
 from entity_handler.interactor import Interactor
 from entity_handler.entity_manager import EntityManager

@@ -6,11 +6,11 @@ from root_container.panel_container.command_block.command_block_entity import Co
 from command_creation.command_definition_database import CommandDefinitionDatabase
 
     
-from models.command_models.section_model import SectionModel
 from entity_base.entity import Entity
-from adapter.path_adapter import PathAdapter
+from adapter.path_adapter import NullPathAdapter, PathAdapter
 from models.command_models.model_based_entity import ModelBasedEntity
 from command_creation.command_definition import CommandDefinition
+from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 
 
 from root_container.panel_container.command_block.parameter_state import ParameterState
@@ -60,23 +60,32 @@ class CommandModel(AbstractModel, Observer):
         return self.type
 
     def _createChild(self) -> 'CommandModel':
-        return self.createCustomCommandModel()
+        return CommandModel(NullPathAdapter())
     
     # whether command can contain children. Ie tasks, loops, etc
     def _canHaveChildren(self) -> bool:
-        return self.getDefinition().isTask
+        return self.isTask()
     
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
-        return CommandBlockEntity(self.getParentUI(), self)
+        if self.getType() == CommandType.CUSTOM:
+            return CustomCommandBlockEntity(self.getParentUI(), self)
+        else:
+            return CommandBlockEntity(self.getParentUI(), self)
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinitionByID(self.type, self._definitionID)
     
+    def getParameters(self) -> ParameterState:
+        return self.parameters
+
     def getType(self) -> CommandType:
         return self.type
 
     def getAdapter(self) -> PathAdapter:
         return self.adapter
+    
+    def isTask(self) -> bool:
+        return self.getDefinition().isTask
 
     
     def getGeneratedCode(self) -> str:
