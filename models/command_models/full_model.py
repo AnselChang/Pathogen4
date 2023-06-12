@@ -2,6 +2,7 @@ from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
 from models.command_models.abstract_model import AbstractModel
 from models.command_models.section_model import SectionModel
+from root_container.panel_container.command_block.full_container import FullContainer
 
 """
 Model of entire path command, through a list of path sections
@@ -9,14 +10,25 @@ Model of entire path command, through a list of path sections
 
 class FullModel(AbstractModel[None, SectionModel]):
     
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, parentUI: Entity = None):
+        super().__init__()
+
+        self.fullModelParentUI = parentUI
+
+        # create the first section
+        self.addSectionToEnd()
+
+    def getParentUI(self) -> Entity:
+        return self.fullModelParentUI
+    
+    def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
+        return FullContainer(self.getParentUI())
 
     def _canHaveChildren(self) -> bool:
         return True
 
     def _createChild(self) -> SectionModel:
-        return SectionModel(self)
+        return SectionModel()
     
     def addSectionToEnd(self):
         self.insertChildAtEnd(self._createChild())

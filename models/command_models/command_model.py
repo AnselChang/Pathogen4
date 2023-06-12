@@ -28,7 +28,7 @@ class CommandModel(AbstractModel, Observer):
         self.adapter = pathAdapter
         self.type = pathAdapter.type
 
-        super().__init__()
+        super().__init__(str(self.type))
 
         # initialize default command definition to be the first one
         self._definitionID = self.database.getDefinitionByIndex(self.type).id

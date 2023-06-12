@@ -13,9 +13,9 @@ Model for a command section, which contains commands
 
 class SectionModel(AbstractModel):
     
-    def __init__(self, parent: 'FullModel'):
+    def __init__(self):
 
-        super().__init__(parent)
+        super().__init__("SectionModel")
 
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
         return SectionEntity(self.getParentUI())

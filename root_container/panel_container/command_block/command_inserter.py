@@ -34,7 +34,10 @@ A "plus" button that, when clicked, inserts a custom command there
 class CommandInserter(Entity):
 
     def __init__(self, parent: VariableContainer, onInsert = lambda: None, isFirst: bool = False):
-        assert(False)
+        
+        super().__init__(self)
+        return
+
         super().__init__(
             parent = parent,
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),

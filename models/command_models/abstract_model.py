@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from adapter.path_adapter import NullPathAdapter
 from command_creation.command_definition_database import CommandDefinitionDatabase
 
-from data_structures.linked_list import LinkedList
+from data_structures.linked_list import LinkedList, LinkedListNode
 from typing import TypeVar, Generic
 
 from entity_base.entity import Entity
@@ -23,11 +23,15 @@ Command blocks usualy have a parent of sections, or tasks/loops if they're insid
 
 T1 = TypeVar('T1') # parent type
 T2 = TypeVar('T2') # children type
-class AbstractModel(Generic[T1, T2]):
+class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
 
-    def __init__(self, parent: AbstractModel | T1 = None):
+    def __init__(self, name: str = "AbstractModel"):
+
+        super().__init__()
+
+        self.name = name
         
-        self.parent = parent
+        self.parent = None
         self.children = LinkedList[AbstractModel | T2]()
 
         self.ui = None
@@ -47,18 +51,21 @@ class AbstractModel(Generic[T1, T2]):
     # must be implemented by subclasses
     # implement this to generate the UI for this element ONLY (not children)
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
-        raise NotImplementedError
+        raise NotImplementedError(self)
     
     def getFirstChild(self) -> AbstractModel | T2:
         return self.children[0]
 
     def insertChildAfter(self, child: AbstractModel | T2, after: AbstractModel | T2):
+        child.parent = self
         self.children.insertAfter(after, child)
 
     def insertChildAtBeginning(self, child: AbstractModel | T2):
+        child.parent = self
         self.children.addToBeginning(child)
 
     def insertChildAtEnd(self, child: AbstractModel | T2):
+        child.parent = self
         self.children.addToEnd(child)
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
@@ -100,26 +107,28 @@ class AbstractModel(Generic[T1, T2]):
     # If rebuildChildren, rebuilds children as well.
     # Otherwise, links the already-computed UI for children to this element
     def rebuild(self, rebuildChildren: bool = False) -> None:
-        self.ui = self._generateUIForMyself(self.getParentUI())
+        self.ui = self._generateUIForMyself()
+        assert(isinstance(self.ui, ModelBasedEntity))
 
         if not self._canHaveChildren():
             return
-
-        # clear existing child ui before re-adding all
-        self.ui.clearChildUI()
-
+        
         # add first inserter UI
         self.ui.addChildUI(self.createInserterUI(None))
 
         for child in self.children:
 
             if rebuildChildren:
-                childUI = child.rebuild(self.ui, True)
-            else:
-                childUI = child.getExistingUI()
-
+                child.rebuild(True)
+            
             # add the section/command UI
-            self.ui.addChildUI(childUI)
+            self.ui.addChildUI(child.getExistingUI())
 
             # add the inserter UI
             self.ui.addChildUI(self.createInserterUI(child))
+
+    # print this element and all children as tree structure for debugging
+    def tree(self, indent: int = 0):
+        print(" " * indent + self.name)
+        for child in self.children:
+            child.tree(indent + 2)

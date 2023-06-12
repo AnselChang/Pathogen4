@@ -5,6 +5,7 @@ from entity_ui.dropdown.dropdown_container import DropdownContainer
 from entity_ui.group.variable_group.variable_container import VariableContainer
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
 from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
+from models.command_models.full_model import FullModel
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
@@ -51,15 +52,18 @@ GREEN = [0,255,0]
 BLUE = [0,0,255]
 
 # Define the I/O handling function
-def io_handler(database: CommandDefinitionDatabase):
+def io_handler(database: CommandDefinitionDatabase, model: FullModel):
     while True:
         cmd = input("Enter some text: ")
         
         if cmd == "json":
             commandJSON: dict = database.exportToJson()
             print(json.dumps(commandJSON, indent = 4))
-        elif cmd == "forward":
-            database.registerDefinition(goToPoint())
+        elif cmd == "model":
+            model.tree()
+        elif cmd == "ui":
+            model.rebuild(True)
+            model.getExistingUI().tree()
 
 
 
@@ -105,8 +109,11 @@ def main():
     # create tabs
     tabHandler = TabHandler(panelContainer, database)
 
+    # create command model
+    model = FullModel()
+
     # Create path
-    path = Path(fieldContainer, tabHandler.blockContainer, database, PointRef(Ref.FIELD, (24,24)))
+    path = Path(fieldContainer, tabHandler.blockContainer, model, database, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)
 
     # initialize pygame artifacts
@@ -117,7 +124,7 @@ def main():
     rootContainer.recomputeEntity()
 
     # Create a new thread for the I/O handling function
-    io_thread = threading.Thread(target=io_handler, args = (database,), daemon=True)
+    io_thread = threading.Thread(target=io_handler, args = (database,model,), daemon=True)
 
     # Start the I/O handling thread
     io_thread.start()

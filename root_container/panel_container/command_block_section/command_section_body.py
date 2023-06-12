@@ -28,9 +28,7 @@ class CommandSectionBody(Container):
                          outerMargin = 5,
                          name = "section")
         
-        # initialize first inserter inside command section
-        inserterVariableContainer = parent.handler._createInserter(self.vgc)
-        self.vgc.containers.addToBeginning(inserterVariableContainer)
+
     
     # This container is dynamically fit to VariableGroupContainer
     def defineHeight(self) -> float:

@@ -27,9 +27,8 @@ pertaining to the command section.
 
 class SectionEntity(Entity, ModelBasedEntity):
 
-    def __init__(self, parent: Entity, handler: CommandSequenceHandler):
+    def __init__(self, parent: Entity):
 
-        self.handler = handler
         self.HEADER_HEIGHT = 30
         super().__init__(parent = parent,
             click = ClickLambda(self, FonLeftClick=lambda mouse: self.toggleExpansion()),
@@ -44,6 +43,9 @@ class SectionEntity(Entity, ModelBasedEntity):
         
         self.body = CommandSectionBody(parent = self)
         self.header = CommandSectionHeader(parent = self)
+
+    def getChildVGC(self) -> VariableGroupContainer:
+        return self.body.vgc
 
      # Update animation every tick
     def onTick(self):
@@ -90,9 +92,6 @@ class SectionEntity(Entity, ModelBasedEntity):
             self.setExpansion(True)
         else:
             self.setExpansion(False)
-
-    def getChildVGC(self) -> VariableGroupContainer:
-        return self.body.vgc
 
     # This container is dynamically fit to VariableGroupContainer
     def defineHeight(self) -> float:

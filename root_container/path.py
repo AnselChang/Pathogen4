@@ -41,6 +41,7 @@ class Path(Observer):
     def __init__(self,
                  field: FieldContainer,
                  panel: BlockTabContentsContainer,
+                 model: FullModel,
                  database: CommandDefinitionDatabase,
                  startPosition: PointRef):
             
@@ -51,7 +52,7 @@ class Path(Observer):
 
         self.fieldContainer = field
 
-
+        self.model = model
         self.pathList = LinkedList[PathNodeEntity | PathSegmentEntity]() # linked list of nodes and segments
 
         # store a dict that maintains a mapping from PathNodeEntity | PathSegmentEntity to CommandBlockEntity
