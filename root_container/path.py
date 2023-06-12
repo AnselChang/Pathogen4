@@ -61,6 +61,8 @@ class Path(Observer):
         # initialize first node
         node = self._addRawNode(startPosition) # add start node
 
+        self.model.recomputeUI()
+
         node.updateAdapter()
 
 
@@ -68,12 +70,18 @@ class Path(Observer):
 
         if afterPath is None:
             afterPath = self.pathList.tail
+        if afterCommand is None:
+            afterCommand = self.model.getLastChild().getLastChild()
 
         # create node and add entity
         node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
         self.pathList.insertAfter(afterPath, node)
 
         turnCommand = CommandModel(node.getAdapter())
+        if afterCommand is None:
+            self.model.getLastChild().insertChildAtEnd(turnCommand)
+        else:
+            afterCommand.insertAfterThis(turnCommand)
         self.linker.linkNode(node, turnCommand)
 
         return node
@@ -85,6 +93,7 @@ class Path(Observer):
         self.pathList.addToBeginning(node)
 
         turnCommand = CommandModel(node.getAdapter())
+        self.model.getFirstChild().insertChildAtBeginning(turnCommand)
         self.linker.linkNode(node, turnCommand)
 
         return node
@@ -94,14 +103,16 @@ class Path(Observer):
 
         if afterPath is None:
             afterPath = self.pathList.tail
+        if afterCommand is None:
+            afterCommand = self.model.getLastChild().getLastChild()
 
         # create segment and add entity
         segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer, self)
         self.pathList.insertAfter(afterPath, segment)
 
         segmentCommand = CommandModel(segment.getAdapter())
+        afterCommand.insertAfterThis(segmentCommand)
         self.linker.linkSegment(segment, segmentCommand)
-
 
         return segment
 
@@ -111,6 +122,7 @@ class Path(Observer):
         segment = self._addRawSegment()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
 
+        self.model.recomputeUI()
 
         node.onNodeMove()
 
@@ -124,6 +136,7 @@ class Path(Observer):
         command = self.linker.getCommandFromPath(node)
         newSegment = self._addRawSegment(node, command)
 
+        self.model.recomputeUI()
 
         node.updateAdapter()
         node.getNext().onNodeMove(node)
@@ -138,6 +151,7 @@ class Path(Observer):
         command = self.linker.getCommandFromPath(node)
         segment = self._addRawSegment(node, command)
 
+        self.model.recomputeUI()
 
         node.updateAdapter()
         node.getNext().onNodeMove(node)
@@ -150,7 +164,11 @@ class Path(Observer):
         # remove the node
         self.pathList.remove(node)
         self.entities.removeEntity(node)
+
+        turnCommand = self.linker.getCommandFromPath(node)
+        turnCommand.delete()
         
+        self.model.recomputeUI()
 
         # remove the next segment, unless its the last segment, in which case remove the previous segment
         if node.isLastNode():

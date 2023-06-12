@@ -51,19 +51,38 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
         raise NotImplementedError(self)
     
     def getFirstChild(self) -> AbstractModel | T2:
-        return self.children[0]
+        return self.children.head
+    
+    def getLastChild(self) -> AbstractModel | T2:
+        return self.children.tail
+    
+    # insert a sibling model after this model
+    def insertAfterThis(self, model: AbstractModel | T2) -> None:
+        self.parent.insertChildAfter(model, self)
+        self.parent.rebuild(rebuildChildren = False)
+
+    # insert a sibling model before this model
+    def insertBeforeThis(self, model: AbstractModel | T2) -> None:
+        if self._prev is None:
+            self.parent.insertChildAtBeginning(model)
+        else:
+            self.parent.insertChildAfter(model, self._prev)
+        self.parent.rebuild(rebuildChildren = False)
 
     def insertChildAfter(self, child: AbstractModel | T2, after: AbstractModel | T2):
         child.parent = self
         self.children.insertAfter(after, child)
+        self.rebuild(rebuildChildren = False)
 
     def insertChildAtBeginning(self, child: AbstractModel | T2):
         child.parent = self
         self.children.addToBeginning(child)
+        self.rebuild(rebuildChildren = False)
 
     def insertChildAtEnd(self, child: AbstractModel | T2):
         child.parent = self
         self.children.addToEnd(child)
+        self.rebuild(rebuildChildren = False)
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
 
@@ -92,6 +111,7 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
     def delete(self) -> None:
         if self.parent is not None:
             self.parent.children.remove(self)
+            self.parent.rebuild(False)
         else:
             raise Exception("Cannot delete root model")
     

@@ -18,6 +18,9 @@ class FullModel(AbstractModel[None, SectionModel]):
         # create the first section
         self.addSectionToEnd()
 
+    def recomputeUI(self) -> None:
+        self.ui.recomputeEntity()
+
     def getParentUI(self) -> Entity:
         return self.fullModelParentUI
     
