@@ -11,17 +11,20 @@ class FullContainer(Container, ModelBasedEntity):
 
         self.vgc = VariableGroupContainer(self, isHorizontal = False)
 
+    def propagateChange(self):
+        self.recomputeEntity()
+
     def getChildVGC(self) -> VariableGroupContainer:
         return self.vgc
 
     def defineWidth(self) -> float:
-        return self._pwidth(1)
+        return self._mwidth(4)
     
     def defineHeight(self) -> float:
         return self._pheight(1)
     
-    def defineLeftX(self) -> float:
-        return self._px(0)
+    def defineCenterX(self) -> float:
+        return self._px(0.5)
     
     def defineTopY(self) -> float:
         return self._py(0)

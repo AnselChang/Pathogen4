@@ -35,13 +35,11 @@ class CommandInserter(Entity):
 
     def __init__(self, parent: VariableContainer, onInsert = lambda: None, isFirst: bool = False):
         
-        super().__init__(self)
-        return
 
         super().__init__(
             parent = parent,
             hover = HoverLambda(self, FonHoverOn = self.onHoverOn, FonHoverOff = self.onHoverOff),
-            click = ClickLambda(self, FonLeftClick = lambda mouse: onInsert(self)),
+            click = ClickLambda(self, FonLeftClick = lambda mouse: onInsert()),
             select = SelectLambda(self, "inserter", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMAND_INSERTER,
             recomputeWhenInvisible = True
@@ -49,8 +47,9 @@ class CommandInserter(Entity):
         
         self.container = parent
         self.isFirst = isFirst
-
-        self.START_Y = 43
+        
+        self.HEIGHT_MIN = 5
+        self.HEIGHT_MAX = 12
 
         # shaded area specs
         self.X_MARGIN_LEFT = 6
@@ -64,71 +63,30 @@ class CommandInserter(Entity):
         self.THICK = 3 # cross thick radius
         self.THIN = 1 # cross thin radius
 
-        self.currentY = self.START_Y
-        self.isActive = False
-        self.hovering = False
-
-    def getVGC(self) -> VariableGroupContainer:
-        return self.container.group
-    
-    def isSectionInserter(self):
-        return self.getVGC().name == "main"
 
     def defineCenterX(self) -> tuple:
         return self._px(0.5)
 
     def defineWidth(self) -> float:
-        return self._pwidth(1) if self.isSectionInserter() else self._mwidth(7)
+        return self._pwidth(1)
     
     def defineHeight(self) -> float:
-
-        if not self.isFirst and self.getPreviousCommand() is not None and not self.getPreviousCommand().isVisible():
-            return 0
-
-        if self.handler.isOnlyInserter(self):
-            HEIGHT_MIN = 30
-            HEIGHT_MAX = 30
-        else:
-            HEIGHT_MIN = 5
-            HEIGHT_MAX = 16 if self.isSectionInserter() else 12
-        return self._aheight(HEIGHT_MAX if self.hovering else HEIGHT_MIN)
-    
-
-    def setActive(self, isActive):
-        self.isActive = isActive
-        self.propagateChange()
-
-    def defineBefore(self):
-        if self.getPreviousCommand() is None or self.getPreviousCommand().isVisible():
-            self.setActive(True)
-        else:
-            self.setActive(False)
+        return self._aheight(self.HEIGHT_MAX if self.hover.isHovering else self.HEIGHT_MIN)
 
     def onHoverOn(self):
-
-        if len(self.interactor.selected.entities) > 1 or self.interactor.leftDragging or self.interactor.rightDragging:
-            return
-
-        if self.isActive:
-            self.hovering = True
-            self.propagateChange()
+        self.propagateChange()
 
     def onHoverOff(self):
-        self.hovering = False
         self.propagateChange()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        
-        isActive = isActive and self.interactor.leftDragging and self.isActive
 
         Y_MARGIN = 2
         rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
         
-        isOnlyInserter = self.handler.isOnlyInserter(self)
-
-        if self.isActive and (self.hovering or isOnlyInserter):
+        if self.hover.isHovering:
             
-            color = [140, 140, 140] if (self.hovering) else [160, 160, 160]
+            color = [140, 140, 140] if (self.hover.isHovering) else [160, 160, 160]
 
             # draw shaded area
             pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)
@@ -137,16 +95,4 @@ class CommandInserter(Entity):
             x,y = self.CENTER_X, self.CENTER_Y
             pygame.draw.rect(screen, [255,255,255], [x - self.THICK, y - self.THIN, self.THICK*2, self.THIN*2])
             pygame.draw.rect(screen, [255,255,255], [x - self.THIN, y - self.THICK, self.THIN*2, self.THICK*2])
-
-    def getPreviousCommand(self) -> CommandBlockEntity:
-        #return self.handler.getPrevious(self)
-        pass
-    
-    def getNextCommand(self) -> CommandBlockEntity:
-        #return self.handler.getNext(self)
-        pass
-    
-    # whether this command block is inside a task
-    def isInsideTask(self) -> bool:
-        return self.handler.getVGC(self) is not self.handler.vgc
     

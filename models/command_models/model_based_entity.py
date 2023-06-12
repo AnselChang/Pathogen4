@@ -7,8 +7,8 @@ from entity_ui.group.variable_group.variable_container import VariableContainer
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
 
 """
-An interface for an UI element (path section / command / etc) that
-can be built from a command model (see models/command_models/command_model.py
+This class represents a UI element that can be generated on 1:1 correlation
+from a model. It contains code to interface between model and ui.
 """
 
 class ModelBasedEntity:
@@ -26,5 +26,7 @@ class ModelBasedEntity:
         childUI.changeParent(vc)
         self.getChildVGC().containers.addToEnd(vc)
     
+    # Implement this in entity subclasses as an endpoint for this class
+    # and model to interface with the children of this ui element
     def getChildVGC(self) -> VariableGroupContainer:
         raise NotImplementedError

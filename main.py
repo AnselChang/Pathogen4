@@ -62,7 +62,6 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel):
         elif cmd == "model":
             model.tree()
         elif cmd == "ui":
-            model.rebuild(True)
             model.getExistingUI().tree()
 
 
@@ -110,7 +109,8 @@ def main():
     tabHandler = TabHandler(panelContainer, database)
 
     # create command model
-    model = FullModel()
+    model = FullModel(tabHandler.blockContainer)
+    model.rebuild(True)
 
     # Create path
     path = Path(fieldContainer, tabHandler.blockContainer, model, database, PointRef(Ref.FIELD, (24,24)))

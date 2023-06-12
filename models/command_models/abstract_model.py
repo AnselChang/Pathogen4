@@ -15,10 +15,11 @@ if TYPE_CHECKING:
     from models.command_models.command_model import CommandModel
 
 """
-Interface for something that has a CommandElement parent, and that
-has 0 or more command children.
-CommandSections have a parent of None
-Command blocks usualy have a parent of sections, or tasks/loops if they're inside them
+A single-source-of-truth model storing the internal state of some
+recursive element, like a command block or a section. It handles
+the recursive generation of UI elements from the model for itself and its children,
+and has the option to regenerate the UI for itself without needing
+to regenerate the UI for its children through caching.
 """
 
 T1 = TypeVar('T1') # parent type
@@ -31,7 +32,7 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
 
         self.name = name
         
-        self.parent = None
+        self.parent: 'AbstractModel' = None
         self.children = LinkedList[AbstractModel | T2]()
 
         self.ui = None
@@ -69,18 +70,24 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
         self.children.addToEnd(child)
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
+
+        print("Inserter clicked")
+
         sectionOrCommand = self._createChild()
 
         if elementBeforeInserter is None:
             self.insertChildAtBeginning(sectionOrCommand)
         else:
             self.insertChildAfter(sectionOrCommand, elementBeforeInserter)
+
+        self.rebuild(rebuildChildren = False)
+        self.ui.propagateChange()
     
     def createCustomCommandModel(self) -> CommandModel:
         return CommandModel(NullPathAdapter())
     
     def createInserterUI(self, elementBeforeInserter: AbstractModel) -> CommandInserter:
-        return CommandInserter(None, lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
+        return CommandInserter(self.getParentUI(), lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
 
     
     # return cached UI for this element
@@ -106,9 +113,9 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
     # rebuild the UI for this element
     # If rebuildChildren, rebuilds children as well.
     # Otherwise, links the already-computed UI for children to this element
-    def rebuild(self, rebuildChildren: bool = False) -> None:
+    def rebuild(self, rebuildChildren: bool = False, isRoot: bool = True) -> None:
         self.ui = self._generateUIForMyself()
-        assert(isinstance(self.ui, ModelBasedEntity))
+        assert(isinstance(self.ui, ModelBasedEntity) and isinstance(self.ui, Entity))
 
         if not self._canHaveChildren():
             return
@@ -118,14 +125,18 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
 
         for child in self.children:
 
-            if rebuildChildren:
-                child.rebuild(True)
+            if rebuildChildren or child.ui is None:
+                child.rebuild(True, False)
             
             # add the section/command UI
             self.ui.addChildUI(child.getExistingUI())
 
             # add the inserter UI
             self.ui.addChildUI(self.createInserterUI(child))
+
+        if isRoot:
+            pass
+            #self.ui.recomputeEntity()
 
     # print this element and all children as tree structure for debugging
     def tree(self, indent: int = 0):
