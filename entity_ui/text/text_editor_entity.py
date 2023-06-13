@@ -209,7 +209,7 @@ class TextEditorEntity(Entity, Observer, Observable):
             self.notify()
 
         if self.defineHeight() != oldHeight:
-            self.propagateChange()
+            self.recomputeEntity()
 
     def onKeyUp(self, key):
         pass

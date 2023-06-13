@@ -134,7 +134,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         container: RowElementsContainer = self.elementsContainer
         container.onDefinitionChange()
 
-        self.propagateChange()
+        self.recomputeEntity()
     
     # call whenever database command color changes
     def onColorChange(self):
@@ -172,7 +172,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         # whenever changing function, expand function
         self.localExpansion = True
 
-        self.propagateChange()
+        self.recomputeEntity()
 
     # Update animation every tick
     def onTick(self):
@@ -198,7 +198,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             #self.animatedPosition.tick()
             self.animatedExpansion.tick()
 
-            self.propagateChange()
+            self.recomputeEntity()
 
 
     # how much the widgets stretch the command by. return the largest one
@@ -266,7 +266,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     # Toggle command expansion. Modify global expansion flags if needed
     def onClick(self, mouse: tuple):
         self.localExpansion = not self.localExpansion
-        self.propagateChange()
+        self.recomputeEntity()
 
     def onTurnEnableToggled(self):
         if self.model.getType() == CommandType.TURN:
@@ -276,7 +276,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             else:
                 self.setInvisible()
 
-            self.propagateChange()
+            self.recomputeEntity()
 
     def getOpacity(self) -> float:
         if self.isDragging():
@@ -309,7 +309,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         if self.isHighlighted():
             CommandBlockEntity.HIGHLIGHTED = None
             self.localExpansion = False
-            self.propagateChange()
+            self.recomputeEntity()
             return
 
         # highlight and expand this command, disabling global flag if need be
@@ -317,7 +317,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         self.handler.setAllLocalExpansion(False)
         self.commandExpansion.setForceCollapse(False)
         self.localExpansion = True
-        self.propagateChange()
+        self.recomputeEntity()
 
         self.handler.scrollToCommand(self)
 

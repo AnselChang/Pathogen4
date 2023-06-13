@@ -21,7 +21,7 @@ class ParameterState:
 
         # if parameter is not in hashmap, assign to default value
         if id not in self.hashmap:
-            widgetDefinition: WidgetDefinition = self.command.getDefinition().getElementDefinitionByID(id)
+            widgetDefinition: WidgetDefinition = self.command.model.getDefinition().getElementDefinitionByID(id)
             self.hashmap[id] = widgetDefinition.defaultValue
 
         return self.hashmap[id]

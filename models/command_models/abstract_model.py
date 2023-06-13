@@ -96,7 +96,7 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
             self.insertChildAfter(sectionOrCommand, elementBeforeInserter)
 
         self.rebuild(rebuildChildren = False)
-        self.ui.propagateChange()
+        self.ui.recomputeEntity()
     
     def createInserterUI(self, elementBeforeInserter: AbstractModel) -> CommandInserter:
         return CommandInserter(self.getParentUI(), lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)

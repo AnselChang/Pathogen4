@@ -19,7 +19,7 @@ class CommandSectionBody(Container):
 
     def __init__(self, parent: SectionEntity):
 
-        super().__init__(parent = parent)
+        super().__init__(parent = parent, thisUpdatesParent = True)
         self.section = parent
 
         self.vgc = VariableGroupContainer(parent = self,

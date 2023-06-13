@@ -45,35 +45,13 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         self.innerMargin = innerMargin
         self.outerMargin = outerMargin
 
-        super().__init__(parent = parent, tick = TickLambda(self, FonTickEnd = self.onTickEnd))
-        self.needToRecompute = False
-
-
-    # VariableContainer should call this whenever its size changes. O(1), so call as many
-    # times as you want in a single tick
-    def propagateChange(self):
-        # Instead of calling updateContainerPositions() directly, set a flag
-        # so it will be called on tick end
-        self.needToRecompute = True
-        super().propagateChange()
-        
-    # onTickEnd guarantees that, if there's nesting, children VGCs will update
-    # before parent VGCs
-    def onTickEnd(self):
-        if self.needToRecompute:
-            self.recomputeEntity() # this calls updateContainerPositions() at some point
-            self.needToRecompute = False
-            self.notify()
+        super().__init__(parent = parent)
 
     def _getMargin(self, margin):
         return self._awidth(margin) if self.isHorizontal else self._aheight(margin)
-    
-    def defineBefore(self) -> None:
-        self.updateContainerPositions()
 
-
-    # Iteratively update the position of each VariableContainer
-    def updateContainerPositions(self):
+    # Return the size of the VGC while setting the positions of the children
+    def updateContainerPositions(self) -> float:
 
         inner = self._getMargin(self.innerMargin)
         outer = self._getMargin(self.outerMargin)
@@ -99,23 +77,9 @@ class VariableGroupContainer(Container, Generic[T], Observable):
                 break
             else:
                 pos += inner
+        pos += outer
 
-    def getSize(self):
-
-        inner = self._getMargin(self.innerMargin)
-        outer = self._getMargin(self.outerMargin)
-
-        size = 2 * outer
-        container = self.containers.head
-        while container is not None:
-            size += container.defineWidth() if self.isHorizontal else container.defineHeight()
-            container = container.getNext()
-
-            if container is None:
-                break
-            else:
-                size += inner
-        return size
+        return pos - startPos
 
     def defineLeftX(self) -> float:
         if self.isHorizontal:
@@ -139,13 +103,13 @@ class VariableGroupContainer(Container, Generic[T], Observable):
 
     def defineWidth(self) -> float:
         if self.isHorizontal:
-            return self.getSize()
+            return self.updateContainerPositions()
         else:
             return self._pwidth(1)
         
     def defineHeight(self) -> float:
         if not self.isHorizontal:
-            return self.getSize()
+            return self.updateContainerPositions()
         else:
             return self._pheight(1)
         

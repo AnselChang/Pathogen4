@@ -367,7 +367,7 @@ class CommandSequenceHandler(Observer):
             raise Exception("Invalid element type")
         
     def onGlobalCommandExpansionChange(self):
-        self.vgc.propagateChange()
+        self.vgc.recomputeEntity()
 
     # returns true if the inserter is the only inserter in the list (whether it is main list or task command)
     def isOnlyInserter(self, inserter: CommandInserter) -> bool:

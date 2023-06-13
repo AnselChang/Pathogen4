@@ -55,16 +55,16 @@ class SectionEntity(Entity, ModelBasedEntity):
         if self.commandsVisible and isFullyCollapsed:
             self.body.setInvisible()
             self.commandsVisible = False
-            self.propagateChange()
+            self.recomputeEntity()
         elif not self.commandsVisible and not isFullyCollapsed:
             self.body.setVisible()
             self.commandsVisible = True
-            self.propagateChange()
+            self.recomputeEntity()
 
         # handle expansion animation
         if not self.animatedExpansion.isDone():
             self.animatedExpansion.tick()
-            self.propagateChange()
+            self.recomputeEntity()
 
     def getCommandOpacity(self) -> float:
         return self.animatedExpansion.get()

@@ -71,7 +71,8 @@ class Entity(ABC, Observable):
                  key: KeyListener = None,
                  drawOrder: DrawOrder = 0,
                  initiallyVisible: bool = True,
-                 recomputeWhenInvisible: bool = False
+                 recomputeWhenInvisible: bool = False,
+                 thisUpdatesParent: bool = False,
                  ) -> None:
                 
         self.drawOrder = drawOrder
@@ -84,6 +85,8 @@ class Entity(ABC, Observable):
         self._LOCAL_VISIBLE = initiallyVisible
         self.recomputeWhenInvisible = recomputeWhenInvisible
 
+        # if true, means that recomputing self must first recompute parent
+        self.thisUpdatesParent = thisUpdatesParent or (parent is not None and parent.thisUpdatesParent)
 
         self.entities = _entities
         self.interactor = _interactor
@@ -219,11 +222,6 @@ class Entity(ABC, Observable):
     def drawRect(self, screen: pygame.Surface):
         pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], 1)
 
-    # propagate notification up the chain.
-    # Useful for when parent rect is defined by child rect, and child rect changes
-    def propagateChange(self):
-        if self._parent is not None:
-            self._parent.propagateChange()
 
     def recomputeSize(self):
 
@@ -282,8 +280,21 @@ class Entity(ABC, Observable):
 
         self.RECT = [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT]
 
+    # Going up the tree, find first ancestor entity with (thisUpdatesParent == False)
+    def findAncestorEntityIndependentFromParent(self) -> 'Entity':
+        if self._parent is not None and self.thisUpdatesParent:
+            return self._parent.findAncestorEntityIndependentFromParent()
+        else:
+            return self
+
     # Must call recomputePosition every time the entity changes its position or dimensions
-    def recomputeEntity(self, excludeChildIf: Callable[['Entity'], bool] = lambda entity: False, skipRecomputeSize: bool = False):
+    def recomputeEntity(self, isRoot: bool = True):
+
+        # for initially calling this function, update ancestors first if ancestor dimensions dependent on self
+        if isRoot:
+            firstEntityToCompute = self.findAncestorEntityIndependentFromParent()
+            firstEntityToCompute.recomputeEntity(False)
+            return
 
         # only recompute when visible. Otherwise, the position is not defined
         # When the entity is made visible, it will recompute its position
@@ -291,20 +302,14 @@ class Entity(ABC, Observable):
             return
         
         self.defineBefore()
-
-        if not skipRecomputeSize:
-            self.recomputeSize()
-        
+        self.recomputeSize()
         self.recomputePosition()
 
         self.defineAfter()
 
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:
-            if excludeChildIf(child):
-                pass
-            else:
-                child.recomputeEntity()
+            child.recomputeEntity(False)
 
     # THESE ARE UTILITY METHODS THAT CAN BE USED TO SPECIFY RELATIVE POSITIONS ABOVE
 

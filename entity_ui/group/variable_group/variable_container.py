@@ -28,7 +28,7 @@ class VariableContainer(Container, LinkedListNode['VariableContainer'], ABC, Gen
         self.child: T | Entity = None
         self._POSITION_FROM_VGC = 0
 
-        super().__init__(parent = parent)
+        super().__init__(parent = parent, thisUpdatesParent = True)
         LinkedListNode.__init__(self)
 
     def setChild(self, child: T):

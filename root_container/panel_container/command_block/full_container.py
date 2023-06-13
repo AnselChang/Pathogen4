@@ -11,8 +11,6 @@ class FullContainer(Container, ModelBasedEntity):
 
         self.vgc = VariableGroupContainer(self, isHorizontal = False)
 
-    def propagateChange(self):
-        self.recomputeEntity()
 
     def getChildVGC(self) -> VariableGroupContainer:
         return self.vgc
