@@ -53,6 +53,8 @@ class VariableGroupContainer(Container, Generic[T], Observable):
     # Return the size of the VGC while setting the positions of the children
     def updateContainerPositions(self) -> float:
 
+        print("ucp", self._parent, self)
+
         inner = self._getMargin(self.innerMargin)
         outer = self._getMargin(self.outerMargin)
 

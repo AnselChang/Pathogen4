@@ -121,6 +121,9 @@ def main():
     clock = pygame.time.Clock()
 
     # initialize everything
+    print(model.tree())
+    print(model.ui.tree())
+    print("compute everything")
     rootContainer.recomputeEntity()
 
     # Create a new thread for the I/O handling function
@@ -130,6 +133,7 @@ def main():
     io_thread.start()
 
     # Main game loop
+    print("start loop")
     while True:
 
         dimensions.RESIZED_THIS_FRAME = False

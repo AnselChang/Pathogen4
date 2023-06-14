@@ -98,6 +98,9 @@ class Entity(ABC, Observable):
         self._children: list[Entity] = []
         self._parent: Entity = parent
 
+        self._widthCached = False
+        self._heightCached = False
+
         if self._parent is not None and self not in self._parent._children:
             self._parent._children.append(self)
 
@@ -143,10 +146,14 @@ class Entity(ABC, Observable):
     # must impl both of these if want to contain other entity
     # by default, set to the parent width and height
     def defineWidth(self) -> float:
+
         return self.dimensions.SCREEN_WIDTH if self._parent is None else self._pwidth(1)
-    def defineHeight(self) -> float:
-        return self.dimensions.SCREEN_HEIGHT if self._parent is None else self._pheight(1)
     
+    def defineHeight(self) -> float:
+
+        return self.dimensions.SCREEN_HEIGHT if self._parent is None else self._pheight(1)
+
+
     # override this to define anything else before the position is recomputed
     def defineBefore(self) -> None:
         return
@@ -223,9 +230,10 @@ class Entity(ABC, Observable):
         pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], 1)
 
 
-    def recomputeSize(self):
-
+    def recomputeWidth(self):
         self.WIDTH = self.defineWidth()
+
+    def recomputeHeight(self):
         self.HEIGHT = self.defineHeight()
 
     def recomputePosition(self):
@@ -300,12 +308,15 @@ class Entity(ABC, Observable):
         # When the entity is made visible, it will recompute its position
         if not self.isVisible() and not self.recomputeWhenInvisible:
             return
-        
+                
         self.defineBefore()
-        self.recomputeSize()
+        self.recomputeWidth()
+        self.recomputeHeight()
         self.recomputePosition()
 
         self.defineAfter()
+
+        print("recomputed", self)
 
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:

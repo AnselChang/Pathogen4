@@ -33,6 +33,7 @@ class VariableContainer(Container, LinkedListNode['VariableContainer'], ABC, Gen
 
     def setChild(self, child: T):
         self.child: T | Entity = child
+        self.child.thisUpdatesParent = True
 
     def changeParent(self, newParent: Entity):
         super().changeParent(newParent)
