@@ -73,6 +73,7 @@ class Entity(ABC, Observable):
                  initiallyVisible: bool = True,
                  recomputeWhenInvisible: bool = False,
                  thisUpdatesParent: bool = False,
+                 verbose: bool = True
                  ) -> None:
                 
         self.drawOrder = drawOrder
@@ -87,6 +88,9 @@ class Entity(ABC, Observable):
 
         # if true, means that recomputing self must first recompute parent
         self.thisUpdatesParent = thisUpdatesParent or (parent is not None and parent.thisUpdatesParent)
+
+        # for debugging with tree()
+        self.verbose = verbose
 
         self.entities = _entities
         self.interactor = _interactor
@@ -405,5 +409,9 @@ class Entity(ABC, Observable):
     def tree(self, targetEntity: 'Entity' = None, indent: int = 0, ):
         targetStr = "(!) " if self is targetEntity else ""
         print("  " * indent + targetStr + str(self))
+
+        if not self.verbose:
+            return
+
         for child in self._children:
             child.tree(targetEntity, indent + 1)

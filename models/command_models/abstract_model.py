@@ -100,7 +100,6 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
     
     def createInserterUI(self, elementBeforeInserter: AbstractModel) -> CommandInserter:
         return CommandInserter(self.getParentUI(), lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
-
     
     # return cached UI for this element
     def getExistingUI(self) -> ModelBasedEntity | Entity:

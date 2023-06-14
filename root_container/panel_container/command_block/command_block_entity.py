@@ -90,7 +90,8 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
             hover = HoverLambda(self),
             drawOrder = DrawOrder.COMMANND_BLOCK,
-            recomputeWhenInvisible = True
+            recomputeWhenInvisible = True,
+            verbose = False
         )
 
         ModelBasedEntity.__init__(self, self.model)

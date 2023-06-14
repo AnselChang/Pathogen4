@@ -51,9 +51,33 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         return self._awidth(margin) if self.isHorizontal else self._aheight(margin)
 
     # Return the size of the VGC while setting the positions of the children
-    def updateContainerPositions(self) -> float:
+    def getSize(self) -> float:
 
-        print("ucp", self._parent, self)
+        inner = self._getMargin(self.innerMargin)
+        outer = self._getMargin(self.outerMargin)
+
+        # add upper outer margin
+        size = outer
+
+        container = self.containers.head
+        while container is not None:
+            
+            # use container size to find position of next container
+            size += container.defineWidth() if self.isHorizontal else container.defineHeight()
+
+            # Go to next container, if any
+            container = container.getNext()
+
+            if container is None:
+                break
+            else:
+                size += inner
+        size += outer
+
+        return size
+    
+    # Return the size of the VGC while setting the positions of the children
+    def updateContainerPositions(self) -> float:
 
         inner = self._getMargin(self.innerMargin)
         outer = self._getMargin(self.outerMargin)
@@ -79,9 +103,7 @@ class VariableGroupContainer(Container, Generic[T], Observable):
                 break
             else:
                 pos += inner
-        pos += outer
 
-        return pos - startPos
 
     def defineLeftX(self) -> float:
         if self.isHorizontal:
@@ -105,13 +127,15 @@ class VariableGroupContainer(Container, Generic[T], Observable):
 
     def defineWidth(self) -> float:
         if self.isHorizontal:
-            return self.updateContainerPositions()
+            return self.getSize()
         else:
             return self._pwidth(1)
         
     def defineHeight(self) -> float:
         if not self.isHorizontal:
-            return self.updateContainerPositions()
+            return self.getSize()
         else:
             return self._pheight(1)
         
+    def defineAfter(self) -> None:
+        self.updateContainerPositions()

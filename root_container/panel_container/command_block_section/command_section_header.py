@@ -21,7 +21,7 @@ class CommandSectionHeader(Container):
 
     def __init__(self, parent: SectionEntity):
 
-        super().__init__(parent = parent)
+        super().__init__(parent = parent, verbose = False)
         self.section = parent
 
         self.folder = CommandSectionFolder(parent = self, section = parent)
