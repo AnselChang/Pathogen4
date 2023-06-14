@@ -305,6 +305,7 @@ class Entity(ABC, Observable):
         # for initially calling this function, update ancestors first if ancestor dimensions dependent on self
         if isRoot:
             firstEntityToCompute = self.findAncestorEntityIndependentFromParent()
+            print("recompute", firstEntityToCompute)
             firstEntityToCompute.recomputeEntity(False)
             return
 
@@ -320,7 +321,6 @@ class Entity(ABC, Observable):
 
         self.defineAfter()
 
-        print("recomputed", self)
 
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:
@@ -403,6 +403,7 @@ class Entity(ABC, Observable):
             return f"{self.__class__.__name__} {info}({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)})"
         except:
             return f"{self.__class__.__name__} (Undefined)"
+
     
     # print tree using indentation to indicate hierarchy
     # very useful debugging feature for visualizing parent-child entity relationships

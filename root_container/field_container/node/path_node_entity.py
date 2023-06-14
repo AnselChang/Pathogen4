@@ -153,6 +153,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, PathElement[PathSeg
         self.adapter.setIconStateID(TurnDirection.RIGHT if direction >= 0 else TurnDirection.LEFT)
 
         self.adapter.setTurnEnabled(self.isTurnEnabled())
+        self.recomputeEntity()
 
     # gets the start theta, adjusted for segment direction.
     # returns None if there is no previous node

@@ -33,6 +33,7 @@ class SectionEntity(Entity, ModelBasedEntity):
         super().__init__(parent = parent,
             click = ClickLambda(self, FonLeftClick=lambda mouse: self.toggleExpansion()),
             tick = TickLambda(self, FonTickStart=lambda: self.onTick()),
+            hover = HoverLambda(self)
         )
 
         self.pathVisible = True
@@ -99,4 +100,10 @@ class SectionEntity(Entity, ModelBasedEntity):
         return self.header.defineHeight() + (self.body.defineHeight()-py) * self.animatedExpansion.get() + py
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        pygame.draw.rect(screen, (120, 120, 120), self.RECT, 0, border_radius = 5)
+
+        if self.isSelfOrChildrenHovering():
+            color = (125, 125, 125)
+        else:
+            color = (120, 120, 120)
+        
+        pygame.draw.rect(screen, color, self.RECT, 0, border_radius = 5)

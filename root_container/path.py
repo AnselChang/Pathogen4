@@ -119,7 +119,12 @@ class Path(Observer):
         segment = self._addRawSegment()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
 
+        node.recomputeEntity()
         self.model.recomputeUI()
+
+        node.updateAdapter()
+
+        
 
         node.onNodeMove()
 
@@ -134,8 +139,8 @@ class Path(Observer):
         newSegment = self._addRawSegment(node, command)
 
         self.model.recomputeUI()
-
         node.updateAdapter()
+        
         node.getNext().onNodeMove(node)
         node.getPrevious().onNodeMove(node)
 
@@ -149,8 +154,8 @@ class Path(Observer):
         segment = self._addRawSegment(node, command)
 
         self.model.recomputeUI()
-
         node.updateAdapter()
+        
         node.getNext().onNodeMove(node)
 
         return node
