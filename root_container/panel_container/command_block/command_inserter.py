@@ -48,8 +48,8 @@ class CommandInserter(Entity):
         self.container = parent
         self.isFirst = isFirst
         
-        self.HEIGHT_MIN = 5
-        self.HEIGHT_MAX = 12
+        self.HEIGHT_MIN = 20#5
+        self.HEIGHT_MAX = 30#12
 
         # shaded area specs
         self.X_MARGIN_LEFT = 6
@@ -78,7 +78,7 @@ class CommandInserter(Entity):
         self.recomputeEntity()
 
     def onHoverOff(self):
-        print("of")
+        print("off")
         self.recomputeEntity()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
@@ -86,9 +86,9 @@ class CommandInserter(Entity):
         Y_MARGIN = 2
         rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
         
-        if self.hover.isHovering:
+        if True or self.hover.isHovering:
             
-            color = [140, 140, 140] if (self.hover.isHovering) else [160, 160, 160]
+            color = [0, 140, 140] if (self.hover.isHovering) else [0, 160, 160]
 
             # draw shaded area
             pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)

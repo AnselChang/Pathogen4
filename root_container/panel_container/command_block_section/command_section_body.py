@@ -34,8 +34,14 @@ class CommandSectionBody(Container):
     def defineHeight(self) -> float:
         return self.vgc.defineHeight()
     
+    def defineWidth(self) -> float:
+        return self._mwidth(4)
+    
     def defineTopY(self) -> float:
         return self._ay(self.section.HEADER_HEIGHT)
+    
+    def defineCenterX(self) -> float:
+        return self._px(0.5)
     
     def getOpacity(self) -> float:
         return self.section.getCommandOpacity()

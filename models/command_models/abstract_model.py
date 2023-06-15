@@ -20,7 +20,7 @@ to regenerate the UI for its children through caching.
 
 T1 = TypeVar('T1') # parent type
 T2 = TypeVar('T2') # children type
-class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
+class AbstractModel(Generic[T1, T2]):
 
     def __init__(self, name: str = "AbstractModel"):
 
@@ -29,7 +29,7 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
         self.name = name
         
         self.parent: 'AbstractModel' = None
-        self.children = LinkedList[AbstractModel | T2]()
+        self.children: list[AbstractModel | T2] = []
 
         self.ui = None
 
@@ -51,10 +51,13 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
         raise NotImplementedError(self)
     
     def getFirstChild(self) -> AbstractModel | T2:
-        return self.children.head
+        return None if len(self.children) == 0 else self.children[0]
     
     def getLastChild(self) -> AbstractModel | T2:
-        return self.children.tail
+        return None if len(self.children) == 0 else self.children[-1]
+    
+    def getIndex(self, child: AbstractModel):
+        return self.children.index(child)
     
     # insert a sibling model after this model
     def insertAfterThis(self, model: AbstractModel | T2) -> None:
@@ -63,25 +66,30 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
 
     # insert a sibling model before this model
     def insertBeforeThis(self, model: AbstractModel | T2) -> None:
-        if self._prev is None:
+
+        i = self.parent.getIndex(self)
+
+        if i == 0:
             self.parent.insertChildAtBeginning(model)
         else:
-            self.parent.insertChildAfter(model, self._prev)
+            self.parent.insertChildAfter(model, self.parent.children[i-1])
         self.parent.rebuild(rebuildChildren = False)
 
     def insertChildAfter(self, child: AbstractModel | T2, after: AbstractModel | T2):
         child.parent = self
-        self.children.insertAfter(after, child)
+
+        i = self.getIndex(after)
+        self.children.insert(i+1, child)
         self.rebuild(rebuildChildren = False)
 
     def insertChildAtBeginning(self, child: AbstractModel | T2):
         child.parent = self
-        self.children.addToBeginning(child)
+        self.children.insert(0, child)
         self.rebuild(rebuildChildren = False)
 
     def insertChildAtEnd(self, child: AbstractModel | T2):
         child.parent = self
-        self.children.addToEnd(child)
+        self.children.append(child)
         self.rebuild(rebuildChildren = False)
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
@@ -132,6 +140,8 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
         if not self._canHaveChildren():
             return
         
+        print("rebuild", self, len(self.ui.getChildVGC()._children))
+        
         # add first inserter UI
         self.ui.addChildUI(self.createInserterUI(None))
 
@@ -145,6 +155,8 @@ class AbstractModel(LinkedListNode['AbstractModel'], Generic[T1, T2]):
 
             # add the inserter UI
             self.ui.addChildUI(self.createInserterUI(child))
+
+        print("DONE", self, len(self.ui.getChildVGC()._children))
 
         if isRoot:
             pass

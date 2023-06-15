@@ -17,14 +17,14 @@ class ModelBasedEntity:
         self.model = model
 
     def clearChildUI(self) -> None:
-        self.getChildVGC().containers.clear()
+        self.getChildVGC().clear()
 
     # add a child UI element to this UI element
     def addChildUI(self, childUI: Entity) -> None:
         vc = VariableContainer(self.getChildVGC(), False)
         vc.setChild(childUI)
         childUI.changeParent(vc)
-        self.getChildVGC().containers.addToEnd(vc)
+        self.getChildVGC().add(vc)
     
     # Implement this in entity subclasses as an endpoint for this class
     # and model to interface with the children of this ui element

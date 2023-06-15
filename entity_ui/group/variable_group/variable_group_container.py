@@ -40,8 +40,6 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         self.name = name
         self.isHorizontal = isHorizontal
 
-        # linked list makes it easy to insert/remove VariableContainers
-        self.containers: LinkedList[VariableContainer[T]] = LinkedList()
         self.innerMargin = innerMargin
         self.outerMargin = outerMargin
 
@@ -49,6 +47,13 @@ class VariableGroupContainer(Container, Generic[T], Observable):
 
     def _getMargin(self, margin):
         return self._awidth(margin) if self.isHorizontal else self._aheight(margin)
+
+
+    def clear(self):
+        self._children.clear()
+
+    def add(self, vc: VariableContainer):
+        self._children.append(vc)
 
     # Return the size of the VGC while setting the positions of the children
     def getSize(self) -> float:
@@ -59,21 +64,14 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         # add upper outer margin
         size = outer
 
-        container = self.containers.head
-        while container is not None:
+        for vc in self._children:
+            vc: VariableContainer = vc
             
             # use container size to find position of next container
-            size += container.defineWidth() if self.isHorizontal else container.defineHeight()
+            size += vc.defineWidth() if self.isHorizontal else vc.defineHeight()
+            size += inner
 
-            # Go to next container, if any
-            container = container.getNext()
-
-            if container is None:
-                break
-            else:
-                size += inner
         size += outer
-
         return size
     
     # Return the size of the VGC while setting the positions of the children
@@ -87,22 +85,15 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         # add upper outer margin
         pos = startPos + outer
 
-        container = self.containers.head
-        while container is not None:
+        for vc in self._children:
+            vc: VariableContainer = vc
 
             # set the position of the container
-            container.setPosition(pos)
+            vc.setPosition(pos)
             
             # use container size to find position of next container
-            pos += container.defineWidth() if self.isHorizontal else container.defineHeight()
-
-            # Go to next container, if any
-            container = container.getNext()
-
-            if container is None:
-                break
-            else:
-                pos += inner
+            pos += vc.defineWidth() if self.isHorizontal else vc.defineHeight()
+            pos += inner
 
 
     def defineLeftX(self) -> float:

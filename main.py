@@ -63,6 +63,11 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel):
             model.tree()
         elif cmd == "ui":
             model.getExistingUI().tree()
+        elif cmd == "recomp":
+            model.ui.recomputeEntity()
+        elif cmd == "rebuild":
+            model.rebuild(True)
+            model.ui.recomputeEntity()
 
 
 

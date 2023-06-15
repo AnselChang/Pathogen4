@@ -99,7 +99,7 @@ class CommandSequenceHandler(Observer):
         if commandOrInserter is None or self.vgc.containers.contains(commandOrInserter):
             return self.vgc
         elif isinstance(commandOrInserter, VariableContainer):
-            return commandOrInserter.group
+            return commandOrInserter._parent
         else:
             return commandOrInserter.getChildVGC()
     
