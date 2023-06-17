@@ -9,6 +9,8 @@ from models.command_models.full_model import FullModel
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from root_container.panel_container.command_block.command_inserter import CommandInserter
 
 from root_container.panel_container.tab.tab_handler import TabHandler
 
@@ -51,8 +53,14 @@ RED = [255,0,0]
 GREEN = [0,255,0]
 BLUE = [0,0,255]
 
+def instanceOfClasses(entity, *classes):
+    for c in classes:
+        if isinstance(entity, c):
+            return True
+    return False
+
 # Define the I/O handling function
-def io_handler(database: CommandDefinitionDatabase, model: FullModel):
+def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: EntityManager):
     while True:
         cmd = input("Enter some text: ")
         
@@ -63,15 +71,8 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel):
             model.tree()
         elif cmd == "ui":
             model.getExistingUI().tree()
-        elif cmd == "recomp":
-            model.ui.recomputeEntity()
-        elif cmd == "rebuild":
-            model.rebuild()
-            print("after ebuild")
-            model.ui.tree()
-            model.ui.recomputeEntity()
-            print("afte recomp")
-            model.ui.tree()
+        elif cmd == "e":
+            print([e for e in entities.entities if instanceOfClasses(e, CommandInserter)])
 
 
 
@@ -136,7 +137,7 @@ def main():
     rootContainer.recomputeEntity()
 
     # Create a new thread for the I/O handling function
-    io_thread = threading.Thread(target=io_handler, args = (database,model,), daemon=True)
+    io_thread = threading.Thread(target=io_handler, args = (database,model,entities,), daemon=True)
 
     # Start the I/O handling thread
     io_thread.start()

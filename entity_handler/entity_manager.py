@@ -51,7 +51,8 @@ class EntityManager:
         if entity._parent is not None and entity in entity._parent._children:
             entity._parent._children.remove(entity)
 
-        self.entities.remove(entity)
+        if entity in self.entities:
+            self.entities.remove(entity)
 
         if entity in self.keyEntities:
             self.keyEntities.remove(entity)

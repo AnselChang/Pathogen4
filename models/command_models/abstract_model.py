@@ -142,6 +142,8 @@ class AbstractModel(Generic[T1, T2]):
 
         # if this is the root model, do nothing
         if self.parent is None:
+            if self.ui is not None:
+                self.ui.entities.removeEntity(self.ui)
             self.ui = newUI
             return
         
@@ -156,6 +158,9 @@ class AbstractModel(Generic[T1, T2]):
                 newUI.changeParent(childVC)
                 break
 
+        if self.ui is not None:
+            self.ui.entities.removeEntity(self.ui)
+        
         self.ui = newUI
     
     # rebuild the UI for this element

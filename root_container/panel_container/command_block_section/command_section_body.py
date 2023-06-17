@@ -23,7 +23,7 @@ class CommandSectionBody(Container):
 
         self.vgc = VariableGroupContainer(parent = self,
                          isHorizontal = False,
-                         innerMargin = 0,
+                         innerMargin = 2,
                          outerMargin = 5,
                          name = "section")
         
@@ -34,7 +34,7 @@ class CommandSectionBody(Container):
         return self.vgc.defineHeight()
     
     def defineWidth(self) -> float:
-        return self._mwidth(4)
+        return self._mwidth(6)
     
     def defineTopY(self) -> float:
         return self._ay(self._parent.HEADER_HEIGHT)

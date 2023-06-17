@@ -9,7 +9,10 @@ class FullContainer(Container, ModelBasedEntity):
     def __init__(self, parent: Entity):
         super().__init__(parent = parent)
 
-        self.vgc = VariableGroupContainer(self, isHorizontal = False)
+        self.vgc = VariableGroupContainer(self,
+            isHorizontal = False,
+            innerMargin = 2
+            )
 
     def onAddChild(self, child: Entity):
         self.tree()

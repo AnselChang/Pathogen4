@@ -102,8 +102,8 @@ class SectionEntity(Entity, ModelBasedEntity):
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
         if self.isSelfOrChildrenHovering():
-            color = (125, 125, 125)
+            color = (130, 130, 130)
         else:
-            color = (120, 120, 120)
+            color = (125, 125, 125)
         
         pygame.draw.rect(screen, color, self.RECT, 0, border_radius = 5)
