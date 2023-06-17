@@ -152,6 +152,7 @@ class AbstractModel(Generic[T1, T2]):
 
             if childVC.child is self.ui:
                 childVC.setChild(newUI)
+                childVC.removeChild(self.ui)
                 newUI.changeParent(childVC)
                 break
 
@@ -160,7 +161,10 @@ class AbstractModel(Generic[T1, T2]):
     # rebuild the UI for this element
     # If rebuildChildren, rebuilds children as well.
     # Otherwise, links the already-computed UI for children to this element
-    def rebuild(self) -> None:
+    def rebuild(self, isRoot: bool = True) -> None:
+
+        if isRoot:
+            print("rebulding", self)
         
         self.reassignSelfUI( self._generateUIForMyself() )
         
@@ -175,7 +179,7 @@ class AbstractModel(Generic[T1, T2]):
 
         for child in self.children:
 
-            child.rebuild()
+            child.rebuild(False)
             
             # add the section/command UI
             self.ui.addChildUI(child.getExistingUI())

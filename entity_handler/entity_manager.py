@@ -48,7 +48,7 @@ class EntityManager:
                 continue
             i += 1
 
-        if entity in entity._parent._children:
+        if entity._parent is not None and entity in entity._parent._children:
             entity._parent._children.remove(entity)
 
         self.entities.remove(entity)

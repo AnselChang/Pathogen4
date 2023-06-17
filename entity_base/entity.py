@@ -111,6 +111,13 @@ class Entity(ABC, Observable):
 
         self.entities._addEntity(self)
 
+    def removeChild(self, child: Entity):
+        if child in self._children:
+            child._parent = None
+            self._children.remove(child)
+            self.entities.removeEntity(child)
+            
+
     def changeParent(self, newParent: Entity):
         if self._parent is not None:
             self._parent._children.remove(self)
@@ -406,9 +413,9 @@ class Entity(ABC, Observable):
             info = f"[{moreInfo}] "
 
         try:
-            return f"{self.__class__.__name__} {info}({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)})"
+            return f"{self.__class__.__name__} {info}({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)}) " + str(id(self))
         except:
-            return f"{self.__class__.__name__} (Undefined)"
+            return f"{self.__class__.__name__} (Undefined) " + str(id(self))
 
     
     # print tree using indentation to indicate hierarchy
