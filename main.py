@@ -5,9 +5,12 @@ from entity_ui.dropdown.dropdown_container import DropdownContainer
 from entity_ui.group.variable_group.variable_container import VariableContainer
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
 from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
+from models.command_models.full_model import FullModel
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from root_container.panel_container.command_block.command_inserter import CommandInserter
 
 from root_container.panel_container.tab.tab_handler import TabHandler
 
@@ -50,16 +53,26 @@ RED = [255,0,0]
 GREEN = [0,255,0]
 BLUE = [0,0,255]
 
+def instanceOfClasses(entity, *classes):
+    for c in classes:
+        if isinstance(entity, c):
+            return True
+    return False
+
 # Define the I/O handling function
-def io_handler(database: CommandDefinitionDatabase):
+def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: EntityManager):
     while True:
         cmd = input("Enter some text: ")
         
         if cmd == "json":
             commandJSON: dict = database.exportToJson()
             print(json.dumps(commandJSON, indent = 4))
-        elif cmd == "forward":
-            database.registerDefinition(goToPoint())
+        elif cmd == "model":
+            model.tree()
+        elif cmd == "ui":
+            model.getExistingUI().tree()
+        elif cmd == "e":
+            print([e for e in entities.entities if instanceOfClasses(e, CommandInserter)])
 
 
 
@@ -105,8 +118,12 @@ def main():
     # create tabs
     tabHandler = TabHandler(panelContainer, database)
 
+    # create command model
+    model = FullModel(tabHandler.blockContainer)
+    model.rebuild()
+
     # Create path
-    path = Path(fieldContainer, tabHandler.blockContainer, database, PointRef(Ref.FIELD, (24,24)))
+    path = Path(fieldContainer, tabHandler.blockContainer, model, database, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)
 
     # initialize pygame artifacts
@@ -114,15 +131,19 @@ def main():
     clock = pygame.time.Clock()
 
     # initialize everything
+    print(model.tree())
+    print(model.ui.tree())
+    print("compute everything")
     rootContainer.recomputeEntity()
 
     # Create a new thread for the I/O handling function
-    io_thread = threading.Thread(target=io_handler, args = (database,), daemon=True)
+    io_thread = threading.Thread(target=io_handler, args = (database,model,entities,), daemon=True)
 
     # Start the I/O handling thread
     io_thread.start()
 
     # Main game loop
+    print("start loop")
     while True:
 
         dimensions.RESIZED_THIS_FRAME = False

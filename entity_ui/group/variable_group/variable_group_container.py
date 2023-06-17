@@ -40,40 +40,38 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         self.name = name
         self.isHorizontal = isHorizontal
 
-        # linked list makes it easy to insert/remove VariableContainers
-        self.containers: LinkedList[VariableContainer[T]] = LinkedList()
         self.innerMargin = innerMargin
         self.outerMargin = outerMargin
 
-        super().__init__(parent = parent, tick = TickLambda(self, FonTickEnd = self.onTickEnd))
-        self.needToRecompute = False
-
-
-    # VariableContainer should call this whenever its size changes. O(1), so call as many
-    # times as you want in a single tick
-    def propagateChange(self):
-        # Instead of calling updateContainerPositions() directly, set a flag
-        # so it will be called on tick end
-        self.needToRecompute = True
-        super().propagateChange()
-        
-    # onTickEnd guarantees that, if there's nesting, children VGCs will update
-    # before parent VGCs
-    def onTickEnd(self):
-        if self.needToRecompute:
-            self.recomputeEntity() # this calls updateContainerPositions() at some point
-            self.needToRecompute = False
-            self.notify()
+        super().__init__(parent = parent)
 
     def _getMargin(self, margin):
         return self._awidth(margin) if self.isHorizontal else self._aheight(margin)
+
+    def clear(self):
+        self._children.clear()
+
+    # Return the size of the VGC while setting the positions of the children
+    def getSize(self) -> float:
+
+        inner = self._getMargin(self.innerMargin)
+        outer = self._getMargin(self.outerMargin)
+
+        # add upper outer margin
+        size = outer
+
+        for vc in self._children:
+            vc: VariableContainer = vc
+            
+            # use container size to find position of next container
+            size += vc.defineWidth() if self.isHorizontal else vc.defineHeight()
+            size += inner
+
+        size += outer
+        return size
     
-    def defineBefore(self) -> None:
-        self.updateContainerPositions()
-
-
-    # Iteratively update the position of each VariableContainer
-    def updateContainerPositions(self):
+    # Return the size of the VGC while setting the positions of the children
+    def updateContainerPositions(self) -> float:
 
         inner = self._getMargin(self.innerMargin)
         outer = self._getMargin(self.outerMargin)
@@ -83,39 +81,16 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         # add upper outer margin
         pos = startPos + outer
 
-        container = self.containers.head
-        while container is not None:
+        for vc in self._children:
+            vc: VariableContainer = vc
 
             # set the position of the container
-            container.setPosition(pos)
+            vc.setPosition(pos)
             
             # use container size to find position of next container
-            pos += container.defineWidth() if self.isHorizontal else container.defineHeight()
+            pos += vc.defineWidth() if self.isHorizontal else vc.defineHeight()
+            pos += inner
 
-            # Go to next container, if any
-            container = container.getNext()
-
-            if container is None:
-                break
-            else:
-                pos += inner
-
-    def getSize(self):
-
-        inner = self._getMargin(self.innerMargin)
-        outer = self._getMargin(self.outerMargin)
-
-        size = 2 * outer
-        container = self.containers.head
-        while container is not None:
-            size += container.defineWidth() if self.isHorizontal else container.defineHeight()
-            container = container.getNext()
-
-            if container is None:
-                break
-            else:
-                size += inner
-        return size
 
     def defineLeftX(self) -> float:
         if self.isHorizontal:
@@ -149,3 +124,5 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         else:
             return self._pheight(1)
         
+    def defineAfter(self) -> None:
+        self.updateContainerPositions()

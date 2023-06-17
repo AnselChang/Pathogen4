@@ -1,4 +1,5 @@
 from command_creation.command_type import CommandType
+from models.command_models.command_model import CommandModel
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.path_element import PathElement
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
@@ -16,16 +17,16 @@ i.e. Straight, Arc, Bezier.
 class PathCommandLinker:
 
     def __init__(self):
-        self.nodeToCommand: dict[PathNodeEntity, CommandBlockEntity] = {}
-        self.segmentToCommands: dict[PathSegmentEntity, list[CommandBlockEntity]] = {}
+        self.nodeToCommand: dict[PathNodeEntity, CommandModel] = {}
+        self.segmentToCommands: dict[PathSegmentEntity, list[CommandModel]] = {}
 
-        self.commandToPath: dict[CommandBlockEntity, PathElement] = {}
+        self.commandToPath: dict[CommandModel, PathElement] = {}
 
-    def linkNode(self, node: PathNodeEntity, command: CommandBlockEntity):
+    def linkNode(self, node: PathNodeEntity, command: CommandModel):
         self.nodeToCommand[node] = command
         self.commandToPath[command] = node
 
-    def linkSegment(self, segment: PathElement, command: CommandBlockEntity):
+    def linkSegment(self, segment: PathElement, command: CommandModel):
 
         if segment not in self.segmentToCommands:
             self.segmentToCommands[segment] = []
@@ -43,7 +44,7 @@ class PathCommandLinker:
         else:
             raise Exception("PathCommandLinker: Unknown segment type " + str(segmentType))
 
-    def getCommandFromPath(self, nodeOrSegment: PathElement) -> CommandBlockEntity:
+    def getCommandFromPath(self, nodeOrSegment: PathElement) -> CommandModel:
         if isinstance(nodeOrSegment, PathNodeEntity):
             return self.nodeToCommand[nodeOrSegment]
         elif isinstance(nodeOrSegment, PathSegmentEntity):
@@ -54,20 +55,20 @@ class PathCommandLinker:
                     return command
             raise Exception("PathCommandLinker: No command found for segment " + str(segment))
     
-    def getCommandFromSegmentAndType(self, segment: PathSegmentEntity, pathType: PathSegmentType) -> CommandBlockEntity:
+    def getCommandFromSegmentAndType(self, segment: PathSegmentEntity, pathType: PathSegmentType) -> CommandModel:
         targetCommandType = self._getCommandTypeFromSegmentType(pathType)
         for command in self.segmentToCommands[segment]:
             if command.getCommandType() == targetCommandType:
                 return command
         raise Exception("PathCommandLinker: No command found for segment " + str(segment) + " and type " + str(pathType))
 
-    def getLastCommandFromSegment(self, segment: PathSegmentEntity) -> CommandBlockEntity:
+    def getLastCommandFromSegment(self, segment: PathSegmentEntity) -> CommandModel:
         return self.segmentToCommands[segment][-1]
     
-    def getCommandsFromSegment(self, segment: PathSegmentEntity) -> list[CommandBlockEntity]:
+    def getCommandsFromSegment(self, segment: PathSegmentEntity) -> list[CommandModel]:
         return self.segmentToCommands[segment]
 
-    def getPathFromCommand(self, command: CommandBlockEntity) -> PathElement:
+    def getPathFromCommand(self, command: CommandModel) -> PathElement:
         return self.commandToPath[command]
     
     def deleteNode(self, node: PathNodeEntity):

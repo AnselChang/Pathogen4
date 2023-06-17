@@ -35,10 +35,3 @@ class BlockTabContentsContainer(AbstractTabContentsContainer, Observer):
         # add gradient panels
         TabsCommandsSeparator(self)
 
-        self.commandHandler = CommandSequenceHandler(self, database)
-
-        # add command expansion
-        # On command expansion button click, recalculate targets
-        self.commandExpansion = CommandExpansionContainer(self)
-        self.commandHandler.initCommandExpansion(self.commandExpansion)
-        self.commandExpansion.subscribe(self, onNotify = self.commandHandler.onGlobalCommandExpansionChange)

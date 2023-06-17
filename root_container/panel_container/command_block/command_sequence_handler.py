@@ -5,7 +5,7 @@ from command_creation.command_type import CommandType
 from common.draw_order import DrawOrder
 
 from data_structures.observer import Observer
-from root_container.panel_container.command_block_section.command_section import CommandSection
+from root_container.panel_container.command_block_section.section_entity import SectionEntity
 from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
 if TYPE_CHECKING:
@@ -54,7 +54,7 @@ class CommandSequenceHandler(Observer):
 
         self.scrollHandler = CommandScrollingHandler(panel, DrawOrder.COMMANDS)
         scrollingContainer = self.scrollHandler.getScrollingContainer()
-        self.vgc: VariableGroupContainer[CommandSection] = VariableGroupContainer(scrollingContainer, isHorizontal = False, name = "main")
+        self.vgc: VariableGroupContainer[SectionEntity] = VariableGroupContainer(scrollingContainer, isHorizontal = False, name = "main")
 
         self.vgc.subscribe(self, onNotify = lambda: self.scrollHandler.setContentHeight(self.vgc.HEIGHT))        
 
@@ -65,9 +65,9 @@ class CommandSequenceHandler(Observer):
         # Create first section
         self.addSection()
 
-    def _createSection(self) -> VariableContainer[CommandSection]:
+    def _createSection(self) -> VariableContainer[SectionEntity]:
         vc = VariableContainer(self.vgc, isHorizontal = False)
-        section = CommandSection(vc, self)
+        section = SectionEntity(vc, self)
         vc.setChild(section)
         return vc
     
@@ -99,12 +99,11 @@ class CommandSequenceHandler(Observer):
         if commandOrInserter is None or self.vgc.containers.contains(commandOrInserter):
             return self.vgc
         elif isinstance(commandOrInserter, VariableContainer):
-            return commandOrInserter.group
+            return commandOrInserter._parent
         else:
-            return commandOrInserter.getVGC()
+            return commandOrInserter.getChildVGC()
     
     def recomputePosition(self):
-        print("recompute sequence handler")
         self.vgc.recomputeEntity()
     
     # Set up the command block entity and tie it to the VariableGroupContainer
@@ -129,7 +128,7 @@ class CommandSequenceHandler(Observer):
         variableContainer = VariableContainer(vgc, False)
 
         # create the CommandInserter
-        inserter = CommandInserter(variableContainer, self, onInsert = lambda inserter: self._onInsert(inserter))
+        inserter = CommandInserter(variableContainer, onInsert = lambda inserter: self._onInsert(inserter))
         variableContainer.setChild(inserter)
 
         return variableContainer
@@ -171,10 +170,10 @@ class CommandSequenceHandler(Observer):
     def insertCommandAfter(self, after: CommandBlockEntity | CommandInserter, adapter: PathAdapter) -> CommandBlockEntity:
         
         if after is None:
-            lastSectionInserterVC: VariableContainer[CommandSection] = self.vgc.containers.tail
+            lastSectionInserterVC: VariableContainer[SectionEntity] = self.vgc.containers.tail
             lastSection = lastSectionInserterVC.getPrevious().child
-            assert(isinstance(lastSection, CommandSection))
-            vgc = lastSection.getVGC()
+            assert(isinstance(lastSection, SectionEntity))
+            vgc = lastSection.getChildVGC()
         else:
             vgc = self.getVGC(after)
 
@@ -286,16 +285,16 @@ class CommandSequenceHandler(Observer):
         for sectionOrInserterVC in self.vgc.containers:
 
             # cannot insert into section inserters
-            if not isinstance(sectionOrInserterVC.child, CommandSection):
+            if not isinstance(sectionOrInserterVC.child, SectionEntity):
                 continue
 
-            section: CommandSection = sectionOrInserterVC.child
+            section: SectionEntity = sectionOrInserterVC.child
 
             # cannot insert into collapsed section
             if not section.isExpanded():
                 continue
 
-            for commandOrInserterVC in section.getVGC().containers:
+            for commandOrInserterVC in section.getChildVGC().containers:
 
                 # regular command inserter inside section
                 if isinstance(commandOrInserterVC.child, CommandInserter):
@@ -367,7 +366,7 @@ class CommandSequenceHandler(Observer):
             raise Exception("Invalid element type")
         
     def onGlobalCommandExpansionChange(self):
-        self.vgc.propagateChange()
+        self.vgc.recomputeEntity()
 
     # returns true if the inserter is the only inserter in the list (whether it is main list or task command)
     def isOnlyInserter(self, inserter: CommandInserter) -> bool:

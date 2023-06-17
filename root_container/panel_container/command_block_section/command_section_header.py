@@ -7,7 +7,7 @@ from root_container.panel_container.command_block_section.command_section_name i
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
     from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
-    from root_container.panel_container.command_block_section.command_section import CommandSection
+    from root_container.panel_container.command_block_section.section_entity import SectionEntity
 
 from entity_base.container_entity import Container
 import pygame
@@ -19,9 +19,9 @@ as UI buttons like expand/collapse
 
 class CommandSectionHeader(Container):
 
-    def __init__(self, parent: CommandSection):
+    def __init__(self, parent: SectionEntity):
 
-        super().__init__(parent = parent)
+        super().__init__(parent = parent, verbose = False)
         self.section = parent
 
         self.folder = CommandSectionFolder(parent = self, section = parent)

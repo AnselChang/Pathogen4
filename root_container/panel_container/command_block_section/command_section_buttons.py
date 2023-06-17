@@ -13,7 +13,7 @@ from entity_ui.group.variable_group.variable_group_container import VariableGrou
 from entity_ui.text.text_editor_entity import TextEditorEntity
 if TYPE_CHECKING:
     from root_container.panel_container.command_block_section.command_section_header import CommandSectionHeader
-    from root_container.panel_container.command_block_section.command_section import CommandSection
+    from root_container.panel_container.command_block_section.section_entity import SectionEntity
 
 
 from entity_base.container_entity import Container
@@ -26,7 +26,7 @@ IE toggle visibility, expand/collapse, etc
 
 class CommandSectionButtons(Container):
 
-    def __init__(self, parent: CommandSectionHeader, section: CommandSection):
+    def __init__(self, parent: CommandSectionHeader, section: SectionEntity):
 
         super().__init__(parent = parent)
 
@@ -65,7 +65,7 @@ class VisibilityID(Enum):
     INVISIBLE = 1
 class VisibilityButton(Container):
 
-    def __init__(self, parent, section: CommandSection):
+    def __init__(self, parent, section: SectionEntity):
         super().__init__(parent = parent)
 
         self.section = section

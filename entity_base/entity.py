@@ -71,7 +71,9 @@ class Entity(ABC, Observable):
                  key: KeyListener = None,
                  drawOrder: DrawOrder = 0,
                  initiallyVisible: bool = True,
-                 recomputeWhenInvisible: bool = False
+                 recomputeWhenInvisible: bool = False,
+                 thisUpdatesParent: bool = False,
+                 verbose: bool = True
                  ) -> None:
                 
         self.drawOrder = drawOrder
@@ -84,6 +86,11 @@ class Entity(ABC, Observable):
         self._LOCAL_VISIBLE = initiallyVisible
         self.recomputeWhenInvisible = recomputeWhenInvisible
 
+        # if true, means that recomputing self must first recompute parent
+        self.thisUpdatesParent = thisUpdatesParent or (parent is not None and parent.thisUpdatesParent)
+
+        # for debugging with tree()
+        self.verbose = verbose
 
         self.entities = _entities
         self.interactor = _interactor
@@ -95,16 +102,34 @@ class Entity(ABC, Observable):
         self._children: list[Entity] = []
         self._parent: Entity = parent
 
+        self._widthCached = False
+        self._heightCached = False
+
         if self._parent is not None and self not in self._parent._children:
             self._parent._children.append(self)
+            self._parent.onAddChild(self)
 
         self.entities._addEntity(self)
+
+    def removeChild(self, child: Entity):
+        if child in self._children:
+            child._parent = None
+            self._children.remove(child)
+            self.entities.removeEntity(child)
+            
 
     def changeParent(self, newParent: Entity):
         if self._parent is not None:
             self._parent._children.remove(self)
+
+        if self not in newParent._children:
+            newParent._children.append(self)
+
         self._parent = newParent
-        self._parent._children.append(self)
+
+    # optional callback to override for when child just set this as parent
+    def onAddChild(self, child: Entity):
+        return
 
     def distanceTo(self, position: tuple) -> float:
         return distance(*position, self.CENTER_X, self.CENTER_Y)
@@ -137,10 +162,14 @@ class Entity(ABC, Observable):
     # must impl both of these if want to contain other entity
     # by default, set to the parent width and height
     def defineWidth(self) -> float:
+
         return self.dimensions.SCREEN_WIDTH if self._parent is None else self._pwidth(1)
-    def defineHeight(self) -> float:
-        return self.dimensions.SCREEN_HEIGHT if self._parent is None else self._pheight(1)
     
+    def defineHeight(self) -> float:
+
+        return self.dimensions.SCREEN_HEIGHT if self._parent is None else self._pheight(1)
+
+
     # override this to define anything else before the position is recomputed
     def defineBefore(self) -> None:
         return
@@ -216,15 +245,11 @@ class Entity(ABC, Observable):
     def drawRect(self, screen: pygame.Surface):
         pygame.draw.rect(screen, (0,0,0), [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT], 1)
 
-    # propagate notification up the chain.
-    # Useful for when parent rect is defined by child rect, and child rect changes
-    def propagateChange(self):
-        if self._parent is not None:
-            self._parent.propagateChange()
 
-    def recomputeSize(self):
-
+    def recomputeWidth(self):
         self.WIDTH = self.defineWidth()
+
+    def recomputeHeight(self):
         self.HEIGHT = self.defineHeight()
 
     def recomputePosition(self):
@@ -279,29 +304,39 @@ class Entity(ABC, Observable):
 
         self.RECT = [self.LEFT_X, self.TOP_Y, self.WIDTH, self.HEIGHT]
 
+    # Going up the tree, find first ancestor entity with (thisUpdatesParent == False)
+    def findAncestorEntityIndependentFromParent(self) -> 'Entity':
+        if self._parent is not None and self.thisUpdatesParent:
+            return self._parent.findAncestorEntityIndependentFromParent()
+        else:
+            return self
+
     # Must call recomputePosition every time the entity changes its position or dimensions
-    def recomputeEntity(self, excludeChildIf: Callable[['Entity'], bool] = lambda entity: False, skipRecomputeSize: bool = False):
+    def recomputeEntity(self, isRoot: bool = True):
+
+        # for initially calling this function, update ancestors first if ancestor dimensions dependent on self
+        if isRoot:
+            firstEntityToCompute = self.findAncestorEntityIndependentFromParent()
+
+            firstEntityToCompute.recomputeEntity(False)
+            return
 
         # only recompute when visible. Otherwise, the position is not defined
         # When the entity is made visible, it will recompute its position
         if not self.isVisible() and not self.recomputeWhenInvisible:
             return
-        
+                
         self.defineBefore()
-
-        if not skipRecomputeSize:
-            self.recomputeSize()
-        
+        self.recomputeWidth()
+        self.recomputeHeight()
         self.recomputePosition()
 
         self.defineAfter()
 
+
         # Now that this entity position is recomputed, make sure children recompute too
         for child in self._children:
-            if excludeChildIf(child):
-                pass
-            else:
-                child.recomputeEntity()
+            child.recomputeEntity(False)
 
     # THESE ARE UTILITY METHODS THAT CAN BE USED TO SPECIFY RELATIVE POSITIONS ABOVE
 
@@ -377,14 +412,19 @@ class Entity(ABC, Observable):
             info = f"[{moreInfo}] "
 
         try:
-            return f"{self.__class__.__name__} {info}({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)})"
+            return f"{self.__class__.__name__} {info}({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)}) " + str(id(self))
         except:
-            return f"{self.__class__.__name__} (Undefined)"
+            return f"{self.__class__.__name__} (Undefined) " + str(id(self))
+
     
     # print tree using indentation to indicate hierarchy
     # very useful debugging feature for visualizing parent-child entity relationships
     def tree(self, targetEntity: 'Entity' = None, indent: int = 0, ):
         targetStr = "(!) " if self is targetEntity else ""
         print("  " * indent + targetStr + str(self))
+
+        if not self.verbose:
+            return
+
         for child in self._children:
             child.tree(targetEntity, indent + 1)

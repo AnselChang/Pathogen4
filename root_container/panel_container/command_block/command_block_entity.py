@@ -1,20 +1,25 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from adapter.turn_adapter import TurnAdapter
-from data_structures.linked_list import LinkedList
-from entity_base.listeners.hover_listener import HoverLambda
-from entity_ui.group.variable_group.variable_container import VariableContainer
-from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
-from entity_ui.scrollbar.scrolling_content_container import ScrollingContentContainer
-from root_container.panel_container.command_block.parameter_state import ParameterState
-from root_container.panel_container.element.overall.row_elements_container import RowElementsContainer
-from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
 if TYPE_CHECKING:
     from command_creation.command_definition_database import CommandDefinitionDatabase
     from root_container.panel_container.command_block.command_block_container import CommandBlockContainer
     from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
     from root_container.panel_container.command_block.command_inserter import CommandInserter
+    from models.command_models.command_model import CommandModel
+    
+from adapter.turn_adapter import TurnAdapter
+from data_structures.linked_list import LinkedList
+from entity_base.listeners.hover_listener import HoverLambda
+from entity_ui.group.variable_group.variable_container import VariableContainer
+from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
+from entity_ui.scrollbar.scrolling_content_container import ScrollingContentContainer
+from models.command_models.model_based_entity import ModelBasedEntity
+from root_container.panel_container.command_block.parameter_state import ParameterState
+from root_container.panel_container.element.overall.row_elements_container import RowElementsContainer
+from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
+
+
 
 
 from entity_base.entity import Entity
@@ -50,37 +55,29 @@ The WidgetEntities and pathAdapters hold the informatino for this specific insta
 Position calculation is offloaded to CommandBlockPosition
 """
 
-class CommandBlockEntity(Entity, Observer):
+class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
 
     HIGHLIGHTED = None
 
 
-    def __init__(self, parent: CommandBlockContainer, handler: CommandSequenceHandler, pathAdapter: PathAdapter, database: CommandDefinitionDatabase, commandExpansion: CommandExpansionContainer, defaultExpand: bool = False, isCustom: bool = False):
+    def __init__(self, parent: CommandBlockContainer, model: CommandModel):
         
         self.container = parent
+        self.model = model
+        self.database = model.database
         
-        self.handler = handler
-
         self.COLLAPSED_HEIGHT = 35
         self.EXPANDED_HEIGHT = 50 
 
         self.DRAG_OPACITY = 0.7
         self.dragOffset = 0
 
-        self.database = database
-        self.pathAdapter = pathAdapter
-        self.type = self.pathAdapter.type
-
         # controls height animation
         self.animatedExpansion = MotionProfile(0, speed = 0.4)
         # whether to expand by default, ignoring global flags
-        self.localExpansion = self.type == CommandType.CUSTOM
+        self.localExpansion = self.model.getType() == CommandType.CUSTOM
 
-        # initialize default command definition to be the first one
-        self.definitionID = self.database.getDefinitionByIndex(self.type).id
-        self.parameters = ParameterState(self)
-
-        r,g,b = self.getDefinition().color
+        r,g,b = self.model.getDefinition().color
         self.colorR = MotionProfile(r, speed = 0.2)
         self.colorG = MotionProfile(g, speed = 0.2)
         self.colorB = MotionProfile(b, speed = 0.2)
@@ -93,41 +90,31 @@ class CommandBlockEntity(Entity, Observer):
             drag = DragLambda(self, FonStartDrag = self.onStartDrag, FonDrag = self.onDrag, FonStopDrag = self.onStopDrag),
             hover = HoverLambda(self),
             drawOrder = DrawOrder.COMMANND_BLOCK,
-            recomputeWhenInvisible = True
+            recomputeWhenInvisible = True,
+            verbose = False
         )
 
-        # whenever a global expansion flag is changed, recompute each individual command expansion
-        self.commandExpansion = commandExpansion
+        ModelBasedEntity.__init__(self, self.model)
 
         self.elementsContainer = None
         self.mouseHoveringCommand = False
 
         self.elementsVisible = True
 
-        self.headerEntity = CommandBlockHeader(self, pathAdapter, isCustom)
+        self.headerEntity = CommandBlockHeader(self, self.model.getAdapter(), self.model.getType() == CommandType.CUSTOM)
 
-        """
-        Right now, this means that the command block is hardcoded to
-        store only the elements for the current command definition,
-        and switching command definitions will not change the elements.
-        This will be changed in the future.
-        """
-        self.elementsContainer = createElementsContainer(self, self.getDefinition(), pathAdapter)
+        self.elementsContainer = createElementsContainer(self, self.model.getDefinition(), self.model.getAdapter())
 
-        # subscribe to changes in the database
-        self.database.subscribe(self, onNotify = self.onCommandDefinitionChange)
-
-        # For turn commands: if turn is enabled/disabled, command is shown/hidden
-        if self.pathAdapter.type == CommandType.TURN:
-            self.pathAdapter.subscribe(self, id = NotifyType.TURN_ENABLE_TOGGLED, onNotify = self.onTurnEnableToggled)
-
-        self.onTurnEnableToggled()
+    def getChildVGC(self) -> VariableGroupContainer:
+        if not isinstance(self.elementsContainer, TaskCommandsContainer):
+            raise Exception("CommandBlockEntity.getChildVGC() called on non-task command block")
+        return self.elementsContainer.vgc
 
     # update components based on new command definition
     def onCommandDefinitionChange(self):
 
         # not the same type. doesn't even affect function dropdown
-        if self.type != self.database.lastUpdatedCommandType:
+        if self.model.getType() != self.database.lastUpdatedCommandType:
             return
         
         # Update function dropdown
@@ -148,12 +135,12 @@ class CommandBlockEntity(Entity, Observer):
         container: RowElementsContainer = self.elementsContainer
         container.onDefinitionChange()
 
-        self.propagateChange()
+        self.recomputeEntity()
     
     # call whenever database command color changes
     def onColorChange(self):
         # switch to the new definition color (animated)
-        r,g,b = self.getDefinition().color
+        r,g,b = self.model.getDefinition().color
         self.colorR.setEndValue(r)
         self.colorG.setEndValue(g)
         self.colorB.setEndValue(b)
@@ -163,11 +150,11 @@ class CommandBlockEntity(Entity, Observer):
 
         # First, get the definition for the new function
         functionName = self.headerEntity.functionName.getFunctionName()
-        self.definitionID = self.database.getDefinitionIDByName(self.type, functionName)
+        self.definitionID = self.database.getDefinitionIDByName(self.model.getType(), functionName)
 
         # Delete old elements container and assign new one
         self.entities.removeEntity(self.elementsContainer)
-        self.elementsContainer = createElementsContainer(self, self.getDefinition(), self.pathAdapter)
+        self.elementsContainer = createElementsContainer(self, self.model.getDefinition(), self.model.getAdapter())
         self.elementsContainer.recomputeEntity()
 
         self.onColorChange()
@@ -186,7 +173,7 @@ class CommandBlockEntity(Entity, Observer):
         # whenever changing function, expand function
         self.localExpansion = True
 
-        self.propagateChange()
+        self.recomputeEntity()
 
     # Update animation every tick
     def onTick(self):
@@ -212,14 +199,9 @@ class CommandBlockEntity(Entity, Observer):
             #self.animatedPosition.tick()
             self.animatedExpansion.tick()
 
-            self.propagateChange()
+            self.recomputeEntity()
 
-    def getDefinition(self) -> CommandDefinition:
-        return self.database.getDefinitionByID(self.type, self.definitionID)
-    
-    def getFunctionName(self) -> str:
-        return self.getDefinition().name
-    
+
     # how much the widgets stretch the command by. return the largest one
     def getElementStretch(self) -> int:
         if self.elementsContainer is None:
@@ -227,37 +209,22 @@ class CommandBlockEntity(Entity, Observer):
         return self.elementsContainer.defineHeight()
     
     def isActuallyExpanded(self) -> bool:
-        if self.commandExpansion.getForceCollapse():
-            return False
-        elif self.commandExpansion.getForceExpand():
-            return True
         return self.localExpansion
-    
-    # whether this command block is inside a task
-    def isInsideTask(self) -> bool:
-        return self.handler.getVGC(self).name == "task"
-    
-    # whether this is a task command
-    def isTask(self) -> bool:
-        return isinstance(self.elementsContainer, TaskCommandsContainer)
     
     # call only if this is a task command. Get the list of commands inside task
     def getTaskList(self) -> LinkedList[VariableContainer]:
 
-        if not self.isTask():
+        if not self.model.isTask():
             return None
 
         taskContainer: TaskCommandsContainer = self.elementsContainer
         return taskContainer.vgc.containers
-    
-    def getVGC(self) -> VariableGroupContainer:
-        return self.container.variableContainer.group
+
     
     # Return the list of possible function names for this block
     # If inside a task and is a custom block, cannot contain task
     def getFunctionNames(self) -> list[str]:
-        print("get names", self.type, self.isInsideTask())
-        return self.database.getDefinitionNames(self.type, self.isInsideTask())
+        return self.database.getDefinitionNames(self.model.getType(), self.model.isTask())
 
     def defineWidth(self) -> float:
         return self._pwidth(1)
@@ -291,7 +258,7 @@ class CommandBlockEntity(Entity, Observer):
         return self.animatedExpansion.get() == 1
     
     def getCommandType(self) -> CommandType:
-        return self.type
+        return self.model.getType()
     
     # Set the local expansion of the command without modifying global expansion flags
     def setLocalExpansion(self, isExpanded):
@@ -299,30 +266,18 @@ class CommandBlockEntity(Entity, Observer):
 
     # Toggle command expansion. Modify global expansion flags if needed
     def onClick(self, mouse: tuple):
-
-        if self.localExpansion:
-            # If all are being forced to contract right now, disable forceContract, but 
-            # all other commands should retain being contracted except this one
-            if self.commandExpansion.getForceCollapse():
-                self.handler.setAllLocalExpansion(False)
-                self.commandExpansion.setForceCollapse(False)
-        else:
-            if self.commandExpansion.getForceExpand():
-                self.handler.setAllLocalExpansion(True)
-                self.commandExpansion.setForceExpand(False)
-
         self.localExpansion = not self.localExpansion
-        self.propagateChange()
+        self.recomputeEntity()
 
     def onTurnEnableToggled(self):
-        if self.pathAdapter.type == CommandType.TURN:
-            turnAdapter: TurnAdapter = self.pathAdapter
+        if self.model.getType() == CommandType.TURN:
+            turnAdapter: TurnAdapter = self.model.getAdapter()
             if turnAdapter.isTurnEnabled():
                 self.setVisible(recompute = False)
             else:
                 self.setInvisible()
 
-            self.propagateChange()
+            self.recomputeEntity()
 
     def getOpacity(self) -> float:
         if self.isDragging():
@@ -350,10 +305,12 @@ class CommandBlockEntity(Entity, Observer):
     # Also, contract all commands except this one
     def highlight(self):
 
+        return
+
         if self.isHighlighted():
             CommandBlockEntity.HIGHLIGHTED = None
             self.localExpansion = False
-            self.propagateChange()
+            self.recomputeEntity()
             return
 
         # highlight and expand this command, disabling global flag if need be
@@ -361,14 +318,15 @@ class CommandBlockEntity(Entity, Observer):
         self.handler.setAllLocalExpansion(False)
         self.commandExpansion.setForceCollapse(False)
         self.localExpansion = True
-        self.propagateChange()
+        self.recomputeEntity()
 
         self.handler.scrollToCommand(self)
 
     # Called when the highlight button in the command block is clicked.
     # Should highlight the corresponding node or segment in the path
     def onHighlightPath(self, mouse: tuple):
-        self.handler.highlightPathFromCommand(self)
+        pass
+        #self.handler.highlightPathFromCommand(self)
 
     # if mouse down on different command, clear highlight
     def onMouseDown(self, mouse: tuple):
@@ -380,27 +338,15 @@ class CommandBlockEntity(Entity, Observer):
         self.dragPosition = mouse[1] + self.mouseOffset
 
         # cache the existing inserters
-        self.handler.updateActiveCommandInserters()
+        #self.handler.updateActiveCommandInserters()
 
     def onStopDrag(self):
         self.dragPosition = None
         self.recomputeEntity()
 
-    def _getClosestInserter(self, mouse: tuple) -> CommandInserter | None:
-        return self.handler.getClosestInserter(mouse, self)
-
     def onDrag(self, mouse: tuple):
         self.dragPosition = mouse[1] + self.mouseOffset
-
-        inserter = self._getClosestInserter(mouse)
-
-        # if dragged to a different position to swap commands
-        if inserter is not None and self.getNextInserter() is not inserter and self.getNextInserter() is not inserter:
-            print("move")
-            self.handler.moveCommand(self, inserter)
-            self.handler.recomputePosition()
-        else:
-            self.recomputeEntity()
+        pass
 
     def getColor(self) -> tuple:
         r = self.colorR.get()
@@ -437,26 +383,6 @@ class CommandBlockEntity(Entity, Observer):
             return self.dragPosition
         else:
             return None
-    
-    def getNextInserter(self) -> CommandInserter:
-        return self.handler.getNext(self)
-    
-    def getPreviousInserter(self) -> CommandBlockEntity:
-        return self.handler.getPrevious(self)
-    
-    def getNextCommand(self) -> CommandBlockEntity:
-        inserter = self.getNextInserter()
-        if inserter is None:
-            return None
-        else:
-            return self.handler.getNext(inserter)
-    
-    def getPreviousCommand(self) -> CommandBlockEntity:
-        inserter = self.getPreviousInserter()
-        if inserter is None:
-            return None
-        else:
-            return self.handler.getPrevious(inserter)
         
     def __repr__(self):
-        return self.getDefinition().id
+        return self.model.getDefinition().id
