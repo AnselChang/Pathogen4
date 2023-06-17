@@ -24,7 +24,9 @@ class ModelBasedEntity:
         vc = VariableContainer(self.getChildVGC(), False)
         vc.setChild(childUI)
         childUI.changeParent(vc)
-        self.getChildVGC().add(vc)
+        print("change parent")
+        print(vc._children)
+        print(childUI)
     
     # Implement this in entity subclasses as an endpoint for this class
     # and model to interface with the children of this ui element

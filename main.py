@@ -66,8 +66,12 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel):
         elif cmd == "recomp":
             model.ui.recomputeEntity()
         elif cmd == "rebuild":
-            model.rebuild(True)
+            model.rebuild()
+            print("after ebuild")
+            model.ui.tree()
             model.ui.recomputeEntity()
+            print("afte recomp")
+            model.ui.tree()
 
 
 
@@ -115,7 +119,7 @@ def main():
 
     # create command model
     model = FullModel(tabHandler.blockContainer)
-    model.rebuild(True)
+    model.rebuild()
 
     # Create path
     path = Path(fieldContainer, tabHandler.blockContainer, model, database, PointRef(Ref.FIELD, (24,24)))

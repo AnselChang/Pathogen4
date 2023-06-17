@@ -68,9 +68,9 @@ class CommandModel(AbstractModel, Observer):
     
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
         if self.getType() == CommandType.CUSTOM:
-            return CustomCommandBlockEntity(self.getParentUI(), self)
+            return CustomCommandBlockEntity(None, self)
         else:
-            return CommandBlockEntity(self.getParentUI(), self)
+            return CommandBlockEntity(None, self)
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinitionByID(self.type, self._definitionID)

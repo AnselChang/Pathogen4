@@ -17,7 +17,7 @@ class SectionModel(AbstractModel):
         super().__init__("SectionModel")
 
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
-        return SectionEntity(self.getParentUI())
+        return SectionEntity(None)
     
     def _canHaveChildren(self) -> bool:
         return True

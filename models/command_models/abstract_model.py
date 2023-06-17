@@ -10,6 +10,10 @@ from models.command_models.model_based_entity import ModelBasedEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 
 
+if TYPE_CHECKING:
+    from entity_ui.group.variable_group.variable_container import VariableContainer
+
+
 """
 A single-source-of-truth model storing the internal state of some
 recursive element, like a command block or a section. It handles
@@ -62,7 +66,7 @@ class AbstractModel(Generic[T1, T2]):
     # insert a sibling model after this model
     def insertAfterThis(self, model: AbstractModel | T2) -> None:
         self.parent.insertChildAfter(model, self)
-        self.parent.rebuild(rebuildChildren = False)
+        self.parent.rebuild()
 
     # insert a sibling model before this model
     def insertBeforeThis(self, model: AbstractModel | T2) -> None:
@@ -73,24 +77,24 @@ class AbstractModel(Generic[T1, T2]):
             self.parent.insertChildAtBeginning(model)
         else:
             self.parent.insertChildAfter(model, self.parent.children[i-1])
-        self.parent.rebuild(rebuildChildren = False)
+        self.parent.rebuild()
 
     def insertChildAfter(self, child: AbstractModel | T2, after: AbstractModel | T2):
         child.parent = self
 
         i = self.getIndex(after)
         self.children.insert(i+1, child)
-        self.rebuild(rebuildChildren = False)
+        self.rebuild()
 
     def insertChildAtBeginning(self, child: AbstractModel | T2):
         child.parent = self
         self.children.insert(0, child)
-        self.rebuild(rebuildChildren = False)
+        self.rebuild()
 
     def insertChildAtEnd(self, child: AbstractModel | T2):
         child.parent = self
         self.children.append(child)
-        self.rebuild(rebuildChildren = False)
+        self.rebuild()
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
 
@@ -103,11 +107,11 @@ class AbstractModel(Generic[T1, T2]):
         else:
             self.insertChildAfter(sectionOrCommand, elementBeforeInserter)
 
-        self.rebuild(rebuildChildren = False)
+        self.rebuild()
         self.ui.recomputeEntity()
     
     def createInserterUI(self, elementBeforeInserter: AbstractModel) -> CommandInserter:
-        return CommandInserter(self.getParentUI(), lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
+        return CommandInserter(None, lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
     
     # return cached UI for this element
     def getExistingUI(self) -> ModelBasedEntity | Entity:
@@ -118,37 +122,60 @@ class AbstractModel(Generic[T1, T2]):
     def delete(self) -> None:
         if self.parent is not None:
             self.parent.children.remove(self)
-            self.parent.rebuild(False)
+            self.parent.rebuild()
         else:
             raise Exception("Cannot delete root model")
     
 
-    def getParentUI(self) -> Entity:
+    def getParentUI(self) -> Entity | ModelBasedEntity:
 
         if self.parent is None:
             raise NotImplementedError("FullModel must implement getParentUI differently")
 
         return self.parent.getExistingUI()
     
+    def getParentVGC(self) -> Entity:
+        return self.getParentUI().getChildVGC()
+    
+    # reassign the UI for this element, making sure parent's child reference is correctly updated
+    def reassignSelfUI(self, newUI: ModelBasedEntity | Entity) -> None:
+
+        # if this is the root model, do nothing
+        if self.parent is None:
+            self.ui = newUI
+            return
+        
+        # search for the child reference in the parent
+        for childVC in self.parent.ui.getChildVGC()._children:
+
+            childVC: VariableContainer = childVC
+
+            if childVC.child is self.ui:
+                childVC.setChild(newUI)
+                newUI.changeParent(childVC)
+                break
+
+        self.ui = newUI
+    
     # rebuild the UI for this element
     # If rebuildChildren, rebuilds children as well.
     # Otherwise, links the already-computed UI for children to this element
-    def rebuild(self, rebuildChildren: bool = False, isRoot: bool = True) -> None:
-        self.ui = self._generateUIForMyself()
-        assert(isinstance(self.ui, ModelBasedEntity) and isinstance(self.ui, Entity))
+    def rebuild(self) -> None:
+        
+        self.reassignSelfUI( self._generateUIForMyself() )
+        
+        if not isinstance(self.ui, ModelBasedEntity) and isinstance(self.ui, Entity):
+            raise Exception("Model must generate ModelBasedEntity", self.ui)
 
         if not self._canHaveChildren():
             return
-        
-        print("rebuild", self, len(self.ui.getChildVGC()._children))
-        
+                
         # add first inserter UI
         self.ui.addChildUI(self.createInserterUI(None))
 
         for child in self.children:
 
-            if rebuildChildren or child.ui is None:
-                child.rebuild(True, False)
+            child.rebuild()
             
             # add the section/command UI
             self.ui.addChildUI(child.getExistingUI())
@@ -156,11 +183,6 @@ class AbstractModel(Generic[T1, T2]):
             # add the inserter UI
             self.ui.addChildUI(self.createInserterUI(child))
 
-        print("DONE", self, len(self.ui.getChildVGC()._children))
-
-        if isRoot:
-            pass
-            #self.ui.recomputeEntity()
 
     # print this element and all children as tree structure for debugging
     def tree(self, indent: int = 0):

@@ -24,6 +24,9 @@ class FullModel(AbstractModel[None, SectionModel]):
     def getParentUI(self) -> Entity:
         return self.fullModelParentUI
     
+    def getParentVGC(self) -> Entity:
+        return self.getParentUI()
+    
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
         return FullContainer(self.getParentUI())
 

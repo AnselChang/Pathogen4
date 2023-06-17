@@ -48,12 +48,8 @@ class VariableGroupContainer(Container, Generic[T], Observable):
     def _getMargin(self, margin):
         return self._awidth(margin) if self.isHorizontal else self._aheight(margin)
 
-
     def clear(self):
         self._children.clear()
-
-    def add(self, vc: VariableContainer):
-        self._children.append(vc)
 
     # Return the size of the VGC while setting the positions of the children
     def getSize(self) -> float:

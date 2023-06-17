@@ -107,6 +107,7 @@ class Entity(ABC, Observable):
 
         if self._parent is not None and self not in self._parent._children:
             self._parent._children.append(self)
+            self._parent.onAddChild(self)
 
         self.entities._addEntity(self)
 
@@ -114,10 +115,14 @@ class Entity(ABC, Observable):
         if self._parent is not None:
             self._parent._children.remove(self)
 
-            if self not in newParent._children:
-                newParent._children.append(self)
+        if self not in newParent._children:
+            newParent._children.append(self)
 
         self._parent = newParent
+
+    # optional callback to override for when child just set this as parent
+    def onAddChild(self, child: Entity):
+        return
 
     def distanceTo(self, position: tuple) -> float:
         return distance(*position, self.CENTER_X, self.CENTER_Y)
@@ -306,6 +311,7 @@ class Entity(ABC, Observable):
         if isRoot:
             firstEntityToCompute = self.findAncestorEntityIndependentFromParent()
             print("recompute", firstEntityToCompute)
+
             firstEntityToCompute.recomputeEntity(False)
             return
 

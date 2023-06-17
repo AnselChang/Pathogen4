@@ -20,7 +20,6 @@ class CommandSectionBody(Container):
     def __init__(self, parent: SectionEntity):
 
         super().__init__(parent = parent, thisUpdatesParent = True)
-        self.section = parent
 
         self.vgc = VariableGroupContainer(parent = self,
                          isHorizontal = False,
@@ -38,10 +37,10 @@ class CommandSectionBody(Container):
         return self._mwidth(4)
     
     def defineTopY(self) -> float:
-        return self._ay(self.section.HEADER_HEIGHT)
+        return self._ay(self._parent.HEADER_HEIGHT)
     
     def defineCenterX(self) -> float:
         return self._px(0.5)
     
     def getOpacity(self) -> float:
-        return self.section.getCommandOpacity()
+        return self._parent.getCommandOpacity()

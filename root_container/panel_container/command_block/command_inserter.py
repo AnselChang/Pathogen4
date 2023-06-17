@@ -48,8 +48,8 @@ class CommandInserter(Entity):
         self.container = parent
         self.isFirst = isFirst
         
-        self.HEIGHT_MIN = 20#5
-        self.HEIGHT_MAX = 30#12
+        self.HEIGHT_MIN = 20
+        self.HEIGHT_MAX = 30
 
         # shaded area specs
         self.X_MARGIN_LEFT = 6
@@ -74,7 +74,7 @@ class CommandInserter(Entity):
         return self._aheight(self.HEIGHT_MAX if self.hover.isHovering else self.HEIGHT_MIN)
 
     def onHoverOn(self):
-        print("on", self.thisUpdatesParent)
+        print("on")
         self.recomputeEntity()
 
     def onHoverOff(self):

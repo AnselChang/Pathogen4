@@ -11,6 +11,10 @@ class FullContainer(Container, ModelBasedEntity):
 
         self.vgc = VariableGroupContainer(self, isHorizontal = False)
 
+    def onAddChild(self, child: Entity):
+        self.tree()
+        if not isinstance(child, VariableGroupContainer):
+            raise Exception("FullContainer should non-VGC added to it", child)
 
     def getChildVGC(self) -> VariableGroupContainer:
         return self.vgc
