@@ -109,7 +109,10 @@ class Path(Observer):
         self.pathList.insertAfter(afterPath, segment)
 
         segmentCommand = CommandModel(segment.getAdapter())
-        afterCommand.insertAfterThis(segmentCommand)
+        if afterCommand is None:
+            self.model.getLastChild().insertChildAtEnd(segmentCommand)
+        else:
+            afterCommand.insertAfterThis(segmentCommand)
         self.linker.linkSegment(segment, segmentCommand)
 
         return segment
