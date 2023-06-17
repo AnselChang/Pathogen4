@@ -169,7 +169,8 @@ class AbstractModel(Generic[T1, T2]):
     def rebuild(self, isRoot: bool = True) -> None:
 
         if isRoot:
-            print("rebulding", self)
+            pass
+            #print("rebulding", self)
         
         self.reassignSelfUI( self._generateUIForMyself() )
         

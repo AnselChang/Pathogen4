@@ -59,8 +59,6 @@ class Path(Observer):
         self.linker = PathCommandLinker()
 
         # initialize first node
-        print("before firs tnode")
-        self.model.ui.tree()
         node = self._addRawNode(startPosition) # add start node
 
 

@@ -104,7 +104,6 @@ class CommandSequenceHandler(Observer):
             return commandOrInserter.getChildVGC()
     
     def recomputePosition(self):
-        print("recompute sequence handler")
         self.vgc.recomputeEntity()
     
     # Set up the command block entity and tie it to the VariableGroupContainer
