@@ -23,7 +23,7 @@ class CommandSectionBody(Container):
 
         self.vgc = VariableGroupContainer(parent = self,
                          isHorizontal = False,
-                         innerMargin = 2,
+                         innerMargin = 1,
                          outerMargin = 5,
                          name = "section")
         

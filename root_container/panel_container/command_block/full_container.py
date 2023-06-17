@@ -11,7 +11,8 @@ class FullContainer(Container, ModelBasedEntity):
 
         self.vgc = VariableGroupContainer(self,
             isHorizontal = False,
-            innerMargin = 2
+            innerMargin = 1,
+            outerMargin = 5
             )
 
     def onAddChild(self, child: Entity):
