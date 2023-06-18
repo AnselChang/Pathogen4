@@ -60,6 +60,45 @@ class AbstractModel(Generic[T1, T2]):
     def getLastChild(self) -> AbstractModel | T2:
         return None if len(self.children) == 0 else self.children[-1]
     
+    def getPreviousSiblingModel(self) -> AbstractModel | T2:
+        if self.parent is None:
+            return None
+        i = self.parent.getIndex(self)
+        return None if i == 0 else self.parent.children[i-1]
+    
+    def getNextSiblingModel(self) -> AbstractModel | T2:
+        if self.parent is None:
+            return None
+        i = self.parent.getIndex(self)
+        return None if i == len(self.parent.children)-1 else self.parent.children[i+1]
+    
+    def getPreviousUI(self) -> ModelBasedEntity | Entity:
+        if self.parent is None:
+            return None
+        
+        vgc = self.parent.ui.getChildVGC()
+        print(vgc._children)
+        i = vgc._children.index(self.ui._parent)
+        
+        if i == 0:
+            return None
+        
+        vc: VariableContainer = vgc._children[i-1]
+        return vc.child
+    
+    def getNextUI(self) -> ModelBasedEntity | Entity:
+        if self.parent is None:
+            return None
+        
+        vgc = self.parent.ui.getChildVGC()
+        i = vgc._children.index(self.ui._parent)
+        
+        if i == len(vgc._children)-1:
+            return None
+        
+        vc: VariableContainer = vgc._children[i+1]
+        return vc.child
+    
     def getIndex(self, child: AbstractModel):
         return self.children.index(child)
     

@@ -202,6 +202,24 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
 
             self.recomputeEntity()
 
+    def makeCommandVisible(self):
+        self.setVisible()
+
+        previousInserter = self.model.getPreviousUI()
+        if previousInserter is None:
+            raise Exception("CommandBlockEntity.makeCommandVisible() called on command with no previous inserter")
+            
+        previousInserter.setVisible()
+
+
+    def makeCommandInvisible(self):
+        self.setInvisible()
+
+        previousInserter = self.model.getPreviousUI()
+        if previousInserter is None:
+            raise Exception("CommandBlockEntity.makeCommandInvisible() called on command with no next inserter")
+        
+        previousInserter.setInvisible()
 
     # how much the widgets stretch the command by. return the largest one
     def getElementStretch(self) -> int:
