@@ -86,6 +86,10 @@ class CommandModel(AbstractModel, Observer):
     
     def isTask(self) -> bool:
         return self.getDefinition().isTask
+    
+    
+    def setDefinitionID(self, id: int):
+        self._definitionID = id
 
     
     def getGeneratedCode(self) -> str:

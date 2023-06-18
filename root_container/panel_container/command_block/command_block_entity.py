@@ -150,7 +150,8 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
 
         # First, get the definition for the new function
         functionName = self.headerEntity.functionName.getFunctionName()
-        self.definitionID = self.database.getDefinitionIDByName(self.model.getType(), functionName)
+        definitionID = self.database.getDefinitionIDByName(self.model.getType(), functionName)
+        self.model.setDefinitionID(definitionID)
 
         # Delete old elements container and assign new one
         self.entities.removeEntity(self.elementsContainer)
