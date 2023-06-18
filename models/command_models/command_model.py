@@ -45,13 +45,20 @@ class CommandModel(AbstractModel, Observer):
         if self.adapter.type == CommandType.TURN:
             self.adapter.subscribe(self, id = NotifyType.TURN_ENABLE_TOGGLED, onNotify = self.onTurnEnableToggled)
 
-        self.onTurnEnableToggled()
+        #self.onTurnEnableToggled()
 
     def onCommandDefinitionChange(self):
         print("CommandModel: onCommandDefinitionChange")
 
     def onTurnEnableToggled(self):
         print("CommandModel: onTurnEnableToggled")
+        commandEntity: CommandBlockEntity = self.ui
+
+        if self.adapter.turnEnabled:
+            commandEntity.makeCommandVisible()
+        else:
+            commandEntity.makeCommandInvisible()
+        commandEntity.recomputeEntity()
 
     def isHighlighted(self):
         return False

@@ -71,6 +71,10 @@ class CommandInserter(Entity):
         return self._pwidth(1)
     
     def defineHeight(self) -> float:
+
+        if not self.isVisible():
+            return 0
+
         return self._aheight(self.HEIGHT_MAX if self.hover.isHovering else self.HEIGHT_MIN)
 
     def onHoverOn(self):
