@@ -55,7 +55,8 @@ class TextEditorEntity(Entity, Observer, Observable):
                  readColor = (196, 219, 250),
                  readColorH = (176, 200, 250),
                  writeColor = (239, 226, 174),
-                 writeColorH = (239, 226, 174)
+                 writeColorH = (239, 226, 174),
+                 maxTextLength: int | None = None,
                  ):
         
         super().__init__(parent, 
@@ -75,6 +76,7 @@ class TextEditorEntity(Entity, Observer, Observable):
         self.centered = isCentered # whether to center text
         self.fixedWidth = isFixedWidth # whether to grow horizontally
         self.hideTextbox = hideTextbox # whether to hide the textbox when not hovered/selected
+        self.maxTextLength = maxTextLength # maximum length of text
 
         self.border = TextBorder()
         self.borderThickness: dict[TextEditorMode, int] = {
@@ -208,8 +210,8 @@ class TextEditorEntity(Entity, Observer, Observable):
         if self.getText() != oldText:
             self.notify()
 
-        if self.defineHeight() != oldHeight:
-            self.recomputeEntity()
+        print("length", self.textHandler.atMaxLength())
+        self.recomputeEntity()
 
     def onKeyUp(self, key):
         pass

@@ -34,9 +34,10 @@ class CommandSectionName(Container):
             borderThicknessRead = 0,
             borderThicknessWrite = 2,
             readColor = (110, 110, 110),
-            readColorH = (103, 103, 103)
-
+            readColorH = (103, 103, 103),
+            maxTextLength = 17
         )
+
     
     # left margin from left edge of section header
     def defineLeftX(self) -> float:

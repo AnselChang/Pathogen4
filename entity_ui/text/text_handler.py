@@ -1,4 +1,11 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 import pygame
+
+
+if TYPE_CHECKING:
+    from entity_ui.text.text_editor_entity import TextEditorEntity
 
 
 """
@@ -11,7 +18,7 @@ class TextHandler:
 
         self.TAB_LENGTH = 3
 
-        self.textEditor = textEditor
+        self.textEditor: TextEditorEntity = textEditor
 
         if type(defaultText) == str:
             defaultText = [defaultText]
@@ -55,15 +62,34 @@ class TextHandler:
             if "." in line:
                 return True
         return False
+    
+    def getLength(self) -> int:
+        length = 0
+        for line in self.text:
+            length += len(line)
+        return length
+
+    def atMaxLength(self):
+
+        if self.textEditor.maxTextLength is None:
+            return False
+        
+        return self.getLength() >= self.textEditor.maxTextLength        
 
     def onKeyDown(self, key):
 
         line = self.text[self.cursorY]
+        atMaxLength = self.atMaxLength()
 
         # insert new line if there is room
         if key == pygame.K_RETURN:
-            # can't add anymore lines
+            
             if not self.textEditor.dynamic:
+                # submit form
+                self.textEditor.interactor.releaseGreedyEntity()
+                return
+            elif atMaxLength:
+                # can't add anymore lines
                 return
             
             remainingText = line[self.cursorX:]
@@ -133,6 +159,11 @@ class TextHandler:
                 self.cursorY += 1
                 self.cursorX = min(self.cursorX, self.currentLineLength())
         else:
+
+
+            if atMaxLength:
+                return
+
             # for number only, can only accept decimal values
             if self.textEditor.numOnly:
                 if key == pygame.K_PERIOD:

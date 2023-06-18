@@ -222,6 +222,10 @@ class Interactor:
             self.box.enable(self.mouseStartDrag)
             self.box.update(mouse, entities)
 
+    def releaseGreedyEntity(self):
+        self.removeEntity(self.greedyEntity)
+        self.greedyEntity = None
+
     def onMouseUp(self, entities: EntityManager, mouse: tuple):
 
         for entity in entities.entities:
@@ -252,8 +256,7 @@ class Interactor:
 
         # release the mouse elsewhere from the greedy entity, so release greedy entity
         if self.greedyEntity is not None and self.rawHoveredEntity is not self.greedyEntity:
-            self.removeEntity(self.greedyEntity)
-            self.greedyEntity = None
+            self.releaseGreedyEntity()
 
 
     def canDragSelection(self, offset):
