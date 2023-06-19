@@ -22,7 +22,9 @@ class TaskCommandsContainer(AbstractElementsContainer):
 
         super().__init__(parentCommand, commandDefinition, pathAdapter)
 
-        self.vgc = VariableGroupContainer(self, False, name = "task")
+        self.vgc = VariableGroupContainer(self, False, name = "task",
+            innerMargin = 1,
+            outerMargin = 5)
 
     # This container is dynamically fit to VariableGroupContainer
     def defineHeight(self) -> float:

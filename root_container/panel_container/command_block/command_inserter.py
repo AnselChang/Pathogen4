@@ -92,7 +92,7 @@ class CommandInserter(Entity):
         
         if self.hover.isHovering:
             
-            color = [100, 250, 100]
+            color = [68, 208, 96]
 
             # draw shaded area
             pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)
