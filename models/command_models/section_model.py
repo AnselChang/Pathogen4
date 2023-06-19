@@ -14,10 +14,19 @@ class SectionModel(AbstractModel):
     
     def __init__(self):
 
-        super().__init__("SectionModel")
+        super().__init__()
+
+        self._sectionName = "New Section"
+
+    def getName(self):
+        return self._sectionName
+    
+    def setName(self, name: str):
+        print("set name", name)
+        self._sectionName = name
 
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
-        return SectionEntity(None)
+        return SectionEntity(None, self)
     
     def _canHaveChildren(self) -> bool:
         return True

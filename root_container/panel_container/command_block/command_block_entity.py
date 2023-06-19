@@ -404,4 +404,4 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             return None
         
     def __repr__(self):
-        return self.model.getDefinition().id
+        return f"{self.model.getDefinition().id} {self.model.getFunctionName()}"

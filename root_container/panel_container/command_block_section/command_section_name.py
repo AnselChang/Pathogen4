@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from common.font_manager import FontID
+from data_structures.observer import Observer
 
 from entity_base.entity import Entity
 from entity_ui.text.text_editor_entity import TextEditorEntity
@@ -16,11 +17,13 @@ Section header contains a textbox to edit section name, as well
 as UI buttons like expand/collapse
 """
 
-class CommandSectionName(Container):
+class CommandSectionName(Container, Observer):
 
     def __init__(self, parent: CommandSectionHeader):
 
         super().__init__(parent = parent)
+
+        self.header = parent
 
         self.text = TextEditorEntity(parent = self,
             fontID = FontID.FONT_NORMAL,
@@ -29,7 +32,7 @@ class CommandSectionName(Container):
             isNumOnly = False,
             isCentered = False,
             isFixedWidth = False,
-            defaultText = "New Section",
+            defaultText = parent.section.model.getName(),
             hideTextbox = False,
             borderThicknessRead = 0,
             borderThicknessWrite = 2,
@@ -38,6 +41,10 @@ class CommandSectionName(Container):
             maxTextLength = 17
         )
 
+        self.text.subscribe(self, onNotify = self.onTextEntityUpdate)
+
+    def onTextEntityUpdate(self):
+        self.header.section.model.setName(self.text.getText())
     
     # left margin from left edge of section header
     def defineLeftX(self) -> float:

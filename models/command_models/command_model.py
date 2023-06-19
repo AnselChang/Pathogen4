@@ -28,11 +28,11 @@ class CommandModel(AbstractModel, Observer):
         self.adapter = pathAdapter
         self.type = pathAdapter.type
 
-        super().__init__(str(self.type))
-
         # initialize default command definition to be the first one
         self._definitionID = self.database.getDefinitionByIndex(self.type).id
         self.parameters = ParameterState(self)
+
+        super().__init__()
 
         # if None, use template text in definition.
         # If not none, means there's a text editor in command and templateText is editable
@@ -78,6 +78,9 @@ class CommandModel(AbstractModel, Observer):
             return CustomCommandBlockEntity(None, self)
         else:
             return CommandBlockEntity(None, self)
+        
+    def getName(self):
+        return f"{self.type} {self.getFunctionName()}"
 
     def getDefinition(self) -> CommandDefinition:
         return self.database.getDefinitionByID(self.type, self._definitionID)
@@ -97,7 +100,6 @@ class CommandModel(AbstractModel, Observer):
     
     def setDefinitionID(self, id: int):
         self._definitionID = id
-
     
     def getGeneratedCode(self) -> str:
         

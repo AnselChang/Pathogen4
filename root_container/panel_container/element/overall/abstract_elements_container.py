@@ -6,7 +6,6 @@ from data_structures.observer import Observable
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
-
 from command_creation.command_definition import CommandDefinition
 from entity_base.container_entity import Container
 from abc import ABC, abstractmethod

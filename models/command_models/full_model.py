@@ -21,6 +21,9 @@ class FullModel(AbstractModel[None, SectionModel]):
     def recomputeUI(self) -> None:
         self.ui.recomputeEntity()
 
+    def getName(self):
+        return "FullModel"
+
     def getParentUI(self) -> Entity:
         return self.fullModelParentUI
     

@@ -26,16 +26,17 @@ T1 = TypeVar('T1') # parent type
 T2 = TypeVar('T2') # children type
 class AbstractModel(Generic[T1, T2]):
 
-    def __init__(self, name: str = "AbstractModel"):
+    def __init__(self):
 
         super().__init__()
-
-        self.name = name
         
         self.parent: 'AbstractModel' = None
         self.children: list[AbstractModel | T2] = []
 
         self.ui = None
+
+    def getName(self):
+        return "AbstractModel"
 
     # must be implemented by subclasses
     def _canHaveChildren(self) -> bool:
@@ -235,6 +236,6 @@ class AbstractModel(Generic[T1, T2]):
 
     # print this element and all children as tree structure for debugging
     def tree(self, indent: int = 0):
-        print(" " * indent + self.name)
+        print(" " * indent + self.getName())
         for child in self.children:
             child.tree(indent + 2)

@@ -205,12 +205,10 @@ class TextEditorEntity(Entity, Observer, Observable):
         oldText = self.getText()
 
         self.textHandler.onKeyDown(key)
-
         # notify observers on text change
         if self.getText() != oldText:
             self.notify()
 
-        print("length", self.textHandler.atMaxLength())
         self.recomputeEntity()
 
     def onKeyUp(self, key):
