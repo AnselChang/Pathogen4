@@ -220,8 +220,16 @@ class AbstractModel(Generic[T1, T2]):
         if not isinstance(self.ui, ModelBasedEntity) and isinstance(self.ui, Entity):
             raise Exception("Model must generate ModelBasedEntity", self.ui)
 
+        if self._canHaveChildren():
+            self.rebuildChildren()
+        
+        
+    def rebuildChildren(self):
+
         if not self._canHaveChildren():
             return
+        
+        self.ui.clearChildUI()
                 
         # add first inserter UI
         self.ui.addChildUI(self.createInserterUI(None))
@@ -235,7 +243,6 @@ class AbstractModel(Generic[T1, T2]):
 
             # add the inserter UI
             self.ui.addChildUI(self.createInserterUI(child))
-
 
     # print this element and all children as tree structure for debugging
     def tree(self, indent: int = 0):

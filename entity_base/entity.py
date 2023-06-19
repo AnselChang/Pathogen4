@@ -358,7 +358,10 @@ class Entity(ABC, Observable):
     
     # get relative width as a percent of parent horizontal span
     def _pwidth(self, pwidth):
-        return self._parent.WIDTH * pwidth
+        try:
+            return self._parent.WIDTH * pwidth
+        except:
+            raise Exception("Entity not defined", self)
     
     # get relative height as a percent of parent vertical span
     def _pheight(self, pheight):

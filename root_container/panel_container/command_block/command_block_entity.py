@@ -91,7 +91,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             hover = HoverLambda(self),
             drawOrder = DrawOrder.COMMANND_BLOCK,
             recomputeWhenInvisible = True,
-            verbose = False
+            verbose = self.model.isTask()
         )
 
         ModelBasedEntity.__init__(self, self.model)
@@ -157,6 +157,8 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         self.entities.removeEntity(self.elementsContainer)
         self.elementsContainer = createElementsContainer(self, self.model.getDefinition(), self.model.getAdapter())
         self.elementsContainer.recomputeEntity()
+
+        self.model.rebuildChildren()
 
         self.onColorChange()
 
