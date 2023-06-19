@@ -152,9 +152,17 @@ class AbstractModel(Generic[T1, T2]):
 
         self.rebuild()
         self.ui.recomputeEntity()
+
+        print("after inserter ui")
+        self.getRootModel().ui.tree()
+
+    def getRootModel(self) -> AbstractModel:
+        if self.parent is None:
+            return self
+        return self.parent.getRootModel()
     
     def createInserterUI(self, elementBeforeInserter: AbstractModel) -> CommandInserter:
-        return CommandInserter(None, lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
+        return CommandInserter(None, self.getRootModel(), lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
     
     # return cached UI for this element
     def getExistingUI(self) -> ModelBasedEntity | Entity:
@@ -199,6 +207,7 @@ class AbstractModel(Generic[T1, T2]):
                 childVC.setChild(newUI)
                 childVC.removeChild(self.ui)
                 newUI.changeParent(childVC)
+                print("reassign parent", newUI)
                 break
 
         if self.ui is not None:
@@ -213,7 +222,7 @@ class AbstractModel(Generic[T1, T2]):
 
         if isRoot:
             pass
-            #print("rebulding", self)
+            print("rebulding", self)
         
         self.reassignSelfUI( self._generateUIForMyself() )
         

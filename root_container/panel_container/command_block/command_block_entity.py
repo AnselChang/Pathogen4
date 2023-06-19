@@ -91,7 +91,8 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             hover = HoverLambda(self),
             drawOrder = DrawOrder.COMMANND_BLOCK,
             recomputeWhenInvisible = True,
-            verbose = self.model.isTask()
+            verbose = self.model.isTask(),
+            thisUpdatesParent=True
         )
 
         ModelBasedEntity.__init__(self, self.model)
@@ -159,6 +160,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         self.elementsContainer.recomputeEntity()
 
         self.model.rebuildChildren()
+        print("rebuild children model")
 
         self.onColorChange()
 
@@ -177,6 +179,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         self.localExpansion = True
 
         self.recomputeEntity()
+        print("recompute tasks")
 
     # Update animation every tick
     def onTick(self):
@@ -405,5 +408,5 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         else:
             return None
         
-    def __repr__(self):
-        return f"{self.model.getDefinition().id} {self.model.getFunctionName()}"
+    def logMoreInfo(self):
+        return self.model.getFunctionName()

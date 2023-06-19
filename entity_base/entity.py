@@ -317,7 +317,7 @@ class Entity(ABC, Observable):
         # for initially calling this function, update ancestors first if ancestor dimensions dependent on self
         if isRoot:
             firstEntityToCompute = self.findAncestorEntityIndependentFromParent()
-
+            print("first entity to compute", firstEntityToCompute, "is root")
             firstEntityToCompute.recomputeEntity(False)
             return
 
@@ -361,7 +361,7 @@ class Entity(ABC, Observable):
         try:
             return self._parent.WIDTH * pwidth
         except:
-            raise Exception("Entity not defined", self)
+            raise Exception("Entity not defined", self, self._parent)
     
     # get relative height as a percent of parent vertical span
     def _pheight(self, pheight):
@@ -402,23 +402,15 @@ class Entity(ABC, Observable):
             
         return False
     
-    # override to add more information when logging entity
-    def logMoreInfo(self) -> str:
-        return None
-    
+
     def __repr__(self):
+        p = ""
+        if self._parent is not None:
+            p = " " + str(self._parent.__class__.__name__)
+        return f"{self.__class__.__name__} (D) " + str(id(self)) + " " + p
 
-        moreInfo = self.logMoreInfo()
-        if  moreInfo is None:
-            info = ""
-        else:
-            info = f"[{moreInfo}] "
-
-        try:
-            return f"{self.__class__.__name__} {info}({int(self.LEFT_X)}, {int(self.TOP_Y)}, {int(self.WIDTH)}, {int(self.HEIGHT)}) " + str(id(self))
-        except:
-            return f"{self.__class__.__name__} (Undefined) " + str(id(self))
-
+    def logMoreInfo(self) -> str:
+        return str(self._parent)
     
     # print tree using indentation to indicate hierarchy
     # very useful debugging feature for visualizing parent-child entity relationships

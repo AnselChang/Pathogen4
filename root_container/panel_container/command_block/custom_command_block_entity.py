@@ -42,3 +42,8 @@ class CustomCommandBlockEntity(CommandBlockEntity):
 
     def onDelete(self):
         print("on delete")
+
+    def recomputeEntity(self, isRoot: bool = True):
+        print("recompute custom", self.thisUpdatesParent, self._parent)
+        self.model.getRootModel().ui.tree()
+        return super().recomputeEntity(isRoot)
