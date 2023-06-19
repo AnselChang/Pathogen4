@@ -98,7 +98,8 @@ class CommandModel(AbstractModel, Observer):
         return self.getDefinition().isTask
     
     
-    def setDefinitionID(self, id: int):
+    def setDefinitionID(self, id: str):
+        print("setDefinitionID", id)
         self._definitionID = id
     
     def getGeneratedCode(self) -> str:

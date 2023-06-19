@@ -38,7 +38,8 @@ class DropdownContainer(Container, Observable):
         if self.selectedOptionText == selectedText:
             return
         
-        assert(selectedText in self.optionTexts)
+        if selectedText not in self.optionTexts:
+            raise Exception("Selected text not in option texts", selectedText, self.optionTexts)
 
         self.selectedOptionText = selectedText
         self.otherOptions = [text for text in self.optionTexts if text != selectedText]
@@ -57,7 +58,8 @@ class DropdownContainer(Container, Observable):
     def __init__(self, parent: Entity, options: list[str], fontID: FontID, fontSize: int,
                  colorSelectedHovered, colorSelected, colorHovered, colorOff,
                  dynamicWidth: bool = False, dynamicBorderOpacity: bool = False, centered: bool = True,
-                 iconScale = 0.8, verticalTextPadding = 0, textLeftOffset = 14, textRightOffset = 5, cornerRadius = 5, name = ""):
+                 iconScale = 0.8, verticalTextPadding = 0, textLeftOffset = 14, textRightOffset = 5, cornerRadius = 5, name = "",
+                 defaultOption = None):
         
         self.CORNER_RADIUS = cornerRadius
         self.VERTICAL_TEXT_PADDING = verticalTextPadding
@@ -95,7 +97,10 @@ class DropdownContainer(Container, Observable):
 
         self.optionTexts = options
         self.selectedOptionText = None
-        self.setSelectedText(options[0], False) # recomputes position from this call
+
+        if defaultOption is None:
+            defaultOption = options[0]
+        self.setSelectedText(defaultOption, False) # recomputes position from this call
 
         self.colors = [colorSelectedHovered, colorSelected, colorHovered, colorOff]
 

@@ -243,7 +243,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     # Return the list of possible function names for this block
     # If inside a task and is a custom block, cannot contain task
     def getFunctionNames(self) -> list[str]:
-        return self.database.getDefinitionNames(self.model.getType(), self.model.isTask())
+        return self.database.getDefinitionNames(self.model.getType(), self.model.parent.isTask())
 
     def defineWidth(self) -> float:
         return self._pwidth(1)

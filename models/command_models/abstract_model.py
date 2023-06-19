@@ -37,6 +37,9 @@ class AbstractModel(Generic[T1, T2]):
 
     def getName(self):
         return "AbstractModel"
+    
+    def isTask(self) -> bool:
+        return False
 
     # must be implemented by subclasses
     def _canHaveChildren(self) -> bool:

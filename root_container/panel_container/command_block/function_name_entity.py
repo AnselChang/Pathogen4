@@ -32,12 +32,15 @@ class FunctionNameEntity(Entity, Observer):
         self.CORNER_RADIUS = 5
         
         names = self.parentCommand.getFunctionNames()
+        print("names", names)
         self.dropdown = DropdownContainer(self, names,
                           FontID.FONT_NORMAL, 18,
                           (0,0,0), (0,0,0), (0,0,0), (0,0,0),
                           dynamicWidth = True, dynamicBorderOpacity = True, centered = False,
                           iconScale = 0.6, textLeftOffset = 16, cornerRadius = 7, verticalTextPadding = 0,
-                          name = "function dropdown")
+                          name = "function dropdown",
+                          defaultOption = self.parentCommand.model.getFunctionName(),
+                          )
         self.updateColor()
 
         # Whenever the name changes, notify the commmand block entity to update the command
