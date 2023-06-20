@@ -109,7 +109,9 @@ class AbstractModel(Generic[T1, T2]):
     # insert a sibling model after this model
     def insertAfterThis(self, model: AbstractModel | T2) -> None:
         self.parent.insertChildAfter(model, self)
-        self.parent.rebuild()
+
+        model.rebuild()
+        self.parent.rebuildChildren()
 
     # insert a sibling model before this model
     def insertBeforeThis(self, model: AbstractModel | T2) -> None:
@@ -120,24 +122,36 @@ class AbstractModel(Generic[T1, T2]):
             self.parent.insertChildAtBeginning(model)
         else:
             self.parent.insertChildAfter(model, self.parent.children[i-1])
-        self.parent.rebuild()
 
-    def insertChildAfter(self, child: AbstractModel | T2, after: AbstractModel | T2):
-        child.parent = self
+        model.rebuild()
+        self.parent.rebuildChildren()
+
+    def insertChildAfter(self, model: AbstractModel | T2, after: AbstractModel | T2):
+        model.parent = self
 
         i = self.getIndex(after)
-        self.children.insert(i+1, child)
-        self.rebuild()
+        self.children.insert(i+1, model)
 
-    def insertChildAtBeginning(self, child: AbstractModel | T2):
-        child.parent = self
-        self.children.insert(0, child)
-        self.rebuild()
+        model.rebuild()
+        self.rebuildChildren()
 
-    def insertChildAtEnd(self, child: AbstractModel | T2):
-        child.parent = self
-        self.children.append(child)
-        self.rebuild()
+    def insertChildAtBeginning(self, model: AbstractModel | T2):
+        model.parent = self
+        self.children.insert(0, model)
+
+        model.rebuild()
+        self.rebuildChildren()
+
+    def insertChildAtEnd(self, model: AbstractModel | T2):
+        print("start")
+        self.ui.tree()
+        model.parent = self
+        self.children.append(model)
+        print("inserter child at end", self, model)
+        model.rebuild()
+        print("after model rebuild")
+        self.ui.tree()
+        self.rebuildChildren()
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
 
@@ -150,11 +164,9 @@ class AbstractModel(Generic[T1, T2]):
         else:
             self.insertChildAfter(sectionOrCommand, elementBeforeInserter)
 
-        self.rebuild()
         self.ui.recomputeEntity()
 
         print("after inserter ui")
-        self.getRootModel().ui.tree()
 
     def getRootModel(self) -> AbstractModel:
         if self.parent is None:
@@ -199,6 +211,9 @@ class AbstractModel(Generic[T1, T2]):
             return
         
         # search for the child reference in the parent
+        if self.parent.ui is None:
+            raise Exception("Parent UI is None")
+            
         for childVC in self.parent.ui.getChildVGC()._children:
 
             childVC: VariableContainer = childVC
@@ -228,9 +243,23 @@ class AbstractModel(Generic[T1, T2]):
         
         if not isinstance(self.ui, ModelBasedEntity) and isinstance(self.ui, Entity):
             raise Exception("Model must generate ModelBasedEntity", self.ui)
+        if isRoot:
+            print("before rebuild children")
+            self.ui.tree()
 
-        if self._canHaveChildren():
-            self.rebuildChildren()
+            print()
+
+            for child in self.children:
+                print("child", child)
+                child.ui.tree()
+                print("--")
+
+            print()
+
+        self.rebuildChildren()
+        if isRoot:
+            print("after rebuild children")
+            self.ui.tree()
         
         
     def rebuildChildren(self):
@@ -245,8 +274,8 @@ class AbstractModel(Generic[T1, T2]):
 
         for child in self.children:
 
-            child.rebuild(False)
-            
+            assert(child.getExistingUI() is not None)
+
             # add the section/command UI
             self.ui.addChildUI(child.getExistingUI())
 

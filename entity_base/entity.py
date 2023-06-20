@@ -119,7 +119,7 @@ class Entity(ABC, Observable):
             
 
     def changeParent(self, newParent: Entity):
-        if self._parent is not None:
+        if self._parent is not None and self in self._parent._children:
             self._parent._children.remove(self)
 
         if self not in newParent._children:
@@ -414,12 +414,12 @@ class Entity(ABC, Observable):
     
     # print tree using indentation to indicate hierarchy
     # very useful debugging feature for visualizing parent-child entity relationships
-    def tree(self, targetEntity: 'Entity' = None, indent: int = 0, ):
+    def tree(self, targetEntity: 'Entity' = None, indent: int = 0, verbose: bool = False):
         targetStr = "(!) " if self is targetEntity else ""
         print("  " * indent + targetStr + str(self))
 
-        if not self.verbose:
+        if not self.verbose and not verbose:
             return
 
         for child in self._children:
-            child.tree(targetEntity, indent + 1)
+            child.tree(targetEntity, indent + 1, verbose)

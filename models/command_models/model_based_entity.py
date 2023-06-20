@@ -21,6 +21,11 @@ class ModelBasedEntity:
 
     # add a child UI element to this UI element
     def addChildUI(self, childUI: Entity) -> None:
+
+        assert(childUI is not None)
+
+        print("add child", childUI, "to", self, self.getChildVGC())
+
         vc = VariableContainer(self.getChildVGC(), False)
         vc.setChild(childUI)
         childUI.changeParent(vc)
