@@ -223,11 +223,9 @@ class AbstractModel(Generic[T1, T2]):
         self.ui = newUI
     
     # rebuild the UI for this element
-    # If rebuildChildren, rebuilds children as well.
-    # Otherwise, links the already-computed UI for children to this element
+    # Calls rebuildChildren() to link the UIs of the children to this
     def rebuild(self, isRoot: bool = True) -> None:
 
-        
         self.reassignSelfUI( self._generateUIForMyself() )
         
         if not isinstance(self.ui, ModelBasedEntity) and isinstance(self.ui, Entity):
@@ -235,6 +233,9 @@ class AbstractModel(Generic[T1, T2]):
 
         self.rebuildChildren()
         
+    # Rebuild the children of this element. Do not recompute
+    # the UI either for this element or the children,
+    # just link existing reference to child UIs
     def rebuildChildren(self):
 
         if not self._canHaveChildren():
