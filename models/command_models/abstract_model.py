@@ -81,7 +81,6 @@ class AbstractModel(Generic[T1, T2]):
             return None
         
         vgc = self.parent.ui.getChildVGC()
-        print(vgc._children)
         i = vgc._children.index(self.ui._parent)
         
         if i == 0:
@@ -143,19 +142,14 @@ class AbstractModel(Generic[T1, T2]):
         self.rebuildChildren()
 
     def insertChildAtEnd(self, model: AbstractModel | T2):
-        print("start")
-        self.ui.tree()
         model.parent = self
         self.children.append(model)
-        print("inserter child at end", self, model)
         model.rebuild()
-        print("after model rebuild")
-        self.ui.tree()
+
         self.rebuildChildren()
 
-    def onInserterClicked(self, elementBeforeInserter: AbstractModel):
 
-        print("Inserter clicked")
+    def onInserterClicked(self, elementBeforeInserter: AbstractModel):
 
         sectionOrCommand = self._createChild()
 
@@ -166,7 +160,6 @@ class AbstractModel(Generic[T1, T2]):
 
         self.ui.recomputeEntity()
 
-        print("after inserter ui")
 
     def getRootModel(self) -> AbstractModel:
         if self.parent is None:
@@ -222,7 +215,6 @@ class AbstractModel(Generic[T1, T2]):
                 childVC.setChild(newUI)
                 childVC.removeChild(self.ui)
                 newUI.changeParent(childVC)
-                print("reassign parent", newUI)
                 break
 
         if self.ui is not None:
@@ -235,32 +227,13 @@ class AbstractModel(Generic[T1, T2]):
     # Otherwise, links the already-computed UI for children to this element
     def rebuild(self, isRoot: bool = True) -> None:
 
-        if isRoot:
-            pass
-            print("rebulding", self)
         
         self.reassignSelfUI( self._generateUIForMyself() )
         
         if not isinstance(self.ui, ModelBasedEntity) and isinstance(self.ui, Entity):
             raise Exception("Model must generate ModelBasedEntity", self.ui)
-        if isRoot:
-            print("before rebuild children")
-            self.ui.tree()
-
-            print()
-
-            for child in self.children:
-                print("child", child)
-                child.ui.tree()
-                print("--")
-
-            print()
 
         self.rebuildChildren()
-        if isRoot:
-            print("after rebuild children")
-            self.ui.tree()
-        
         
     def rebuildChildren(self):
 

@@ -121,11 +121,6 @@ def main():
     # create command model
     model = FullModel(tabHandler.blockContainer)
 
-    print("random rebuild")
-    model.rebuild()
-    print("after ebuild")
-    model.ui.tree()
-
     # Create path
     path = Path(fieldContainer, tabHandler.blockContainer, model, database, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)

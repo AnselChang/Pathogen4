@@ -83,12 +83,9 @@ class CommandInserter(Entity):
         return self._aheight(self.HEIGHT_MAX if self.hover.isHovering else self.HEIGHT_MIN)
 
     def onHoverOn(self):
-        print("on")
         self.recomputeEntity()
 
     def onHoverOff(self):
-        print("off", self.thisUpdatesParent)
-        self.fullModel.ui.tree()
         self.recomputeEntity()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
