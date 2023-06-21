@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from command_creation.command_definition_database import CommandDefinitionDatabase
-    from root_container.panel_container.command_block.command_block_container import CommandBlockContainer
-    from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
     from root_container.panel_container.command_block.command_inserter import CommandInserter
     from models.command_models.command_model import CommandModel
     
@@ -272,6 +270,9 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         height = self.ACTUAL_COLLAPSED_HEIGHT + (self.ACTUAL_EXPANDED_HEIGHT - self.ACTUAL_COLLAPSED_HEIGHT) * ratio
         return height
     
+    def defineCenterY(self):
+        return self._py(0.5) + self.dragOffset
+    
     def getPercentExpanded(self) -> float:
         return self.animatedExpansion.get()
         
@@ -358,19 +359,25 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             CommandBlockEntity.HIGHLIGHTED = None
 
     def onStartDrag(self, mouse: tuple):
-        self.mouseOffset = self.CENTER_Y - mouse[1]
-        self.dragPosition = mouse[1] + self.mouseOffset
-
-        # cache the existing inserters
-        #self.handler.updateActiveCommandInserters()
-
-    def onStopDrag(self):
-        self.dragPosition = None
-        self.recomputeEntity()
+        self.startMouseY = mouse[1]
+        self.dragOffset = 0
 
     def onDrag(self, mouse: tuple):
-        self.dragPosition = mouse[1] + self.mouseOffset
-        pass
+        self.dragOffset = mouse[1] - self.startMouseY
+        print(self.dragOffset)
+        self.recomputeEntity()
+
+    def onStopDrag(self):
+        self.dragOffset = 0
+        print("on stop drag")
+        self.recomputeEntity()
+
+    # If dragging, put dragged command on top
+    def drawOrderTiebreaker(self) -> float:
+        if self.drag.isDragging:
+            return 0
+        else:
+            return None
 
     def getColor(self) -> tuple:
         r = self.colorR.get()
@@ -401,12 +408,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
 
     def toString(self) -> str:
         return "Command Block Entity"
-    
-    def defineCenterY(self):
-        if self.drag.isDragging:
-            return self.dragPosition
-        else:
-            return None
         
     def logMoreInfo(self):
         return self.model.getFunctionName()

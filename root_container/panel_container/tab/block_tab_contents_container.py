@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from data_structures.observer import Observer
-from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
 
 from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
 if TYPE_CHECKING:
