@@ -1,13 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from entity_ui.group.variable_group.variable_container import VariableContainer
-    from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
     from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
     from models.command_models.full_model import FullModel
 
+from root_container.panel_container.command_block.inserter_interface import ICommandInserter
 
 from entity_base.entity import Entity
 from entity_base.listeners.hover_listener import HoverLambda
@@ -34,7 +33,7 @@ Appears between each command
 A "plus" button that, when clicked, inserts a custom command there
 """
 
-class CommandInserter(Entity):
+class CommandInserter(Entity, ICommandInserter):
 
     def __init__(self, parent: VariableContainer, fullModel: FullModel, onInsert = lambda: None, isFirst: bool = False):
         

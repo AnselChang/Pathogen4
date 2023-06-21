@@ -106,7 +106,8 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
 
     def getChildVGC(self) -> VariableGroupContainer:
         if not isinstance(self.elementsContainer, TaskCommandsContainer):
-            raise Exception("CommandBlockEntity.getChildVGC() called on non-task command block")
+            return None
+        
         return self.elementsContainer.vgc
 
     # update components based on new command definition

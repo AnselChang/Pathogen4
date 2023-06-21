@@ -36,7 +36,7 @@ class FullModel(AbstractModel[None, SectionModel]):
         return self.getParentUI()
     
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
-        return FullContainer(self.getParentUI())
+        return FullContainer(self.getParentUI(), self)
 
     def _canHaveChildren(self) -> bool:
         return True

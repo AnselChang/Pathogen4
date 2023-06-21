@@ -166,6 +166,13 @@ class AbstractModel(Generic[T1, T2]):
             return self
         return self.parent.getRootModel()
     
+    def isSectionModel(self) -> bool:
+        # root model
+        if self.parent is None:
+            return False
+        
+        return self.parent.parent is None
+    
     def createInserterUI(self, elementBeforeInserter: AbstractModel) -> CommandInserter:
         return CommandInserter(None, self.getRootModel(), lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
     

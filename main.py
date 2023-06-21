@@ -71,9 +71,8 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: 
             model.tree()
         elif cmd == "ui":
             model.getExistingUI().tree(verbose=True)
-        elif cmd == "e":
-            print([e for e in entities.entities if instanceOfClasses(e, CommandInserter)])
-
+        elif cmd == "flatten":
+            print(model.getExistingUI().flatten())
 
 
 def main():

@@ -101,6 +101,9 @@ class Interactor:
                 pass
             else:
                 return
+            
+        if len(self.draggingEntities) > 0:
+            return
 
         if self.hoveredEntity is not entity:
 

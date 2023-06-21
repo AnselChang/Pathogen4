@@ -1,0 +1,2 @@
+class ICommandInserter:
+    pass
