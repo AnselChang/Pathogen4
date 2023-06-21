@@ -15,11 +15,19 @@ class FullModel(AbstractModel[None, SectionModel]):
 
         self.fullModelParentUI = parentUI
 
+        self.rebuild()
+
         # create the first section
         self.addSectionToEnd()
 
+        print("after first section:")
+        self.ui.tree()
+
     def recomputeUI(self) -> None:
         self.ui.recomputeEntity()
+
+    def getName(self):
+        return "FullModel"
 
     def getParentUI(self) -> Entity:
         return self.fullModelParentUI

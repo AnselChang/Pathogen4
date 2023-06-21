@@ -26,16 +26,20 @@ T1 = TypeVar('T1') # parent type
 T2 = TypeVar('T2') # children type
 class AbstractModel(Generic[T1, T2]):
 
-    def __init__(self, name: str = "AbstractModel"):
+    def __init__(self):
 
         super().__init__()
-
-        self.name = name
         
         self.parent: 'AbstractModel' = None
         self.children: list[AbstractModel | T2] = []
 
         self.ui = None
+
+    def getName(self):
+        return "AbstractModel"
+    
+    def isTask(self) -> bool:
+        return False
 
     # must be implemented by subclasses
     def _canHaveChildren(self) -> bool:
@@ -77,7 +81,6 @@ class AbstractModel(Generic[T1, T2]):
             return None
         
         vgc = self.parent.ui.getChildVGC()
-        print(vgc._children)
         i = vgc._children.index(self.ui._parent)
         
         if i == 0:
@@ -105,7 +108,9 @@ class AbstractModel(Generic[T1, T2]):
     # insert a sibling model after this model
     def insertAfterThis(self, model: AbstractModel | T2) -> None:
         self.parent.insertChildAfter(model, self)
-        self.parent.rebuild()
+
+        model.rebuild()
+        self.parent.rebuildChildren()
 
     # insert a sibling model before this model
     def insertBeforeThis(self, model: AbstractModel | T2) -> None:
@@ -116,28 +121,35 @@ class AbstractModel(Generic[T1, T2]):
             self.parent.insertChildAtBeginning(model)
         else:
             self.parent.insertChildAfter(model, self.parent.children[i-1])
-        self.parent.rebuild()
 
-    def insertChildAfter(self, child: AbstractModel | T2, after: AbstractModel | T2):
-        child.parent = self
+        model.rebuild()
+        self.parent.rebuildChildren()
+
+    def insertChildAfter(self, model: AbstractModel | T2, after: AbstractModel | T2):
+        model.parent = self
 
         i = self.getIndex(after)
-        self.children.insert(i+1, child)
-        self.rebuild()
+        self.children.insert(i+1, model)
 
-    def insertChildAtBeginning(self, child: AbstractModel | T2):
-        child.parent = self
-        self.children.insert(0, child)
-        self.rebuild()
+        model.rebuild()
+        self.rebuildChildren()
 
-    def insertChildAtEnd(self, child: AbstractModel | T2):
-        child.parent = self
-        self.children.append(child)
-        self.rebuild()
+    def insertChildAtBeginning(self, model: AbstractModel | T2):
+        model.parent = self
+        self.children.insert(0, model)
+
+        model.rebuild()
+        self.rebuildChildren()
+
+    def insertChildAtEnd(self, model: AbstractModel | T2):
+        model.parent = self
+        self.children.append(model)
+        model.rebuild()
+
+        self.rebuildChildren()
+
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
-
-        print("Inserter clicked")
 
         sectionOrCommand = self._createChild()
 
@@ -146,11 +158,16 @@ class AbstractModel(Generic[T1, T2]):
         else:
             self.insertChildAfter(sectionOrCommand, elementBeforeInserter)
 
-        self.rebuild()
         self.ui.recomputeEntity()
+
+
+    def getRootModel(self) -> AbstractModel:
+        if self.parent is None:
+            return self
+        return self.parent.getRootModel()
     
     def createInserterUI(self, elementBeforeInserter: AbstractModel) -> CommandInserter:
-        return CommandInserter(None, lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
+        return CommandInserter(None, self.getRootModel(), lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
     
     # return cached UI for this element
     def getExistingUI(self) -> ModelBasedEntity | Entity:
@@ -187,6 +204,9 @@ class AbstractModel(Generic[T1, T2]):
             return
         
         # search for the child reference in the parent
+        if self.parent.ui is None:
+            raise Exception("Parent UI is None")
+            
         for childVC in self.parent.ui.getChildVGC()._children:
 
             childVC: VariableContainer = childVC
@@ -207,34 +227,36 @@ class AbstractModel(Generic[T1, T2]):
     # Otherwise, links the already-computed UI for children to this element
     def rebuild(self, isRoot: bool = True) -> None:
 
-        if isRoot:
-            pass
-            #print("rebulding", self)
         
         self.reassignSelfUI( self._generateUIForMyself() )
         
         if not isinstance(self.ui, ModelBasedEntity) and isinstance(self.ui, Entity):
             raise Exception("Model must generate ModelBasedEntity", self.ui)
 
+        self.rebuildChildren()
+        
+    def rebuildChildren(self):
+
         if not self._canHaveChildren():
             return
+        
+        self.ui.clearChildUI()
                 
         # add first inserter UI
         self.ui.addChildUI(self.createInserterUI(None))
 
         for child in self.children:
 
-            child.rebuild(False)
-            
+            assert(child.getExistingUI() is not None)
+
             # add the section/command UI
             self.ui.addChildUI(child.getExistingUI())
 
             # add the inserter UI
             self.ui.addChildUI(self.createInserterUI(child))
 
-
     # print this element and all children as tree structure for debugging
     def tree(self, indent: int = 0):
-        print(" " * indent + self.name)
+        print(" " * indent + self.getName())
         for child in self.children:
             child.tree(indent + 2)

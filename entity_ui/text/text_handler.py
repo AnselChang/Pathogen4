@@ -214,8 +214,7 @@ class TextHandler:
         self.fullText = ""
         for textLine in self.text:
             self.fullText += textLine + "\n"
-        self.fullText = self.fullText[-1]
-
+        self.fullText = self.fullText[:-1]
         self.maxSurfaceWidth = max(surface.get_width() for surface in self.textSurfaces)
 
     def getSurfaceWidth(self) -> int:

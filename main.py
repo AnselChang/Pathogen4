@@ -70,7 +70,7 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: 
         elif cmd == "model":
             model.tree()
         elif cmd == "ui":
-            model.getExistingUI().tree()
+            model.getExistingUI().tree(verbose=True)
         elif cmd == "e":
             print([e for e in entities.entities if instanceOfClasses(e, CommandInserter)])
 
@@ -120,7 +120,6 @@ def main():
 
     # create command model
     model = FullModel(tabHandler.blockContainer)
-    model.rebuild()
 
     # Create path
     path = Path(fieldContainer, tabHandler.blockContainer, model, database, PointRef(Ref.FIELD, (24,24)))

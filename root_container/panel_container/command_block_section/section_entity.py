@@ -13,7 +13,7 @@ from utility.motion_profile import MotionProfile
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
     from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
-
+    from models.command_models.section_model import SectionModel
 
 from entity_base.container_entity import Container
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
@@ -27,7 +27,7 @@ pertaining to the command section.
 
 class SectionEntity(Entity, ModelBasedEntity):
 
-    def __init__(self, parent: Entity):
+    def __init__(self, parent: Entity, model: SectionModel):
 
         self.HEADER_HEIGHT = 30
         super().__init__(parent = parent,
@@ -35,6 +35,8 @@ class SectionEntity(Entity, ModelBasedEntity):
             tick = TickLambda(self, FonTickStart=lambda: self.onTick()),
             hover = HoverLambda(self)
         )
+
+        self.model = model
 
         self.pathVisible = True
         self.commandsVisible = True
@@ -44,6 +46,9 @@ class SectionEntity(Entity, ModelBasedEntity):
         
         self.body = CommandSectionBody(parent = self)
         self.header = CommandSectionHeader(parent = self)
+
+    def getSectionName(self) -> str:
+        return self.model.getName()
 
     def getChildVGC(self) -> VariableGroupContainer:
         return self.body.vgc

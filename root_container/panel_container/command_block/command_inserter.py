@@ -1,10 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from entity_ui.group.variable_group.variable_container import VariableContainer
     from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
     from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
+    from models.command_models.full_model import FullModel
+
 
 from entity_base.entity import Entity
 from entity_base.listeners.hover_listener import HoverLambda
@@ -33,7 +36,7 @@ A "plus" button that, when clicked, inserts a custom command there
 
 class CommandInserter(Entity):
 
-    def __init__(self, parent: VariableContainer, onInsert = lambda: None, isFirst: bool = False):
+    def __init__(self, parent: VariableContainer, fullModel: FullModel, onInsert = lambda: None, isFirst: bool = False):
         
 
         super().__init__(
@@ -42,10 +45,12 @@ class CommandInserter(Entity):
             click = ClickLambda(self, FonLeftClick = lambda mouse: onInsert()),
             select = SelectLambda(self, "inserter", type = SelectorType.SOLO),
             drawOrder = DrawOrder.COMMAND_INSERTER,
-            recomputeWhenInvisible = True
+            recomputeWhenInvisible = True,
+            thisUpdatesParent=True
             )
         
         self.container = parent
+        self.fullModel = fullModel
         self.isFirst = isFirst
         
         self.HEIGHT_MIN = 6
@@ -78,11 +83,9 @@ class CommandInserter(Entity):
         return self._aheight(self.HEIGHT_MAX if self.hover.isHovering else self.HEIGHT_MIN)
 
     def onHoverOn(self):
-        print("on")
         self.recomputeEntity()
 
     def onHoverOff(self):
-        print("off")
         self.recomputeEntity()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
@@ -92,7 +95,7 @@ class CommandInserter(Entity):
         
         if self.hover.isHovering:
             
-            color = [100, 250, 100]
+            color = [68, 208, 96]
 
             # draw shaded area
             pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)

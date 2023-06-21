@@ -80,7 +80,3 @@ class VariableContainer(Container, ABC, Generic[T]):
             return childTiebreaker
 
         return -self._POSITION_FROM_VGC
-    
-    # override to add more information when logging entity
-    def logMoreInfo(self) -> str:
-        return self.child.__repr__()

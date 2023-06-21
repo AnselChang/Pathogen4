@@ -5,7 +5,7 @@ from common.draw_order import DrawOrder
 from data_structures.observer import Observable
 if TYPE_CHECKING:
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
-
+    from adapter.path_adapter import PathAdapter
 
 from command_creation.command_definition import CommandDefinition
 from entity_base.container_entity import Container
@@ -15,7 +15,7 @@ class AbstractElementsContainer(Container, ABC, Observable):
     
     def __init__(self, parentCommand: CommandBlockEntity, commandDefinition: CommandDefinition, pathAdapter: PathAdapter):
         
-        super().__init__(parentCommand, drawOrder = DrawOrder.COMMAND_ELEMENTS)
+        super().__init__(parentCommand, drawOrder = DrawOrder.COMMAND_ELEMENTS, thisUpdatesParent=True)
         self.parentCommand = parentCommand
         self.commandDefinition = commandDefinition
 

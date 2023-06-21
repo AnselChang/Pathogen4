@@ -61,7 +61,6 @@ class Path(Observer):
         # initialize first node
         node = self._addRawNode(startPosition) # add start node
 
-
     def _addRawNode(self, nodePosition: PointRef, afterPath = None, afterCommand: CommandModel = None, isTemporary: bool = False):
 
         if afterPath is None:

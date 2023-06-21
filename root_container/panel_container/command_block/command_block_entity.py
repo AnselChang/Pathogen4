@@ -91,7 +91,8 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             hover = HoverLambda(self),
             drawOrder = DrawOrder.COMMANND_BLOCK,
             recomputeWhenInvisible = True,
-            verbose = False
+            verbose = self.model.isTask(),
+            thisUpdatesParent=True
         )
 
         ModelBasedEntity.__init__(self, self.model)
@@ -158,6 +159,9 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         self.elementsContainer = createElementsContainer(self, self.model.getDefinition(), self.model.getAdapter())
         self.elementsContainer.recomputeEntity()
 
+        self.model.rebuildChildren()
+        print("rebuild children model")
+
         self.onColorChange()
 
         # set initial visibility for new elements container
@@ -175,6 +179,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         self.localExpansion = True
 
         self.recomputeEntity()
+        print("recompute tasks")
 
     # Update animation every tick
     def onTick(self):
@@ -243,7 +248,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     # Return the list of possible function names for this block
     # If inside a task and is a custom block, cannot contain task
     def getFunctionNames(self) -> list[str]:
-        return self.database.getDefinitionNames(self.model.getType(), self.model.isTask())
+        return self.database.getDefinitionNames(self.model.getType(), self.model.parent.isTask())
 
     def defineWidth(self) -> float:
         return self._pwidth(1)
@@ -403,5 +408,5 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         else:
             return None
         
-    def __repr__(self):
-        return self.model.getDefinition().id
+    def logMoreInfo(self):
+        return self.model.getFunctionName()
