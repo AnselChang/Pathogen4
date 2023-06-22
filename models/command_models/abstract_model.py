@@ -166,9 +166,12 @@ class AbstractModel(Generic[T1, T2]):
             return self
         return self.parent.getRootModel()
     
+    def isRootModel(self) -> bool:
+        return self.parent is None
+    
     def isSectionModel(self) -> bool:
         # root model
-        if self.parent is None:
+        if self.isRootModel():
             return False
         
         return self.parent.parent is None

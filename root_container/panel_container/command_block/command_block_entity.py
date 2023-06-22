@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from models.command_models.inserter_processor import InserterProcessor
+
 if TYPE_CHECKING:
     from command_creation.command_definition_database import CommandDefinitionDatabase
     from root_container.panel_container.command_block.command_inserter import CommandInserter
@@ -362,6 +364,9 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     def onStartDrag(self, mouse: tuple):
         self.startMouseY = mouse[1]
         self.dragOffset = 0
+
+        # cache flattened inserters
+        self.ip = InserterProcessor(self.model.getRootModel().ui)
 
     def onDrag(self, mouse: tuple):
         self.dragOffset = mouse[1] - self.startMouseY
