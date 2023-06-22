@@ -57,6 +57,7 @@ class InserterProcessor:
     def reset(self):
         self.inserters: list[InserterData] = []
         self.closestInserter: InserterData = None
+        self.inserterCandidates: list[CommandInserter] = []
 
     def process(self):        
         self.reset()
@@ -142,7 +143,7 @@ class InserterProcessor:
                 closestDistance = distance
 
         # if closest inserter is right next to current command, it doesn't do anything
-        if closestInserter is inserters[0 if direction == InserterProcessor._Direction.DOWN else -1]:
+        if closestInserter is inserters[0]:
             return None
 
         return closestInserter
@@ -169,11 +170,13 @@ class InserterProcessor:
         inserterCandidates: list[InserterData] = []
         if isCustom:
             if direction == InserterProcessor._Direction.UP:
-                inserterCandidates = self.inserters[:index+1]
+                inserterCandidates = self.inserters[index::-1]
             else:
                 inserterCandidates = self.inserters[index:]
         else:
             inserterCandidates = self._findUntilNonCustomInserter(index, direction)
+
+        self.inserterCandidates = [inserter.inserter for inserter in inserterCandidates]
 
         # return closest inserter to mouse
         return self._getClosestInserterToMouseFromList(inserterCandidates, mouseY, direction)

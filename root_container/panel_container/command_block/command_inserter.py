@@ -111,3 +111,4 @@ class CommandInserter(Entity, ICommandInserter):
             fc: FullContainer = self.fullModel.ui
             if fc.ip.getClosestInserter() is self:
                 pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)
+            
