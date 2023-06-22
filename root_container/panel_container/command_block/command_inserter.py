@@ -92,8 +92,10 @@ class CommandInserter(Entity, ICommandInserter):
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
         Y_MARGIN = 2
-        rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
-        
+        try:
+            rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
+        except:
+            raise Exception("error", self)
         color = [68, 208, 96]
 
         if self.hover.isHovering:

@@ -41,4 +41,5 @@ class CustomCommandBlockEntity(CommandBlockEntity):
         super().__init__(parent, model)
 
     def onDelete(self):
-        print("on delete")
+        self.model.delete()
+        self.getRootEntity().recomputeEntity()

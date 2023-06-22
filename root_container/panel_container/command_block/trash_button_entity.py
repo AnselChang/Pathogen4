@@ -28,7 +28,7 @@ class TrashEntity(Container):
         super().__init__(parent = parentHeader)
 
         state = ImageState(0, ImageID.TRASH_OFF, imageOnHoveredID = ImageID.TRASH_ON)
-        ImageEntity(self, state, onClick = onDelete)
+        ImageEntity(self, state, onClick = lambda mouse: onDelete())
 
     def defineCenter(self) -> tuple:
         return self._px(1) - self._awidth(20), self._py(0.5)

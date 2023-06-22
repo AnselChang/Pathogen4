@@ -148,6 +148,11 @@ class AbstractModel(Generic[T1, T2]):
 
         self.rebuildChildren()
 
+    # relocate self to be after model.
+    # Could be moved to anywhere in the tree (not necessarily sibling)
+    def moveThisAfter(self, model: AbstractModel | T2) -> None:
+        pass
+
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
 
@@ -188,9 +193,10 @@ class AbstractModel(Generic[T1, T2]):
     def delete(self) -> None:
         if self.parent is not None:
             self.parent.children.remove(self)
-            self.parent.rebuild()
+            self.parent.rebuildChildren()
         else:
             raise Exception("Cannot delete root model")
+        
     
 
     def getParentUI(self) -> Entity | ModelBasedEntity:

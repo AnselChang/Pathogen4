@@ -51,12 +51,11 @@ class InserterProcessor:
 
     def reset(self):
         self.inserters: list[InserterData] = []
-        self.closestInserter: CommandInserter = None
+        self.closestInserter: InserterData = None
 
     def process(self):        
         self.reset()
         self._generateFlattenedInserters(self.inserters, self.fullContainer)
-        print(self.inserters)
 
     # return an ordered list of inserters+ from top to bottom
     # exclude section inserters
@@ -87,7 +86,7 @@ class InserterProcessor:
     # return the inserter that is closest to the mouse
     # command is not custom, cannot be moved so that
     # it is rearranged with another non-custom command
-    def computeClosestInserter(self, command: CommandBlockEntity) -> CommandInserter:
+    def computeClosestInserter(self, command: CommandBlockEntity):
         y = command.CENTER_Y
         if command.dragOffset < 0:
             self.closestInserter = self._getClosestInserter(command, y, InserterProcessor._Direction.UP)
@@ -95,6 +94,9 @@ class InserterProcessor:
             self.closestInserter = self._getClosestInserter(command, y, InserterProcessor._Direction.DOWN)
 
     def getClosestInserter(self) -> CommandInserter:
+        return self.closestInserter.inserter if self.closestInserter is not None else None
+    
+    def getClosestInserterData(self) -> InserterData:
         return self.closestInserter
 
     # return a list of inserters up till the first non-custom command
@@ -123,13 +125,13 @@ class InserterProcessor:
 
         return inserters
 
-    def _getClosestInserterToMouseFromList(self, inserters: list[CommandInserter], mouseY: int, direction: InserterProcessor._Direction) -> CommandInserter:
+    def _getClosestInserterToMouseFromList(self, inserters: list[InserterData], mouseY: int, direction: InserterProcessor._Direction) -> CommandInserter:
         
         # find closest inserter to mouse
-        closestInserter: CommandInserter = inserters[0]
-        closestDistance: int = abs(mouseY - closestInserter.CENTER_Y)
+        closestInserter: InserterData = inserters[0]
+        closestDistance: int = abs(mouseY - closestInserter.inserter.CENTER_Y)
         for inserter in inserters[1:]:
-            distance = abs(mouseY - inserter.CENTER_Y)
+            distance = abs(mouseY - inserter.inserter.CENTER_Y)
             if distance < closestDistance:
                 closestInserter = inserter
                 closestDistance = distance
@@ -140,7 +142,7 @@ class InserterProcessor:
 
         return closestInserter
     
-    def _getClosestInserter(self, command: CommandBlockEntity, mouseY, direction: _Direction) -> CommandInserter:
+    def _getClosestInserter(self, command: CommandBlockEntity, mouseY, direction: _Direction) -> InserterData:
         
         def isInserterClosestToCommand(inserterData: InserterData) -> bool:
             if direction == InserterProcessor._Direction.UP:
@@ -168,8 +170,5 @@ class InserterProcessor:
         else:
             inserterCandidates = self._findUntilNonCustomInserter(index, direction)
 
-        # convert candidates to raw inserters
-        inserters: list[CommandInserter] = [inserterData.inserter for inserterData in inserterCandidates]
-
         # return closest inserter to mouse
-        return self._getClosestInserterToMouseFromList(inserters, mouseY, direction)
+        return self._getClosestInserterToMouseFromList(inserterCandidates, mouseY, direction)

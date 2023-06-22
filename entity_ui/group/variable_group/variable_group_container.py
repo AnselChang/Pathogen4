@@ -49,6 +49,8 @@ class VariableGroupContainer(Container, Generic[T], Observable):
         return self._awidth(margin) if self.isHorizontal else self._aheight(margin)
 
     def clear(self):
+        for vc in self._children:
+            self.entities.removeEntity(vc)
         self._children.clear()
 
     # Return the size of the VGC while setting the positions of the children

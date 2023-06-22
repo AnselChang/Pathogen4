@@ -376,6 +376,11 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
 
     def onStopDrag(self):
         self.dragOffset = 0
+
+        draggedToInserter = self.getRootEntity().ip.getClosestInserterData()
+        if draggedToInserter is not None:
+            print("Drag to", draggedToInserter)
+
         self.getRootEntity().ip.reset()
         self.recomputeEntity()
 
