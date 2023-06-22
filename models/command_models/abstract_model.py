@@ -151,8 +151,18 @@ class AbstractModel(Generic[T1, T2]):
     # relocate self to be after model.
     # Could be moved to anywhere in the tree (not necessarily sibling)
     def moveThisAfter(self, model: AbstractModel | T2) -> None:
-        pass
+        self.delete()
+        model.insertAfterThis(self)
 
+    # relocate self to be before model.
+    # Could be moved to anywhere in the tree (not necessarily sibling)
+    def moveThisBefore(self, model: AbstractModel | T2) -> None:
+        self.delete()
+        model.insertBeforeThis(self)
+
+    def moveThisInsideParent(self, parent: AbstractModel | T1) -> None:
+        self.delete()
+        parent.insertChildAtEnd(self)
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
 

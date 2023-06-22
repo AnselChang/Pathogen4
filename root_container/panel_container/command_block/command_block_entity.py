@@ -379,7 +379,13 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
 
         draggedToInserter = self.getRootEntity().ip.getClosestInserterData()
         if draggedToInserter is not None:
-            print("Drag to", draggedToInserter)
+            if draggedToInserter.after is not None:
+                self.model.moveThisBefore(draggedToInserter.after.model)
+            elif draggedToInserter.before is not None:
+                self.model.moveThisAfter(draggedToInserter.before.model)
+            else:
+                # Replace inserter with command
+                self.model.moveThisInsideParent(draggedToInserter.parentModel)
 
         self.getRootEntity().ip.reset()
         self.recomputeEntity()

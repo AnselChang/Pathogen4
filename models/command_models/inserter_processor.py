@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from entity_ui.group.variable_group.variable_container import VariableContainer
     from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
     from root_container.panel_container.command_block.command_inserter import CommandInserter
+    from models.command_models.abstract_model import AbstractModel
 
 
 """
@@ -20,7 +21,10 @@ of moving commands around to different inserters.
 """
 
 class InserterData:
-        def __init__(self, inserter: CommandInserter, before: CommandBlockEntity = None, after: CommandBlockEntity = None):
+        def __init__(self, inserter: CommandInserter,
+                     before: CommandBlockEntity = None,
+                     after: CommandBlockEntity = None,
+                     parentModel: AbstractModel = None):
             
             if not isinstance(inserter, ICommandInserter):
                 raise Exception("First argument must be a CommandInserter")
@@ -34,6 +38,7 @@ class InserterData:
             self.inserter = inserter
             self.before = before
             self.after = after
+            self.parentModel = parentModel
 
         # displayed [inserter] [before] [after]
         # id set to 0 if before/after is None
@@ -74,7 +79,7 @@ class InserterProcessor:
             after = children[i + 1].child if (i < len(children)-1) else None
 
             if isinstance(entity, ICommandInserter) and not mbe.model.isRootModel():
-                inserters.append(InserterData(entity, before, after))
+                inserters.append(InserterData(entity, before, after, mbe.model))
             elif isinstance(entity, ModelBasedEntity):
                 self._generateFlattenedInserters(inserters, entity)
 
