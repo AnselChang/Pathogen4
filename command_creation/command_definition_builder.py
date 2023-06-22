@@ -30,7 +30,7 @@ class CommandDefinitionBuilder:
         self.templateText = "// [Code template unspecified]"
 
         self.nonblockingEnabled = (type == CommandType.CUSTOM)
-        self.allowedInTask = (type == CommandType.CUSTOM)
+        self.allowedInTask = True
 
         # set to default color
         self.color = COMMAND_INFO[self.type].color

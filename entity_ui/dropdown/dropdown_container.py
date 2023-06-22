@@ -39,7 +39,8 @@ class DropdownContainer(Container, Observable):
             return
         
         if selectedText not in self.optionTexts:
-            raise Exception("Selected text not in option texts", selectedText, self.optionTexts)
+            selectedText = self.optionTexts[0]
+            print("WARNING: selected text not in option texts, defaulting to first option")
 
         self.selectedOptionText = selectedText
         self.otherOptions = [text for text in self.optionTexts if text != selectedText]
