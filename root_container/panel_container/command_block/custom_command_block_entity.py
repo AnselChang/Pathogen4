@@ -36,7 +36,7 @@ CustomCommands have two additonal features compared to regular commands
 
 class CustomCommandBlockEntity(CommandBlockEntity):
 
-    def __init__(self, parent: CommandBlockContainer, model: CommandModel):
+    def __init__(self, parent: Entity, model: CommandModel):
         
         super().__init__(parent, model)
 

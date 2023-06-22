@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from models.command_models.inserter_processor import InserterProcessor
+from root_container.panel_container.command_block.interfaces import ICommandBlock
 
 if TYPE_CHECKING:
     from command_creation.command_definition_database import CommandDefinitionDatabase
@@ -13,9 +13,7 @@ from data_structures.linked_list import LinkedList
 from entity_base.listeners.hover_listener import HoverLambda
 from entity_ui.group.variable_group.variable_container import VariableContainer
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
-from entity_ui.scrollbar.scrolling_content_container import ScrollingContentContainer
 from models.command_models.model_based_entity import ModelBasedEntity
-from root_container.panel_container.command_block.parameter_state import ParameterState
 from root_container.panel_container.element.overall.row_elements_container import RowElementsContainer
 from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
@@ -55,12 +53,12 @@ The WidgetEntities and pathAdapters hold the informatino for this specific insta
 Position calculation is offloaded to CommandBlockPosition
 """
 
-class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
+class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
 
     HIGHLIGHTED = None
 
 
-    def __init__(self, parent: CommandBlockContainer, model: CommandModel):
+    def __init__(self, parent: Entity, model: CommandModel):
         
         self.container = parent
         self.model = model
@@ -334,6 +332,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     def highlight(self):
 
         return
+        
 
         if self.isHighlighted():
             CommandBlockEntity.HIGHLIGHTED = None
@@ -366,16 +365,18 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         self.dragOffset = 0
 
         # cache flattened inserters
-        self.ip = InserterProcessor(self.model.getRootModel().ui)
+        self.getRootEntity().ip.process()
 
     def onDrag(self, mouse: tuple):
-        self.dragOffset = mouse[1] - self.startMouseY
-        print(self.dragOffset)
+        my = mouse[1]
+        self.dragOffset = my - self.startMouseY
         self.recomputeEntity()
+
+        self.getRootEntity().ip.computeClosestInserter(self)
 
     def onStopDrag(self):
         self.dragOffset = 0
-        print("on stop drag")
+        self.getRootEntity().ip.reset()
         self.recomputeEntity()
 
     # If dragging, put dragged command on top

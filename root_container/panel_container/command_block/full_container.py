@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from entity_base.container_entity import Container
 from entity_base.entity import Entity
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
+from models.command_models.inserter_processor import InserterProcessor
 from models.command_models.model_based_entity import ModelBasedEntity
 
 if TYPE_CHECKING:
@@ -22,6 +23,8 @@ class FullContainer(Container, ModelBasedEntity):
             innerMargin = 1,
             outerMargin = 5
             )
+        
+        self.ip = InserterProcessor(self)
 
     def onAddChild(self, child: Entity):
         if not isinstance(child, VariableGroupContainer):

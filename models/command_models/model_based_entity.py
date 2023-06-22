@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from root_container.panel_container.command_block.inserter_interface import ICommandInserter
-
 if TYPE_CHECKING:
     from models.command_models.abstract_model import AbstractModel
     from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
@@ -22,6 +20,9 @@ class ModelBasedEntity:
 
     def __init__(self, model: AbstractModel):
         self.model = model
+
+    def getRootEntity(self) -> FullContainer:
+        return self.model.getRootModel().getExistingUI()
 
     def clearChildUI(self) -> None:
         self.getChildVGC().clear()

@@ -5,8 +5,10 @@ if TYPE_CHECKING:
     from entity_ui.group.variable_group.variable_container import VariableContainer
     from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
     from models.command_models.full_model import FullModel
+    from root_container.panel_container.command_block.full_container import FullContainer
 
-from root_container.panel_container.command_block.inserter_interface import ICommandInserter
+
+from root_container.panel_container.command_block.interfaces import ICommandInserter
 
 from entity_base.entity import Entity
 from entity_base.listeners.hover_listener import HoverLambda
@@ -92,9 +94,9 @@ class CommandInserter(Entity, ICommandInserter):
         Y_MARGIN = 2
         rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
         
+        color = [68, 208, 96]
+
         if self.hover.isHovering:
-            
-            color = [68, 208, 96]
 
             # draw shaded area
             pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)
@@ -103,4 +105,7 @@ class CommandInserter(Entity, ICommandInserter):
             x,y = self.CENTER_X, self.CENTER_Y
             pygame.draw.rect(screen, [255,255,255], [x - self.THICK, y - self.THIN, self.THICK*2, self.THIN*2])
             pygame.draw.rect(screen, [255,255,255], [x - self.THIN, y - self.THICK, self.THIN*2, self.THICK*2])
-    
+        else:
+            fc: FullContainer = self.fullModel.ui
+            if fc.ip.getClosestInserter() is self:
+                pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)
