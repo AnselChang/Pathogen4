@@ -56,6 +56,7 @@ class InserterProcessor:
     def process(self):        
         self.reset()
         self._generateFlattenedInserters(self.inserters, self.fullContainer)
+        print(self.inserters)
 
     # return an ordered list of inserters+ from top to bottom
     # exclude section inserters
@@ -114,7 +115,7 @@ class InserterProcessor:
             inserter = self.inserters[index]
             command = inserter.after if direction == InserterProcessor._Direction.UP else inserter.before
 
-            if command.getCommandType() != CommandType.CUSTOM:
+            if command is not None and command.getCommandType() != CommandType.CUSTOM:
                 break
             
             inserters.append(inserter)
@@ -122,7 +123,8 @@ class InserterProcessor:
 
         return inserters
 
-    def _getClosestInserterToMouseFromList(self, inserters: list[CommandInserter], mouseY: int) -> CommandInserter:
+    def _getClosestInserterToMouseFromList(self, inserters: list[CommandInserter], mouseY: int, direction: InserterProcessor._Direction) -> CommandInserter:
+        
         # find closest inserter to mouse
         closestInserter: CommandInserter = inserters[0]
         closestDistance: int = abs(mouseY - closestInserter.CENTER_Y)
@@ -131,6 +133,11 @@ class InserterProcessor:
             if distance < closestDistance:
                 closestInserter = inserter
                 closestDistance = distance
+
+        # if closest inserter is right next to current command, it doesn't do anything
+        if closestInserter is inserters[0 if direction == InserterProcessor._Direction.DOWN else -1]:
+            return None
+
         return closestInserter
     
     def _getClosestInserter(self, command: CommandBlockEntity, mouseY, direction: _Direction) -> CommandInserter:
@@ -165,4 +172,4 @@ class InserterProcessor:
         inserters: list[CommandInserter] = [inserterData.inserter for inserterData in inserterCandidates]
 
         # return closest inserter to mouse
-        return self._getClosestInserterToMouseFromList(inserters, mouseY)
+        return self._getClosestInserterToMouseFromList(inserters, mouseY, direction)
