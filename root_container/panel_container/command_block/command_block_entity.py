@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from root_container.panel_container.command_block.interfaces import ICommandBlock
+
 if TYPE_CHECKING:
     from command_creation.command_definition_database import CommandDefinitionDatabase
-    from root_container.panel_container.command_block.command_block_container import CommandBlockContainer
-    from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
     from root_container.panel_container.command_block.command_inserter import CommandInserter
     from models.command_models.command_model import CommandModel
     
@@ -13,9 +13,7 @@ from data_structures.linked_list import LinkedList
 from entity_base.listeners.hover_listener import HoverLambda
 from entity_ui.group.variable_group.variable_container import VariableContainer
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
-from entity_ui.scrollbar.scrolling_content_container import ScrollingContentContainer
 from models.command_models.model_based_entity import ModelBasedEntity
-from root_container.panel_container.command_block.parameter_state import ParameterState
 from root_container.panel_container.element.overall.row_elements_container import RowElementsContainer
 from root_container.panel_container.element.overall.task_commands_container import TaskCommandsContainer
 
@@ -55,12 +53,12 @@ The WidgetEntities and pathAdapters hold the informatino for this specific insta
 Position calculation is offloaded to CommandBlockPosition
 """
 
-class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
+class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
 
     HIGHLIGHTED = None
 
 
-    def __init__(self, parent: CommandBlockContainer, model: CommandModel):
+    def __init__(self, parent: Entity, model: CommandModel):
         
         self.container = parent
         self.model = model
@@ -108,7 +106,8 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
 
     def getChildVGC(self) -> VariableGroupContainer:
         if not isinstance(self.elementsContainer, TaskCommandsContainer):
-            raise Exception("CommandBlockEntity.getChildVGC() called on non-task command block")
+            return None
+        
         return self.elementsContainer.vgc
 
     # update components based on new command definition
@@ -272,6 +271,9 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
         height = self.ACTUAL_COLLAPSED_HEIGHT + (self.ACTUAL_EXPANDED_HEIGHT - self.ACTUAL_COLLAPSED_HEIGHT) * ratio
         return height
     
+    def defineCenterY(self):
+        return self._py(0.5) + self.dragOffset
+    
     def getPercentExpanded(self) -> float:
         return self.animatedExpansion.get()
         
@@ -330,6 +332,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
     def highlight(self):
 
         return
+        
 
         if self.isHighlighted():
             CommandBlockEntity.HIGHLIGHTED = None
@@ -358,19 +361,41 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
             CommandBlockEntity.HIGHLIGHTED = None
 
     def onStartDrag(self, mouse: tuple):
-        self.mouseOffset = self.CENTER_Y - mouse[1]
-        self.dragPosition = mouse[1] + self.mouseOffset
+        self.startMouseY = mouse[1]
+        self.dragOffset = 0
 
-        # cache the existing inserters
-        #self.handler.updateActiveCommandInserters()
-
-    def onStopDrag(self):
-        self.dragPosition = None
-        self.recomputeEntity()
+        # cache flattened inserters
+        self.getRootEntity().ip.process()
 
     def onDrag(self, mouse: tuple):
-        self.dragPosition = mouse[1] + self.mouseOffset
-        pass
+        my = mouse[1]
+        self.dragOffset = my - self.startMouseY
+        self.recomputeEntity()
+
+        self.getRootEntity().ip.computeClosestInserter(self)
+
+    def onStopDrag(self):
+        self.dragOffset = 0
+
+        draggedToInserter = self.getRootEntity().ip.getClosestInserterData()
+        if draggedToInserter is not None:
+            if draggedToInserter.after is not None:
+                self.model.moveThisBefore(draggedToInserter.after.model)
+            elif draggedToInserter.before is not None:
+                self.model.moveThisAfter(draggedToInserter.before.model)
+            else:
+                # Replace inserter with command
+                self.model.moveThisInsideParent(draggedToInserter.parentModel)
+
+        self.getRootEntity().ip.reset()
+        self.recomputeEntity()
+
+    # If dragging, put dragged command on top
+    def drawOrderTiebreaker(self) -> float:
+        if self.drag.isDragging:
+            return 0
+        else:
+            return None
 
     def getColor(self) -> tuple:
         r = self.colorR.get()
@@ -401,12 +426,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity):
 
     def toString(self) -> str:
         return "Command Block Entity"
-    
-    def defineCenterY(self):
-        if self.drag.isDragging:
-            return self.dragPosition
-        else:
-            return None
         
     def logMoreInfo(self):
         return self.model.getFunctionName()

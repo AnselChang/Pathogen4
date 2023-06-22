@@ -36,9 +36,10 @@ CustomCommands have two additonal features compared to regular commands
 
 class CustomCommandBlockEntity(CommandBlockEntity):
 
-    def __init__(self, parent: CommandBlockContainer, model: CommandModel):
+    def __init__(self, parent: Entity, model: CommandModel):
         
         super().__init__(parent, model)
 
     def onDelete(self):
-        print("on delete")
+        self.model.delete()
+        self.getRootEntity().recomputeEntity()

@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from entity_ui.group.variable_group.variable_container import VariableContainer
-    from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
     from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
     from models.command_models.full_model import FullModel
+    from root_container.panel_container.command_block.full_container import FullContainer
 
+
+from root_container.panel_container.command_block.interfaces import ICommandInserter
 
 from entity_base.entity import Entity
 from entity_base.listeners.hover_listener import HoverLambda
@@ -34,7 +35,7 @@ Appears between each command
 A "plus" button that, when clicked, inserts a custom command there
 """
 
-class CommandInserter(Entity):
+class CommandInserter(Entity, ICommandInserter):
 
     def __init__(self, parent: VariableContainer, fullModel: FullModel, onInsert = lambda: None, isFirst: bool = False):
         
@@ -91,11 +92,13 @@ class CommandInserter(Entity):
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
         Y_MARGIN = 2
-        rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
-        
+        try:
+            rect = [self.LEFT_X, self.TOP_Y + Y_MARGIN, self.WIDTH, self.HEIGHT - Y_MARGIN*2]
+        except:
+            raise Exception("error", self)
+        color = [68, 208, 96]
+
         if self.hover.isHovering:
-            
-            color = [68, 208, 96]
 
             # draw shaded area
             pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)
@@ -104,4 +107,8 @@ class CommandInserter(Entity):
             x,y = self.CENTER_X, self.CENTER_Y
             pygame.draw.rect(screen, [255,255,255], [x - self.THICK, y - self.THIN, self.THICK*2, self.THIN*2])
             pygame.draw.rect(screen, [255,255,255], [x - self.THIN, y - self.THICK, self.THIN*2, self.THICK*2])
-    
+        else:
+            fc: FullContainer = self.fullModel.ui
+            if fc.ip.getClosestInserter() is self:
+                pygame.draw.rect(screen, color, rect, border_radius = Constants.CORNER_RADIUS)
+            

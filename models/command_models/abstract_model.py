@@ -148,6 +148,21 @@ class AbstractModel(Generic[T1, T2]):
 
         self.rebuildChildren()
 
+    # relocate self to be after model.
+    # Could be moved to anywhere in the tree (not necessarily sibling)
+    def moveThisAfter(self, model: AbstractModel | T2) -> None:
+        self.delete()
+        model.insertAfterThis(self)
+
+    # relocate self to be before model.
+    # Could be moved to anywhere in the tree (not necessarily sibling)
+    def moveThisBefore(self, model: AbstractModel | T2) -> None:
+        self.delete()
+        model.insertBeforeThis(self)
+
+    def moveThisInsideParent(self, parent: AbstractModel | T1) -> None:
+        self.delete()
+        parent.insertChildAtEnd(self)
 
     def onInserterClicked(self, elementBeforeInserter: AbstractModel):
 
@@ -166,6 +181,16 @@ class AbstractModel(Generic[T1, T2]):
             return self
         return self.parent.getRootModel()
     
+    def isRootModel(self) -> bool:
+        return self.parent is None
+    
+    def isSectionModel(self) -> bool:
+        # root model
+        if self.isRootModel():
+            return False
+        
+        return self.parent.parent is None
+    
     def createInserterUI(self, elementBeforeInserter: AbstractModel) -> CommandInserter:
         return CommandInserter(None, self.getRootModel(), lambda: self.onInserterClicked(elementBeforeInserter), elementBeforeInserter is None)
     
@@ -178,9 +203,10 @@ class AbstractModel(Generic[T1, T2]):
     def delete(self) -> None:
         if self.parent is not None:
             self.parent.children.remove(self)
-            self.parent.rebuild()
+            self.parent.rebuildChildren()
         else:
             raise Exception("Cannot delete root model")
+        
     
 
     def getParentUI(self) -> Entity | ModelBasedEntity:

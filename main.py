@@ -70,11 +70,7 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: 
         elif cmd == "model":
             model.tree()
         elif cmd == "ui":
-            model.getExistingUI().tree(verbose=True)
-        elif cmd == "e":
-            print([e for e in entities.entities if instanceOfClasses(e, CommandInserter)])
-
-
+            model.getExistingUI().tree(verbose=False)
 
 def main():
 

@@ -16,12 +16,13 @@ def _traverseEntities(current: entity.Entity, order: TraversalOrder) -> Iterator
     if order == TraversalOrder.PREFIX:
         yield current
 
-    current._children.sort(
+    sortedChildren = sorted(
+        current._children,
         key = lambda entity: (entity.drawOrder, 0 if entity.drawOrderTiebreaker() is None else (-entity.drawOrderTiebreaker())),
         reverse = (order == TraversalOrder.PREFIX)
     )
 
-    for child in current._children:
+    for child in sortedChildren:
         yield from _traverseEntities(child, order)
 
     if order == TraversalOrder.POSTFIX:
