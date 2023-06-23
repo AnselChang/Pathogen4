@@ -150,7 +150,7 @@ class PathNodeEntity(AbstractCircleEntity, AdapterInterface, PathElement[PathSeg
         self.adapter.set(PathAttributeID.THETA2, end, formatDegrees(end, 1))
 
         direction = deltaInHeading(start, end)
-        self.adapter.setIconStateID(TurnDirection.RIGHT if direction >= 0 else TurnDirection.LEFT)
+        self.adapter.setIconStateID(TurnDirection.LEFT if direction >= 0 else TurnDirection.RIGHT)
 
         self.adapter.setTurnEnabled(self.isTurnEnabled())
         self.recomputeEntity()
