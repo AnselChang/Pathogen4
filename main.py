@@ -71,6 +71,8 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: 
             model.tree()
         elif cmd == "ui":
             model.getExistingUI().tree(verbose=False)
+        elif cmd == "cmd":
+            print([e for e in entities.entities if isinstance(e, CommandBlockEntity)])
 
 def main():
 

@@ -41,24 +41,31 @@ class CommandModel(AbstractModel, Observer):
         # subscribe to changes in the database
         self.database.subscribe(self, onNotify = self.onCommandDefinitionChange)
 
+        self.adapter.subscribe(self, onNotify = self.onAdapterChange)
+
         # For turn commands: if turn is enabled/disabled, command is shown/hidden
         if self.adapter.type == CommandType.TURN:
             self.adapter.subscribe(self, id = NotifyType.TURN_ENABLE_TOGGLED, onNotify = self.onTurnEnableToggled)
+            self.onTurnEnableToggled(recompute = False)
 
-        #self.onTurnEnableToggled()
+    def onAdapterChange(self):
+        if self.show:
+            self.ui.recomputeEntity()
 
     def onCommandDefinitionChange(self):
         print("CommandModel: onCommandDefinitionChange")
 
-    def onTurnEnableToggled(self):
+    def onTurnEnableToggled(self, recompute: bool = True):
         print("CommandModel: onTurnEnableToggled")
         commandEntity: CommandBlockEntity = self.ui
 
         if self.adapter.turnEnabled:
-            commandEntity.makeCommandVisible()
+            self.showUI()
         else:
-            commandEntity.makeCommandInvisible()
-        commandEntity.recomputeEntity()
+            self.hideUI()
+
+        if recompute:
+            commandEntity.recomputeEntity()
 
     def isHighlighted(self):
         return False

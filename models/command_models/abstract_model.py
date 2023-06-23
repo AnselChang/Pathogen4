@@ -34,6 +34,19 @@ class AbstractModel(Generic[T1, T2]):
         self.children: list[AbstractModel | T2] = []
 
         self.ui = None
+        self.show = True
+
+    def showUI(self):
+        self.show = True
+        if self.parent is not None:
+            self.parent.rebuildChildren()
+            print("show")
+
+    def hideUI(self):
+        self.show = False
+        if self.parent is not None:
+            self.parent.rebuildChildren()
+            print("hide")
 
     def getName(self):
         return "AbstractModel"
@@ -273,6 +286,10 @@ class AbstractModel(Generic[T1, T2]):
         self.ui.addChildUI(self.createInserterUI(None))
 
         for child in self.children:
+
+            # command is hidden, don't show it
+            if not child.show:
+                continue
 
             assert(child.getExistingUI() is not None)
 

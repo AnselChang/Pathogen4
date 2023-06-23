@@ -109,33 +109,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
             return None
         
         return self.elementsContainer.vgc
-
-    # update components based on new command definition
-    def onCommandDefinitionChange(self):
-
-        # not the same type. doesn't even affect function dropdown
-        if self.model.getType() != self.database.lastUpdatedCommandType:
-            return
-        
-        # Update function dropdown
-        self.headerEntity.functionName.onDatabaseChange()
-
-        # If id is not command's id, this is not applicable as there are no relevant changes
-        if self.definitionID != self.database.lastUpdatedCommandID:
-            return
-        
-        print("change")
-        
-        # only commands consisting of widgets and readouts can have their definition changed
-        assert(isinstance(self.elementsContainer, RowElementsContainer))
-
-        self.onColorChange()
-
-        # update container with new database info
-        container: RowElementsContainer = self.elementsContainer
-        container.onDefinitionChange()
-
-        self.recomputeEntity()
     
     # call whenever database command color changes
     def onColorChange(self):
@@ -205,25 +178,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
             self.animatedExpansion.tick()
 
             self.recomputeEntity()
-
-    def makeCommandVisible(self):
-        self.setVisible()
-
-        previousInserter = self.model.getPreviousUI()
-        if previousInserter is None:
-            raise Exception("CommandBlockEntity.makeCommandVisible() called on command with no previous inserter")
-            
-        previousInserter.setVisible()
-
-
-    def makeCommandInvisible(self):
-        self.setInvisible()
-
-        previousInserter = self.model.getPreviousUI()
-        if previousInserter is None:
-            raise Exception("CommandBlockEntity.makeCommandInvisible() called on command with no next inserter")
-        
-        previousInserter.setInvisible()
 
     # how much the widgets stretch the command by. return the largest one
     def getElementStretch(self) -> int:
