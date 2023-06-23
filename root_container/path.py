@@ -182,9 +182,10 @@ class Path(Observer):
         
         self.pathList.remove(segment)
         self.entities.removeEntity(segment)
+
+        segmentCommand = self.linker.getCommandFromPath(segment)
+        segmentCommand.delete()
         
-
-
         # the other segment is the only node/segment affected by this
         if otherSegment is not None: # it's none if there are only two nodes total and remove last one
             otherSegment.updateAdapter()
