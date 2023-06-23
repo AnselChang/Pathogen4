@@ -24,23 +24,30 @@ class CommandModel(AbstractModel, Observer):
 
     def __init__(self, pathAdapter: 'PathAdapter'):
 
+        super().__init__()
+
         self.database = CommandDefinitionDatabase.getInstance()
-        self.adapter = pathAdapter
-        self.type = pathAdapter.type
+        # subscribe to changes in the database
+        self.database.subscribe(self, onNotify = self.onCommandDefinitionChange)
+
+        self.adapter: PathAdapter = None
+        self.setNewAdapter(pathAdapter)
 
         # initialize default command definition to be the first one
-        self._definitionID = self.database.getDefinitionByIndex(self.type).id
+        self._definitionID = self.database.getDefinitionByIndex(self.adapter.type).id
         self.parameters = ParameterState(self)
 
-        super().__init__()
+        
 
         # if None, use template text in definition.
         # If not none, means there's a text editor in command and templateText is editable
         self.templateText = None 
 
-        # subscribe to changes in the database
-        self.database.subscribe(self, onNotify = self.onCommandDefinitionChange)
-
+    def setNewAdapter(self, newAdapter: 'PathAdapter'):
+        if self.adapter is not None:
+            self.adapter.unsubscribeAll()
+        
+        self.adapter = newAdapter
         self.adapter.subscribe(self, onNotify = self.onAdapterChange)
 
         # For turn commands: if turn is enabled/disabled, command is shown/hidden
@@ -71,7 +78,7 @@ class CommandModel(AbstractModel, Observer):
         return False
     
     def getCommandType(self) -> CommandType:
-        return self.type
+        return self.adapter.type
 
     def _createChild(self) -> 'CommandModel':
         return CommandModel(NullPathAdapter())
@@ -81,22 +88,19 @@ class CommandModel(AbstractModel, Observer):
         return self.isTask()
     
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:
-        if self.getType() == CommandType.CUSTOM:
+        if self.getCommandType() == CommandType.CUSTOM:
             return CustomCommandBlockEntity(None, self)
         else:
             return CommandBlockEntity(None, self)
         
     def getName(self):
-        return f"{self.type} {self.getFunctionName()}"
+        return f"{self.getCommandType()} {self.getFunctionName()}"
 
     def getDefinition(self) -> CommandDefinition:
-        return self.database.getDefinitionByID(self.type, self._definitionID)
+        return self.database.getDefinitionByID(self.getCommandType(), self._definitionID)
     
     def getParameters(self) -> ParameterState:
         return self.parameters
-
-    def getType(self) -> CommandType:
-        return self.type
 
     def getAdapter(self) -> PathAdapter:
         return self.adapter
@@ -126,4 +130,4 @@ class CommandModel(AbstractModel, Observer):
         return self.getDefinition().name
     
     def getFunctionNameOptions(self):
-        return self.database.getDefinitionNames(self.type)
+        return self.database.getDefinitionNames(self.getCommandType())

@@ -73,7 +73,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         # controls height animation
         self.animatedExpansion = MotionProfile(0, speed = 0.4)
         # whether to expand by default, ignoring global flags
-        self.localExpansion = self.model.getType() == CommandType.CUSTOM
+        self.localExpansion = self.model.getCommandType() == CommandType.CUSTOM
 
         r,g,b = self.model.getDefinition().color
         self.colorR = MotionProfile(r, speed = 0.2)
@@ -100,7 +100,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
 
         self.elementsVisible = True
 
-        self.headerEntity = CommandBlockHeader(self, self.model.getAdapter(), self.model.getType() == CommandType.CUSTOM)
+        self.headerEntity = CommandBlockHeader(self, self.model.getAdapter(), self.model.getCommandType() == CommandType.CUSTOM)
 
         self.elementsContainer = createElementsContainer(self, self.model.getDefinition(), self.model.getAdapter())
 
@@ -123,7 +123,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
 
         # First, get the definition for the new function
         functionName = self.headerEntity.functionName.getFunctionName()
-        definitionID = self.database.getDefinitionIDByName(self.model.getType(), functionName)
+        definitionID = self.database.getDefinitionIDByName(self.model.getCommandType(), functionName)
         self.model.setDefinitionID(definitionID)
 
         # Delete old elements container and assign new one
@@ -201,7 +201,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
     # Return the list of possible function names for this block
     # If inside a task and is a custom block, cannot contain task
     def getFunctionNames(self) -> list[str]:
-        return self.database.getDefinitionNames(self.model.getType(), self.model.parent.isTask())
+        return self.database.getDefinitionNames(self.model.getCommandType(), self.model.parent.isTask())
 
     def defineWidth(self) -> float:
         return self._pwidth(1)
@@ -238,7 +238,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         return self.animatedExpansion.get() == 1
     
     def getCommandType(self) -> CommandType:
-        return self.model.getType()
+        return self.model.getCommandType()
     
     # Set the local expansion of the command without modifying global expansion flags
     def setLocalExpansion(self, isExpanded):
@@ -250,7 +250,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         self.recomputeEntity()
 
     def onTurnEnableToggled(self):
-        if self.model.getType() == CommandType.TURN:
+        if self.model.getCommandType() == CommandType.TURN:
             turnAdapter: TurnAdapter = self.model.getAdapter()
             if turnAdapter.isTurnEnabled():
                 self.setVisible(recompute = False)
