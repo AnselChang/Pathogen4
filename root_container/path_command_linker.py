@@ -18,7 +18,7 @@ class PathCommandLinker:
 
     def __init__(self):
         self.nodeToCommand: dict[PathNodeEntity, CommandModel] = {}
-        self.segmentToCommands: dict[PathSegmentEntity, list[CommandModel]] = {}
+        self.segmentToCommand: dict[PathSegmentEntity, CommandModel] = {}
 
         self.commandToPath: dict[CommandModel, PathElement] = {}
 
@@ -28,45 +28,17 @@ class PathCommandLinker:
 
     def linkSegment(self, segment: PathElement, command: CommandModel):
 
-        if segment not in self.segmentToCommands:
-            self.segmentToCommands[segment] = []
+        if segment not in self.segmentToCommand:
+            self.segmentToCommand[segment] = []
 
-        self.segmentToCommands[segment].append(command)
+        self.segmentToCommand[segment] = command
         self.commandToPath[command] = segment
-
-    def _getCommandTypeFromSegmentType(self, segmentType: PathSegmentType) -> CommandType:
-        if segmentType == PathSegmentType.STRAIGHT:
-            return CommandType.STRAIGHT
-        elif segmentType == PathSegmentType.ARC:
-            return CommandType.ARC
-        elif segmentType == PathSegmentType.BEZIER:
-            return CommandType.BEZIER
-        else:
-            raise Exception("PathCommandLinker: Unknown segment type " + str(segmentType))
 
     def getCommandFromPath(self, nodeOrSegment: PathElement) -> CommandModel:
         if isinstance(nodeOrSegment, PathNodeEntity):
             return self.nodeToCommand[nodeOrSegment]
         elif isinstance(nodeOrSegment, PathSegmentEntity):
-            segment: PathSegmentEntity = nodeOrSegment
-            pathType = segment.getSegmentType()
-            for command in self.segmentToCommands[segment]:
-                if command.getCommandType() == self._getCommandTypeFromSegmentType(pathType):
-                    return command
-            raise Exception("PathCommandLinker: No command found for segment " + str(segment))
-    
-    def getCommandFromSegmentAndType(self, segment: PathSegmentEntity, pathType: PathSegmentType) -> CommandModel:
-        targetCommandType = self._getCommandTypeFromSegmentType(pathType)
-        for command in self.segmentToCommands[segment]:
-            if command.getCommandType() == targetCommandType:
-                return command
-        raise Exception("PathCommandLinker: No command found for segment " + str(segment) + " and type " + str(pathType))
-
-    def getLastCommandFromSegment(self, segment: PathSegmentEntity) -> CommandModel:
-        return self.segmentToCommands[segment][-1]
-    
-    def getCommandsFromSegment(self, segment: PathSegmentEntity) -> list[CommandModel]:
-        return self.segmentToCommands[segment]
+            return self.segmentToCommand[nodeOrSegment]
 
     def getPathFromCommand(self, command: CommandModel) -> PathElement:
         return self.commandToPath[command]
@@ -77,7 +49,6 @@ class PathCommandLinker:
         del self.commandToPath[command]
 
     def deleteSegment(self, segment: PathSegmentEntity):
-        commands = self.segmentToCommands[segment]
-        for command in commands:
-            del self.commandToPath[command]
-        del self.segmentToCommands[segment]
+        command = self.segmentToCommand[segment]
+        del self.commandToPath[command]
+        del self.segmentToCommand[segment]

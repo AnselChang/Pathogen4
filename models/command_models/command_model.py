@@ -37,8 +37,6 @@ class CommandModel(AbstractModel, Observer):
         self._definitionID = self.database.getDefinitionByIndex(self.adapter.type).id
         self.parameters = ParameterState(self)
 
-        
-
         # if None, use template text in definition.
         # If not none, means there's a text editor in command and templateText is editable
         self.templateText = None 
@@ -97,6 +95,7 @@ class CommandModel(AbstractModel, Observer):
         return f"{self.getCommandType()} {self.getFunctionName()}"
 
     def getDefinition(self) -> CommandDefinition:
+        print("getdef", self.getCommandType(), self.database.getDefinitionNames(self.getCommandType()))
         return self.database.getDefinitionByID(self.getCommandType(), self._definitionID)
     
     def getParameters(self) -> ParameterState:
