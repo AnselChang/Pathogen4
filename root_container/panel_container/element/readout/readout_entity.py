@@ -34,7 +34,6 @@ class ReadoutEntity(ElementContainer, Observer):
 
         self.definition = readoutDefinition
         self.pathAdapter = pathAdapter
-        self.pathAdapter.subscribe(self, onNotify = self.recomputeEntity)
 
         super().__init__(parent, parentCommand)
         
