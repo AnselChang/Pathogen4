@@ -65,7 +65,12 @@ class ScrollbarEntity(Entity, Observable):
         return max(0, contentHeight - self.scrollbarContainer.HEIGHT)
 
     def onDrag(self, mouse: tuple):
-        newYOffset = self.startOffsetY + (mouse[1] - self.mouseStartY)
+
+        mouseDelta = (mouse[1] - self.mouseStartY)
+        ratio = mouseDelta / (self._py(1) - self.HEIGHT)
+
+        maxOffset = self.getMaxOffset(self.contentHeight)
+        newYOffset = self.startOffsetY + ratio * maxOffset
 
         newYOffset = max(0, newYOffset)
 
