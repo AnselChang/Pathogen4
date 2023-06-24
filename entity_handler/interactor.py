@@ -330,12 +330,13 @@ class Interactor:
 
     # callback for when mousewheel used.
     # Send callback to hovered entity
-    def onMouseWheel(self, offset: int):
+    def onMouseWheel(self, offset: int, mouseRef):
         if self.hoveredEntity is not None:
-            self._onMouseWheel(self.hoveredEntity, offset)
+            self._onMouseWheel(self.hoveredEntity, offset, mouseRef)
 
-    def _onMouseWheel(self, entity: Entity, offset: int):
+    def _onMouseWheel(self, entity: Entity, offset: int, mouseRef):
         if entity.mousewheel is not None:
+            entity.mousewheel.mouseRef = mouseRef
             handled: bool = entity.mousewheel.onMousewheel(offset)
 
             if handled:
@@ -343,4 +344,4 @@ class Interactor:
         
         # otherwise, defer to parent
         if entity._parent is not None:
-            self._onMouseWheel(entity._parent, offset)
+            self._onMouseWheel(entity._parent, offset, mouseRef)

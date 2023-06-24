@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from data_structures.observer import Observer
+from entity_base.listeners.mousewheel_listener import MousewheelLambda
 if TYPE_CHECKING:
     from root_container.path import Path
 
@@ -37,15 +38,18 @@ class FieldContainer(entity.Entity, Observer):
                               FonStopDrag = self.onStopDrag
                               ),
             click = ClickLambda(self, FonRightClick = self.onRightClick),
+            mousewheel = MousewheelLambda(self, FonMousewheel = self.onMousewheel),
             drawOrder = DrawOrder.FIELD_BACKGROUND)
         self.fieldTransform = fieldTransform
 
         # Whenever field is dragged, update entities on field
         self.fieldTransform.subscribe(self, onNotify = self.recomputeEntity)
 
-
     def initPath(self, path: Path):
         self.path = path
+
+    def onMousewheel(self, offset: int) -> bool:
+        self.fieldTransform.changeZoom(self.mousewheel.mouseRef, offset * 0.01)
 
     def defineTopLeft(self) -> tuple:
         return 0, 0

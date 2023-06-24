@@ -11,6 +11,8 @@ class MousewheelListener(ABC):
     def __init__(self, entity):
         self.entity = entity
 
+        self.mouseRef = None
+
     # return true if handled by entity
     @abstractmethod
     def onMousewheel(self, offset):
