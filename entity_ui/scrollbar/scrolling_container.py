@@ -19,6 +19,7 @@ and pass in scrollingContainer.getContainer() as parent
 
 from entity_base.container_entity import Container
 from entity_base.entity import Entity
+from entity_base.listeners.mousewheel_listener import MousewheelLambda
 from entity_ui.scrollbar.moving_scrolling_container import MovingScrollingContainer
 from entity_ui.scrollbar.scrollbar_container import ScrollbarContainer
 
@@ -27,7 +28,9 @@ class ScrollingContainer(Container):
     
     def __init__(self, parent: Entity):
 
-        super().__init__(parent)
+        super().__init__(parent,
+            mousewheel = MousewheelLambda(self, FonMousewheel = self.onMousewheel)  
+        )
 
         self.SCROLLBAR_WIDTH = 13 # in relative pixels
         self.yOffset = 0 # in relative pixels, 0 means from the top
@@ -53,3 +56,7 @@ class ScrollingContainer(Container):
     def setYOffset(self, newYOffset):
         self.yOffset = newYOffset
         self.recomputeEntity()
+
+    def onMousewheel(self, offset) -> bool:
+        self.scrollbarContainer.scrollbarEntity.onMousewheel(offset)
+        return True

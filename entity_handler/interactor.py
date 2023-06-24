@@ -327,3 +327,20 @@ class Interactor:
 
         # Draw multiselect box
         self.box.draw(screen)
+
+    # callback for when mousewheel used.
+    # Send callback to hovered entity
+    def onMouseWheel(self, offset: int):
+        if self.hoveredEntity is not None:
+            self._onMouseWheel(self.hoveredEntity, offset)
+
+    def _onMouseWheel(self, entity: Entity, offset: int):
+        if entity.mousewheel is not None:
+            handled: bool = entity.mousewheel.onMousewheel(offset)
+
+            if handled:
+                return
+        
+        # otherwise, defer to parent
+        if entity._parent is not None:
+            self._onMouseWheel(entity._parent, offset)

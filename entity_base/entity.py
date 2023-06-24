@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 
 from common.draw_order import DrawOrder
+from entity_base.listeners.mousewheel_listener import MousewheelListener
 
 if TYPE_CHECKING:
     from entity_handler.entity_manager import EntityManager
@@ -69,6 +70,7 @@ class Entity(ABC, Observable):
                  tick: TickListener = None,
                  hover: HoverListener = None,
                  key: KeyListener = None,
+                 mousewheel: MousewheelListener = None,
                  drawOrder: DrawOrder = 0,
                  initiallyVisible: bool = True,
                  recomputeWhenInvisible: bool = False,
@@ -83,6 +85,7 @@ class Entity(ABC, Observable):
         self.tick = tick
         self.hover = hover
         self.key = key
+        self.mousewheel = mousewheel
         self._LOCAL_VISIBLE = initiallyVisible
         self.recomputeWhenInvisible = recomputeWhenInvisible
 

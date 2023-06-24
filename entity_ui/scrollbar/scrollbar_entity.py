@@ -64,6 +64,16 @@ class ScrollbarEntity(Entity, Observable):
     def getMaxOffset(self, contentHeight):
         return max(0, contentHeight - self.scrollbarContainer.HEIGHT)
 
+
+    def boundYOffset(self, newYOffset) -> float:
+
+        newYOffset = max(0, newYOffset)
+
+        contentHeight = self.scrollbarContainer.getContentHeight()
+        newYOffset = min(self.getMaxOffset(contentHeight), newYOffset)
+
+        return newYOffset
+    
     def onDrag(self, mouse: tuple):
 
         mouseDelta = (mouse[1] - self.mouseStartY)
@@ -72,12 +82,15 @@ class ScrollbarEntity(Entity, Observable):
         maxOffset = self.getMaxOffset(self.contentHeight)
         newYOffset = self.startOffsetY + ratio * maxOffset
 
-        newYOffset = max(0, newYOffset)
+        self.scrollbarContainer.setYOffset(self.boundYOffset(newYOffset))
 
-        contentHeight = self.scrollbarContainer.getContentHeight()
-        newYOffset = min(self.getMaxOffset(contentHeight), newYOffset)
+    def onMousewheel(self, offset: int):
+        KP = -5
+        mouseDelta = self._aheight(offset) * KP
         
-        self.scrollbarContainer.setYOffset(newYOffset)
+        newYOffset = self.scrollbarContainer.yOffset + mouseDelta
+        self.scrollbarContainer.setYOffset(self.boundYOffset(newYOffset))
+        
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
