@@ -37,7 +37,7 @@ class FullContainer(Container, ModelBasedEntity):
         return self._mwidth(4)
     
     def defineHeight(self) -> float:
-        return self._pheight(1)
+        return self.vgc.defineHeight()
     
     def defineCenterX(self) -> float:
         return self._px(0.5)

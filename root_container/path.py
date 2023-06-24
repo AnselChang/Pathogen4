@@ -14,7 +14,6 @@ from command_creation.command_block_entity_factory import CommandBlockEntityFact
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 from root_container.field_container.field_container import FieldContainer
-from root_container.panel_container.command_scrolling.command_scrolling_handler import CommandScrollingHandler
 
 from entity_handler.entity_manager import EntityManager
 from entity_handler.interactor import Interactor

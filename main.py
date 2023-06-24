@@ -4,6 +4,7 @@ from entity_base.entity import initEntityClass, setRootContainer
 from entity_ui.dropdown.dropdown_container import DropdownContainer
 from entity_ui.group.variable_group.variable_container import VariableContainer
 from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
+from entity_ui.scrollbar.scrolling_container import ScrollingContainer
 from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 from models.command_models.full_model import FullModel
 
@@ -25,8 +26,6 @@ from root_container.panel_container.command_expansion.command_expansion_containe
 
 from root_container.panel_container.panel_container import PanelContainer
 from root_container.field_container.field_container import FieldContainer
-
-from root_container.panel_container.command_scrolling.command_scrollbar import CommandScrollbar
 
 from entity_ui.tooltip import initTooltipFont
 
@@ -111,9 +110,9 @@ def main():
     # initialize commands
     database = CommandDefinitionDatabase()
 
-    # create tabs
     # create command model
-    model = FullModel(panelContainer)
+    scrollingContainer = ScrollingContainer(panelContainer)
+    model = FullModel(scrollingContainer.getContainer())
 
     # Create path
     path = Path(fieldContainer, panelContainer, model, database, PointRef(Ref.FIELD, (24,24)))
