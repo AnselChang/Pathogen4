@@ -52,5 +52,4 @@ class ScrollingContainer(Container):
     
     def setYOffset(self, newYOffset):
         self.yOffset = newYOffset
-        print("new y offset", self.yOffset)
         self.recomputeEntity()

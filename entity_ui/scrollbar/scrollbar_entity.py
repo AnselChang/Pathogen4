@@ -34,7 +34,12 @@ class ScrollbarEntity(Entity, Observable):
         self.SCROLLBAR_RADIUS = 5
 
     def defineTopY(self) -> tuple:
-        return self._py(0) + self._aheight(self.scrollbarContainer.yOffset)
+        maxOffset = self.getMaxOffset(self.contentHeight)
+        if maxOffset == 0:
+            ratio = 0
+        else:
+            ratio = self.scrollbarContainer.yOffset / maxOffset
+        return self._py(0) + ratio * (self._pheight(1) - self.HEIGHT)
     
     def defineCenterX(self) -> float:
         return self._px(0.5)
@@ -44,12 +49,12 @@ class ScrollbarEntity(Entity, Observable):
     
     def defineHeight(self) -> float:
 
-        contentHeight = self.scrollbarContainer.getContentHeight()
+        self.contentHeight = self.scrollbarContainer.getContentHeight()
 
-        if contentHeight == 0:
+        if self.contentHeight == 0:
             ratio = 1
         else:
-            ratio = min(1, self._pheight(1) / contentHeight)
+            ratio = min(1, self._pheight(1) / self.contentHeight)
         return self._pheight(1) * ratio
 
     def onStartDrag(self, mouse: tuple):
@@ -66,7 +71,7 @@ class ScrollbarEntity(Entity, Observable):
 
         contentHeight = self.scrollbarContainer.getContentHeight()
         newYOffset = min(self.getMaxOffset(contentHeight), newYOffset)
-
+        print(contentHeight, self._py(1), newYOffset)
         self.scrollbarContainer.setYOffset(newYOffset)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
