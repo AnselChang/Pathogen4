@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from data_structures.observer import Observable
+from data_structures.observer import Observable, Observer
 from command_creation.command_type import CommandType
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
@@ -60,7 +60,7 @@ legalAttributesForType: dict[CommandType, list[PathAttributeID]] = {
 Abstract class that facilitates communication between Commands and Path entities
 """
 
-class PathAdapter(ABC, Observable):
+class PathAdapter(ABC, Observable, Observer):
 
     def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState):
         self.type = type

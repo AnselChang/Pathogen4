@@ -205,17 +205,7 @@ class Path(Observer):
     
     # when the segment type has changed, show the correct command and hide the others
     def onSegmentTypeChange(self, segment: PathSegmentEntity, oldType: PathSegmentType, newType: PathSegmentType):
-        oldCommand = self.linker.getCommandFromSegmentAndType(segment, oldType)
-        commandToShow = self.linker.getCommandFromSegmentAndType(segment, newType)
-
-        for command in self.linker.getCommandsFromSegment(segment):
-            if command is commandToShow:
-                command.setVisible()
-            else:
-                command.setInvisible()
-
-        # if old command was highlighted, then highlight the new command
-        if oldCommand.isHighlighted():
-            commandToShow.highlight()
-
-        commandToShow.onFunctionChange()
+        segmentCommand = self.linker.getCommandFromPath(segment)
+        segmentCommand.setNewAdapter(segment.getAdapter())
+        segmentCommand.rebuild()
+        self.model.recomputeUI()

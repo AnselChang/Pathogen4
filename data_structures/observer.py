@@ -72,5 +72,5 @@ class Observable:
         if "observers" in self.__dict__:
             for observer in self.observers:
                 if id == observer.id:
-                    print("notifying", id, observer.onNotify)
+                    #print("notifying", id, observer.onNotify)
                     observer.onNotify()
