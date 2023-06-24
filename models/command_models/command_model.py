@@ -33,9 +33,6 @@ class CommandModel(AbstractModel, Observer):
         self.adapter: PathAdapter = None
         self.setNewAdapter(pathAdapter)
 
-        # initialize default command definition to be the first one
-        self._definitionID = self.database.getDefinitionByIndex(self.adapter.type).id
-        self.parameters = ParameterState(self)
 
         # if None, use template text in definition.
         # If not none, means there's a text editor in command and templateText is editable
@@ -47,6 +44,10 @@ class CommandModel(AbstractModel, Observer):
         
         self.adapter = newAdapter
         self.adapter.subscribe(self, onNotify = self.onAdapterChange)
+
+        # initialize default command definition to be the first one
+        self._definitionID = self.database.getDefinitionByIndex(self.adapter.type).id
+        self.parameters = ParameterState(self)
 
         # For turn commands: if turn is enabled/disabled, command is shown/hidden
         if self.adapter.type == CommandType.TURN:
