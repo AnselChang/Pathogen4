@@ -29,4 +29,4 @@ class HighlightCommandAction(MenuClickAction[PathNodeEntity | PathSegmentEntity]
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity | PathSegmentEntity, mouse: tuple):
         command = targetEntity.path.getCommandFromPathEntity(targetEntity)
-        command.highlight()
+        command.highlightUI()
