@@ -271,31 +271,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
     # not applicable for regular command blocks
     def isDragging(self):
         return self.drag.isDragging
-    
-    def isHighlighted(self) -> bool:
-        return CommandBlockEntity.HIGHLIGHTED == self
-    
-    # Highlight the command block visually
-    # Also, contract all commands except this one
-    def highlight(self):
-
-        return
-        
-
-        if self.isHighlighted():
-            CommandBlockEntity.HIGHLIGHTED = None
-            self.localExpansion = False
-            self.recomputeEntity()
-            return
-
-        # highlight and expand this command, disabling global flag if need be
-        CommandBlockEntity.HIGHLIGHTED = self
-        self.handler.setAllLocalExpansion(False)
-        self.commandExpansion.setForceCollapse(False)
-        self.localExpansion = True
-        self.recomputeEntity()
-
-        self.handler.scrollToCommand(self)
 
     # Called when the highlight button in the command block is clicked.
     # Should highlight the corresponding node or segment in the path
@@ -353,7 +328,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
-        isHighlighted = (CommandBlockEntity.HIGHLIGHTED is self)
+        isHighlighted = self.model.isHighlighted()
 
         # draw rounded rect
         color = self.getColor()
