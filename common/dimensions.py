@@ -19,7 +19,7 @@ class Dimensions(Observable):
         display_info = pygame.display.Info()
 
         # I work off my smaller-res mac computer, so I need to keep track of this to not screw with larger resolutions
-        self.ANSEL_START_WIDTH = 800
+        self.ANSEL_START_WIDTH = 950
         self.ANSEL_START_HEIGHT = 600
 
         self.DEFAULT_SCREEN_WIDTH = display_info.current_w * 0.8
@@ -31,13 +31,18 @@ class Dimensions(Observable):
 
     # Resize screen to (screenWidth, screenHeight) and return a new instance of the screen with updated dimensions
     def resizeScreen(self, screenWidth: int, screenHeight: int) -> pygame.Surface:
-        screenWidth = max(screenWidth, int(screenHeight * self.RATIO)*2)
-        screenHeight = max(screenHeight, 500)
+
+        area = screenWidth * screenHeight
+        originalArea = self.ANSEL_START_WIDTH * self.ANSEL_START_HEIGHT
+        r = math.sqrt(area / originalArea)
         
+        screenWidth = self.ANSEL_START_WIDTH * r
+        screenHeight = self.ANSEL_START_HEIGHT * r        
 
         self.SCREEN_WIDTH = screenWidth
         self.SCREEN_HEIGHT = screenHeight
-        self.PANEL_WIDTH = int(screenHeight * self.RATIO)
+        self.FIELD_WIDTH = self.SCREEN_HEIGHT
+        self.PANEL_WIDTH = self.SCREEN_WIDTH - self.FIELD_WIDTH
         self.FIELD_WIDTH = screenWidth - self.PANEL_WIDTH
         self.FIELD_DIAGONAL = math.sqrt(self.FIELD_WIDTH ** 2 + self.SCREEN_HEIGHT ** 2)
 

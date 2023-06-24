@@ -317,6 +317,7 @@ class Entity(ABC, Observable):
         # for initially calling this function, update ancestors first if ancestor dimensions dependent on self
         if isRoot:
             firstEntityToCompute = self.findAncestorEntityIndependentFromParent()
+            #print("first", firstEntityToCompute)
             firstEntityToCompute.recomputeEntity(False)
             return
 

@@ -85,7 +85,6 @@ class TextEditorEntity(Entity, Observer, Observable):
         }
 
         self.rows = 1
-        self.font.subscribe(self, onNotify = self.onFontUpdate)
 
         self.textHandler = TextHandler(self, defaultText = defaultText)
         self.cursorBlink = CursorBlink(35, 33)

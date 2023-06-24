@@ -133,7 +133,7 @@ class CommandModel(AbstractModel, Observer):
         return f"{self.getCommandType()} {self.getFunctionName()}"
 
     def getDefinition(self) -> CommandDefinition:
-        print("getdef", self.getCommandType(), self.database.getDefinitionNames(self.getCommandType()))
+        #print("getdef", self.getCommandType(), self.database.getDefinitionNames(self.getCommandType()))
         return self.database.getDefinitionByID(self.getCommandType(), self._definitionID)
     
     def getParameters(self) -> ParameterState:
