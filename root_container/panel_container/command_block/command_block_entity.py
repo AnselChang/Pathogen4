@@ -71,9 +71,9 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         self.dragOffset = 0
 
         # controls height animation
-        self.animatedExpansion = MotionProfile(0, speed = 0.4)
+        endValue = 1 if self.model.uiState.expanded else 0
+        self.animatedExpansion = MotionProfile(endValue, speed = 0.4)
         # whether to expand by default, ignoring global flags
-        self.localExpansion = self.model.getCommandType() == CommandType.CUSTOM
 
         r,g,b = self.model.getDefinition().color
         self.colorR = MotionProfile(r, speed = 0.2)
@@ -147,9 +147,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         # update header entity. Need to show/hide wait entity
         self.headerEntity.onFunctionChange()
 
-        # whenever changing function, expand function
-        self.localExpansion = True
-
         self.recomputeEntity()
         print("recompute tasks")
 
@@ -184,9 +181,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         if self.elementsContainer is None:
             return 0
         return self.elementsContainer.defineHeight()
-    
-    def isActuallyExpanded(self) -> bool:
-        return self.localExpansion
+
     
     # call only if this is a task command. Get the list of commands inside task
     def getTaskList(self) -> LinkedList[VariableContainer]:
@@ -212,7 +207,7 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
             return 0
         
         # calculate target height
-        expanded = self.isActuallyExpanded()
+        expanded = self.model.uiState.expanded
         
         self.ACTUAL_COLLAPSED_HEIGHT = self._aheight(self.COLLAPSED_HEIGHT)
         self.ACTUAL_EXPANDED_HEIGHT = self._aheight(self.EXPANDED_HEIGHT) + self.getElementStretch()
@@ -239,15 +234,14 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
     
     def getCommandType(self) -> CommandType:
         return self.model.getCommandType()
-    
-    # Set the local expansion of the command without modifying global expansion flags
-    def setLocalExpansion(self, isExpanded):
-        self.localExpansion = isExpanded
+
 
     # Toggle command expansion. Modify global expansion flags if needed
     def onClick(self, mouse: tuple):
-        self.localExpansion = not self.localExpansion
-        self.recomputeEntity()
+        if self.model.uiState.expanded:
+            self.model.collapseUI()
+        else:
+            self.model.expandUI()
 
     def onTurnEnableToggled(self):
         if self.model.getCommandType() == CommandType.TURN:

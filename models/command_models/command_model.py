@@ -15,16 +15,23 @@ from root_container.panel_container.command_block.custom_command_block_entity im
 
 from root_container.panel_container.command_block.parameter_state import ParameterState
 
+class CommandUIState:
+
+    def __init__(self, expanded = True, highlighted = False):
+        self.expanded = expanded
+        self.highlighted = highlighted
+
 """
 Stores the data of a single command block
 Model part of MVC design pattern for command block
 """
-
 class CommandModel(AbstractModel, Observer):
 
     def __init__(self, pathAdapter: 'PathAdapter'):
 
         super().__init__()
+
+        self.uiState = CommandUIState(expanded = pathAdapter.type == CommandType.CUSTOM)
 
         self.database = CommandDefinitionDatabase.getInstance()
         # subscribe to changes in the database
@@ -33,10 +40,10 @@ class CommandModel(AbstractModel, Observer):
         self.adapter: PathAdapter = None
         self.setNewAdapter(pathAdapter)
 
-
         # if None, use template text in definition.
         # If not none, means there's a text editor in command and templateText is editable
-        self.templateText = None 
+        self.templateText = None
+
 
     def setNewAdapter(self, newAdapter: 'PathAdapter'):
         if self.adapter is not None:
@@ -53,6 +60,14 @@ class CommandModel(AbstractModel, Observer):
         if self.adapter.type == CommandType.TURN:
             self.adapter.subscribe(self, id = NotifyType.TURN_ENABLE_TOGGLED, onNotify = self.onTurnEnableToggled)
             self.onTurnEnableToggled(recompute = False)
+
+    def expandUI(self):
+        self.uiState.expanded = True
+        self.ui.recomputeEntity()
+
+    def collapseUI(self):
+        self.uiState.expanded = False
+        self.ui.recomputeEntity()
 
     def onAdapterChange(self):
         if self.show:
