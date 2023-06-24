@@ -76,7 +76,7 @@ class ScrollbarEntity(Entity, Observable):
 
         contentHeight = self.scrollbarContainer.getContentHeight()
         newYOffset = min(self.getMaxOffset(contentHeight), newYOffset)
-        print(contentHeight, self._py(1), newYOffset)
+        
         self.scrollbarContainer.setYOffset(newYOffset)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
