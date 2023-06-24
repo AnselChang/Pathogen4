@@ -35,6 +35,7 @@ from common.reference_frame import PointRef, Ref, initReferenceframe, VectorRef
 from common.field_transform import FieldTransform
 from common.dimensions import Dimensions
 from common.draw_order import DrawOrder
+from root_container.top_bar_container.top_bar_container import TopBarContainer
 from utility.pygame_functions import getGradientSurface
 from utility.math_functions import isInsideBox2
 import pygame, random, threading, time, json
@@ -98,6 +99,7 @@ def main():
     # Add permanent static entities
     panelContainer = PanelContainer()
     fieldContainer = FieldContainer(fieldTransform)
+    topBarContainer = TopBarContainer()
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)

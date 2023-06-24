@@ -52,11 +52,11 @@ class FieldTransform(Observable):
         MARGIN = 0
 
         minPanX = min(self._dimensions.FIELD_WIDTH - self.size, 0)
-        minPanY = min(self._dimensions.SCREEN_HEIGHT - self.size, 0)
+        minPanY = min(self._dimensions.FIELD_HEIGHT - self.size, 0)
 
 
         maxPanX = max(self._dimensions.FIELD_WIDTH - self.size, 0)
-        maxPanY = max(self._dimensions.SCREEN_HEIGHT - self.size, 0)
+        maxPanY = max(self._dimensions.FIELD_HEIGHT - self.size, 0)
 
         minPan = min(minPanX, minPanY)
         self._panX = clamp(self._panX, minPanX - MARGIN, maxPanX + MARGIN)

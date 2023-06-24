@@ -29,9 +29,9 @@ class PanelContainer(entity.Entity):
         pygame.draw.rect(screen, self.color, self.RECT)
 
     def defineTopLeft(self) -> tuple:
-        return self.dimensions.FIELD_WIDTH, 0
+        return self.dimensions.FIELD_WIDTH, self.dimensions.TOP_HEIGHT
 
     def defineWidth(self) -> float:
         return self.dimensions.PANEL_WIDTH
     def defineHeight(self) -> float:
-        return self.dimensions.SCREEN_HEIGHT
+        return self.dimensions.PANEL_HEIGHT

@@ -34,4 +34,4 @@ class RootContainer(Container, Observer):
 
     # Draw screen background
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        screen.fill((255,255,255))
+        pass

@@ -146,7 +146,7 @@ class Interactor:
 
     def onLeftMouseDown(self, mouse: tuple, shiftKey: bool):
 
-        if self.hoveredEntity.click is not None:
+        if self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             self.hoveredEntity.click.onMouseDown(mouse)
 
         # handle double-click logic
@@ -177,7 +177,7 @@ class Interactor:
 
         # if there's a group selected but the mouse is not clicking on the group, deselect
         elif self.hoveredEntity is None or self.hoveredEntity not in self.selected.entities:
-            if self.hoveredEntity is not self.fieldContainer and self.hoveredEntity.select is not None:
+            if self.hoveredEntity is not self.fieldContainer and (self.hoveredEntity is not None and self.hoveredEntity.select is not None):
 
                 doNotRemove = None
                 if self.hoveredEntity.drag is not None:
@@ -193,7 +193,7 @@ class Interactor:
                 self.addEntity(self.hoveredEntity)
 
         # start dragging all the selected entities
-        if self.hoveredEntity.drag is not None and self.hoveredEntity.select is None:
+        if self.hoveredEntity is not None and self.hoveredEntity.drag is not None and self.hoveredEntity.select is None:
             self.draggingEntities = [self.hoveredEntity]
             self.hoveredEntity.drag.onStartDrag(mouse)
 

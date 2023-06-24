@@ -37,13 +37,21 @@ class Dimensions(Observable):
         r = math.sqrt(area / originalArea)
         
         screenWidth = self.ANSEL_START_WIDTH * r
-        screenHeight = self.ANSEL_START_HEIGHT * r        
+        screenHeight = self.ANSEL_START_HEIGHT * r      
 
         self.SCREEN_WIDTH = screenWidth
         self.SCREEN_HEIGHT = screenHeight
-        self.FIELD_WIDTH = self.SCREEN_HEIGHT
+
+        TOP_RATIO = 0.15
+        self.TOP_WIDTH = screenWidth
+        self.TOP_HEIGHT = self.SCREEN_HEIGHT * TOP_RATIO  
+
+        self.FIELD_HEIGHT = self.SCREEN_HEIGHT * (1 - TOP_RATIO)
+        self.FIELD_WIDTH = self.FIELD_HEIGHT
+
         self.PANEL_WIDTH = self.SCREEN_WIDTH - self.FIELD_WIDTH
-        self.FIELD_WIDTH = screenWidth - self.PANEL_WIDTH
+        self.PANEL_HEIGHT = self.FIELD_HEIGHT
+
         self.FIELD_DIAGONAL = math.sqrt(self.FIELD_WIDTH ** 2 + self.SCREEN_HEIGHT ** 2)
 
         #ratioSquared = (self.SCREEN_WIDTH * self.SCREEN_HEIGHT) / (self.DEFAULT_SCREEN_HEIGHT * self.DEFAULT_SCREEN_WIDTH)

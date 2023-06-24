@@ -52,13 +52,13 @@ class FieldContainer(entity.Entity, Observer):
         self.fieldTransform.changeZoom(self.mousewheel.mouseRef, offset * 0.01)
 
     def defineTopLeft(self) -> tuple:
-        return 0, 0
+        return 0, self.dimensions.TOP_HEIGHT
 
     # must impl both of these if want to contain other entity
     def defineWidth(self) -> float:
         return self.dimensions.FIELD_WIDTH
     def defineHeight(self) -> float:
-        return self.dimensions.SCREEN_HEIGHT
+        return self.dimensions.FIELD_HEIGHT
     
     # Add a new node at location
     def onRightClick(self, mousePos: tuple):
@@ -76,4 +76,6 @@ class FieldContainer(entity.Entity, Observer):
         pass
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
+        pygame.draw.rect(screen, (255, 255, 255), self.RECT)
         self.fieldTransform.draw(screen)
+        self.drawRect(screen)
