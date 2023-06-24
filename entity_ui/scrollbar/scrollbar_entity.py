@@ -29,6 +29,10 @@ class ScrollbarEntity(Entity, Observable):
 
         self.scrollbarContainer = scrollbarContainer
 
+        self.SCROLLBAR_H_MARGIN = 1
+        self.SCROLLBAR_V_MARGIN = 3
+        self.SCROLLBAR_RADIUS = 5
+
     def defineTopY(self) -> tuple:
         return self._py(0) + self._aheight(self.scrollbarContainer.yOffset)
     
@@ -67,5 +71,9 @@ class ScrollbarEntity(Entity, Observable):
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 
+        mh = self.SCROLLBAR_H_MARGIN
+        mv = self.SCROLLBAR_V_MARGIN
+        rect = [self.LEFT_X + mh, self.TOP_Y + mv, self.WIDTH - mh*2, self.HEIGHT - mv*2]
+
         color = [140,140,140] if self.hover.isHovering else [160,160,160]
-        pygame.draw.rect(screen, color, self.RECT)
+        pygame.draw.rect(screen, color, rect, border_radius = self.SCROLLBAR_RADIUS)

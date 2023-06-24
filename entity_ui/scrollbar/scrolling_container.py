@@ -29,7 +29,7 @@ class ScrollingContainer(Container):
 
         super().__init__(parent)
 
-        self.SCROLLBAR_WIDTH = 15 # in relative pixels
+        self.SCROLLBAR_WIDTH = 13 # in relative pixels
         self.yOffset = 0 # in relative pixels, 0 means from the top
 
         self.movingContainer = MovingScrollingContainer(self)
