@@ -12,8 +12,6 @@ from root_container.field_container.segment.path_segment_entity import PathSegme
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 
-from root_container.panel_container.tab.tab_handler import TabHandler
-
 from entity_handler.entity_manager import EntityManager
 from entity_handler.interactor import Interactor
 
@@ -114,13 +112,11 @@ def main():
     database = CommandDefinitionDatabase()
 
     # create tabs
-    tabHandler = TabHandler(panelContainer, database)
-
     # create command model
-    model = FullModel(tabHandler.blockContainer)
+    model = FullModel(panelContainer)
 
     # Create path
-    path = Path(fieldContainer, tabHandler.blockContainer, model, database, PointRef(Ref.FIELD, (24,24)))
+    path = Path(fieldContainer, panelContainer, model, database, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.initPath(path)
 
     # initialize pygame artifacts
