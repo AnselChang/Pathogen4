@@ -97,9 +97,9 @@ class FieldEntity(Entity, Observable):
         self.startPan = (self._panX, self._panY)
 
     def _boundPan(self):
-        # panning must always be nonpositive
-        self._panX = min(self._panX, 0)
-        self._panY = min(self._panY, 0)
+        # panning must always be between (-zoom, 0)
+        self._panX = clamp(self._panX, 1-self._zoom, 0)
+        self._panY = clamp(self._panY, 1-self._zoom, 0)
 
     # pan and recompute
     def onDrag(self, mouse: tuple):
