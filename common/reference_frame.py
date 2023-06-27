@@ -44,29 +44,11 @@ class PointRef:
     # Given we only store the point in the field reference frame, convert to field reference frame before storing it
     def _screenToField(self, pointS: tuple) -> None:
 
-        # undo the panning and zooming
-        panX, panY = self.transform.getPan()
-        normalizedScreenX = (pointS[0] - panX) / self.transform._zoom
-        normalizedScreenY = (pointS[1] - panY) / self.transform._zoom
-
-        # convert to field reference frame
-        xf = (normalizedScreenX - dimensions.FIELD_MARGIN_IN_PIXELS) / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN * dimensions.FIELD_SIZE_IN_INCHES
-        yf = (normalizedScreenY - dimensions.FIELD_MARGIN_IN_PIXELS) / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN * dimensions.FIELD_SIZE_IN_INCHES
-
-        return xf, yf
+        return self.transform.mouseToInches(pointS)
 
     # Given we only store the point in the field reference frame, we need to convert it to return as screen reference frame
     def _fieldToScreen(self, pointF: tuple) -> tuple:
-        # convert to normalized (pre-zoom and pre-panning) coordinates
-        normalizedScreenX = pointF[0] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN + dimensions.FIELD_MARGIN_IN_PIXELS
-        normalizedScreenY = pointF[1] / dimensions.FIELD_SIZE_IN_INCHES * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN + dimensions.FIELD_MARGIN_IN_PIXELS
-
-        # convert to screen reference frame
-        panX, panY = self.transform.getPan()
-        xs = normalizedScreenX * self.transform._zoom + panX
-        ys = normalizedScreenY * self.transform._zoom + panY
-
-        return xs, ys
+        return self.transform.inchesToMouse(pointF)
     
     def _getScreenRef(self) -> tuple:
         return self._fieldToScreen(self.fieldRef)
@@ -153,14 +135,11 @@ class VectorRef:
 
     # Given we only store the point in the field reference frame, convert to field reference frame before storing it
     def _setScreenRef(self, vector: tuple):
-        scalar = dimensions.FIELD_SIZE_IN_INCHES / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN / self.transform._zoom
-        self._vxf = vector[0] * scalar
-        self._vyf = vector[1] * scalar
+        self._vxf, self._vyf = self.transform.mouseToInchesScaleOnly(vector)
 
     # Given we only store the point in the field reference frame, we need to convert it to return as screen reference frame
     def _getScreenRef(self):
-        scalar = self.transform._zoom * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN / dimensions.FIELD_SIZE_IN_INCHES
-        return self._vxf * scalar, self._vyf * scalar
+        return self.transform.inchesToMouseScaleOnly(self.fieldRef)
 
     screenRef = property(_getScreenRef, _setScreenRef)
 

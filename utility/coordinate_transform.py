@@ -86,3 +86,14 @@ class CoordinateTransform(Generic[T]):
             y = self.scale_y_B_to_A * oldPoint[1] + self.offset_y_B_to_A
             
         return (x, y)
+    
+    # convert through scaling without offsets
+    def scaleFrom(self, oldSystem: T, oldPoint: tuple) -> tuple:
+        if oldSystem == self.systemAType:
+            x = self.scale_x_A_to_B * oldPoint[0]
+            y = self.scale_y_A_to_B * oldPoint[1]
+        else:
+            x = self.scale_x_B_to_A * oldPoint[0]
+            y = self.scale_y_B_to_A * oldPoint[1]
+            
+        return (x, y)

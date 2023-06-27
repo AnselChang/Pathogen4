@@ -24,7 +24,7 @@ from adapter.path_adapter import NullPathAdapter
 
 from data_structures.linked_list import LinkedList
 from common.dimensions import Dimensions
-from common.reference_frame import PointRef
+from common.reference_frame import PointRef, Ref
 
 import entity_base.entity as entity
 from root_container.panel_container.panel_container import PanelContainer
@@ -49,6 +49,7 @@ class Path(Observer):
         self.database = database
 
         self.fieldContainer = field
+        self.fieldEntity = field.fieldEntity
 
         self.model = model
         self.pathList = LinkedList[PathNodeEntity | PathSegmentEntity]() # linked list of nodes and segments
@@ -67,7 +68,7 @@ class Path(Observer):
             afterCommand = self.model.getLastChild().getLastChild()
 
         # create node and add entity
-        node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
+        node: PathNodeEntity = PathNodeEntity(self.fieldEntity, self, nodePosition, isTemporary)
         self.pathList.insertAfter(afterPath, node)
 
         turnCommand = CommandModel(node.getAdapter())
@@ -82,7 +83,7 @@ class Path(Observer):
     def _addRawNodeToBeginning(self, nodePosition: PointRef, isTemporary: bool = False):
 
         # create node and add entity
-        node: PathNodeEntity = PathNodeEntity(self.fieldContainer, self, nodePosition, isTemporary)
+        node: PathNodeEntity = PathNodeEntity(self.fieldEntity, self, nodePosition, isTemporary)
         self.pathList.addToBeginning(node)
 
         turnCommand = CommandModel(node.getAdapter())
@@ -100,7 +101,7 @@ class Path(Observer):
             afterCommand = self.model.getLastChild().getLastChild()
 
         # create segment and add entity
-        segment: PathSegmentEntity = PathSegmentEntity(self.fieldContainer, self)
+        segment: PathSegmentEntity = PathSegmentEntity(self.fieldEntity, self)
         self.pathList.insertAfter(afterPath, segment)
 
         segmentCommand = CommandModel(segment.getAdapter())
@@ -114,9 +115,10 @@ class Path(Observer):
 
     # adds segment and node to the end of the path
     # return the created PathNodeEntity
-    def addNode(self, nodePosition: PointRef, isTemporary: bool = False) -> PathNodeEntity:
+    def addNode(self, nodePosition: tuple, isTemporary: bool = False) -> PathNodeEntity:
         segment = self._addRawSegment()
-        node = self._addRawNode(nodePosition, isTemporary = isTemporary)
+        nodePositionRef = PointRef(Ref.SCREEN, nodePosition)
+        node = self._addRawNode(nodePositionRef, isTemporary = isTemporary)
 
         node.recomputeEntity()
         self.model.recomputeUI()

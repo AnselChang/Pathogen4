@@ -96,6 +96,7 @@ def main():
     # Add permanent static entities
     panelContainer = PanelContainer()
     fieldContainer = FieldContainer()
+    initReferenceframe(dimensions, fieldContainer.fieldEntity)
     topBarContainer = TopBarContainer()
 
     # handles the creating of menus when an entity is selected
@@ -113,10 +114,6 @@ def main():
     scrollingContainer = ScrollingContainer(panelContainer)
     model = FullModel(scrollingContainer.getContainer())
 
-    # Create path
-    #path = Path(fieldContainer, panelContainer, model, database, PointRef(Ref.FIELD, (24,24)))
-    #fieldContainer.initPath(path)
-
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
     clock = pygame.time.Clock()
@@ -125,6 +122,12 @@ def main():
     print(model.tree())
     print(model.ui.tree())
     print("compute everything")
+    rootContainer.recomputeEntity()
+
+    # Create path
+    path = Path(fieldContainer, panelContainer, model, database, PointRef(Ref.FIELD, (24,24)))
+    fieldContainer.fieldEntity.initPath(path)
+
     rootContainer.recomputeEntity()
 
     # Create a new thread for the I/O handling function

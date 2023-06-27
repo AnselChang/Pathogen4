@@ -51,9 +51,6 @@ class BezierSegmentState(PathSegmentState, Observer):
         self.MOUSE_BEZIER_RESOLUTION = 0.3
         
 
-        # every time the screen shifts, recompute the mouse detection points
-        self.segment.transform.subscribe(self, onNotify = self.onScreenRefChange)
-
     def getAdapter(self) -> PathAdapter:
         return self.adapter
     

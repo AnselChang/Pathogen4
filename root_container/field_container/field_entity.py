@@ -1,7 +1,14 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from root_container.path import Path
+
+
 from enum import Enum
 from common.image_manager import ImageID, ImageManager
 from common.dimensions import Dimensions
 from entity_base.entity import Entity
+from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.drag_listener import DragLambda
 from entity_base.listeners.mousewheel_listener import MousewheelLambda
 from utility.coordinate_transform import CoordinateTransformBuilder
@@ -28,7 +35,8 @@ class FieldEntity(Entity, Observable):
                 FonStartDrag = self.onStartDrag,
                 FonDrag = self.onDrag,
                 FonStopDrag = self.onStopDrag
-            )
+            ),
+            click = ClickLambda(self, FonRightClick = self.onRightClick)
         )
 
         # At zoom = 1, the image is completely fit to the parent rect,
@@ -63,6 +71,9 @@ class FieldEntity(Entity, Observable):
         self._oldRect = None
         self._oldZoom = None
         self._oldPan = None
+
+    def initPath(self, path: Path):
+        self.path = path
 
     def onMousewheel(self, offset: int) -> bool:
         P_ZOOM = 0.05
@@ -153,6 +164,18 @@ class FieldEntity(Entity, Observable):
         # convert to inches
         return self.transform.convertFrom(Ref.IMAGE_PIXELS, (pixelX, pixelY))
     
+    # convert only through scaling for vectors, no offsets
+    def mouseToInchesScaleOnly(self, vector: tuple) -> tuple:
+        pwidth = self._inverse_pwidth(vector[0])
+        pheight = self._inverse_pheight(vector[1])
+
+        # convert to raw image pixels
+        pixelWidth = self.RAW_SURFACE_PIXELS * pwidth / self._zoom
+        pixelHeight = self.RAW_SURFACE_PIXELS * pheight / self._zoom
+
+        # convert to inches
+        return self.transform.scaleFrom(Ref.IMAGE_PIXELS, (pixelWidth, pixelHeight))
+
     # convert from inches (0-144) to absolute coordinates
     def inchesToMouse(self, inches: tuple) -> tuple:
 
@@ -170,10 +193,20 @@ class FieldEntity(Entity, Observable):
         # convert to absolute coordinates
         return (self._px(px), self._py(py))
     
+    # convert only through scaling for vectors, no offsets
+    def inchesToMouseScaleOnly(self, vector: tuple) -> tuple:
+        pixelWidth, pixelHeight = self.transform.scaleFrom(Ref.FIELD_INCHES, vector)
+
+        # convert to px (0-1) and py (0-1) for percent position on field
+        pwidth = pixelWidth * self._zoom / self.RAW_SURFACE_PIXELS
+        pheight = pixelHeight * self._zoom / self.RAW_SURFACE_PIXELS
+
+        return (self._pwidth(pwidth), self._pheight(pheight))
+    
     # Add a new node at location
     def onRightClick(self, mousePos: tuple):
-        #self.path.addNode(PointRef(Ref.SCREEN, mousePos))
-        pass
+        self.path.addNode(mousePos)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         screen.blit(self.fieldSurface, (self.LEFT_X, self.TOP_Y))
+        pass
