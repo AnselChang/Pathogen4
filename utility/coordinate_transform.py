@@ -3,14 +3,12 @@ from typing import TypeVar, Generic
 
 """
 Maps one coordinate system to another.
+LINEAR TRANSFORMATIONS ONLY.
 Define coordinate system relation by providing two points,
 in respect to both systems.
 For example, for a system A and B, we have:
     System A: (5,5) -> (15,20)
     System B: (20,20) -> (100,100)
-
-Refer to test cases at bottom of file for usage.
-
 """
 
 T = TypeVar('T')
@@ -88,25 +86,3 @@ class CoordinateTransform(Generic[T]):
             y = self.scale_y_B_to_A * oldPoint[1] + self.offset_y_B_to_A
             
         return (x, y)
-
-class _Coordinate(Enum):
-    TYPEA = 1
-    TYPEB = 2
-
-class CoordinateTransformTest:
-
-        def __init__(self):
-
-            print("Testing CoordinateTransform")
-
-            C = _Coordinate
-
-            # Test case 1
-            builder1 = CoordinateTransformBuilder[C](C.TYPEA, C.TYPEB)
-            builder1.defineFirstPoint((5,6), (6,5))
-            builder1.defineSecondPoint((0,0), (0,0))
-            transform1 = builder1.build()
-
-            
-if __name__ == "__main__":
-    CoordinateTransformTest()
