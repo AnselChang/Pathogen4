@@ -10,7 +10,7 @@ import pygame
 import weakref
 
 class Ref(Enum):
-    PERCENT = 0
+    IMAGE_PIXELS = 0
     FIELD_INCHES = 1
 
 """This class is used for storing the field transformations (zooming and panning) relative to the screen, as well as
@@ -37,9 +37,15 @@ class FieldEntity(Entity, Observable):
         self.rawSurface = self.images.get(ImageID.FIELD)
         self.RAW_SURFACE_PIXELS = self.rawSurface.get_width()
 
+        self.TOP_LEFT_POS_PIXELS = (65, 58)
+        self.BOTTOM_RIGHT_POS_PIXELS = (4947, 4938)
         self.FIELD_SIZE_INCHES = 144
-        self.MARGIN_PIXELS = 12 # raw pixels from top left to (0", 0") for field ref
-        self.ACTIVE_FIELD_PIXELS = self.RAW_SURFACE_PIXELS - 2 * self.MARGIN_PIXELS
+
+        builder = CoordinateTransformBuilder[Ref](Ref.IMAGE_PIXELS, Ref.FIELD_INCHES)
+        builder.defineFirstPoint(self.TOP_LEFT_POS_PIXELS, (0, 0))
+        fsi = [self.FIELD_SIZE_INCHES, self.FIELD_SIZE_INCHES]
+        builder.defineSecondPoint(self.BOTTOM_RIGHT_POS_PIXELS, fsi)
+        self.transform = builder.build()
 
         self.oldRect = None
     
@@ -63,17 +69,16 @@ class FieldEntity(Entity, Observable):
         
         self.oldRect = self.RECT
         self.scaledSurface = pygame.transform.smoothscale(self.rawSurface, (self.WIDTH, self.HEIGHT))
-
-        # percent is from (0,0) (top left) to (1,1) (bottom right)
-        builder = CoordinateTransformBuilder[Ref](Ref.PERCENT, Ref.FIELD_INCHES)
-        builder.defineFirstPoint((0.1, 0.1), (0, 0))
-        builder.defineSecondPoint((0.9, 0.9), (144, 144))
-        self.transform = builder.build()
+        
 
     def mouseToInches(self, mousePos: tuple) -> tuple:
         px = self._inverse_px(mousePos[0])
         py = self._inverse_py(mousePos[1])
-        return self.transform.convertFrom(Ref.PERCENT, (px, py))
+
+        pixelX = self.RAW_SURFACE_PIXELS * px
+        pixelY = self.RAW_SURFACE_PIXELS * py
+
+        return self.transform.convertFrom(Ref.IMAGE_PIXELS, (pixelX, pixelY))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         screen.blit(self.scaledSurface, (self.LEFT_X, self.TOP_Y))
