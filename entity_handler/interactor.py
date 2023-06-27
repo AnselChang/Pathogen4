@@ -25,10 +25,9 @@ class Interactor:
         self.fieldContainer = fieldContainer
         self.selected.initMenuManager(menuManager)
 
-    def __init__(self, dimensions: Dimensions, fieldTransform: FieldTransform):
+    def __init__(self, dimensions: Dimensions):
 
         self.dimensions = dimensions
-        self.fieldTransform = fieldTransform
 
         # the multiselect box
         self.box = SelectorBox()

@@ -45,16 +45,14 @@ _interactor: Interactor = None
 _images: ImageManager = None
 _fonts: FontManager = None
 _dimensions: Dimensions = None
-_transform: FieldTransform = None
 ROOT_CONTAINER = None
-def initEntityClass(entityManager: EntityManager, interactor: Interactor, images: ImageManager, fonts: FontManager, dimensions: Dimensions, transform: FieldTransform):
+def initEntityClass(entityManager: EntityManager, interactor: Interactor, images: ImageManager, fonts: FontManager, dimensions: Dimensions):
     global _entities, _interactor, _images, _fonts, _dimensions, _transform
     _entities = entityManager
     _interactor = interactor
     _images = images
     _fonts = fonts
     _dimensions = dimensions
-    _transform = transform
 
 def setRootContainer(rootContainer):
     global ROOT_CONTAINER
@@ -100,7 +98,6 @@ class Entity(ABC, Observable):
         self.images = _images
         self.fonts = _fonts
         self.dimensions = _dimensions
-        self.transform = _transform
 
         self._children: list[Entity] = []
         self._parent: Entity = parent

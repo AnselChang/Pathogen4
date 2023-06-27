@@ -83,16 +83,13 @@ def main():
     imageSize = images.get(ImageID.FIELD).get_width()
     dimensions.setFieldSizePixels(imageSize)
 
-
-    fieldTransform: FieldTransform = FieldTransform(images, dimensions)
-    initReferenceframe(dimensions, fieldTransform)
     
     initTooltipFont(fontManager.getDynamicFont(FontID.FONT_NORMAL, 10))
     
     # Initialize entities
-    interactor = Interactor(dimensions, fieldTransform)
+    interactor = Interactor(dimensions)
     entities = EntityManager()
-    initEntityClass(entities, interactor, images, fontManager, dimensions, fieldTransform)
+    initEntityClass(entities, interactor, images, fontManager, dimensions)
     rootContainer = entities.initRootContainer()
     setRootContainer(rootContainer)
 
@@ -100,6 +97,9 @@ def main():
     panelContainer = PanelContainer()
     fieldContainer = FieldContainer(fieldTransform)
     topBarContainer = TopBarContainer()
+
+    fieldTransform: FieldTransform = FieldTransform(images, dimensions)
+    initReferenceframe(dimensions, fieldTransform)
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)
@@ -117,8 +117,8 @@ def main():
     model = FullModel(scrollingContainer.getContainer())
 
     # Create path
-    path = Path(fieldContainer, panelContainer, model, database, PointRef(Ref.FIELD, (24,24)))
-    fieldContainer.initPath(path)
+    #path = Path(fieldContainer, panelContainer, model, database, PointRef(Ref.FIELD, (24,24)))
+    #fieldContainer.initPath(path)
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")

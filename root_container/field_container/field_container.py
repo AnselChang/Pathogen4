@@ -28,7 +28,7 @@ Passes events to fieldTransform, and subscribes to it to update entities on fiel
 class FieldContainer(entity.Entity, Observer):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
-    def __init__(self, fieldTransform: FieldTransform):
+    def __init__(self):
         super().__init__(
             parent = entity.ROOT_CONTAINER,
             select = SelectLambda(self, "field", type = SelectorType.SOLO, deselectOnMouseUp = True),
@@ -40,10 +40,7 @@ class FieldContainer(entity.Entity, Observer):
             click = ClickLambda(self, FonRightClick = self.onRightClick),
             mousewheel = MousewheelLambda(self, FonMousewheel = self.onMousewheel),
             drawOrder = DrawOrder.FIELD_BACKGROUND)
-        self.fieldTransform = fieldTransform
-
-        # Whenever field is dragged, update entities on field
-        self.fieldTransform.subscribe(self, onNotify = self.recomputeEntity)
+    
 
     def initPath(self, path: Path):
         self.path = path
