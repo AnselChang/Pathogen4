@@ -46,9 +46,7 @@ class FieldContainer(entity.Entity, Observer):
     def defineHeight(self) -> float:
         return self.dimensions.FIELD_HEIGHT
     
-    # Add a new node at location
-    def onRightClick(self, mousePos: tuple):
-        self.path.addNode(PointRef(Ref.SCREEN, mousePos))
-    
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
-        pygame.draw.rect(screen, (255, 255, 255), self.RECT)
+        # draw white background
+        #pygame.draw.rect(screen, (255, 255, 255), self.RECT)
+        pass # unnecessary for now

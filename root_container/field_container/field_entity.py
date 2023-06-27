@@ -2,6 +2,7 @@ from enum import Enum
 from common.image_manager import ImageID, ImageManager
 from common.dimensions import Dimensions
 from entity_base.entity import Entity
+from entity_base.listeners.drag_listener import DragLambda
 from entity_base.listeners.mousewheel_listener import MousewheelLambda
 from utility.coordinate_transform import CoordinateTransformBuilder
 from utility.math_functions import clamp
@@ -22,7 +23,12 @@ class FieldEntity(Entity, Observable):
     def __init__(self, parent: Entity):
 
         super().__init__(parent,
-            mousewheel = MousewheelLambda(self, FonMousewheel = self.onMousewheel)
+            mousewheel = MousewheelLambda(self, FonMousewheel = self.onMousewheel),
+            drag = DragLambda(self,
+                FonStartDrag = self.onStartDrag,
+                FonDrag = self.onDrag,
+                FonStopDrag = self.onStopDrag
+            )
         )
 
         # At zoom = 1, the image is completely fit to the parent rect,
@@ -30,6 +36,8 @@ class FieldEntity(Entity, Observable):
         # Scaling zoom scales this already-scaled value.
         # zoom is applied from top-left corner of parent rect, and then pan.
         self._zoom = 1
+
+        # pan units are in percent
         self._panX, self._panY = (0, 0)
 
         self.rawSurface = self.images.get(ImageID.FIELD)
@@ -54,17 +62,32 @@ class FieldEntity(Entity, Observable):
         # scaled image needs to be recomputed
         self._oldRect = None
         self._oldZoom = None
+        self._oldPan = None
 
     def onMousewheel(self, offset: int) -> bool:
         P_ZOOM = 0.01
         MIN_ZOOM = 1
-        MAX_ZOOM = 3
+        MAX_ZOOM = 3 # maximum zoom from fit-to-container size
 
         self._zoom += offset * P_ZOOM
         self._zoom = clamp(self._zoom, MIN_ZOOM, MAX_ZOOM)
         self.recomputeEntity()
-        print(self._zoom)
-        return True
+
+        return True # always consume event
+    
+    def onStartDrag(self, mouse: tuple):
+        self.startPan = (self._panX, self._panY)
+
+    def onDrag(self, mouse: tuple):
+        ox, oy = self.drag.totalOffsetX, self.drag.totalOffsetY
+
+        self._panX = self.startPan[0] + self._inverse_pwidth(ox)
+        self._panY = self.startPan[1] + self._inverse_pheight(oy)
+
+        self.recomputeEntity()
+
+    def onStopDrag(self):
+        pass
 
     # recompute scaled surface if change in scale
     def defineAfter(self) -> None:
@@ -72,21 +95,31 @@ class FieldEntity(Entity, Observable):
         # use cached surface
         if self.RECT == self._oldRect:
             if self._zoom == self._oldZoom:
-                return
+                if (self._panX, self._panY) == self._oldPan:
+                    return
         
         self._oldRect = self.RECT
         self._oldZoom = self._zoom
+        self._oldPan = (self._panX, self._panY)
 
         size = self.WIDTH * self._zoom
         scaledSurface = pygame.transform.smoothscale(self.rawSurface, (size, size))
         self.fieldSurface = pygame.Surface((self.WIDTH, self.HEIGHT))
-        self.fieldSurface.blit(scaledSurface, (0,0))
+
+        offsetX = self._pwidth(self._panX)
+        offsetY = self._pheight(self._panY)
+
+        self.fieldSurface.blit(scaledSurface, (offsetX, offsetY))
         
     # convert from absolute coordinates to position on field in inches (0-144)
     def mouseToInches(self, mousePos: tuple) -> tuple:
         # get px (0-1) and py (0-1) for percent position on field
         px = self._inverse_px(mousePos[0])
         py = self._inverse_py(mousePos[1])
+
+        # apply panning
+        px -= self._panX
+        py -= self._panY
 
         # convert to raw image pixels
         pixelX = self.RAW_SURFACE_PIXELS * px / self._zoom
@@ -105,8 +138,17 @@ class FieldEntity(Entity, Observable):
         px = pixelX * self._zoom / self.RAW_SURFACE_PIXELS
         py = pixelY * self._zoom / self.RAW_SURFACE_PIXELS
 
+        # unapply panning
+        px += self._panX
+        py += self._panY
+
         # convert to absolute coordinates
         return (self._px(px), self._py(py))
+    
+    # Add a new node at location
+    def onRightClick(self, mousePos: tuple):
+        #self.path.addNode(PointRef(Ref.SCREEN, mousePos))
+        pass
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         screen.blit(self.fieldSurface, (self.LEFT_X, self.TOP_Y))

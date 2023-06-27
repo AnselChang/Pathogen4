@@ -374,9 +374,21 @@ class Entity(ABC, Observable):
         except:
             raise Exception("Entity not defined", self, self._parent)
     
+    # from absolute width, get relative width as a percent of parent horizontal span
+    def _inverse_pwidth(self, width):
+        if self._parent.WIDTH == 0:
+            return 0
+        return width / self._parent.WIDTH
+
     # get relative height as a percent of parent vertical span
     def _pheight(self, pheight):
         return self._parent.HEIGHT * pheight
+    
+    # from absolute height, get relative height as a percent of parent vertical span
+    def _inverse_pheight(self, height):
+        if self._parent.HEIGHT == 0:
+            return 0
+        return height / self._parent.HEIGHT
     
     # Get width given a margin (on both sides) from parent horizontal span
     def _mwidth(self, margin):

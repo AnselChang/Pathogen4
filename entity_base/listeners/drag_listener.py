@@ -16,17 +16,29 @@ class DragListener(ABC):
     
     def onStartDrag(self, mouse: tuple):
         self.isDragging = True
+        self.prevX, self.prevY = mouse
+        self.startX, self.startY = mouse
+        self.offsetX = 0
+        self.offsetY = 0
+        self.totalOffsetX = 0
+        self.totalOffsetY = 0
 
     @abstractmethod
     def canDrag(self, mouse: tuple) -> bool:
         pass
 
-    @abstractmethod
     def onDrag(self, mouse: tuple):
-        pass
+        self.offsetX = mouse[0] - self.prevX
+        self.offsetY = mouse[1] - self.prevY
+        self.prevX, self.prevY = mouse
+
+        self.totalOffsetX = mouse[0] - self.startX
+        self.totalOffsetY = mouse[1] - self.startY
 
     def onStopDrag(self):
         self.isDragging = False
+        self.offsetX = 0
+        self.offsetY = 0
 
 class DragLambda(DragListener):
 
@@ -45,6 +57,7 @@ class DragLambda(DragListener):
         return self.FcanDrag(mouse)
 
     def onDrag(self, mouse: tuple):
+        super().onDrag(mouse)
         self.FonDrag(mouse)
 
     def onStopDrag(self):
