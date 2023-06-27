@@ -94,6 +94,19 @@ class FieldEntity(Entity, Observable):
 
         # convert to inches
         return self.transform.convertFrom(Ref.IMAGE_PIXELS, (pixelX, pixelY))
+    
+    # convert from inches (0-144) to absolute coordinates
+    def inchesToMouse(self, inches: tuple) -> tuple:
+
+        # convert to raw image pixels
+        pixelX, pixelY = self.transform.convertFrom(Ref.FIELD_INCHES, inches)
+
+        # convert to px (0-1) and py (0-1) for percent position on field
+        px = pixelX * self._zoom / self.RAW_SURFACE_PIXELS
+        py = pixelY * self._zoom / self.RAW_SURFACE_PIXELS
+
+        # convert to absolute coordinates
+        return (self._px(px), self._py(py))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         screen.blit(self.fieldSurface, (self.LEFT_X, self.TOP_Y))

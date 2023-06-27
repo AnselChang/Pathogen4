@@ -148,8 +148,9 @@ def main():
         else:
             parent = ""
         #msg = f"({mouse[0]}, {mouse[1]}), {str(hoveredEntity)}" + parent
-        msg = fieldContainer.fieldEntity.mouseToInches(mouse)
-        pygame.display.set_caption(str(msg))
+        inches = fieldContainer.fieldEntity.mouseToInches(mouse)
+        mouse2 = fieldContainer.fieldEntity.inchesToMouse(inches)
+        pygame.display.set_caption(str(mouse) + str(inches) + str(mouse2))
 
         interactor.setHoveredEntity(hoveredEntity, mouse)
         # handle events and call callbacks
