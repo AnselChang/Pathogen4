@@ -32,7 +32,7 @@ from entity_ui.tooltip import initTooltipFont
 from common.font_manager import FontManager, FontID
 from common.image_manager import ImageManager, ImageID
 from common.reference_frame import PointRef, Ref, initReferenceframe, VectorRef
-from common.field_transform import FieldTransform
+from root_container.field_container.field_entity import FieldEntity
 from common.dimensions import Dimensions
 from common.draw_order import DrawOrder
 from root_container.top_bar_container.top_bar_container import TopBarContainer
@@ -95,11 +95,8 @@ def main():
 
     # Add permanent static entities
     panelContainer = PanelContainer()
-    fieldContainer = FieldContainer(fieldTransform)
+    fieldContainer = FieldContainer()
     topBarContainer = TopBarContainer()
-
-    fieldTransform: FieldTransform = FieldTransform(images, dimensions)
-    initReferenceframe(dimensions, fieldTransform)
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)
@@ -144,15 +141,15 @@ def main():
 
         mouse = pygame.mouse.get_pos()
         
-
-        mouseRef = PointRef(Ref.SCREEN, mouse)
         hoveredEntity = entities.getEntityAtPosition(mouse)
 
         if hoveredEntity is not None:
             parent = f", {str(hoveredEntity._parent)}"
         else:
             parent = ""
-        pygame.display.set_caption(f"({mouse[0]}, {mouse[1]}), {str(hoveredEntity)}" + parent)
+        #msg = f"({mouse[0]}, {mouse[1]}), {str(hoveredEntity)}" + parent
+        msg = fieldContainer.fieldEntity.mouseToInches(mouse)
+        pygame.display.set_caption(str(msg))
 
         interactor.setHoveredEntity(hoveredEntity, mouse)
         # handle events and call callbacks
@@ -162,10 +159,8 @@ def main():
                 sys.exit()
             elif event.type == pygame.VIDEORESIZE:
                 screen = dimensions.resizeScreen(*event.size)
-                fieldTransform.resizeScreen()
             elif event.type == pygame.MOUSEWHEEL:
-                #fieldTransform.changeZoom(mouseRef, event.y * 0.01)
-                interactor.onMouseWheel(event.y, mouseRef)
+                pass
             elif event.type == pygame.MOUSEBUTTONDOWN and (event.button == 1 or event.button == 3):
                 ctrlKey = pygame.key.get_pressed()[pygame.K_LCTRL]
                 shiftKey = pygame.key.get_pressed()[pygame.K_LSHIFT]

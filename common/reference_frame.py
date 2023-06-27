@@ -1,11 +1,11 @@
-from common.field_transform import FieldTransform
+from root_container.field_container.field_entity import FieldEntity
 from common.dimensions import Dimensions
 import math, utility.math_functions as math_functions
 from enum import Enum
 
-transform: FieldTransform = None
+transform: FieldEntity = None
 dimensions: Dimensions = None
-def initReferenceframe(dims: Dimensions, fieldTransform: FieldTransform):
+def initReferenceframe(dims: Dimensions, fieldTransform: FieldEntity):
     global transform, dimensions
     dimensions = dims
     transform = fieldTransform
@@ -127,7 +127,7 @@ class VectorRef:
 
     def __init__(self, referenceMode: Ref, vector: tuple = (0,0), magnitude: float = None, heading: float = None):
 
-        self.transform: FieldTransform = transform
+        self.transform: FieldEntity = transform
         self._vxf, self._vyf = None, None
 
         # If given in (magnitude, heading) form instead, find the vector
@@ -208,7 +208,7 @@ class VectorRef:
 class ScalarRef:
 
     def __init__(self, referenceMode: Ref, value: float):
-        self.transform: FieldTransform = transform
+        self.transform: FieldEntity = transform
         self.fieldRef = value
 
 
@@ -227,7 +227,7 @@ class ScalarRef:
 
 # Testing code
 if __name__ == "__main__":
-    f = FieldTransform(2, (0,0))
+    f = FieldEntity(2, (0,0))
     p = PointRef(f, Ref.FIELD, (10,10))
     p.screenRef = (0,0)
     print(p)

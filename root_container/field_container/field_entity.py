@@ -1,12 +1,17 @@
+from enum import Enum
 from common.image_manager import ImageID, ImageManager
 from common.dimensions import Dimensions
 from entity_base.entity import Entity
+from utility.coordinate_transform import CoordinateTransformBuilder
 from utility.math_functions import clamp
 from utility.pygame_functions import scaleSurface
 from data_structures.observer import Observable
 import pygame
 import weakref
 
+class Ref(Enum):
+    PERCENT = 0
+    FIELD_INCHES = 1
 
 """This class is used for storing the field transformations (zooming and panning) relative to the screen, as well as
 the image of the field itself.
@@ -16,7 +21,7 @@ change the panning or zooming values through automatic getters and setters.
 It is expected only to have a single instance of this class to represent the screen transformation state, and this
 object would be used in cases like for PointRef objects to figure out their field and screen reference frame conversions
 """
-class FieldTransform(Entity, Observable):
+class FieldEntity(Entity, Observable):
 
     def __init__(self, parent: Entity):
 
@@ -57,35 +62,18 @@ class FieldTransform(Entity, Observable):
             return
         
         self.oldRect = self.RECT
-        scaled = pygame.transform.smoothscale(self.rawSurface, (self.WIDTH, self.HEIGHT))
-        self.scaledSurface = pygame.Surface((self._pwidth(1), self._pheight(1)))
-        self.scaledSurface.blit(scaled, (self._awidth(self._panX), self._aheight(self._panY)))
-    
-    def _fieldToScreenX(self, x: float) -> float:
-        x = self._px(0) # left edge of container
-        x += self._awidth(self._panX) # add pan
-        x += self._zoom * self.MARGIN_PIXELS # add margin
-        x += self._zoom * (self.ACTIVE_FIELD_PIXELS / self.FIELD_SIZE_INCHES) * x # add x
-        return x
-    
-    def _fieldToScreenY(self, y: float) -> float:
-        y = self._py(0) # top edge of container
-        y += self._aheight(self._panY) # add pan
-        y += self._zoom * self.MARGIN_PIXELS # add margin
-        y += self._zoom * (self.ACTIVE_FIELD_PIXELS / self.FIELD_SIZE_INCHES) * y # add y
-        return y
-    
-    # Draw the scaled field with the stored pan
-    def draw(self, screen: pygame.Surface):
+        self.scaledSurface = pygame.transform.smoothscale(self.rawSurface, (self.WIDTH, self.HEIGHT))
+
+        # percent is from (0,0) (top left) to (1,1) (bottom right)
+        builder = CoordinateTransformBuilder[Ref](Ref.PERCENT, Ref.FIELD_INCHES)
+        builder.defineFirstPoint((0.1, 0.1), (0, 0))
+        builder.defineSecondPoint((0.9, 0.9), (144, 144))
+        self.transform = builder.build()
+
+    def mouseToInches(self, mousePos: tuple) -> tuple:
+        px = self._inverse_px(mousePos[0])
+        py = self._inverse_py(mousePos[1])
+        return self.transform.convertFrom(Ref.PERCENT, (px, py))
+
+    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         screen.blit(self.scaledSurface, (self.LEFT_X, self.TOP_Y))
-
-    def __str__(self):
-        return "FieldTransform object\nzoom: {}\npan: ({},{})".format(self._zoom, self._panX, self._panY)
-
-# Testing code
-if __name__ == "__main__":
-    f = FieldTransform()
-    print(f)
-    f._zoom = 4
-    f.pan = -10000, 1000
-    print(f)

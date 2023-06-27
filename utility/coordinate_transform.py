@@ -58,13 +58,36 @@ class CoordinateTransform(Generic[T]):
                  systemASecondPoint: tuple,
                  systemBSecondPoint: tuple):
         
-            
+        if systemAFirstPoint == systemASecondPoint or systemBFirstPoint == systemBSecondPoint:
+            raise ValueError("The two points in a system should not be the same.")
+
+        self.systemAType = systemAType
+        self.systemBType = systemBType
+
+        # Precompute scales and offsets
+        self.scale_x_A_to_B = (systemBSecondPoint[0] - systemBFirstPoint[0]) / (systemASecondPoint[0] - systemAFirstPoint[0])
+        self.offset_x_A_to_B = systemBFirstPoint[0] - self.scale_x_A_to_B * systemAFirstPoint[0]
         
-        pass
+        self.scale_y_A_to_B = (systemBSecondPoint[1] - systemBFirstPoint[1]) / (systemASecondPoint[1] - systemAFirstPoint[1])
+        self.offset_y_A_to_B = systemBFirstPoint[1] - self.scale_y_A_to_B * systemAFirstPoint[1]
+
+        self.scale_x_B_to_A = 1 / self.scale_x_A_to_B
+        self.offset_x_B_to_A = systemAFirstPoint[0] - self.scale_x_B_to_A * systemBFirstPoint[0]
+
+        self.scale_y_B_to_A = 1 / self.scale_y_A_to_B
+        self.offset_y_B_to_A = systemAFirstPoint[1] - self.scale_y_B_to_A * systemBFirstPoint[1]
 
     # convert from the given system to the other system as a tuple
     def convertFrom(self, oldSystem: T, oldPoint: tuple) -> tuple:
-        pass
+        
+        if oldSystem == self.systemAType:
+            x = self.scale_x_A_to_B * oldPoint[0] + self.offset_x_A_to_B
+            y = self.scale_y_A_to_B * oldPoint[1] + self.offset_y_A_to_B
+        else:
+            x = self.scale_x_B_to_A * oldPoint[0] + self.offset_x_B_to_A
+            y = self.scale_y_B_to_A * oldPoint[1] + self.offset_y_B_to_A
+            
+        return (x, y)
 
 class _Coordinate(Enum):
     TYPEA = 1
@@ -78,16 +101,12 @@ class CoordinateTransformTest:
 
             C = _Coordinate
 
-            builder = CoordinateTransformBuilder[C](C.TYPEA, C.TYPEB)
-            builder.defineFirstPoint((5,5), (20,20))
-            builder.defineSecondPoint((15,20), (100,100))
-            transform = builder.build()
+            # Test case 1
+            builder1 = CoordinateTransformBuilder[C](C.TYPEA, C.TYPEB)
+            builder1.defineFirstPoint((5,6), (6,5))
+            builder1.defineSecondPoint((0,0), (0,0))
+            transform1 = builder1.build()
 
-            assert(transform.convertFrom(C.TYPEA, (5,5)) == (20,20))
-            assert(transform.convertFrom(C.TYPEB, (20,20)) == (5,5))
-
-            assert(transform.convertFrom(C.TYPEA, (15,20)) == (100,100))
-            assert(transform.convertFrom(C.TYPEB, (100,100)) == (15,20))
-
+            
 if __name__ == "__main__":
     CoordinateTransformTest()

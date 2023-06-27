@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from common.reference_frame import VectorRef, PointRef
 
 """
 MUST be have selectListener to have DragListener.

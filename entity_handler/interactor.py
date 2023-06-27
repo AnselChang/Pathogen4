@@ -9,7 +9,6 @@ from entity_handler.select_handler import SelectHandler
 from entity_handler.selector_box import SelectorBox
 from common.reference_frame import PointRef, VectorRef
 from common.dimensions import Dimensions
-from common.field_transform import FieldTransform
 from utility.math_functions import isInsideBox
 
 import pygame, time

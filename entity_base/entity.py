@@ -10,12 +10,11 @@ if TYPE_CHECKING:
     from common.font_manager import FontManager
     from common.image_manager import ImageManager
     from common.dimensions import Dimensions
-    from common.field_transform import FieldTransform
+    from root_container.field_container.field_entity import FieldEntity
 
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from common.reference_frame import PointRef, Ref
 
 from entity_base.listeners.click_listener import ClickListener
 from entity_base.listeners.drag_listener import DragListener
@@ -344,9 +343,21 @@ class Entity(ABC, Observable):
     def _px(self, px):
         return self._parent.LEFT_X + px * self._parent.WIDTH
     
+    # from absolute x, get relative x as a percent of parent horizontal span
+    def _inverse_px(self, x):
+        if self._parent.WIDTH == 0:
+            return 0
+        return (x - self._parent.LEFT_X) / self._parent.WIDTH
+    
     # get relative y as a percent of parent horizontal span
     def _py(self, py):
         return self._parent.TOP_Y + py * self._parent.HEIGHT
+    
+    # from absolute y, get relative y as a percent of parent horizontal span
+    def _inverse_py(self, y):
+        if self._parent.HEIGHT == 0:
+            return 0
+        return (y - self._parent.TOP_Y) / self._parent.HEIGHT
     
     # get relative x in "pixels". One "pixel" is accurate for default resolution
     def _ax(self, pixels):

@@ -12,7 +12,7 @@ from common.reference_frame import PointRef, Ref
 
 import entity_base.entity as entity
 from common.draw_order import DrawOrder
-from common.field_transform import FieldTransform
+from root_container.field_container.field_entity import FieldEntity
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.drag_listener import DragLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
@@ -30,23 +30,12 @@ class FieldContainer(entity.Entity, Observer):
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
     def __init__(self):
         super().__init__(
-            parent = entity.ROOT_CONTAINER,
-            select = SelectLambda(self, "field", type = SelectorType.SOLO, deselectOnMouseUp = True),
-            drag = DragLambda(self,
-                              FonStartDrag = self.onStartDrag,
-                              FonDrag = self.onDrag,
-                              FonStopDrag = self.onStopDrag
-                              ),
-            click = ClickLambda(self, FonRightClick = self.onRightClick),
-            mousewheel = MousewheelLambda(self, FonMousewheel = self.onMousewheel),
-            drawOrder = DrawOrder.FIELD_BACKGROUND)
+            parent = entity.ROOT_CONTAINER)
+        
+        self.fieldEntity = FieldEntity(self)
     
-
     def initPath(self, path: Path):
         self.path = path
-
-    def onMousewheel(self, offset: int) -> bool:
-        self.fieldTransform.changeZoom(self.mousewheel.mouseRef, offset * 0.01)
 
     def defineTopLeft(self) -> tuple:
         return 0, self.dimensions.TOP_HEIGHT
@@ -61,18 +50,5 @@ class FieldContainer(entity.Entity, Observer):
     def onRightClick(self, mousePos: tuple):
         self.path.addNode(PointRef(Ref.SCREEN, mousePos))
     
-    def onStartDrag(self, mousePos: tuple):
-        self.startX, self.startY = mousePos
-        self.fieldTransform.startPan()
-
-    def onDrag(self, mousePos: tuple):
-        mx, my = mousePos
-        self.fieldTransform.updatePan(mx - self.startX, my - self.startY)
-
-    def onStopDrag(self):
-        pass
-    
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         pygame.draw.rect(screen, (255, 255, 255), self.RECT)
-        self.fieldTransform.draw(screen)
-        self.drawRect(screen)
