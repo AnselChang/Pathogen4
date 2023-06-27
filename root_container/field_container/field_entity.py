@@ -65,12 +65,30 @@ class FieldEntity(Entity, Observable):
         self._oldPan = None
 
     def onMousewheel(self, offset: int) -> bool:
-        P_ZOOM = 0.01
+        P_ZOOM = 0.05
         MIN_ZOOM = 1
-        MAX_ZOOM = 3 # maximum zoom from fit-to-container size
+        MAX_ZOOM = 3.5 # maximum zoom from fit-to-container size
 
+        oldZoom = self._zoom
         self._zoom += offset * P_ZOOM
         self._zoom = clamp(self._zoom, MIN_ZOOM, MAX_ZOOM)
+        zoomDelta = self._zoom - oldZoom
+
+        # Calculate how much to pan to zoom on mouse axis
+        mx, my = self.mousewheel.mouse
+        px = self._inverse_px(mx)
+        py = self._inverse_py(my)
+
+        # apply panning
+        px -= self._panX
+        py -= self._panY
+        px /= self._zoom
+        py /= self._zoom
+
+        self._panX -= zoomDelta * px
+        self._panY -= zoomDelta * py
+
+        self._boundPan()
         self.recomputeEntity()
 
         return True # always consume event
@@ -78,12 +96,19 @@ class FieldEntity(Entity, Observable):
     def onStartDrag(self, mouse: tuple):
         self.startPan = (self._panX, self._panY)
 
+    def _boundPan(self):
+        # panning must always be nonpositive
+        self._panX = min(self._panX, 0)
+        self._panY = min(self._panY, 0)
+
+    # pan and recompute
     def onDrag(self, mouse: tuple):
         ox, oy = self.drag.totalOffsetX, self.drag.totalOffsetY
 
         self._panX = self.startPan[0] + self._inverse_pwidth(ox)
         self._panY = self.startPan[1] + self._inverse_pheight(oy)
 
+        self._boundPan()
         self.recomputeEntity()
 
     def onStopDrag(self):
@@ -92,7 +117,7 @@ class FieldEntity(Entity, Observable):
     # recompute scaled surface if change in scale
     def defineAfter(self) -> None:
         
-        # use cached surface
+        # use cached surface if no change
         if self.RECT == self._oldRect:
             if self._zoom == self._oldZoom:
                 if (self._panX, self._panY) == self._oldPan:
