@@ -168,9 +168,9 @@ class BezierThetaNode(AbstractCircleEntity):
         
         # attempt to constrain to other theta
         if self.isStartAngle:
-            otherTheta = node.getPrevious().getStartTheta()
+            otherTheta = node.getPrevious().getEndTheta()
         else:
-            otherTheta = node.getNext().getEndTheta()
+            otherTheta = node.getNext().getStartTheta()
         node.constraints.addThetaConstraint(otherTheta)
 
         newTheta = node.constraints.getTheta()
