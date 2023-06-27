@@ -14,13 +14,8 @@ class Ref(Enum):
     IMAGE_PIXELS = 0
     FIELD_INCHES = 1
 
-"""This class is used for storing the field transformations (zooming and panning) relative to the screen, as well as
-the image of the field itself.
-It bounds the pan and zoom so that the field never leaves the screen, and does so automatically whenever you
-change the panning or zooming values through automatic getters and setters.
-
-It is expected only to have a single instance of this class to represent the screen transformation state, and this
-object would be used in cases like for PointRef objects to figure out their field and screen reference frame conversions
+"""
+Draws the background field image and handles logic for panning and zooming
 """
 class FieldEntity(Entity, Observable):
 
@@ -57,33 +52,35 @@ class FieldEntity(Entity, Observable):
 
         # cache old rect to see if there was any change, in which case
         # scaled image needs to be recomputed
-        self.oldRect = None
+        self._oldRect = None
+        self._oldZoom = None
 
     def onMousewheel(self, offset: int) -> bool:
-        print(offset)
+        P_ZOOM = 0.01
+        MIN_ZOOM = 1
+        MAX_ZOOM = 3
+
+        self._zoom += offset * P_ZOOM
+        self._zoom = clamp(self._zoom, MIN_ZOOM, MAX_ZOOM)
+        self.recomputeEntity()
+        print(self._zoom)
         return True
-    
-    def defineLeftX(self) -> float:
-        return self._px(0) + self._awidth(self._panX)
-    
-    def defineTopY(self) -> float:
-        return self._py(0) + self._aheight(self._panY)
-    
-    def defineWidth(self) -> float:
-        return self._pwidth(1) * self._zoom
-    
-    def defineHeight(self) -> float:
-        return self._pheight(1) * self._zoom
-    
+
     # recompute scaled surface if change in scale
     def defineAfter(self) -> None:
         
         # use cached surface
-        if self.RECT == self.oldRect:
-            return
+        if self.RECT == self._oldRect:
+            if self._zoom == self._oldZoom:
+                return
         
-        self.oldRect = self.RECT
-        self.scaledSurface = pygame.transform.smoothscale(self.rawSurface, (self.WIDTH, self.HEIGHT))
+        self._oldRect = self.RECT
+        self._oldZoom = self._zoom
+
+        size = self.WIDTH * self._zoom
+        scaledSurface = pygame.transform.smoothscale(self.rawSurface, (size, size))
+        self.fieldSurface = pygame.Surface((self.WIDTH, self.HEIGHT))
+        self.fieldSurface.blit(scaledSurface, (0,0))
         
     # convert from absolute coordinates to position on field in inches (0-144)
     def mouseToInches(self, mousePos: tuple) -> tuple:
@@ -92,11 +89,11 @@ class FieldEntity(Entity, Observable):
         py = self._inverse_py(mousePos[1])
 
         # convert to raw image pixels
-        pixelX = self.RAW_SURFACE_PIXELS * px
-        pixelY = self.RAW_SURFACE_PIXELS * py
+        pixelX = self.RAW_SURFACE_PIXELS * px / self._zoom
+        pixelY = self.RAW_SURFACE_PIXELS * py / self._zoom
 
         # convert to inches
         return self.transform.convertFrom(Ref.IMAGE_PIXELS, (pixelX, pixelY))
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
-        screen.blit(self.scaledSurface, (self.LEFT_X, self.TOP_Y))
+        screen.blit(self.fieldSurface, (self.LEFT_X, self.TOP_Y))

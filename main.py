@@ -160,7 +160,7 @@ def main():
             elif event.type == pygame.VIDEORESIZE:
                 screen = dimensions.resizeScreen(*event.size)
             elif event.type == pygame.MOUSEWHEEL:
-                pass
+                interactor.onMouseWheel(event.y, mouse)
             elif event.type == pygame.MOUSEBUTTONDOWN and (event.button == 1 or event.button == 3):
                 ctrlKey = pygame.key.get_pressed()[pygame.K_LCTRL]
                 shiftKey = pygame.key.get_pressed()[pygame.K_LSHIFT]

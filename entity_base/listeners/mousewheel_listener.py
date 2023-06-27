@@ -11,7 +11,7 @@ class MousewheelListener(ABC):
     def __init__(self, entity):
         self.entity = entity
 
-        self.mouseRef = None
+        self.mouse: tuple = None
 
     # return true if handled by entity
     @abstractmethod

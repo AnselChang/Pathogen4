@@ -21,8 +21,8 @@ from utility.math_functions import distance
 import pygame
 
 """
-An entity for the field.
-Passes events to fieldTransform, and subscribes to it to update entities on field
+Defines the static boundaries of the field.
+Holds a FieldEntity that deals with transformations on zooming/panning, and the background image
 """
 
 class FieldContainer(entity.Entity, Observer):
