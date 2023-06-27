@@ -101,7 +101,7 @@ def main():
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)
-    interactor.initInteractor(menuManager, fieldContainer)
+    interactor.initInteractor(menuManager, fieldContainer.fieldEntity)
 
     
 
