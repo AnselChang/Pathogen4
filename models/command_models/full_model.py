@@ -10,8 +10,10 @@ Model of entire path command, through a list of path sections
 
 class FullModel(AbstractModel[None, SectionModel]):
     
-    def __init__(self, parentUI: Entity = None):
+    def __init__(self):
         super().__init__()
+
+    def initParentUI(self, parentUI: Entity) -> None:
 
         self.fullModelParentUI = parentUI
 

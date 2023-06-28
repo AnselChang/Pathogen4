@@ -7,6 +7,7 @@ from entity_ui.group.variable_group.variable_group_container import VariableGrou
 from entity_ui.scrollbar.scrolling_container import ScrollingContainer
 from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 from models.command_models.full_model import FullModel
+from models.project_model import ProjectModel
 
 from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
@@ -74,6 +75,10 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: 
 
 def main():
 
+    # Project model that stores all the state of the program
+    # makes it easy to serialize and deserialize
+    model = ProjectModel()
+
     # Initialize field
     dimensions = Dimensions()
     fontManager = FontManager(dimensions)
@@ -97,7 +102,7 @@ def main():
     panelContainer = PanelContainer()
     fieldContainer = FieldContainer()
     initReferenceframe(dimensions, fieldContainer.fieldEntity)
-    topBarContainer = TopBarContainer()
+    topBarContainer = TopBarContainer(model)
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)
@@ -112,20 +117,18 @@ def main():
 
     # create command model
     scrollingContainer = ScrollingContainer(panelContainer)
-    model = FullModel(scrollingContainer.getContainer())
+    model.commandsModel.initParentUI(scrollingContainer.getContainer())
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
     clock = pygame.time.Clock()
 
     # initialize everything
-    print(model.tree())
-    print(model.ui.tree())
     print("compute everything")
     rootContainer.recomputeEntity()
 
     # Create path
-    path = Path(fieldContainer, panelContainer, model, database, PointRef(Ref.FIELD, (24,24)))
+    path = Path(fieldContainer, panelContainer, model.commandsModel, database, PointRef(Ref.FIELD, (24,24)))
     fieldContainer.fieldEntity.initPath(path)
 
     rootContainer.recomputeEntity()

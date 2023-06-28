@@ -11,8 +11,6 @@ from root_container.panel_container.command_block_section.command_section_body i
 from root_container.panel_container.command_block_section.command_section_header import CommandSectionHeader
 from utility.motion_profile import MotionProfile
 if TYPE_CHECKING:
-    from root_container.panel_container.command_block.command_sequence_handler import CommandSequenceHandler
-    from root_container.panel_container.tab.block_tab_contents_container import BlockTabContentsContainer
     from models.command_models.section_model import SectionModel
 
 from entity_base.container_entity import Container

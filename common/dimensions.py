@@ -19,8 +19,8 @@ class Dimensions(Observable):
         display_info = pygame.display.Info()
 
         # I work off my smaller-res mac computer, so I need to keep track of this to not screw with larger resolutions
-        self.ANSEL_START_WIDTH = 950
-        self.ANSEL_START_HEIGHT = 600
+        self.ANSEL_START_WIDTH = 900
+        self.ANSEL_START_HEIGHT = 700
 
         self.DEFAULT_SCREEN_WIDTH = display_info.current_w * 0.8
         self.DEFAULT_SCREEN_HEIGHT = display_info.current_h * 0.8
@@ -42,7 +42,7 @@ class Dimensions(Observable):
         self.SCREEN_WIDTH = screenWidth
         self.SCREEN_HEIGHT = screenHeight
 
-        TOP_RATIO = 0.15
+        TOP_RATIO = 0.1
         self.TOP_WIDTH = screenWidth
         self.TOP_HEIGHT = self.SCREEN_HEIGHT * TOP_RATIO  
 
