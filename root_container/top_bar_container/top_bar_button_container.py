@@ -15,7 +15,7 @@ from entity_ui.group.variable_group.variable_group_container import VariableGrou
 class TopBarButtonState:
 
     def __init__(self, imageID: ImageID, onClick: Callable, tooltip: str):
-        self.state = ImageState(0, imageID, tooltip)
+        self.state = ImageState(0, imageID, tooltip, hoveredBrightenAmount = 60)
         self.onClick = onClick
 
 
@@ -54,4 +54,4 @@ class TopBarButtonContainer(Container):
     
     # each button is this proportion of the top bar height
     def defineHeight(self) -> float:
-        return self._pheight(0.3)
+        return self._pheight(0.37)
