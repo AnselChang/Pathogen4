@@ -2,16 +2,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from data_structures.observer import Observer
+from entity_base.container_entity import Container
 
 if TYPE_CHECKING:
     from models.project_model import ProjectModel
     from root_container.top_bar_container.top_bar_container import TopBarContainer
 
 from common.font_manager import FontID
-from entity_base.entity import Entity
 from entity_ui.text.text_editor_entity import TextEditorEntity
 
-class ProjectName(Entity, Observer):
+class ProjectName(Container, Observer):
 
     def __init__(self, parent: TopBarContainer, model: ProjectModel):
         super().__init__(parent)

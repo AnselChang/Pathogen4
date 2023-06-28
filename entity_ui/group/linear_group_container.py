@@ -6,6 +6,8 @@ from typing import TypeVar, Generic
 
 """
 A group of linear entities, arranged either horizontally or vertically
+It spaces out the LinearContainer entities evenly within LGC bounds
+The size of each LC is determined by LGC size / N, where N is the number of LCs
 """
 T = TypeVar('T')
 class LinearGroupContainer(Container, Generic[T]):

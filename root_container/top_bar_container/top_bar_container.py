@@ -1,7 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from common.image_manager import ImageID
+from entity_base.image.image_entity import ImageEntity
 
 from root_container.top_bar_container.project_name import ProjectName
+from root_container.top_bar_container.top_bar_button_container import TopBarButtonContainer, TopBarButtonState
 
 if TYPE_CHECKING:
     from models.project_model import ProjectModel
@@ -19,6 +22,20 @@ class TopBarContainer(Container):
         self.model = model
 
         self.projectName = ProjectName(self, model)
+
+        undo = TopBarButtonState(ImageID.UNDO, self.onUndo, "Undo")
+        redo = TopBarButtonState(ImageID.REDO, self.onRedo, "Redo")
+        TopBarButtonContainer(self, 0.3, [undo, redo], 10)
+        undo = TopBarButtonState(ImageID.UNDO, self.onUndo, "Undo")
+        redo = TopBarButtonState(ImageID.REDO, self.onRedo, "Redo")
+        TopBarButtonContainer(self, 0.8, [undo, redo], 20)
+
+
+    def onUndo(self, mouse):
+        print("undo")
+
+    def onRedo(self, mouse):
+        print("redo")
     
     def defineTopLeft(self) -> tuple:
         return 0,0

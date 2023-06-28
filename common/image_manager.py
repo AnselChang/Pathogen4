@@ -43,6 +43,9 @@ class ImageID(Enum):
     FOLDER_CLOSED = auto()
     VISIBLE = auto()
     INVISIBLE = auto()
+    
+    UNDO = auto()
+    REDO = auto()
 
 class Image:
 
@@ -120,3 +123,6 @@ class ImageManager:
         self.images[ImageID.FOLDER_CLOSED] = Image("SectionIcons/folder_closed.png")
         self.images[ImageID.VISIBLE] = Image("SectionIcons/visible.png")
         self.images[ImageID.INVISIBLE] = Image("SectionIcons/invisible.png")
+
+        self.images[ImageID.UNDO] = Image("TopMenuIcons/undo.png")
+        self.images[ImageID.REDO] = Image("TopMenuIcons/redo.png")
