@@ -95,7 +95,7 @@ class Interactor:
         self.rawHoveredEntity = entity
 
         if self.greedyEntity is not None or self.disableUntilMouseUp:
-            if entity.select is not None and entity.select.rootSelectEntity is self.greedyEntity:
+            if entity is not None and entity.select is not None and entity.select.rootSelectEntity is self.greedyEntity:
                 pass
             else:
                 return

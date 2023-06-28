@@ -30,6 +30,9 @@ class TopBarContainer(Container):
         redo = TopBarButtonState(ImageID.REDO, self.onRedo, "Redo")
         TopBarButtonContainer(self, 0.8, [undo, redo], 20)
 
+        state = TopBarButtonState(ImageID.CHECKBOX_ON, lambda: None, "asdf")
+        TopBarButtonContainer(self, 0.4, state, 20)
+
 
     def onUndo(self, mouse):
         print("undo")
