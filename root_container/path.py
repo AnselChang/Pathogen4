@@ -133,7 +133,7 @@ class Path(Observer):
     
     # insert node to split up given segment
     def insertNode(self, segment: PathSegmentEntity, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
-        previousCommand = self.linker.getLastCommandFromSegment(segment)
+        previousCommand = self.linker.getCommandFromPath(segment)
         node = self._addRawNode(position, segment, previousCommand, isTemporary = isTemporary)
         
         command = self.linker.getCommandFromPath(node)
