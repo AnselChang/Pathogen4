@@ -1,0 +1,2 @@
+class PathNodeModel:
+    pass
