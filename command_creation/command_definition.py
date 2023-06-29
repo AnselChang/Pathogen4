@@ -33,3 +33,9 @@ class CommandDefinition:
             if element.id == id:
                 return element
         return None
+    
+    def getElementDefinitionByName(self, name) -> ElementDefinition:
+        for element in self.elements:
+            if element.variableName == name:
+                return element
+        return None

@@ -17,7 +17,18 @@ class ParameterState:
         self.database = model.database
         self.hashmap: dict[str, Any] = {}
 
-    def getValue(self, id):
+    # find the value of a parameter by its name and return its value.
+    # if parameter does not exist, return None
+    def getValueByName(self, name: str) -> str | None:
+
+        elementDefinition = self.model.getDefinition().getElementDefinitionByName(name)
+
+        if elementDefinition is None:
+            return None
+        
+        return self.getValueByID(elementDefinition.id)
+
+    def getValueByID(self, id):
 
         # if parameter is not in hashmap, assign to default value
         if id not in self.hashmap:
@@ -26,8 +37,9 @@ class ParameterState:
 
         return self.hashmap[id]
     
-    def setValue(self, id: str, value: Any):
+    def setValueByID(self, id: str, value: Any):
         self.hashmap[id] = value
+
 
     # when the command definition updates, modify hashmap to fit new parameters
     def onCommandDefinitionUpdate(self):
