@@ -46,10 +46,10 @@ class WidgetContainer(ElementContainer, Observable, Generic[T]):
         pass
 
     def setValue(self, value: str | float):
-        self.parameters.setValue(self.definition.id, value)
+        self.parameters.setValueByID(self.definition.id, value)
 
     def getValue(self) -> str | float:
-        return self.parameters.getValue(self.definition.id)
+        return self.parameters.getValueByID(self.definition.id)
 
     def getOpacity(self) -> float:
         return self.parentCommand.getAddonsOpacity()

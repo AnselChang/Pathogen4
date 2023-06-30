@@ -193,13 +193,11 @@ class ScalarRef:
 
     # Given we only store the point in the field reference frame, convert to field reference frame before storing it
     def _setScreenRef(self, valueScreenRef: tuple):
-        scalar = dimensions.FIELD_SIZE_IN_INCHES / dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN / self.transform._zoom
-        self.fieldRef = valueScreenRef * scalar
+        self.fieldRef = self.transform.mouseToInchesScaleOnly((valueScreenRef, 0))[0]
 
     # Given we only store the point in the field reference frame, we need to convert it to return as screen reference frame
     def _getScreenRef(self):
-        scalar = self.transform._zoom * dimensions.FIELD_SIZE_IN_PIXELS_NO_MARGIN / dimensions.FIELD_SIZE_IN_INCHES
-        return self.fieldRef * scalar
+        return self.transform.inchesToMouseScaleOnly((self.fieldRef, 0))[0]
 
     screenRef = property(_getScreenRef, _getScreenRef)
 
