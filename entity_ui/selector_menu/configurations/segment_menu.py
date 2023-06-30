@@ -50,6 +50,7 @@ class ToggleSegmentTypeAction(MenuClickAction[PathSegmentEntity]):
         else:
             raise Exception("Invalid segment type")      
 
+
 """
 Menu for segments. Functionality for:
     - revealing command associated with node
