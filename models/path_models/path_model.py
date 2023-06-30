@@ -1,5 +1,6 @@
 """
 The path model consists of a linked list of nodes and segments.
+All positions are stored as tuples in field ref.
 
 For nodes, the following information is stored:
 - Position (field ref): tuple
@@ -19,10 +20,15 @@ from data_structures.linked_list import LinkedList
 from models.command_models.command_model import CommandModel
 from models.path_models.path_node_model import PathNodeModel
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
-from root_container.path_command_linker import PathCommandLinker
+from models.path_models.path_command_linker import PathCommandLinker
+from serialization.serializable import Serializable, SerializedState
 
+class SerializedPathModel(SerializedState):
+    def __init__(self, pathList: LinkedList[PathNodeModel | PathSegmentEntity], linker: PathCommandLinker):
+        self.pathList = pathList
+        self.linker = linker
 
-class PathModel:
+class PathModel(Serializable):
 
     def __init__(self):
 
@@ -33,13 +39,22 @@ class PathModel:
 
         self.commandsModel = None
 
+    def serialize(self) -> SerializedState:
+        return SerializedPathModel(self.pathList, self.linker)
+    
+    def deserialize(state: SerializedPathModel) -> 'PathModel':
+        model = PathModel()
+        model.pathList = state.pathList
+        model.linker = state.linker
+        return model
+
     def initCommandsModel(self, commandsModel: CommandModel):
         self.commandsModel = commandsModel
 
     def initFirstNode(self, startPosition: tuple):
 
         # initialize first node
-        node = self._addRawNode(startPosition) # add start node
+        self._addRawNode(startPosition) # add start node
 
     def _addRawNode(self, nodePosition: tuple, afterPath = None, afterCommand: CommandModel = None, isTemporary: bool = False):
 

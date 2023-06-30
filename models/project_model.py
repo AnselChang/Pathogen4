@@ -1,7 +1,8 @@
 from models.command_models.full_model import FullModel
+from serialization.serializable import Serializable
 
 
-class ProjectModel:
+class ProjectModel(Serializable):
 
     def __init__(self):
 
