@@ -12,6 +12,9 @@ class ProjectModel(Serializable):
         # stores model for all the commands
         self.commandsModel = FullModel()
 
+        print("commands model after init")
+        self.commandsModel.tree()
+
         # stores model for the path
         self.pathModel = PathModel()
         self.pathModel.initCommandsModel(self.commandsModel)

@@ -22,8 +22,6 @@ class FullModel(AbstractModel[None, SectionModel]):
         # create the first section
         self.addSectionToEnd()
 
-        print("after first section:")
-        self.ui.tree()
 
     def recomputeUI(self) -> None:
         self.ui.recomputeEntity()

@@ -5,13 +5,10 @@ from common.draw_order import DrawOrder
 from common.reference_frame import PointRef, Ref, VectorRef
 from entity_base.listeners.drag_listener import DragLambda
 
-from root_container.field_container.segment.segment_type import PathSegmentType
 from utility.math_functions import distanceTuples, thetaFromPoints
 from utility.pygame_functions import shade
 if TYPE_CHECKING:
-    from root_container.field_container.node.path_node_entity import PathNodeEntity
-    from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
-    from root_container.field_container.segment.PathSegmentStates.bezier_segment_state import BezierSegmentState
+    from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 
 from entity_base.abstract_circle_entity import AbstractCircleEntity
 
@@ -31,7 +28,7 @@ that would make the angle at the other side of the segment snap
 class BezierThetaNode(AbstractCircleEntity):
 
     # segmentFunction is either getPrevious or getNext
-    def __init__(self, segment: PathSegmentEntity, bezier: BezierSegmentState, getNode, isStartAngle):
+    def __init__(self, segment: StraightSegmentEntity, bezier: BezierSegmentState, getNode, isStartAngle):
 
         self.DISTANCE_TO_NODE = 40
 

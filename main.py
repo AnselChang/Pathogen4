@@ -9,7 +9,7 @@ from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 from models.command_models.full_model import FullModel
 from models.project_model import ProjectModel
 
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 
@@ -56,7 +56,7 @@ def instanceOfClasses(entity, *classes):
     return False
 
 # Define the I/O handling function
-def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: EntityManager):
+def io_handler(database: CommandDefinitionDatabase, model: ProjectModel, entities: EntityManager):
     while True:
         cmd = input("Enter some text: ")
         
@@ -66,9 +66,11 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: 
         elif cmd == "model":
             model.tree()
         elif cmd == "ui":
-            model.getExistingUI().tree(verbose=False)
+            model.commandsModel.getExistingUI().tree(verbose=False)
         elif cmd == "cmd":
             print([e for e in entities.entities if isinstance(e, CommandBlockEntity)])
+        elif cmd == "path":
+            model.pathModel.pathList.printList()
 
 def main():
 
@@ -104,14 +106,10 @@ def main():
     model.pathModel.initFieldEntity(fieldContainer.fieldEntity)
     fieldContainer.fieldEntity.initPathModel(model.pathModel)
 
-
-    
-
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)
     interactor.initInteractor(menuManager, fieldContainer.fieldEntity)
 
-    
 
     StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX)
 
@@ -121,6 +119,10 @@ def main():
     # create command model
     scrollingContainer = ScrollingContainer(panelContainer)
     model.commandsModel.initParentUI(scrollingContainer.getContainer())
+
+    # create first path node
+    START_POSITION = (20,20)
+    model.pathModel.initFirstNode(START_POSITION)
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")

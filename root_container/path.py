@@ -11,7 +11,7 @@ from root_container.panel_container.command_expansion.command_expansion_containe
 
 from command_creation.command_block_entity_factory import CommandBlockEntityFactory
 
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.field_container.segment.path_segment_entity import StraightSegmentEntity
 from root_container.field_container.field_container import FieldContainer
 
 from entity_handler.entity_manager import EntityManager
@@ -51,7 +51,7 @@ class Path(Observer):
         self.fieldEntity = field.fieldEntity
 
         self.model = model
-        self.pathList = LinkedList[PathNodeEntity | PathSegmentEntity]() # linked list of nodes and segments
+        self.pathList = LinkedList[PathNodeEntity | StraightSegmentEntity]() # linked list of nodes and segments
 
         # store a dict that maintains a mapping from PathNodeEntity | PathSegmentEntity to CommandBlockEntity
         self.linker = PathCommandLinker()
@@ -100,7 +100,7 @@ class Path(Observer):
             afterCommand = self.model.getLastChild().getLastChild()
 
         # create segment and add entity
-        segment: PathSegmentEntity = PathSegmentEntity(self.fieldEntity, self)
+        segment: StraightSegmentEntity = StraightSegmentEntity(self.fieldEntity, self)
         self.pathList.insertAfter(afterPath, segment)
 
         segmentCommand = CommandModel(segment.getAdapter())
@@ -131,7 +131,7 @@ class Path(Observer):
         return node
     
     # insert node to split up given segment
-    def insertNode(self, segment: PathSegmentEntity, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
+    def insertNode(self, segment: StraightSegmentEntity, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
         previousCommand = self.linker.getCommandFromPath(segment)
         node = self._addRawNode(position, segment, previousCommand, isTemporary = isTemporary)
         
@@ -197,14 +197,14 @@ class Path(Observer):
             node.getPrevious().getPrevious().onAngleChange()
 
 
-    def getPathEntityFromCommand(self, command: CommandModel) -> PathSegmentEntity | PathNodeEntity:
+    def getPathEntityFromCommand(self, command: CommandModel) -> StraightSegmentEntity | PathNodeEntity:
         return self.linker.getPathFromCommand(command)
     
-    def getCommandFromPathEntity(self, pathEntity: PathSegmentEntity | PathNodeEntity) -> CommandModel:
+    def getCommandFromPathEntity(self, pathEntity: StraightSegmentEntity | PathNodeEntity) -> CommandModel:
         return self.linker.getCommandFromPath(pathEntity)
     
     # when the segment type has changed, show the correct command and hide the others
-    def onSegmentTypeChange(self, segment: PathSegmentEntity, oldType: PathSegmentType, newType: PathSegmentType):
+    def onSegmentTypeChange(self, segment: StraightSegmentEntity, oldType: PathSegmentType, newType: PathSegmentType):
         segmentCommand = self.linker.getCommandFromPath(segment)
         segmentCommand.setNewAdapter(segment.getAdapter())
         segmentCommand.rebuild()

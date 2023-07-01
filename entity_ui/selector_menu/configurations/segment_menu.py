@@ -2,8 +2,7 @@ from common.reference_frame import PointRef, Ref
 from entity_base.image.image_state import ImageStatesFactory
 from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction, HighlightID
 from entity_ui.selector_menu.selector_menu_factory import *
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
-from root_container.field_container.segment.segment_type import PathSegmentType
+from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 
 # When clicked, segment toggles forward/reverse direction
 class DirectionButtonID(Enum):
@@ -11,10 +10,10 @@ class DirectionButtonID(Enum):
     CURVE_FORWARD = 1
     STRAIGHT_REVERSE = 2
     CURVE_REVERSE = 3
-class InvertDirectionAction(MenuClickAction[PathSegmentEntity]):
+class InvertDirectionAction(MenuClickAction[StraightSegmentEntity]):
 
     # Get the current direction of the segment
-    def getStateID(self, targetEntity: PathSegmentEntity) -> Enum:
+    def getStateID(self, targetEntity: StraightSegmentEntity) -> Enum:
         isStraight = (targetEntity.getSegmentType() == PathSegmentType.STRAIGHT)
         if targetEntity.getDirection() == SegmentDirection.FORWARD:
             return DirectionButtonID.STRAIGHT_FORWARD if isStraight else DirectionButtonID.CURVE_FORWARD
@@ -22,23 +21,23 @@ class InvertDirectionAction(MenuClickAction[PathSegmentEntity]):
             return DirectionButtonID.STRAIGHT_REVERSE if isStraight else DirectionButtonID.CURVE_REVERSE
 
     # Toggle the forward/reverse direction
-    def onClick(self, targetEntity: PathSegmentEntity, mouse: tuple):
+    def onClick(self, targetEntity: StraightSegmentEntity, mouse: tuple):
         targetEntity.toggleDirection()
 
 # When clicked, splits segment and creates temporary node that follows mouse
-class InsertNodeAction(MenuClickAction[PathSegmentEntity]):
-    def onClick(self, targetEntity: PathSegmentEntity, mouse: tuple):
+class InsertNodeAction(MenuClickAction[StraightSegmentEntity]):
+    def onClick(self, targetEntity: StraightSegmentEntity, mouse: tuple):
         newNode = targetEntity.path.insertNode(targetEntity, PointRef(Ref.SCREEN, mouse), isTemporary = True)
         return newNode
     
 # When clicked, splits segment and creates temporary node that follows mouse
-class ToggleSegmentTypeAction(MenuClickAction[PathSegmentEntity]):
+class ToggleSegmentTypeAction(MenuClickAction[StraightSegmentEntity]):
 
     # Get the current segment type
-    def getStateID(self, targetEntity: PathSegmentEntity) -> Enum:
+    def getStateID(self, targetEntity: StraightSegmentEntity) -> Enum:
         return targetEntity.getSegmentType()
 
-    def onClick(self, targetEntity: PathSegmentEntity, mouse: tuple):
+    def onClick(self, targetEntity: StraightSegmentEntity, mouse: tuple):
         current = self.getStateID(targetEntity)
 
         if current == PathSegmentType.STRAIGHT:
@@ -58,7 +57,7 @@ Menu for segments. Functionality for:
 """
 def configureSegmentMenu() -> MenuDefinition:
 
-    segmentDefinition = MenuDefinition(PathSegmentEntity)
+    segmentDefinition = MenuDefinition(StraightSegmentEntity)
 
     # Reveals the corresponding command
     states = ImageStatesFactory()
@@ -75,12 +74,13 @@ def configureSegmentMenu() -> MenuDefinition:
     segmentDefinition.add(states.create(), InvertDirectionAction())
 
     # Add a button that toggles segment type
+    """
     states = ImageStatesFactory()
     states.addState(PathSegmentType.STRAIGHT, ImageID.STRAIGHT_SEGMENT, "Segment type: straight")
     states.addState(PathSegmentType.ARC, ImageID.ARC_SEGMENT, "Segment type: arc")
     states.addState(PathSegmentType.BEZIER, ImageID.CURVE_SEGMENT, "Segment type: bezier")
     segmentDefinition.add(states.create(), ToggleSegmentTypeAction())
-
+    """
     # Inserts a node which splits this segment into two. New node is set to temporary and following mouse position
     states = ImageStatesFactory()
     states.addState(0, ImageID.ADD_NODE, "Splits this segment to insert a node")

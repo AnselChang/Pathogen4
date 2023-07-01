@@ -18,7 +18,7 @@ from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.select_listener import SelectListener, SelectLambda
 from entity_base.listeners.key_listener import KeyLambda
 from entity_base.listeners.hover_listener import HoverLambda
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from root_container.field_container.field_container import FieldContainer
 from common.draw_order import DrawOrder
 from entity_handler.interactor import Interactor
@@ -57,7 +57,8 @@ class PathNodeEntity(Entity):
         self.field = fieldEntity
         self.model = model
         Entity.__init__(self,
-                parent = fieldEntity
+                parent = fieldEntity,
+                drawOrder = DrawOrder.NODE
         )
 
         self.RADIUS = 5

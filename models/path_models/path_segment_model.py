@@ -5,7 +5,7 @@ from adapter.straight_adapter import StraightAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 from models.path_models.segment_direction import SegmentDirection
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 if TYPE_CHECKING:
     from root_container.field_container.field_entity import FieldEntity
     from models.path_models.path_node_model import PathNodeModel
@@ -27,6 +27,8 @@ class PathSegmentModel(PathElementModel):
             ImageState(SegmentDirection.FORWARD, ImageID.STRAIGHT_FORWARD),
             ImageState(SegmentDirection.REVERSE, ImageID.STRAIGHT_REVERSE),
         ])
+
+        self.generateUI()
 
     def getAdapter(self) -> PathAdapter:
         return self.adapter
@@ -53,4 +55,7 @@ class PathSegmentModel(PathElementModel):
         return self.direction
     
     def _generateUI(self, fieldEntity: FieldEntity) -> Entity:
-        return PathSegmentEntity(fieldEntity, self)
+        return StraightSegmentEntity(fieldEntity, self)
+    
+    def __str__(self) -> str:
+        return f"PathSegmentModel"

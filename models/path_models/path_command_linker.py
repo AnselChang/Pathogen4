@@ -3,8 +3,7 @@ from models.command_models.command_model import CommandModel
 from models.path_models.path_node_model import PathNodeModel
 from models.path_models.path_segment_model import PathSegmentModel
 from models.path_models.path_element_model import PathElementModel
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
-from root_container.field_container.segment.segment_type import PathSegmentType
+from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
 """

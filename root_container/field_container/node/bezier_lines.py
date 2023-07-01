@@ -7,7 +7,7 @@ from root_container.field_container.segment.segment_type import PathSegmentType
 
 from utility.pygame_functions import drawDottedLine, shade
 if TYPE_CHECKING:
-    from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+    from root_container.field_container.segment.path_segment_entity import StraightSegmentEntity
 
 import pygame
 
@@ -20,7 +20,7 @@ Visible only when segment is selected, or the previous/next nodes
 class BezierLines(Entity):
 
     # segmentFunction is either getPrevious or getNext
-    def __init__(self, segment: PathSegmentEntity):
+    def __init__(self, segment: StraightSegmentEntity):
 
         self.segment = segment
 

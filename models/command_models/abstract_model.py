@@ -157,8 +157,8 @@ class AbstractModel(Generic[T1, T2]):
     def insertChildAtEnd(self, model: AbstractModel | T2):
         model.parent = self
         self.children.append(model)
-        model.rebuild()
 
+        model.rebuild()
         self.rebuildChildren()
 
     # relocate self to be after model.

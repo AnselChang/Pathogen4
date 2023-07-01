@@ -42,6 +42,8 @@ class PathNodeModel(PathElementModel):
         self.temporary = temporary
         self.lastDragPositionValid = False
 
+        self.generateUI()
+
     def getAdapter(self) -> TurnAdapter:
         return self.adapter
     
@@ -87,3 +89,6 @@ class PathNodeModel(PathElementModel):
         if self.getNext().getDirection() == SegmentDirection.REVERSE:
             theta = (theta + math.pi) % (math.pi*2)
         return theta
+    
+    def __str__(self) -> str:
+        return f"PathNodeModel at ({self.position[0]:2f}, {self.position[1]:2f})"

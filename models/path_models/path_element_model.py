@@ -16,20 +16,20 @@ A PathNodeEntity or PathSegment entity
 T = TypeVar('T')
 class PathElementModel(LinkedListNode[T], Generic[T]):
     def __init__(self, pathModel: PathModel):
+
+        super().__init__()
         
         self.path = pathModel
         self.ui: Entity = None
 
     def _generateUI(self, fieldEntity: FieldEntity) -> Entity:
         raise NotImplementedError()
+    
+    def generateUI(self):
+        assert(self.path.fieldEntity is not None)
+        self.ui = self._generateUI(self.path.fieldEntity)
 
     def recomputeUI(self):
-
-        assert(self.path.fieldEntity is not None)
-
-        if self.ui is None:
-            self.ui = self._generateUI(self.path.fieldEntity)
-        
         self.ui.recomputeEntity()
 
     def deleteUI(self):

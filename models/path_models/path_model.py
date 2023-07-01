@@ -9,12 +9,12 @@ from models.command_models.command_model import CommandModel
 from models.path_models.path_node_model import PathNodeModel
 from models.path_models.path_segment_model import PathSegmentModel
 from root_container.field_container.field_entity import FieldEntity
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from models.path_models.path_command_linker import PathCommandLinker
 from serialization.serializable import Serializable, SerializedState
 
 class SerializedPathModel(SerializedState):
-    def __init__(self, pathList: LinkedList[PathNodeModel | PathSegmentEntity], linker: PathCommandLinker):
+    def __init__(self, pathList: LinkedList[PathNodeModel | StraightSegmentEntity], linker: PathCommandLinker):
         self.pathList = pathList
         self.linker = linker
 
@@ -22,13 +22,14 @@ class PathModel(Serializable):
 
     def __init__(self):
 
-        self.pathList = LinkedList[PathNodeModel | PathSegmentEntity]() # linked list of nodes and segments
+        self.pathList = LinkedList[PathNodeModel | StraightSegmentEntity]() # linked list of nodes and segments
 
         # store a dict that maintains a mapping from PathNodeEntity | PathSegmentEntity to CommandBlockEntity
         self.linker = PathCommandLinker()
 
         self.commandsModel = None
         self.fieldEntity: FieldEntity = None
+
 
     def serialize(self) -> SerializedState:
         return SerializedPathModel(self.pathList, self.linker)
@@ -48,7 +49,7 @@ class PathModel(Serializable):
     def initFirstNode(self, startPosition: tuple):
 
         # initialize first node
-        self._addRawNode(startPosition) # add start node
+        node = self._addRawNode(startPosition) # add start node
 
     def _addRawNode(self, nodePosition: tuple, afterPath = None, afterCommand: CommandModel = None, isTemporary: bool = False):
 
@@ -113,12 +114,13 @@ class PathModel(Serializable):
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
 
         node.recomputeUI()
+        segment.recomputeUI()
         self.commandsModel.ui.recomputeEntity()
 
         return node
     
     # insert node to split up given segment
-    def insertNode(self, segment: PathSegmentEntity, position: tuple, isTemporary: bool = False) -> PathNodeModel:
+    def insertNode(self, segment: StraightSegmentEntity, position: tuple, isTemporary: bool = False) -> PathNodeModel:
         previousCommand = self.linker.getCommandFromPath(segment)
         node = self._addRawNode(position, segment, previousCommand, isTemporary = isTemporary)
         
@@ -184,14 +186,14 @@ class PathModel(Serializable):
             node.getPrevious().getPrevious().onAngleChange()
 
 
-    def getPathEntityFromCommand(self, command: CommandModel) -> PathSegmentEntity | PathNodeModel:
+    def getPathEntityFromCommand(self, command: CommandModel) -> StraightSegmentEntity | PathNodeModel:
         return self.linker.getPathFromCommand(command)
     
-    def getCommandFromPathEntity(self, pathEntity: PathSegmentEntity | PathNodeModel) -> CommandModel:
+    def getCommandFromPathEntity(self, pathEntity: StraightSegmentEntity | PathNodeModel) -> CommandModel:
         return self.linker.getCommandFromPath(pathEntity)
     
     # when the segment type has changed, show the correct command and hide the others
-    def onSegmentTypeChange(self, segment: PathSegmentEntity, oldType, newType):
+    def onSegmentTypeChange(self, segment: StraightSegmentEntity, oldType, newType):
         segmentCommand = self.linker.getCommandFromPath(segment)
         segmentCommand.setNewAdapter(segment.getAdapter())
         segmentCommand.rebuild()
