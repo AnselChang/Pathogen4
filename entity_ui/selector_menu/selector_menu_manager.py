@@ -3,7 +3,6 @@ from entity_ui.selector_menu.selector_menu_entity import SelectorMenuEntity
 from entity_ui.selector_menu.selector_menu_factory import *
 from common.image_manager import ImageID
 
-from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 
 from entity_ui.selector_menu.configurations.segment_menu import configureSegmentMenu

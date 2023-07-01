@@ -1,19 +1,7 @@
 """
 The path model consists of a linked list of nodes and segments.
-All positions are stored as tuples in field ref.
-
-For nodes, the following information is stored:
-- Position (field ref): tuple
-- Start Theta (radians): float
-- End Theta (radians): float
-- adapter
-- List of constraints
-
-For segments, the following information is stored:
-- Direction
-- segment states (straight/arc/bezier)
-    - adapter
-    - etc...
+It is in charge of storing all the path state.
+In creating new nodes, it also creates the relevant command models and links them to the nodes.
 """
 
 from data_structures.linked_list import LinkedList
@@ -117,16 +105,20 @@ class PathModel(Serializable):
 
     # adds segment and node to the end of the path
     # return the created PathNodeEntity
-    def addNode(self, nodePosition: tuple, isTemporary: bool = False) -> PathNodeEntity:
+    def addNode(self, nodePosition: tuple, isTemporary: bool = False) -> PathNodeModel:
+        
+        print("addNode")
+        
         segment = self._addRawSegment()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
 
         node.recomputeUI()
+        self.commandsModel.ui.recomputeEntity()
 
         return node
     
     # insert node to split up given segment
-    def insertNode(self, segment: PathSegmentEntity, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
+    def insertNode(self, segment: PathSegmentEntity, position: tuple, isTemporary: bool = False) -> PathNodeModel:
         previousCommand = self.linker.getCommandFromPath(segment)
         node = self._addRawNode(position, segment, previousCommand, isTemporary = isTemporary)
         
@@ -142,7 +134,7 @@ class PathModel(Serializable):
         return node
     
     # insert a node and segment at the beginning of the path
-    def addNodeToBeginning(self, position: PointRef, isTemporary: bool = False) -> PathNodeEntity:
+    def addNodeToBeginning(self, position: tuple, isTemporary: bool = False) -> PathNodeModel:
         node = self._addRawNodeToBeginning(position, isTemporary = isTemporary)
         
         command = self.linker.getCommandFromPath(node)
@@ -156,7 +148,7 @@ class PathModel(Serializable):
         return node
     
     # Removing a node involves removing a node and a neighboring segment
-    def removeNode(self, node: PathNodeEntity):
+    def removeNode(self, node: PathNodeModel):
 
         # remove the node
         self.pathList.remove(node)
@@ -192,14 +184,14 @@ class PathModel(Serializable):
             node.getPrevious().getPrevious().onAngleChange()
 
 
-    def getPathEntityFromCommand(self, command: CommandModel) -> PathSegmentEntity | PathNodeEntity:
+    def getPathEntityFromCommand(self, command: CommandModel) -> PathSegmentEntity | PathNodeModel:
         return self.linker.getPathFromCommand(command)
     
-    def getCommandFromPathEntity(self, pathEntity: PathSegmentEntity | PathNodeEntity) -> CommandModel:
+    def getCommandFromPathEntity(self, pathEntity: PathSegmentEntity | PathNodeModel) -> CommandModel:
         return self.linker.getCommandFromPath(pathEntity)
     
     # when the segment type has changed, show the correct command and hide the others
-    def onSegmentTypeChange(self, segment: PathSegmentEntity, oldType: PathSegmentType, newType: PathSegmentType):
+    def onSegmentTypeChange(self, segment: PathSegmentEntity, oldType, newType):
         segmentCommand = self.linker.getCommandFromPath(segment)
         segmentCommand.setNewAdapter(segment.getAdapter())
         segmentCommand.rebuild()

@@ -9,15 +9,12 @@ from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 from models.command_models.full_model import FullModel
 from models.project_model import ProjectModel
 
-from root_container.field_container.node.path_node_entity import PathNodeEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 
 from entity_handler.entity_manager import EntityManager
 from entity_handler.interactor import Interactor
-
-from root_container.path import Path
 
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from command_creation.test_commands import *
@@ -101,8 +98,14 @@ def main():
     # Add permanent static entities
     panelContainer = PanelContainer()
     fieldContainer = FieldContainer()
-    initReferenceframe(dimensions, fieldContainer.fieldEntity)
     topBarContainer = TopBarContainer(model)
+
+    initReferenceframe(dimensions, fieldContainer.fieldEntity)
+    model.pathModel.initFieldEntity(fieldContainer.fieldEntity)
+    fieldContainer.fieldEntity.initPathModel(model.pathModel)
+
+
+    
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer)
@@ -127,9 +130,6 @@ def main():
     print("compute everything")
     rootContainer.recomputeEntity()
 
-    # Create path
-    path = Path(fieldContainer, panelContainer, model.commandsModel, database, PointRef(Ref.FIELD, (24,24)))
-    fieldContainer.fieldEntity.initPath(path)
 
     rootContainer.recomputeEntity()
 

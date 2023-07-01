@@ -2,8 +2,7 @@ from command_creation.command_type import CommandType
 from models.command_models.command_model import CommandModel
 from models.path_models.path_node_model import PathNodeModel
 from models.path_models.path_segment_model import PathSegmentModel
-from root_container.field_container.node.old_path_node_entity import PathNodeEntity
-from models.path_models.path_element_model import PathElement, PathElementModel
+from models.path_models.path_element_model import PathElementModel
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 from root_container.field_container.segment.segment_type import PathSegmentType
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
@@ -30,7 +29,7 @@ class PathCommandLinker:
         self.nodeToCommand[node] = command
         self.commandToPath[command] = node
 
-    def linkSegment(self, segment: PathElement, command: CommandModel):
+    def linkSegment(self, segment: PathElementModel, command: CommandModel):
 
         if segment not in self.segmentToCommand:
             self.segmentToCommand[segment] = []

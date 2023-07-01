@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from root_container.field_container.field_entity import FieldEntity
 
 from root_container.field_container.node.node_line import NodeLine
-from models.path_models.path_element_model import PathElement
 from models.path_models.segment_direction import SegmentDirection
 if TYPE_CHECKING:
     from models.path_models.path_node_model import PathNodeModel
@@ -66,8 +65,10 @@ class PathNodeEntity(Entity):
     def defineCenter(self) -> tuple:
         return self.field.inchesToMouse(self.model.getPosition())
     
-    def defineAfter(self):
-
+    def isTouching(self, position: tuple) -> bool:
+        MARGIN = 4
+        return self.distanceTo(position) <= self.RADIUS + MARGIN
+    
     def draw(self, screen, isActive, isHovered):
         COLOR = (255, 0, 0)
         POSITION = [self.CENTER_X, self.CENTER_Y]

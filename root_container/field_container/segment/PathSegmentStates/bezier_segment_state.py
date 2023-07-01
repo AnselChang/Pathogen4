@@ -4,7 +4,6 @@ from adapter.bezier_adapter import BezierAdapter
 from common.image_manager import ImageID
 from data_structures.observer import Observer
 from entity_base.image.image_state import ImageState
-from root_container.field_container.segment.segment_direction import SegmentDirection
 import constants
 from root_container.field_container.segment.segment_type import PathSegmentType
 from utility.bezier_functions import generate_cubic_points
@@ -14,7 +13,7 @@ from utility.math_functions import pointTouchingLine, thetaFromPoints
 from utility.pygame_functions import drawLine
 if TYPE_CHECKING:
     from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
-    from root_container.field_container.node.path_node_entity import PathNodeEntity
+    from root_container.field_container.node.old_path_node_entity import PathNodeEntity
 
 from abc import ABC, abstractmethod
 from enum import Enum, auto

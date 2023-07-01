@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
-    from root_container.path import Path
+    from models.path_models.path_model import PathModel
 
 
 from enum import Enum
@@ -72,8 +73,8 @@ class FieldEntity(Entity, Observable):
         self._oldZoom = None
         self._oldPan = None
 
-    def initPath(self, path: Path):
-        self.path = path
+    def initPathModel(self, path: PathModel):
+        self.model = path
 
     def onMousewheel(self, offset: int) -> bool:
         P_ZOOM = 0.05
@@ -205,7 +206,8 @@ class FieldEntity(Entity, Observable):
     
     # Add a new node at location
     def onRightClick(self, mousePos: tuple):
-        self.path.addNode(mousePos)
+        fieldPos = self.mouseToInches(mousePos)
+        self.model.addNode(fieldPos)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         screen.blit(self.fieldSurface, (self.LEFT_X, self.TOP_Y))

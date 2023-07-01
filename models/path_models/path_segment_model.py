@@ -19,7 +19,7 @@ from models.path_models.path_element_model import PathElementModel
 class PathSegmentModel(PathElementModel):
     
     def __init__(self, pathModel: PathModel):
-        super().__init__()
+        super().__init__(pathModel)
 
         self.direction = SegmentDirection.FORWARD
 

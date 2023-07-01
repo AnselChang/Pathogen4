@@ -2,7 +2,7 @@ from common.reference_frame import PointRef, Ref
 from entity_base.image.image_state import ImageStatesFactory
 from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction, HighlightID
 from entity_ui.selector_menu.selector_menu_factory import *
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity, SegmentDirection
+from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 from root_container.field_container.segment.segment_type import PathSegmentType
 
 # When clicked, segment toggles forward/reverse direction
