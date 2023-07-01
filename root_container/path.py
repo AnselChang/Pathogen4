@@ -28,7 +28,7 @@ from common.reference_frame import PointRef, Ref
 
 import entity_base.entity as entity
 from root_container.panel_container.panel_container import PanelContainer
-from root_container.path_command_linker import PathCommandLinker
+from models.path_models.path_command_linker import PathCommandLinker
 
 """
 A class storing state for a segment and the node after it.

@@ -19,6 +19,8 @@ For segments, the following information is stored:
 from data_structures.linked_list import LinkedList
 from models.command_models.command_model import CommandModel
 from models.path_models.path_node_model import PathNodeModel
+from models.path_models.path_segment_model import PathSegmentModel
+from root_container.field_container.field_entity import FieldEntity
 from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
 from models.path_models.path_command_linker import PathCommandLinker
 from serialization.serializable import Serializable, SerializedState
@@ -38,6 +40,7 @@ class PathModel(Serializable):
         self.linker = PathCommandLinker()
 
         self.commandsModel = None
+        self.fieldEntity: FieldEntity = None
 
     def serialize(self) -> SerializedState:
         return SerializedPathModel(self.pathList, self.linker)
@@ -50,6 +53,9 @@ class PathModel(Serializable):
 
     def initCommandsModel(self, commandsModel: CommandModel):
         self.commandsModel = commandsModel
+
+    def initFieldEntity(self, fieldEntity: FieldEntity):
+        self.fieldEntity = fieldEntity
 
     def initFirstNode(self, startPosition: tuple):
 
@@ -97,7 +103,7 @@ class PathModel(Serializable):
             afterCommand = self.commandsModel.getLastChild().getLastChild()
 
         # create segment and add entity
-        segment: PathSegmentEntity = PathSegmentEntity(self)
+        segment: PathSegmentModel = PathSegmentModel(self)
         self.pathList.insertAfter(afterPath, segment)
 
         segmentCommand = CommandModel(segment.getAdapter())
@@ -115,14 +121,7 @@ class PathModel(Serializable):
         segment = self._addRawSegment()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
 
-        node.recomputeEntity()
-        self.commandsModel.recomputeUI()
-
-        node.updateAdapter()
-
-        
-
-        node.onNodeMove()
+        node.recomputeUI()
 
         return node
     
