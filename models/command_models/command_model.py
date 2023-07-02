@@ -108,7 +108,7 @@ class CommandModel(AbstractModel, Observer):
             self.hideUI()
 
         if recompute:
-            commandEntity.recomputeEntity()
+            self.parent.ui.recomputeEntity()
 
     def isHighlighted(self):
         return self.uiSharedState.highlightedModel is self

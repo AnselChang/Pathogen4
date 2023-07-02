@@ -64,7 +64,7 @@ def io_handler(database: CommandDefinitionDatabase, model: ProjectModel, entitie
             commandJSON: dict = database.exportToJson()
             print(json.dumps(commandJSON, indent = 4))
         elif cmd == "model":
-            model.tree()
+            model.commandsModel.tree()
         elif cmd == "ui":
             model.commandsModel.getExistingUI().tree(verbose=False)
         elif cmd == "cmd":

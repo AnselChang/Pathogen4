@@ -25,3 +25,6 @@ def parallelTheta(theta1, theta2, tolerance = 1e-3) -> bool:
     if headingDiff(theta1, theta2 + math.pi) < tolerance:
         return True
     return False
+
+def equalTheta(theta1, theta2, tolerance = 1e-3) -> bool:
+    return headingDiff(theta1, theta2) < tolerance

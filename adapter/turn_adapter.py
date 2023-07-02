@@ -21,6 +21,7 @@ class TurnAdapter(PathAdapter):
         isChange = self.turnEnabled != turnEnabled
         self.turnEnabled = turnEnabled
         if isChange:
+            print("turn enabled changed", turnEnabled)
             self.notify(NotifyType.TURN_ENABLE_TOGGLED)
         
 

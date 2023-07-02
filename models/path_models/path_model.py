@@ -50,6 +50,7 @@ class PathModel(Serializable):
 
         # initialize first node
         node = self._addRawNode(startPosition) # add start node
+        node.onThetaChange()
 
     def _addRawNode(self, nodePosition: tuple, afterPath = None, afterCommand: CommandModel = None, isTemporary: bool = False):
 
@@ -112,6 +113,8 @@ class PathModel(Serializable):
         
         segment = self._addRawSegment()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
+
+        node.onPositionChange()
 
         node.recomputeUI()
         segment.recomputeUI()

@@ -1,7 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from adapter.path_adapter import PathAttributeID
 
 from models.path_models.segment_direction import SegmentDirection
+from utility.angle_functions import equalTheta
+from utility.format_functions import formatDegrees
 if TYPE_CHECKING:
     from models.path_models.path_model import PathModel
     from models.path_models.path_segment_model import PathSegmentModel
@@ -44,6 +47,49 @@ class PathNodeModel(PathElementModel):
 
         self.generateUI()
 
+    """
+    UPDATE methods that update values based on model state
+    """
+
+    """
+    CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED
+    """
+
+    # called when the start or end theta of this node has changed
+    def onThetaChange(self):
+
+        theta1 = self.getStartTheta()
+        theta2 = self.getEndTheta()
+
+        turnEnabled = not equalTheta(theta1, theta2, 0.01)
+        self.adapter.setTurnEnabled(turnEnabled)
+
+        self.adapter.set(PathAttributeID.THETA1, theta1, formatDegrees(theta1, 1))
+        self.adapter.set(PathAttributeID.THETA2, theta2, formatDegrees(theta2, 1))
+
+    def onPositionChange(self):
+        # update segments attached to node, if any
+        if self.getPrevious() is not None:
+            self.getPrevious().onNodePositionChange(self)
+        if self.getNext() is not None:
+            self.getNext().onNodePositionChange(self)
+
+        # recompute node ui
+        self.recomputeUI()
+    
+    """
+    SETTER METHODS THAT MODIFY MODEL AND THEN SEND NOTIF TO UPDATE UI
+    """
+    
+    # Set the position of the node, which will update neighbor segments and recompute node
+    def setPosition(self, position: tuple):
+        self.position = position
+        self.onPositionChange()
+
+    """
+    GETTER METHODS THAT READ FROM MODEL. DO NOT MODIFY MODEL OR SEND NOTIFICATIONS
+    """
+
     def getAdapter(self) -> TurnAdapter:
         return self.adapter
     
@@ -55,52 +101,32 @@ class PathNodeModel(PathElementModel):
     
     def getPosition(self) -> tuple:
         return self.position
-    
-    def setPosition(self, position: tuple):
-        self.position = position
-
-        # update segments attached to node, if any
-        if self.getPrevious() is not None:
-            self.getPrevious().onNodePositionChange(self)
-        if self.getNext() is not None:
-            self.getNext().onNodePositionChange(self)
-
-        # recompute node ui
-        self.recomputeUI()
 
     def isTemporary(self) -> bool:
         return self.temporary
     
-    def _generateUI(self, fieldEntity: FieldEntity) -> Entity:
-        return PathNodeEntity(fieldEntity, self)
-    
-    # gets the start theta, adjusted for segment direction.
-    # returns None if there is no previous node
+    # gets the theta when robot approaches node before turning
     def getStartTheta(self):
         if self.getPrevious() is None:
             if self.getNext() is None:
-                return None
+                return 0
             else:
-                return self.getStopTheta()
-        
-        theta = self.getPrevious().getEndTheta()
-        if self.getPrevious().getDirection() == SegmentDirection.REVERSE:
-            theta = (theta + math.pi) % (math.pi*2)
-        return theta
+                return self.getEndTheta()
+        else:
+            return self.getPrevious().getEndTheta()
 
-    # gets the stop theta, adjusted for segment direction.
-    # returns None if there is no next node
+    # gets the theta when robot leaves node after turning
     def getEndTheta(self):
         if self.getNext() is None:
             if self.getPrevious() is None:
-                return None
+                return 0
             else:
                 return self.getStartTheta()
-        
-        theta = self.getNext().getStartTheta()
-        if self.getNext().getDirection() == SegmentDirection.REVERSE:
-            theta = (theta + math.pi) % (math.pi*2)
-        return theta
+        else:
+            return self.getNext().getStartTheta()
+    
+    def _generateUI(self, fieldEntity: FieldEntity) -> Entity:
+        return PathNodeEntity(fieldEntity, self)
     
     def __str__(self) -> str:
         return f"PathNodeModel at ({self.position[0]:2f}, {self.position[1]:2f})"
