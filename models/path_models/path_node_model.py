@@ -58,6 +58,14 @@ class PathNodeModel(PathElementModel):
     
     def setPosition(self, position: tuple):
         self.position = position
+
+        # update segments attached to node, if any
+        if self.getPrevious() is not None:
+            self.getPrevious().onNodePositionChange(self)
+        if self.getNext() is not None:
+            self.getNext().onNodePositionChange(self)
+
+        # recompute node ui
         self.recomputeUI()
 
     def isTemporary(self) -> bool:

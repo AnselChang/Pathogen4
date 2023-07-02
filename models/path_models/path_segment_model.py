@@ -30,6 +30,28 @@ class PathSegmentModel(PathElementModel):
 
         self.generateUI()
 
+
+    """
+    CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED
+    """
+    
+    # called when a node attached to segment is moved
+    def onNodePositionChange(self, node: PathNodeModel):
+        # assert that node is attached to segment
+        assert(node == self.getPrevious() or node == self.getNext())
+
+        # redraw segment ui. No need to update segment model as
+        # segment endpoint positions are just refs to node models
+        self.recomputeUI()
+
+    """
+    SETTER METHODS THAT MODIFY MODEL AND THEN SEND NOTIF TO UPDATE UI
+    """
+
+    """
+    GETTER METHODS THAT READ FROM MODEL. DO NOT MODIFY MODEL OR SEND NOTIFICATIONS
+    """
+
     def getAdapter(self) -> PathAdapter:
         return self.adapter
  
@@ -53,6 +75,10 @@ class PathSegmentModel(PathElementModel):
     
     def getDirection(self) -> SegmentDirection:
         return self.direction
+    
+    """
+    PRIVATE METHODS
+    """
     
     def _generateUI(self, fieldEntity: FieldEntity) -> Entity:
         return StraightSegmentEntity(fieldEntity, self)
