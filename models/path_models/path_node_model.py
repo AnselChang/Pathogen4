@@ -55,6 +55,10 @@ class PathNodeModel(PathElementModel):
     
     def getPosition(self) -> tuple:
         return self.position
+    
+    def setPosition(self, position: tuple):
+        self.position = position
+        self.recomputeUI()
 
     def isTemporary(self) -> bool:
         return self.temporary

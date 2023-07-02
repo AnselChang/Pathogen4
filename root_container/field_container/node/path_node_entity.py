@@ -48,20 +48,50 @@ Referenced in PathSection
 
 class PathNodeEntity(Entity):
 
-    TURN_DISABLED_COLOR = (0,0,0)
-    BLUE_COLOR = (102, 153, 255)
-    FIRST_BLUE_COLOR = (40, 40, 255)
-    RED_COLOR = (255, 102, 102)
-
     def __init__(self, fieldEntity: FieldEntity, model: PathNodeModel):
         self.field = fieldEntity
         self.model = model
         Entity.__init__(self,
                 parent = fieldEntity,
+                hover = HoverLambda(self),
+                drag = DragLambda(self,
+                    FonStartDrag = self.onStartDrag,
+                    FonDrag = self.onDrag,
+                    FonStopDrag = self.onStopDrag
+                ),
                 drawOrder = DrawOrder.NODE
         )
 
-        self.RADIUS = 5
+        self.RADIUS = 10
+        self.RADIUS_HOVERED = 12
+
+        self.TURN_DISABLED_COLOR = (0,0,0)
+        self.BLUE_COLOR = (102, 153, 255)
+        self.FIRST_BLUE_COLOR = (40, 40, 255)
+        self.RED_COLOR = (255, 102, 102)
+
+    def onStartDrag(self, mouse: tuple):
+
+        # figure out initial offset in inches to determine offset when dragging
+        mouseInchesX, mouseInchesY = self.field.mouseToInches(mouse)
+        nodeInchesX, nodeInchesY = self.model.getPosition()
+        self.dx, self.dy = mouseInchesX - nodeInchesX, mouseInchesY - nodeInchesY
+
+    def onDrag(self, mouse: tuple):
+
+        # compute dragged position, taking into account mouse offset from node center when starting drag
+        rawPosX, rawPosY = self.field.mouseToInches(mouse)
+        newPos = rawPosX - self.dx, rawPosY - self.dy
+
+        # Cannot drag outside of field
+        if not self.field.inBoundsInches(newPos):
+            return
+        
+        # update model with new position
+        self.model.setPosition(newPos)
+
+    def onStopDrag(self):
+        pass
         
     def defineCenter(self) -> tuple:
         return self.field.inchesToMouse(self.model.getPosition())
@@ -71,6 +101,6 @@ class PathNodeEntity(Entity):
         return self.distanceTo(position) <= self.RADIUS + MARGIN
     
     def draw(self, screen, isActive, isHovered):
-        COLOR = (255, 0, 0)
         POSITION = [self.CENTER_X, self.CENTER_Y]
-        pygame.draw.circle(screen, COLOR, POSITION, self.RADIUS)
+        radius = self.RADIUS_HOVERED if self.hover.isHovering else self.RADIUS
+        pygame.draw.circle(screen, self.BLUE_COLOR, POSITION, radius)

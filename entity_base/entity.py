@@ -339,6 +339,9 @@ class Entity(ABC, Observable):
 
     # THESE ARE UTILITY METHODS THAT CAN BE USED TO SPECIFY RELATIVE POSITIONS ABOVE
 
+    def scalePixels(self, pixels: float):
+        return pixels * self.dimensions.RESOLUTION_RATIO
+
     # get relative x as a percent of parent horizontal span
     def _px(self, px):
         return self._parent.LEFT_X + px * self._parent.WIDTH

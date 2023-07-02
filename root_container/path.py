@@ -11,7 +11,7 @@ from root_container.panel_container.command_expansion.command_expansion_containe
 
 from command_creation.command_block_entity_factory import CommandBlockEntityFactory
 
-from root_container.field_container.segment.path_segment_entity import StraightSegmentEntity
+from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from root_container.field_container.field_container import FieldContainer
 
 from entity_handler.entity_manager import EntityManager

@@ -13,7 +13,7 @@ from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.drag_listener import DragLambda
 from entity_base.listeners.mousewheel_listener import MousewheelLambda
 from utility.coordinate_transform import CoordinateTransformBuilder
-from utility.math_functions import clamp
+from utility.math_functions import clamp, isInsideBox
 from utility.pygame_functions import scaleSurface
 from data_structures.observer import Observable
 import pygame
@@ -203,6 +203,12 @@ class FieldEntity(Entity, Observable):
         pheight = pixelHeight * self._zoom / self.RAW_SURFACE_PIXELS
 
         return (self._pwidth(pwidth), self._pheight(pheight))
+    
+    def inBoundsInches(self, inches: tuple) -> bool:
+        return isInsideBox(*inches, 0, 0, 144, 144)
+    
+    def inBoundsPixels(self, pixels: tuple) -> bool:
+        return self.inBoundsInches(self.mouseToInches(pixels))
     
     # Add a new node at location
     def onRightClick(self, mousePos: tuple):

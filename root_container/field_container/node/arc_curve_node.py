@@ -14,7 +14,7 @@ from utility.math_functions import distancePointToLine
 from utility.pygame_functions import shade
 if TYPE_CHECKING:
     from root_container.field_container.node.old_path_node_entity import PathNodeEntity
-    from root_container.field_container.segment.path_segment_entity import StraightSegmentEntity
+    from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
     from root_container.field_container.segment.PathSegmentStates.arc_segment_state import ArcSegmentState
 
 

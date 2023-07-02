@@ -6,7 +6,7 @@ from entity_base.entity import Entity
 
 from utility.pygame_functions import drawDottedLine, shade
 if TYPE_CHECKING:
-    from root_container.field_container.node.path_node_entity import PathNodeEntity
+    from root_container.field_container.node.old_path_node_entity import PathNodeEntity
 
 import pygame
 

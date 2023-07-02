@@ -7,7 +7,7 @@ from root_container.field_container.segment.segment_type import PathSegmentType
 
 from utility.pygame_functions import drawDottedLine, shade
 if TYPE_CHECKING:
-    from root_container.field_container.segment.path_segment_entity import StraightSegmentEntity
+    from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 
 import pygame
 

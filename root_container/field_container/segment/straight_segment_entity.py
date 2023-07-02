@@ -1,5 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from models.path_models.segment_direction import SegmentDirection
+
+from root_container.field_container.segment.abstract_segment_entity import AbstractSegmentEntity
 if TYPE_CHECKING:
     from models.path_models.path_segment_model import PathSegmentModel
 
@@ -22,20 +25,10 @@ that define behavior for straight/arc/bezier shapes. Easy to switch between stat
 We also define the constants that apply across all segment types here, like color and thickness
 """
 
-class StraightSegmentEntity(Entity):
+class StraightSegmentEntity(AbstractSegmentEntity):
     def __init__(self, field: FieldEntity, model: PathSegmentModel):
-        self.model = model
-        self.field = field
-        super().__init__(parent = field, drawOrder = DrawOrder.SEGMENT)
+        super().__init__(field, model)
 
-
-        self.COLOR = (0, 255, 0)
-        self.THICKNESS = 3
-        self.HOVER_THICKNESS = 5
-
-    def defineAfter(self) -> None:
-        self.beforePos = self.field.inchesToMouse(self.model.getBeforePos())
-        self.afterPos = self.field.inchesToMouse(self.model.getAfterPos())
 
     def isTouching(self, position: tuple) -> bool:
         beforeUI = self.model.getPrevious().ui
@@ -45,6 +38,11 @@ class StraightSegmentEntity(Entity):
         return pointTouchingLine(*position, x1, y1, x2, y2, self.HOVER_THICKNESS)
 
     def draw(self, screen, isActive, isHovering):
+
+        if self.model.getDirection() == SegmentDirection.FORWARD:
+            color = self.colorForwardH if self.hover.isHovering else self.colorForward
+        else:
+            color = self.colorReversedH if self.hover.isHovering else self.colorReversed
         
         # draw segment from beforePos to afterPos
-        drawLine(screen, self.COLOR, *self.beforePos, *self.afterPos, self.THICKNESS)
+        drawLine(screen, color, *self.beforePos, *self.afterPos, self.THICKNESS)
