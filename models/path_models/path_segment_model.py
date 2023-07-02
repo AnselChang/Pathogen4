@@ -54,7 +54,7 @@ class PathSegmentModel(PathElementModel):
     CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED
     """
 
-    # when the distance of the segment is changed
+    # called when the distance of the segment is changed
     def onDistanceChange(self):
         distance = distanceTuples(self.getBeforePos(), self.getAfterPos())
         self.adapter.set(PathAttributeID.DISTANCE, distance, formatInches(distance))

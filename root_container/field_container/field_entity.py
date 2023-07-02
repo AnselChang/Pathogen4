@@ -24,8 +24,14 @@ class Ref(Enum):
     FIELD_INCHES = 1
 
 """
-Draws the background field image and handles logic for panning and zooming
+Handles logic for the interactive field.
+This includes:
+- Drawing the background
+- Panning and zooming
+- Coordinate conversions between image pixels and field inches
+     - children inside field can access these methods
 """
+
 class FieldEntity(Entity, Observable):
 
     def __init__(self, parent: Entity):
