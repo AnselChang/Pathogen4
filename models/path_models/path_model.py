@@ -108,14 +108,12 @@ class PathModel(Serializable):
     # adds segment and node to the end of the path
     # return the created PathNodeEntity
     def addNode(self, nodePosition: tuple, isTemporary: bool = False) -> PathNodeModel:
-        
-        print("addNode")
-        
+                
         segment = self._addRawSegment()
         node = self._addRawNode(nodePosition, isTemporary = isTemporary)
 
-        node.onPositionChange()
-
+        segment.onInit()
+        
         node.recomputeUI()
         segment.recomputeUI()
         self.commandsModel.ui.recomputeEntity()

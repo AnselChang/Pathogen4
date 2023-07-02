@@ -99,7 +99,6 @@ class CommandModel(AbstractModel, Observer):
         print("CommandModel: onCommandDefinitionChange")
 
     def onTurnEnableToggled(self, recompute: bool = True):
-        print("CommandModel: onTurnEnableToggled", recompute)
         commandEntity: CommandBlockEntity = self.ui
 
         if self.adapter.turnEnabled:

@@ -55,6 +55,9 @@ class PathNodeModel(PathElementModel):
     CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED
     """
 
+    def onInit(self):
+        self.onThetaChange()
+
     # called when the start or end theta of this node has changed
     def onThetaChange(self):
 

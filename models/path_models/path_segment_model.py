@@ -9,7 +9,7 @@ from models.path_models.path_segment_state.abstract_segment_state import Abstrac
 from models.path_models.path_segment_state.straight_segment_state import StraightSegmentState
 from models.path_models.segment_direction import SegmentDirection
 from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
-from utility.format_functions import formatInches
+from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import distanceTuples, thetaFromPoints
 if TYPE_CHECKING:
     from root_container.field_container.field_entity import FieldEntity
@@ -55,8 +55,8 @@ class PathSegmentModel(PathElementModel):
             self.START_THETA = (self.START_THETA + math.pi) % (2 * math.pi)
             self.END_THETA = (self.END_THETA + math.pi) % (2 * math.pi)
 
-        self.getAdapter().set(PathAttributeID.THETA1, self.START_THETA, formatInches(self.START_THETA))
-        self.getAdapter().set(PathAttributeID.THETA2, self.END_THETA, formatInches(self.END_THETA))
+        self.getAdapter().set(PathAttributeID.THETA1, self.START_THETA, formatDegrees(self.START_THETA))
+        self.getAdapter().set(PathAttributeID.THETA2, self.END_THETA, formatDegrees(self.END_THETA))
 
     # called when the distance of the segment is changed
     def updateDistance(self):
@@ -68,10 +68,34 @@ class PathSegmentModel(PathElementModel):
 
         self.getAdapter().set(PathAttributeID.DISTANCE, distance, formatInches(distance))
     
+    # Update adapter for endpoint position
+    def updateEndpointPosition(self, node: PathNodeModel):
+
+        # new endpoint position
+        pos = node.getPosition()
+
+        # update the correct endpoint
+        if self.getPrevious() == node:
+            x, y = PathAttributeID.X1, PathAttributeID.Y1
+        else:
+            x, y = PathAttributeID.X2, PathAttributeID.Y2
+
+        # set adapter
+        self.getAdapter().set(x, pos[0], formatInches(pos[0]))
+        self.getAdapter().set(y, pos[1], formatInches(pos[1]))
 
     """
     CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED
     """
+
+    def onInit(self):
+        self.updateThetas()
+        self.updateDistance()
+        self.updateEndpointPosition(self.getPrevious())
+        self.updateEndpointPosition(self.getNext())
+
+        self.getPrevious().onThetaChange()
+        self.getNext().onThetaChange()
 
     # called when a node attached to segment is moved
     def onNodePositionChange(self, node: PathNodeModel):
@@ -85,6 +109,9 @@ class PathSegmentModel(PathElementModel):
 
         # update segment distance
         self.updateDistance()
+
+        # update endpoint that changed
+        self.updateEndpointPosition(node)
 
         # redraw segment ui. No need to update segment model as
         # segment endpoint positions are just refs to node models

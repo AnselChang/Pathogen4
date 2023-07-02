@@ -52,6 +52,8 @@ class CommandDefinitionPresets:
         builder = CommandDefinitionBuilder(CommandType.STRAIGHT)
         builder.setName("goForward()")
         builder.addReadout("Distance", PathAttributeID.DISTANCE)
+        builder.addReadout("x1", PathAttributeID.X1)
+        builder.addReadout("angle", PathAttributeID.THETA1)
         builder.addWidget(DropdownWidgetDefinition("Mode", ["Odometry", "IMU+Encoder", "Encoder"]))
         builder.addWidget(DropdownWidgetDefinition("Motion Profile", ["Fast", "Slow", "None"]))
         builder.addWidget(ValueTextboxWidgetDefinition("Speed", 0.75))

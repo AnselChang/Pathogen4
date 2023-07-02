@@ -18,11 +18,8 @@ class TurnAdapter(PathAdapter):
         super().set(attribute, value, string)
 
     def setTurnEnabled(self, turnEnabled: bool):
-        isChange = self.turnEnabled != turnEnabled
         self.turnEnabled = turnEnabled
-        if isChange:
-            print("turn enabled changed", turnEnabled)
-            self.notify(NotifyType.TURN_ENABLE_TOGGLED)
+        self.notify(NotifyType.TURN_ENABLE_TOGGLED)
         
 
     def isTurnEnabled(self) -> bool:
