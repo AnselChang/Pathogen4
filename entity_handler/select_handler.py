@@ -69,6 +69,7 @@ class SelectHandler:
         if self.activeMenu is not None:
             self.activeMenu.despawn()
             self.activeMenu = None
+            print("despawn active menu")
 
         return True
 

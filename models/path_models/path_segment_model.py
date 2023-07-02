@@ -148,6 +148,8 @@ class PathSegmentModel(PathElementModel):
         self.generateUI()
         self.recomputeUI()
 
+        self.ui.interactor.activeMenu = self.ui.interactor.selected.menuManager.createMenuForEntity(self.ui)
+
     def toggleDirection(self):
         if self.direction == SegmentDirection.FORWARD:
             self.direction = SegmentDirection.REVERSE

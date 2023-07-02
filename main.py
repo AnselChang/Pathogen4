@@ -107,7 +107,7 @@ def main():
     fieldContainer.fieldEntity.initPathModel(model.pathModel)
 
     # handles the creating of menus when an entity is selected
-    menuManager = SelectorMenuManager(fieldContainer)
+    menuManager = SelectorMenuManager(fieldContainer.fieldEntity)
     interactor.initInteractor(menuManager, fieldContainer.fieldEntity)
 
 

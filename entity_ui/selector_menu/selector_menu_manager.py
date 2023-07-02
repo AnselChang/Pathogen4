@@ -35,7 +35,7 @@ class SelectorMenuManager:
 
     # If the entity type is supported, create and return a SelectorMenuEntity for the entity
     def createMenuForEntity(self, entity: Entity) -> SelectorMenuEntity:
-            
+        print("create menu for entity", entity)
         for menuDefinition in self.menuDefinitions:
             if isinstance(entity, menuDefinition.entityType):
                 return SelectorMenuEntity(self.fieldContainer, entity, menuDefinition)
