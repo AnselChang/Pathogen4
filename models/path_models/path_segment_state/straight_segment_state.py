@@ -5,8 +5,9 @@ from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 
 from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
+from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.segment_direction import SegmentDirection
-from utility.math_functions import distanceTuples, thetaFromPoints
+from utility.math_functions import distanceTuples, divideTuple, midpoint, thetaFromPoints
 
 if TYPE_CHECKING:
     from models.path_models.path_segment_model import PathSegmentModel
@@ -25,7 +26,7 @@ class StraightSegmentState(AbstractSegmentState):
             ImageState(SegmentDirection.REVERSE, ImageID.STRAIGHT_REVERSE),
         ])
 
-        super().__init__(model, adapter)
+        super().__init__(model, adapter, SegmentType.STRAIGHT)
 
         
     def _update(self) -> tuple: # returns [startTheta, endTheta]
@@ -37,3 +38,6 @@ class StraightSegmentState(AbstractSegmentState):
 
         # straight segments have a constant theta from start to end
         return theta, theta, distance
+    
+    def _defineCenterInches(self) -> tuple:
+        return midpoint(self.model.getBeforePos(), self.model.getAfterPos())

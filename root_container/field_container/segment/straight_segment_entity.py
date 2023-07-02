@@ -29,6 +29,9 @@ class StraightSegmentEntity(AbstractSegmentEntity):
     def __init__(self, field: FieldEntity, model: PathSegmentModel):
         super().__init__(field, model)
 
+    def defineCenter(self) -> tuple:
+        return self.field.inchesToMouse(self.model.getCenterInches())
+
 
     def isTouching(self, position: tuple) -> bool:
         beforeUI = self.model.getPrevious().ui

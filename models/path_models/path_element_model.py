@@ -21,6 +21,7 @@ class PathElementModel(LinkedListNode[T], Generic[T]):
         super().__init__()
         
         self.path = pathModel
+        self.field = pathModel.fieldEntity
         self.ui: Entity = None
 
     def getCommand(self) -> CommandModel:

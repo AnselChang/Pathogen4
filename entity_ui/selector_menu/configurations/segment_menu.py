@@ -2,6 +2,8 @@ from common.reference_frame import PointRef, Ref
 from entity_base.image.image_state import ImageStatesFactory
 from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction, HighlightID
 from entity_ui.selector_menu.selector_menu_factory import *
+from models.path_models.path_segment_state.segment_type import SegmentType
+from models.path_models.segment_direction import SegmentDirection
 from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 
 # When clicked, segment toggles forward/reverse direction
@@ -14,20 +16,20 @@ class InvertDirectionAction(MenuClickAction[StraightSegmentEntity]):
 
     # Get the current direction of the segment
     def getStateID(self, targetEntity: StraightSegmentEntity) -> Enum:
-        isStraight = (targetEntity.getSegmentType() == PathSegmentType.STRAIGHT)
-        if targetEntity.getDirection() == SegmentDirection.FORWARD:
+        isStraight = (targetEntity.model.getType() == SegmentType.STRAIGHT)
+        if targetEntity.model.getDirection() == SegmentDirection.FORWARD:
             return DirectionButtonID.STRAIGHT_FORWARD if isStraight else DirectionButtonID.CURVE_FORWARD
         else:
             return DirectionButtonID.STRAIGHT_REVERSE if isStraight else DirectionButtonID.CURVE_REVERSE
 
     # Toggle the forward/reverse direction
     def onClick(self, targetEntity: StraightSegmentEntity, mouse: tuple):
-        targetEntity.toggleDirection()
+        targetEntity.model.toggleDirection()
 
 # When clicked, splits segment and creates temporary node that follows mouse
 class InsertNodeAction(MenuClickAction[StraightSegmentEntity]):
     def onClick(self, targetEntity: StraightSegmentEntity, mouse: tuple):
-        newNode = targetEntity.path.insertNode(targetEntity, PointRef(Ref.SCREEN, mouse), isTemporary = True)
+        newNode = targetEntity.model.path.insertNode(targetEntity, PointRef(Ref.SCREEN, mouse), isTemporary = True)
         return newNode
     
 # When clicked, splits segment and creates temporary node that follows mouse

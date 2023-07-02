@@ -6,6 +6,7 @@ from adapter.straight_adapter import StraightAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
+from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.path_segment_state.straight_segment_state import StraightSegmentState
 from models.path_models.segment_direction import SegmentDirection
 from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
@@ -126,6 +127,16 @@ class PathSegmentModel(PathElementModel):
     SETTER METHODS THAT MODIFY MODEL AND THEN SEND NOTIF TO UPDATE UI
     """
 
+    def toggleDirection(self):
+        if self.direction == SegmentDirection.FORWARD:
+            self.direction = SegmentDirection.REVERSE
+        else:
+            self.direction = SegmentDirection.FORWARD
+
+        self.updateThetas()
+        self.getPrevious().onThetaChange()
+        self.getNext().onThetaChange()
+
     """
     GETTER METHODS THAT READ FROM MODEL. DO NOT MODIFY MODEL OR SEND NOTIFICATIONS
     """
@@ -153,6 +164,12 @@ class PathSegmentModel(PathElementModel):
     
     def getDirection(self) -> SegmentDirection:
         return self.direction
+    
+    def getType(self) -> SegmentType:
+        return self.currentState.getType()
+    
+    def getCenterInches(self) -> tuple:
+        return self.currentState._defineCenterInches()
     
     def getOther(self, node: PathNodeModel) -> PathNodeModel:
         if node == self.getPrevious():
