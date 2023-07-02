@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from root_container.field_container.field_entity import FieldEntity
     from entity_base.entity import Entity
     from models.path_models.path_model import PathModel
+    from models.command_models.command_model import CommandModel
 
 from typing import Generic, TypeVar
 from data_structures.linked_list import LinkedListNode
@@ -21,6 +22,9 @@ class PathElementModel(LinkedListNode[T], Generic[T]):
         
         self.path = pathModel
         self.ui: Entity = None
+
+    def getCommand(self) -> CommandModel:
+        return self.path.getCommandFromPath(self)
 
     def _generateUI(self, fieldEntity: FieldEntity) -> Entity:
         raise NotImplementedError()

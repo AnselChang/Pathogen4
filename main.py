@@ -111,7 +111,7 @@ def main():
     interactor.initInteractor(menuManager, fieldContainer.fieldEntity)
 
 
-    StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX)
+    StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.FRONT)
 
     # initialize commands
     database = CommandDefinitionDatabase()
@@ -120,9 +120,6 @@ def main():
     scrollingContainer = ScrollingContainer(panelContainer)
     model.commandsModel.initParentUI(scrollingContainer.getContainer())
 
-    # create first path node
-    START_POSITION = (20,20)
-    model.pathModel.initFirstNode(START_POSITION)
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
@@ -132,8 +129,9 @@ def main():
     print("compute everything")
     rootContainer.recomputeEntity()
 
-
-    rootContainer.recomputeEntity()
+    # create first path node
+    START_POSITION = (20,20)
+    model.pathModel.initFirstNode(START_POSITION)
 
     # Create a new thread for the I/O handling function
     io_thread = threading.Thread(target=io_handler, args = (database,model,entities,), daemon=True)

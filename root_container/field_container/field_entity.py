@@ -147,7 +147,7 @@ class FieldEntity(Entity, Observable):
 
         size = self.WIDTH * self._zoom
         scaledSurface = pygame.transform.smoothscale(self.rawSurface, (size, size))
-        self.fieldSurface = pygame.Surface((self.WIDTH, self.HEIGHT))
+        self.fieldSurface = pygame.Surface((self.WIDTH, self.HEIGHT)).convert_alpha()
 
         offsetX = self._pwidth(self._panX)
         offsetY = self._pheight(self._panY)

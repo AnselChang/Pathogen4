@@ -45,6 +45,8 @@ class PathNodeModel(PathElementModel):
         self.temporary = temporary
         self.lastDragPositionValid = False
 
+        self.TURN_ENABLED = None
+
         self.generateUI()
 
     """
@@ -64,11 +66,15 @@ class PathNodeModel(PathElementModel):
         theta1 = self.getStartTheta()
         theta2 = self.getEndTheta()
 
-        turnEnabled = not equalTheta(theta1, theta2, 0.01)
-        self.adapter.setTurnEnabled(turnEnabled)
+        oldTurnEnabled = self.TURN_ENABLED
+        self.TURN_ENABLED = not equalTheta(theta1, theta2, 0.01)
+        self.adapter.setTurnEnabled(self.TURN_ENABLED)
 
         self.adapter.set(PathAttributeID.THETA1, theta1, formatDegrees(theta1, 1))
         self.adapter.set(PathAttributeID.THETA2, theta2, formatDegrees(theta2, 1))
+    
+        if oldTurnEnabled != self.TURN_ENABLED:
+            self.recomputeUI()
 
     def onPositionChange(self):
         # update segments attached to node, if any
@@ -107,6 +113,16 @@ class PathNodeModel(PathElementModel):
 
     def isTemporary(self) -> bool:
         return self.temporary
+    
+    def isFirstNode(self) -> bool:
+        return self.getPrevious() is None
+    
+    def isLastNode(self) -> bool:
+        return self.getNext() is None
+    
+    def isTurnEnabled(self) -> bool:
+        return self.TURN_ENABLED
+
     
     # gets the theta when robot approaches node before turning
     def getStartTheta(self):

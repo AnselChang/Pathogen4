@@ -187,10 +187,10 @@ class PathModel(Serializable):
             node.getPrevious().getPrevious().onAngleChange()
 
 
-    def getPathEntityFromCommand(self, command: CommandModel) -> StraightSegmentEntity | PathNodeModel:
+    def getPathFromCommand(self, command: CommandModel) -> StraightSegmentEntity | PathNodeModel:
         return self.linker.getPathFromCommand(command)
     
-    def getCommandFromPathEntity(self, pathEntity: StraightSegmentEntity | PathNodeModel) -> CommandModel:
+    def getCommandFromPath(self, pathEntity: StraightSegmentEntity | PathNodeModel) -> CommandModel:
         return self.linker.getCommandFromPath(pathEntity)
     
     # when the segment type has changed, show the correct command and hide the others

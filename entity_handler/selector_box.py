@@ -14,9 +14,11 @@ class SelectorBox:
         self.active = True
         self.start = start
         self.x1, self.y1 = start
+        print("enable mu")
 
     def disable(self):
         self.active = False
+        print("disable ")
 
     def isEnabled(self):
         return self.active
@@ -62,5 +64,7 @@ class SelectorBox:
         y = min(y1, y2)
         width = abs(x1 - x2)
         height = abs(y1 - y2)
+
+        print("d")
 
         drawTransparentRect(screen, x, y, width, height, (173, 216, 230), 100)

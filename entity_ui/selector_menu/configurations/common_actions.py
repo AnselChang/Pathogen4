@@ -15,18 +15,18 @@ class HighlightCommandAction(MenuClickAction[PathNodeEntity | StraightSegmentEnt
         if not self.isActionAvailable(targetEntity):
             return HighlightID.START_HIGHLIGHTING
         
-        command = targetEntity.path.getCommandFromPathEntity(targetEntity)
+        command = targetEntity.model.getCommand()
         if command.isHighlighted():
             return HighlightID.STOP_HIGHLIGHTING
         else:
             return HighlightID.START_HIGHLIGHTING
 
     def isActionAvailable(self, targetEntity: PathNodeEntity | StraightSegmentEntity) -> bool:
-        if isinstance(targetEntity, PathNodeEntity) and not targetEntity.isTurnEnabled():
+        if isinstance(targetEntity, PathNodeEntity) and not targetEntity.model.isTurnEnabled():
             return False
         return True
 
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity | StraightSegmentEntity, mouse: tuple):
-        command = targetEntity.path.getCommandFromPathEntity(targetEntity)
+        command = targetEntity.model.getCommand()
         command.highlightUI()

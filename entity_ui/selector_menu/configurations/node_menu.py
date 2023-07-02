@@ -23,7 +23,7 @@ class DeleteNodeAction(MenuClickAction[PathNodeEntity]):
 
     # cannot delete if its the only node
     def isActionAvailable(self, targetEntity: PathNodeEntity | T) -> bool:
-        return not (targetEntity.isFirstNode() and targetEntity.isLastNode())
+        return not (targetEntity.model.isFirstNode() and targetEntity.model.isLastNode())
     
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
@@ -50,12 +50,12 @@ def configureNodeMenu() -> MenuDefinition:
     # Only for first node. Adds a node at the end of the path
     states = ImageStatesFactory()
     states.addState(0, ImageID.ADD_NODE, "Insert a node before the start of the path")
-    segmentDefinition.add(states.create(), AddNodeBeginningAction(), lambda entity: entity.isFirstNode())
+    segmentDefinition.add(states.create(), AddNodeBeginningAction(), lambda pathNodeEntity: pathNodeEntity.model.isFirstNode())
 
     # Only for last node. Adds a node at the end of the path
     states = ImageStatesFactory()
     states.addState(0, ImageID.ADD_NODE, "Add a node at the end of the path")
-    segmentDefinition.add(states.create(), AddNodeEndAction(), lambda entity: entity.isLastNode())
+    segmentDefinition.add(states.create(), AddNodeEndAction(), lambda pathNodeEntity: pathNodeEntity.model.isLastNode())
 
     # Trash can icon. Deletes the node
     states = ImageStatesFactory()

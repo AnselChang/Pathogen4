@@ -68,7 +68,7 @@ class Entity(ABC, Observable):
                  hover: HoverListener = None,
                  key: KeyListener = None,
                  mousewheel: MousewheelListener = None,
-                 drawOrder: DrawOrder = 0,
+                 drawOrder: DrawOrder = DrawOrder.BACK,
                  initiallyVisible: bool = True,
                  recomputeWhenInvisible: bool = False,
                  thisUpdatesParent: bool = False,

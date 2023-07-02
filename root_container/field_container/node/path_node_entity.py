@@ -59,6 +59,7 @@ class PathNodeEntity(Entity):
                     FonDrag = self.onDrag,
                     FonStopDrag = self.onStopDrag
                 ),
+                select = SelectLambda(self, "path node", FgetHitbox = self.getHitbox),
                 drawOrder = DrawOrder.NODE
         )
 
@@ -92,9 +93,26 @@ class PathNodeEntity(Entity):
 
     def onStopDrag(self):
         pass
+
+    # get the hitbox rect approximately spanning the circle
+    def getHitbox(self) -> pygame.Rect:
+
+        hitbox = pygame.Rect(0, 0, self.RADIUS * 1.5, self.RADIUS * 1.5)
+        hitbox.center = self.CENTER_X, self.CENTER_Y
+        return hitbox
         
     def defineCenter(self) -> tuple:
         return self.field.inchesToMouse(self.model.getPosition())
+    
+    def defineAfter(self) -> None:
+        if self.model.isTemporary():
+            self.COLOR = self.RED_COLOR
+        elif not self.model.isTurnEnabled():
+            self.COLOR = self.TURN_DISABLED_COLOR
+        elif self.model.isFirstNode():
+            self.COLOR = self.FIRST_BLUE_COLOR
+        else:
+            self.COLOR = self.BLUE_COLOR
     
     def isTouching(self, position: tuple) -> bool:
         MARGIN = 4
@@ -103,4 +121,4 @@ class PathNodeEntity(Entity):
     def draw(self, screen, isActive, isHovered):
         POSITION = [self.CENTER_X, self.CENTER_Y]
         radius = self.RADIUS_HOVERED if self.hover.isHovering else self.RADIUS
-        pygame.draw.circle(screen, self.BLUE_COLOR, POSITION, radius)
+        pygame.draw.circle(screen, self.COLOR, POSITION, radius)

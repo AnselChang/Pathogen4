@@ -32,6 +32,7 @@ class EntityManager:
         
         self.entities.append(entity)
 
+
         if entity.key is not None:
             self.keyEntities.append(entity)
         if entity.click is not None:

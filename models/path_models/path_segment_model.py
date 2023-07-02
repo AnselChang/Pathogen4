@@ -102,6 +102,8 @@ class PathSegmentModel(PathElementModel):
         # assert that node is attached to segment
         assert(node == self.getPrevious() or node == self.getNext())
 
+        print("onNodePositionChange")
+
         # update segment start/end thetas
         self.updateThetas()
         self.getPrevious().onThetaChange()
@@ -112,6 +114,9 @@ class PathSegmentModel(PathElementModel):
 
         # update endpoint that changed
         self.updateEndpointPosition(node)
+
+        # update the other endpoint's angle
+        self.getOther(node).onThetaChange()
 
         # redraw segment ui. No need to update segment model as
         # segment endpoint positions are just refs to node models
@@ -148,6 +153,14 @@ class PathSegmentModel(PathElementModel):
     
     def getDirection(self) -> SegmentDirection:
         return self.direction
+    
+    def getOther(self, node: PathNodeModel) -> PathNodeModel:
+        if node == self.getPrevious():
+            return self.getNext()
+        elif node == self.getNext():
+            return self.getPrevious()
+        else:
+            raise Exception("Node not attached to segment")
     
     """
     PRIVATE METHODS
