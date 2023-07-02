@@ -5,6 +5,8 @@ from adapter.path_adapter import PathAdapter, PathAttributeID
 from adapter.straight_adapter import StraightAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
+from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
+from models.path_models.path_segment_state.straight_segment_state import StraightSegmentState
 from models.path_models.segment_direction import SegmentDirection
 from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from utility.format_functions import formatInches
@@ -26,10 +28,11 @@ class PathSegmentModel(PathElementModel):
 
         self.direction = SegmentDirection.FORWARD
 
-        self.adapter = StraightAdapter([
-            ImageState(SegmentDirection.FORWARD, ImageID.STRAIGHT_FORWARD),
-            ImageState(SegmentDirection.REVERSE, ImageID.STRAIGHT_REVERSE),
-        ])
+        self.states: list[AbstractSegmentState] = [
+            StraightSegmentState(self),
+        ]
+
+        self.currentState = self.states[0]
 
         self.generateUI()
 
@@ -38,27 +41,38 @@ class PathSegmentModel(PathElementModel):
     UPDATE methods that update values based on model state
     """
 
-    # update thetas based on current node positions and segment direction
+    # update thetas based on segment states and segment direction
     def updateThetas(self):
-        before = self.getBeforePos()
-        after = self.getAfterPos()
-        self.START_THETA = thetaFromPoints(before, after)
-        self.END_THETA = thetaFromPoints(before, after)
+
+        # need to recompute state thetas first
+        self.currentState.onUpdate()
+
+        self.START_THETA = self.currentState.getStartTheta()
+        self.END_THETA = self.currentState.getEndTheta()
 
         # if segment is reversed, flip thetas
         if self.getDirection() == SegmentDirection.REVERSE:
             self.START_THETA = (self.START_THETA + math.pi) % (2 * math.pi)
             self.END_THETA = (self.END_THETA + math.pi) % (2 * math.pi)
 
+        self.getAdapter().set(PathAttributeID.THETA1, self.START_THETA, formatInches(self.START_THETA))
+        self.getAdapter().set(PathAttributeID.THETA2, self.END_THETA, formatInches(self.END_THETA))
+
+    # called when the distance of the segment is changed
+    def updateDistance(self):
+        distance = self.currentState.getDistance()
+
+        # if segment is reversed, negate distance
+        if self.getDirection() == SegmentDirection.REVERSE:
+            distance *= -1
+
+        self.getAdapter().set(PathAttributeID.DISTANCE, distance, formatInches(distance))
+    
+
     """
     CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED
     """
 
-    # called when the distance of the segment is changed
-    def onDistanceChange(self):
-        distance = distanceTuples(self.getBeforePos(), self.getAfterPos())
-        self.adapter.set(PathAttributeID.DISTANCE, distance, formatInches(distance))
-    
     # called when a node attached to segment is moved
     def onNodePositionChange(self, node: PathNodeModel):
         # assert that node is attached to segment
@@ -70,7 +84,7 @@ class PathSegmentModel(PathElementModel):
         self.getNext().onThetaChange()
 
         # update segment distance
-        self.onDistanceChange()
+        self.updateDistance()
 
         # redraw segment ui. No need to update segment model as
         # segment endpoint positions are just refs to node models
@@ -85,7 +99,7 @@ class PathSegmentModel(PathElementModel):
     """
 
     def getAdapter(self) -> PathAdapter:
-        return self.adapter
+        return self.currentState.getAdapter()
  
     def getPrevious(self) -> PathNodeModel:
         return super().getPrevious()

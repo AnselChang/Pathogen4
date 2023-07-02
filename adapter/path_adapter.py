@@ -25,7 +25,8 @@ legalAttributesForType: dict[CommandType, list[PathAttributeID]] = {
         PathAttributeID.Y1,
         PathAttributeID.X2,
         PathAttributeID.Y2,
-        PathAttributeID.DISTANCE
+        PathAttributeID.DISTANCE,
+        PathAttributeID.THETA1
     ],
     CommandType.TURN: [
         PathAttributeID.THETA1,
@@ -82,8 +83,8 @@ class PathAdapter(ABC, Observable, Observer):
     # string: to be displayed by readouts, etc.
     def set(self, attribute: Enum, value: float, string: str):
 
-        # make sure the attribute belongs to the corresponding type of adapter
-        assert(attribute in self._dictValue)
+        if attribute not in self._dictValue:
+            return
 
         self._dictValue[attribute] = round(value, 3)
         self._dictStr[attribute] = string
