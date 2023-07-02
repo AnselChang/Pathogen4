@@ -106,8 +106,6 @@ class PathSegmentModel(PathElementModel):
         # assert that node is attached to segment
         assert(node is None or node == self.getPrevious() or node == self.getNext())
 
-        print("onNodePositionChange")
-
         # update segment start/end thetas
         self.updateThetas()
         self.getPrevious().onThetaChange()
@@ -148,6 +146,8 @@ class PathSegmentModel(PathElementModel):
         self.generateUI()
         self.recomputeUI()
 
+        # absolutely atrocious code to dig through interactor shit to
+        # sustain menu across changing segment entity
         self.ui.interactor.selected.activeMenu = self.ui.interactor.selected.menuManager.createMenuForEntity(self.ui)
 
     def toggleDirection(self):

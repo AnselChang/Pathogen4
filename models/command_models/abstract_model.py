@@ -40,13 +40,11 @@ class AbstractModel(Generic[T1, T2]):
         self.show = True
         if self.parent is not None:
             self.parent.rebuildChildren()
-            print("show")
 
     def hideUI(self):
         self.show = False
         if self.parent is not None:
             self.parent.rebuildChildren()
-            print("hide")
 
     def getName(self):
         return "AbstractModel"

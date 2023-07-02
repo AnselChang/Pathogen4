@@ -56,11 +56,12 @@ class AbstractSegmentEntity(Entity):
     def onStartDrag(self, mouse: tuple):
         self.nodeStartPosition = []
         for node in [self.model.getPrevious(), self.model.getNext()]:
-            self.nodeStartPosition.append(node.position)
+            self.nodeStartPosition.append(node.getPosition())
 
     def canDrag(self, mouse: tuple) -> bool:
 
-        offset = [self.drag.offsetX, self.drag.offsetY]
+        offset = [mouse[0] - self.drag.startX, mouse[1] - self.drag.startY]
+        offset = self.field.mouseToInchesScaleOnly(offset)
 
         self.nodeGoalPosition = []
         for i, node in enumerate([self.model.getPrevious(), self.model.getNext()]):
@@ -73,10 +74,9 @@ class AbstractSegmentEntity(Entity):
     # When dragging, determine if either node is snappable. If so, do it
     def onDrag(self, mouse: tuple):
 
-        offset = [self.drag.offsetX, self.drag.offsetY]
 
         for i, node in enumerate([self.model.getPrevious(), self.model.getNext()]):
-            node.setPosition(addTuples(self.nodeGoalPosition[i], offset))
+            node.setPosition(self.nodeGoalPosition[i])
 
 
     def onStopDrag(self):
