@@ -33,7 +33,7 @@ from root_container.field_container.node.bezier_theta_node import BezierThetaNod
 from common.image_manager import ImageID
 from data_structures.linked_list import LinkedListNode
 
-from utility.math_functions import isInsideBox
+from utility.math_functions import addTuples, isInsideBox
 from utility.pygame_functions import shade
 from utility.angle_functions import deltaInHeading, headingDiff
 from utility.format_functions import formatDegrees
@@ -57,6 +57,7 @@ class PathNodeEntity(Entity):
                 drag = DragLambda(self,
                     FonStartDrag = self.onStartDrag,
                     FonDrag = self.onDrag,
+                    FcanDrag= self.canDrag,
                     FonStopDrag = self.onStopDrag
                 ),
                 select = SelectLambda(self, "path node", FgetHitbox = self.getHitbox),
@@ -66,7 +67,7 @@ class PathNodeEntity(Entity):
         self.RADIUS = 10
         self.RADIUS_HOVERED = 12
 
-        self.TURN_DISABLED_COLOR = (0,0,0)
+        self.TURN_DISABLED_COLOR = (168, 194, 255)
         self.BLUE_COLOR = (102, 153, 255)
         self.FIRST_BLUE_COLOR = (40, 40, 255)
         self.RED_COLOR = (255, 102, 102)
@@ -77,6 +78,11 @@ class PathNodeEntity(Entity):
         mouseInchesX, mouseInchesY = self.field.mouseToInches(mouse)
         nodeInchesX, nodeInchesY = self.model.getPosition()
         self.dx, self.dy = mouseInchesX - nodeInchesX, mouseInchesY - nodeInchesY
+
+    def canDrag(self, mouse: tuple) -> bool:
+        mouseInches = self.field.mouseToInches(mouse)
+        newPos = addTuples(mouseInches, [-self.dx, -self.dy])
+        return self.field.inBoundsInches(newPos)
 
     def onDrag(self, mouse: tuple):
 
@@ -122,3 +128,6 @@ class PathNodeEntity(Entity):
         POSITION = [self.CENTER_X, self.CENTER_Y]
         radius = self.RADIUS_HOVERED if self.hover.isHovering else self.RADIUS
         pygame.draw.circle(screen, self.COLOR, POSITION, radius)
+        
+        if isActive:
+            pygame.draw.circle(screen, (0,0,0), POSITION, radius, 2)
