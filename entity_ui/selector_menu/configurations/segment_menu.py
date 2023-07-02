@@ -41,17 +41,19 @@ class ToggleSegmentTypeAction(MenuClickAction[StraightSegmentEntity]):
 
     # Get the current segment type
     def getStateID(self, targetEntity: StraightSegmentEntity) -> Enum:
-        return targetEntity.getSegmentType()
+        return targetEntity.model.getType()
 
     def onClick(self, targetEntity: StraightSegmentEntity, mouse: tuple):
+        
         current = self.getStateID(targetEntity)
+        segment = targetEntity.model
 
-        if current == PathSegmentType.STRAIGHT:
-            targetEntity.setState(PathSegmentType.ARC)
-        elif current == PathSegmentType.ARC:
-            targetEntity.setState(PathSegmentType.BEZIER)  
-        elif current == PathSegmentType.BEZIER:
-            targetEntity.setState(PathSegmentType.STRAIGHT)
+        if current == SegmentType.STRAIGHT:
+            segment.setState(SegmentType.ARC)
+        elif current == SegmentType.ARC:
+            segment.setState(SegmentType.STRAIGHT) # TODO: change to bezier
+        elif current == SegmentType.BEZIER:
+            segment.setState(SegmentType.STRAIGHT)
         else:
             raise Exception("Invalid segment type")      
 
@@ -80,13 +82,12 @@ def configureSegmentMenu() -> MenuDefinition:
     segmentDefinition.add(states.create(), InvertDirectionAction())
 
     # Add a button that toggles segment type
-    """
     states = ImageStatesFactory()
-    states.addState(PathSegmentType.STRAIGHT, ImageID.STRAIGHT_SEGMENT, "Segment type: straight")
-    states.addState(PathSegmentType.ARC, ImageID.ARC_SEGMENT, "Segment type: arc")
-    states.addState(PathSegmentType.BEZIER, ImageID.CURVE_SEGMENT, "Segment type: bezier")
+    states.addState(SegmentType.STRAIGHT, ImageID.STRAIGHT_SEGMENT, "Segment type: straight")
+    states.addState(SegmentType.ARC, ImageID.ARC_SEGMENT, "Segment type: arc")
+    states.addState(SegmentType.BEZIER, ImageID.CURVE_SEGMENT, "Segment type: bezier")
     segmentDefinition.add(states.create(), ToggleSegmentTypeAction())
-    """
+    
     # Inserts a node which splits this segment into two. New node is set to temporary and following mouse position
     states = ImageStatesFactory()
     states.addState(0, ImageID.ADD_NODE, "Splits this segment to insert a node")

@@ -32,6 +32,10 @@ class PathElementModel(LinkedListNode[T], Generic[T]):
     
     def generateUI(self):
         assert(self.path.fieldEntity is not None)
+
+        if self.ui is not None:
+            self.deleteUI()
+
         self.ui = self._generateUI(self.path.fieldEntity)
 
     def recomputeUI(self):

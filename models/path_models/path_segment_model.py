@@ -6,9 +6,11 @@ from adapter.straight_adapter import StraightAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
+from models.path_models.path_segment_state.arc_segment_state import ArcSegmentState
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.path_segment_state.straight_segment_state import StraightSegmentState
 from models.path_models.segment_direction import SegmentDirection
+from root_container.field_container.segment.arc_segment_entity import ArcSegmentEntity
 from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import distanceTuples, thetaFromPoints
@@ -29,11 +31,12 @@ class PathSegmentModel(PathElementModel):
 
         self.direction = SegmentDirection.FORWARD
 
-        self.states: list[AbstractSegmentState] = [
-            StraightSegmentState(self),
-        ]
+        self.states: dict[SegmentType, AbstractSegmentState] = {
+            SegmentType.STRAIGHT: StraightSegmentState(self),
+            SegmentType.ARC: ArcSegmentState(self),
+        }
 
-        self.currentState = self.states[0]
+        self.currentState = self.states[SegmentType.STRAIGHT]
 
         self.generateUI()
 
@@ -133,6 +136,18 @@ class PathSegmentModel(PathElementModel):
     SETTER METHODS THAT MODIFY MODEL AND THEN SEND NOTIF TO UPDATE UI
     """
 
+    def setState(self, type: SegmentType):
+
+        print("setState", type)
+
+        self.currentState = self.states[type]
+
+        self.onInit()
+
+        # regenerate ui with new state
+        self.generateUI()
+        self.recomputeUI()
+
     def toggleDirection(self):
         if self.direction == SegmentDirection.FORWARD:
             self.direction = SegmentDirection.REVERSE
@@ -190,7 +205,11 @@ class PathSegmentModel(PathElementModel):
     """
     
     def _generateUI(self, fieldEntity: FieldEntity) -> Entity:
-        return StraightSegmentEntity(fieldEntity, self)
+        if self.getType() == SegmentType.STRAIGHT:
+            return StraightSegmentEntity(fieldEntity, self)
+        if self.getType() == SegmentType.ARC:
+            return ArcSegmentEntity(fieldEntity, self)
+        
     
     def __str__(self) -> str:
         return f"PathSegmentModel"
