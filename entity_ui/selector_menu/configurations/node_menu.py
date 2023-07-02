@@ -8,15 +8,17 @@ from root_container.field_container.node.path_node_entity import PathNodeEntity
 class AddNodeEndAction(MenuClickAction[PathNodeEntity]):
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
-        newNode = targetEntity.path.addNode(mouse, isTemporary = True)
-        return newNode
+        mouseInches = targetEntity.field.mouseToInches(mouse)
+        newNode = targetEntity.model.path.addNode(mouseInches, isTemporary = True)
+        return newNode.ui
     
 # When clicked, start adding a node to the end of the path
 class AddNodeBeginningAction(MenuClickAction[PathNodeEntity]):
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
-        newNode = targetEntity.path.addNodeToBeginning(PointRef(Ref.SCREEN, mouse), isTemporary = True)
-        return newNode
+        mouseInches = targetEntity.field.mouseToInches(mouse)
+        newNode = targetEntity.model.path.addNodeToBeginning(mouseInches, isTemporary = True)
+        return newNode.ui
     
 # When clicked, deletes node on path
 class DeleteNodeAction(MenuClickAction[PathNodeEntity]):
@@ -27,7 +29,7 @@ class DeleteNodeAction(MenuClickAction[PathNodeEntity]):
     
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
-        targetEntity.path.removeNode(targetEntity)
+        targetEntity.model.path.deleteNode(targetEntity.model)
 
 """
 Menu for path nodes. Functionality for:

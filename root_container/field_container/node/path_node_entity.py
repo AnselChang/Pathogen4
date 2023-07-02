@@ -61,6 +61,7 @@ class PathNodeEntity(Entity):
                     FonStopDrag = self.onStopDrag
                 ),
                 select = SelectLambda(self, "path node", FgetHitbox = self.getHitbox),
+                key = KeyLambda(self, FonKeyDown = self.onKeyDown, FonKeyUp = self.onKeyUp),
                 drawOrder = DrawOrder.NODE
         )
 
@@ -72,6 +73,8 @@ class PathNodeEntity(Entity):
         self.FIRST_BLUE_COLOR = (40, 40, 255)
         self.RED_COLOR = (255, 102, 102)
 
+        self.lastDragPositionValid = True
+
     def onStartDrag(self, mouse: tuple):
 
         # figure out initial offset in inches to determine offset when dragging
@@ -82,7 +85,12 @@ class PathNodeEntity(Entity):
     def canDrag(self, mouse: tuple) -> bool:
         mouseInches = self.field.mouseToInches(mouse)
         newPos = addTuples(mouseInches, [-self.dx, -self.dy])
-        return self.field.inBoundsInches(newPos)
+        
+        cd = self.field.inBoundsInches(newPos)
+
+        if not cd:
+            self.lastDragPositionValid = False
+        return cd
 
     def onDrag(self, mouse: tuple):
 
@@ -92,12 +100,30 @@ class PathNodeEntity(Entity):
 
         # Cannot drag outside of field
         if not self.field.inBoundsInches(newPos):
+            self.lastDragPositionValid = False
             return
         
         # update model with new position
         self.model.setPosition(newPos)
+        self.lastDragPositionValid = True
 
     def onStopDrag(self):
+        if self.model.isTemporary():
+            if self.lastDragPositionValid:
+                self.model.makePermanent()
+            else:
+                self.model.path.deleteNode(self.model)
+
+    def onKeyDown(self, key):
+
+        # delete node if temporary
+        if (key == pygame.K_ESCAPE or key == pygame.K_BACKSPACE) and self.model.isTemporary():
+            self.model.path.deleteNode(self.model)
+            self.interactor.removeEntity(self)
+            self.interactor.disableUntilMouseUp = False
+            self.interactor.leftDragging = False
+
+    def onKeyUp(self, key):
         pass
 
     # get the hitbox rect approximately spanning the circle
@@ -111,12 +137,10 @@ class PathNodeEntity(Entity):
         return self.field.inchesToMouse(self.model.getPosition())
     
     def defineAfter(self) -> None:
-        if self.model.isTemporary():
-            self.COLOR = self.RED_COLOR
+        if self.model.isFirstNode():
+            self.COLOR = self.FIRST_BLUE_COLOR
         elif not self.model.isTurnEnabled():
             self.COLOR = self.TURN_DISABLED_COLOR
-        elif self.model.isFirstNode():
-            self.COLOR = self.FIRST_BLUE_COLOR
         else:
             self.COLOR = self.BLUE_COLOR
     
@@ -125,9 +149,15 @@ class PathNodeEntity(Entity):
         return self.distanceTo(position) <= self.RADIUS + MARGIN
     
     def draw(self, screen, isActive, isHovered):
+
+        if self.model.isTemporary():
+            color = self.RED_COLOR
+        else:
+            color = self.COLOR
+
         POSITION = [self.CENTER_X, self.CENTER_Y]
         radius = self.RADIUS_HOVERED if self.hover.isHovering else self.RADIUS
-        pygame.draw.circle(screen, self.COLOR, POSITION, radius)
+        pygame.draw.circle(screen, color, POSITION, radius)
         
         if isActive:
             pygame.draw.circle(screen, (0,0,0), POSITION, radius, 2)

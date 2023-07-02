@@ -29,7 +29,11 @@ class InvertDirectionAction(MenuClickAction[StraightSegmentEntity]):
 # When clicked, splits segment and creates temporary node that follows mouse
 class InsertNodeAction(MenuClickAction[StraightSegmentEntity]):
     def onClick(self, targetEntity: StraightSegmentEntity, mouse: tuple):
-        newNode = targetEntity.model.path.insertNode(targetEntity, PointRef(Ref.SCREEN, mouse), isTemporary = True)
+
+        segment = targetEntity.model
+
+        mouseInches = segment.field.mouseToInches(mouse)
+        newNode = segment.path.insertNode(segment, mouseInches, isTemporary = True)
         return newNode
     
 # When clicked, splits segment and creates temporary node that follows mouse

@@ -43,7 +43,6 @@ class PathNodeModel(PathElementModel):
         # A bit like a "hover" node. If user doesn't successfully place it,
         # it will be deleted. Visually it is semi-transparent to indicate this.
         self.temporary = temporary
-        self.lastDragPositionValid = False
 
         self.TURN_ENABLED = None
 
@@ -95,6 +94,8 @@ class PathNodeModel(PathElementModel):
         self.position = position
         self.onPositionChange()
 
+    def makePermanent(self):
+        self.temporary = False
     """
     GETTER METHODS THAT READ FROM MODEL. DO NOT MODIFY MODEL OR SEND NOTIFICATIONS
     """

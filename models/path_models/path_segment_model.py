@@ -99,9 +99,9 @@ class PathSegmentModel(PathElementModel):
         self.getNext().onThetaChange()
 
     # called when a node attached to segment is moved
-    def onNodePositionChange(self, node: PathNodeModel):
+    def onNodePositionChange(self, node: PathNodeModel = None):
         # assert that node is attached to segment
-        assert(node == self.getPrevious() or node == self.getNext())
+        assert(node is None or node == self.getPrevious() or node == self.getNext())
 
         print("onNodePositionChange")
 
@@ -113,11 +113,17 @@ class PathSegmentModel(PathElementModel):
         # update segment distance
         self.updateDistance()
 
-        # update endpoint that changed
-        self.updateEndpointPosition(node)
-
-        # update the other endpoint's angle
-        self.getOther(node).onThetaChange()
+        
+        if node is None:
+            self.updateEndpointPosition(self.getPrevious())
+            self.updateEndpointPosition(self.getNext())
+            self.getPrevious().onThetaChange()
+            self.getNext().onThetaChange()
+        else:
+            # update endpoint that changed
+            self.updateEndpointPosition(node)
+            # update the other endpoint's angle
+            self.getOther(node).onThetaChange()
 
         # redraw segment ui. No need to update segment model as
         # segment endpoint positions are just refs to node models

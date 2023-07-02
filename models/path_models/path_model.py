@@ -6,6 +6,7 @@ In creating new nodes, it also creates the relevant command models and links the
 
 from data_structures.linked_list import LinkedList
 from models.command_models.command_model import CommandModel
+from models.command_models.full_model import FullModel
 from models.path_models.path_node_model import PathNodeModel
 from models.path_models.path_segment_model import PathSegmentModel
 from root_container.field_container.field_entity import FieldEntity
@@ -40,7 +41,7 @@ class PathModel(Serializable):
         model.linker = state.linker
         return model
 
-    def initCommandsModel(self, commandsModel: CommandModel):
+    def initCommandsModel(self, commandsModel: FullModel):
         self.commandsModel = commandsModel
 
     def initFieldEntity(self, fieldEntity: FieldEntity):
@@ -121,20 +122,21 @@ class PathModel(Serializable):
         return node
     
     # insert node to split up given segment
-    def insertNode(self, segment: StraightSegmentEntity, position: tuple, isTemporary: bool = False) -> PathNodeModel:
+    def insertNode(self, segment: PathSegmentModel, position: tuple, isTemporary: bool = False) -> PathNodeModel:
         previousCommand = self.linker.getCommandFromPath(segment)
         node = self._addRawNode(position, segment, previousCommand, isTemporary = isTemporary)
         
         command = self.linker.getCommandFromPath(node)
         newSegment = self._addRawSegment(node, command)
 
-        self.commandsModel.recomputeUI()
-        node.updateAdapter()
-        
-        node.getNext().onNodeMove(node)
-        node.getPrevious().onNodeMove(node)
+        newSegment.onInit()
 
-        return node
+        node.recomputeUI()
+        newSegment.recomputeUI()
+        segment.recomputeUI()
+        self.commandsModel.ui.recomputeEntity()
+
+        return node.ui
     
     # insert a node and segment at the beginning of the path
     def addNodeToBeginning(self, position: tuple, isTemporary: bool = False) -> PathNodeModel:
@@ -142,25 +144,25 @@ class PathModel(Serializable):
         
         command = self.linker.getCommandFromPath(node)
         segment = self._addRawSegment(node, command)
+        
+        segment.onInit()
+        segment.recomputeUI()
+        node.recomputeUI()
 
         self.commandsModel.recomputeUI()
-        node.updateAdapter()
-        
-        node.getNext().onNodeMove(node)
 
         return node
     
     # Removing a node involves removing a node and a neighboring segment
-    def removeNode(self, node: PathNodeModel):
+    def deleteNode(self, node: PathNodeModel):
 
         # remove the node
+        node.deleteUI()
         self.pathList.remove(node)
-        self.entities.removeEntity(node)
 
+        # remvoe turn command
         turnCommand = self.linker.getCommandFromPath(node)
         turnCommand.delete()
-        
-        self.commandsModel.recomputeUI()
 
         # remove the next segment, unless its the last segment, in which case remove the previous segment
         if node.isLastNode():
@@ -171,20 +173,17 @@ class PathModel(Serializable):
             otherSegment = node.getPrevious()
         
         self.pathList.remove(segment)
-        self.entities.removeEntity(segment)
+        segment.deleteUI()
 
         segmentCommand = self.linker.getCommandFromPath(segment)
         segmentCommand.delete()
         
         # the other segment is the only node/segment affected by this
         if otherSegment is not None: # it's none if there are only two nodes total and remove last one
-            otherSegment.updateAdapter()
-            otherSegment.recomputePosition()
+            otherSegment.onNodePositionChange()
 
-        if node.getNext() is not None:
-            node.getNext().getNext().onAngleChange()
-        if node.getPrevious() is not None:
-            node.getPrevious().getPrevious().onAngleChange()
+        # recompute the UI for commands
+        self.commandsModel.recomputeUI()
 
 
     def getPathFromCommand(self, command: CommandModel) -> StraightSegmentEntity | PathNodeModel:
