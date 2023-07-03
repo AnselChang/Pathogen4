@@ -82,6 +82,7 @@ class CommandDefinitionPresets:
     def goArc(self) -> CommandDefinition:
         builder = CommandDefinitionBuilder(CommandType.ARC)
         builder.setName("goArc()")
+        builder.addReadout("X1", PathAttributeID.X1)
         builder.addReadout("Arc length", PathAttributeID.ARC_LENGTH)
         builder.addReadout("Initial angle", PathAttributeID.THETA1)
         builder.addReadout("Final angle", PathAttributeID.THETA2)

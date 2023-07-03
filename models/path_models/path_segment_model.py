@@ -64,13 +64,12 @@ class PathSegmentModel(PathElementModel):
 
     # called when the distance of the segment is changed
     def updateDistance(self):
-        distance = self.getState().getDistance()
-
+        self.DISTANCE = distanceTuples(self.getPrevious().getPosition(), self.getNext().getPosition())
         # if segment is reversed, negate distance
         if self.getDirection() == SegmentDirection.REVERSE:
-            distance *= -1
+            self.DISTANCE *= -1
 
-        self.getAdapter().set(PathAttributeID.DISTANCE, distance, formatInches(distance))
+        self.getAdapter().set(PathAttributeID.DISTANCE, self.DISTANCE, formatInches(self.DISTANCE))
     
     # Update adapter for endpoint position
     def updateEndpointPosition(self, node: PathNodeModel):
@@ -136,8 +135,6 @@ class PathSegmentModel(PathElementModel):
 
     def setState(self, type: SegmentType):
 
-        print("setState", type)
-
         assert(type in self.states)
         self.currentStateType = type
 
@@ -148,11 +145,9 @@ class PathSegmentModel(PathElementModel):
         self.recomputeUI()
 
         command = self.path.getCommandFromPath(self)
-        print("c", command.getCommandType())
         command.setNewAdapter(self.getAdapter())
         command.rebuild()
         command.ui.recomputeEntity()
-        print("d", command.getCommandType())
 
         # absolutely atrocious code to dig through interactor shit to
         # sustain menu across changing segment entity

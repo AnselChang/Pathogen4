@@ -62,8 +62,6 @@ class CommandModel(AbstractModel, Observer):
 
     def setNewAdapter(self, newAdapter: 'PathAdapter'):
 
-        print("new adapter", newAdapter)
-
         if self.adapter is not None:
             self.adapter.unsubscribeAll()
         

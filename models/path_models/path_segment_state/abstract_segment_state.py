@@ -24,19 +24,15 @@ class AbstractSegmentState(Generic[T]):
 
         self.START_THETA = None
         self.END_THETA = None
-        self.DISTANCE = None
 
     def onUpdate(self):
-        self.START_THETA, self.END_THETA, self.DISTANCE = self._update()
+        self.START_THETA, self.END_THETA = self._update()
 
     def getStartTheta(self) -> float:
         return self.START_THETA
     
     def getEndTheta(self) -> float:
         return self.END_THETA
-    
-    def getDistance(self) -> float:
-        return self.DISTANCE
     
     def getAdapter(self) -> PathAdapter | T:
         return self.adapter

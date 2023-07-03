@@ -210,6 +210,12 @@ class FieldEntity(Entity, Observable):
 
         return (self._pwidth(pwidth), self._pheight(pheight))
     
+    def scalarInchesToMouse(self, scalar: float) -> float:
+        return self.inchesToMouseScaleOnly((scalar, 0))[0]
+    
+    def scalarMouseToInches(self, scalar: float) -> float:
+        return self.mouseToInchesScaleOnly((scalar, 0))[0]
+    
     def inBoundsInches(self, inches: tuple) -> bool:
         return isInsideBox(*inches, 0, 0, 144, 144)
     

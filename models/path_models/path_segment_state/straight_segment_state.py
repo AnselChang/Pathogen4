@@ -34,10 +34,8 @@ class StraightSegmentState(AbstractSegmentState):
         after = self.model.getAfterPos()
         theta = thetaFromPoints(before, after)
 
-        distance = distanceTuples(before, after)
-
         # straight segments have a constant theta from start to end
-        return theta, theta, distance
+        return theta, theta
     
     def _defineCenterInches(self) -> tuple:
         return midpoint(self.model.getBeforePos(), self.model.getAfterPos())
