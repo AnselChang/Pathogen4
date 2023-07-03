@@ -27,6 +27,7 @@ class AbstractSegmentState(Generic[T]):
 
     def onUpdate(self):
         self.START_THETA, self.END_THETA = self._update()
+        self._updateIcon()
 
     def getStartTheta(self) -> float:
         return self.START_THETA
@@ -47,6 +48,9 @@ class AbstractSegmentState(Generic[T]):
         raise NotImplementedError()
     
     def _defineCenterInches(self) -> tuple:
+        raise NotImplementedError()
+    
+    def _updateIcon(self):
         raise NotImplementedError()
 
 

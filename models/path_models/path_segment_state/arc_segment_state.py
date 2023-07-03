@@ -137,3 +137,11 @@ class ArcSegmentState(AbstractSegmentState):
         
     def _defineCenterInches(self) -> tuple:
         return midpoint(self.model.getBeforePos(), self.model.getAfterPos())
+    
+    def _updateIcon(self):
+
+        if self.model.getDirection() == SegmentDirection.FORWARD:
+            icon = ArcIconID.FORWARD_LEFT if self.POSITIVE else ArcIconID.FORWARD_RIGHT
+        else:
+            icon = ArcIconID.REVERSE_LEFT if self.POSITIVE else ArcIconID.REVERSE_RIGHT
+        self.adapter.setIconStateID(icon)

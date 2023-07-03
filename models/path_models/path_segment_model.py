@@ -158,6 +158,7 @@ class PathSegmentModel(PathElementModel):
             self.direction = SegmentDirection.REVERSE
         else:
             self.direction = SegmentDirection.FORWARD
+        self.getState()._updateIcon()
 
         self.updateThetas()
         self.getPrevious().onThetaChange()

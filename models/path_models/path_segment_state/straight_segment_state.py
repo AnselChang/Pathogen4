@@ -37,5 +37,8 @@ class StraightSegmentState(AbstractSegmentState):
         # straight segments have a constant theta from start to end
         return theta, theta
     
+    def _updateIcon(self):
+        self.adapter.setIconStateID(self.model.getDirection())
+    
     def _defineCenterInches(self) -> tuple:
         return midpoint(self.model.getBeforePos(), self.model.getAfterPos())
