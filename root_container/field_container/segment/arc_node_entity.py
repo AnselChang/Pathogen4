@@ -12,6 +12,11 @@ from entity_base.listeners.hover_listener import HoverLambda
 import pygame
 from utility.pygame_functions import shade
 
+"""
+Moveable node that controls curavture of an arc.
+Does not store state, but reads and writes to SegmentModel through ArcSegmentState
+"""
+
 class ArcNodeEntity(Entity):
 
     def __init__(self, segment: ArcSegmentEntity):

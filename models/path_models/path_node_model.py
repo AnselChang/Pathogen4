@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from adapter.path_adapter import PathAttributeID
 
 from models.path_models.segment_direction import SegmentDirection
-from utility.angle_functions import equalTheta
+from utility.angle_functions import deltaInHeading, equalTheta
 from utility.format_functions import formatDegrees
 if TYPE_CHECKING:
     from models.path_models.path_model import PathModel
@@ -69,9 +69,15 @@ class PathNodeModel(PathElementModel):
         self.TURN_ENABLED = not equalTheta(theta1, theta2, 0.01)
         self.adapter.setTurnEnabled(self.TURN_ENABLED)
 
+        # set adapter theta
         self.adapter.set(PathAttributeID.THETA1, theta1, formatDegrees(theta1, 1))
         self.adapter.set(PathAttributeID.THETA2, theta2, formatDegrees(theta2, 1))
-    
+        
+        # set adapter icon
+        direction = deltaInHeading(theta1, theta2)
+        self.adapter.setIconStateID(TurnDirection.LEFT if direction >= 0 else TurnDirection.RIGHT)
+
+
         if oldTurnEnabled != self.TURN_ENABLED:
             self.recomputeUI()
 
