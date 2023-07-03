@@ -36,7 +36,7 @@ class PathSegmentModel(PathElementModel):
             SegmentType.ARC: ArcSegmentState(self),
         }
 
-        self.currentState = self.states[SegmentType.STRAIGHT]
+        self.currentStateType = SegmentType.STRAIGHT
 
         self.generateUI()
 
@@ -49,10 +49,10 @@ class PathSegmentModel(PathElementModel):
     def updateThetas(self):
 
         # need to recompute state thetas first
-        self.currentState.onUpdate()
+        self.getState().onUpdate()
 
-        self.START_THETA = self.currentState.getStartTheta()
-        self.END_THETA = self.currentState.getEndTheta()
+        self.START_THETA = self.getState().getStartTheta()
+        self.END_THETA = self.getState().getEndTheta()
 
         # if segment is reversed, flip thetas
         if self.getDirection() == SegmentDirection.REVERSE:
@@ -64,7 +64,7 @@ class PathSegmentModel(PathElementModel):
 
     # called when the distance of the segment is changed
     def updateDistance(self):
-        distance = self.currentState.getDistance()
+        distance = self.getState().getDistance()
 
         # if segment is reversed, negate distance
         if self.getDirection() == SegmentDirection.REVERSE:
@@ -138,13 +138,21 @@ class PathSegmentModel(PathElementModel):
 
         print("setState", type)
 
-        self.currentState = self.states[type]
+        assert(type in self.states)
+        self.currentStateType = type
 
         self.onInit()
 
         # regenerate ui with new state
         self.generateUI()
         self.recomputeUI()
+
+        command = self.path.getCommandFromPath(self)
+        print("c", command.getCommandType())
+        command.setNewAdapter(self.getAdapter())
+        command.rebuild()
+        command.ui.recomputeEntity()
+        print("d", command.getCommandType())
 
         # absolutely atrocious code to dig through interactor shit to
         # sustain menu across changing segment entity
@@ -164,8 +172,11 @@ class PathSegmentModel(PathElementModel):
     GETTER METHODS THAT READ FROM MODEL. DO NOT MODIFY MODEL OR SEND NOTIFICATIONS
     """
 
+    def getState(self) -> AbstractSegmentState:
+        return self.states[self.currentStateType]
+
     def getAdapter(self) -> PathAdapter:
-        return self.currentState.getAdapter()
+        return self.getState().getAdapter()
  
     def getPrevious(self) -> PathNodeModel:
         return super().getPrevious()
@@ -189,10 +200,10 @@ class PathSegmentModel(PathElementModel):
         return self.direction
     
     def getType(self) -> SegmentType:
-        return self.currentState.getType()
+        return self.getState().getType()
     
     def getCenterInches(self) -> tuple:
-        return self.currentState._defineCenterInches()
+        return self.getState()._defineCenterInches()
     
     def getOther(self, node: PathNodeModel) -> PathNodeModel:
         if node == self.getPrevious():

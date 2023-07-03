@@ -1,5 +1,7 @@
 from __future__ import annotations
+from enum import Enum, auto
 from typing import TYPE_CHECKING
+from adapter.arc_adapter import ArcAdapter
 from adapter.straight_adapter import StraightAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
@@ -17,13 +19,21 @@ For straight segments. In this case, calculating thetas is just
 the angle between the start and end points
 """
 
+class ArcIconID(Enum):
+    FORWARD_LEFT = auto()
+    FORWARD_RIGHT = auto()
+    REVERSE_LEFT = auto()
+    REVERSE_RIGHT = auto()
+
 class ArcSegmentState(AbstractSegmentState):
 
     def __init__(self, model: PathSegmentModel):
 
-        adapter = StraightAdapter([
-            ImageState(SegmentDirection.FORWARD, ImageID.STRAIGHT_FORWARD),
-            ImageState(SegmentDirection.REVERSE, ImageID.STRAIGHT_REVERSE),
+        adapter = ArcAdapter([
+            ImageState(ArcIconID.FORWARD_LEFT, ImageID.CURVE_LEFT_FORWARD),
+            ImageState(ArcIconID.FORWARD_RIGHT, ImageID.CURVE_RIGHT_FORWARD),
+            ImageState(ArcIconID.REVERSE_LEFT, ImageID.CURVE_LEFT_REVERSE),
+            ImageState(ArcIconID.REVERSE_RIGHT, ImageID.CURVE_RIGHT_REVERSE),
         ])
 
         super().__init__(model, adapter, SegmentType.ARC)
