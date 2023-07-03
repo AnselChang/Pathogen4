@@ -22,9 +22,7 @@ from utility.pygame_functions import drawArcFromCenterAngles, shade, drawLine
 import pygame
 
 """
-Acts as a "context" class in the state design pattern. Owns PathSegmentState objects
-that define behavior for straight/arc/bezier shapes. Easy to switch between states
-We also define the constants that apply across all segment types here, like color and thickness
+View in MVC model for drawing arcs. References segment model and arc state model
 """
 
 class ArcSegmentEntity(AbstractSegmentEntity):
