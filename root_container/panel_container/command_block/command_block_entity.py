@@ -175,6 +175,11 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
             self.animatedExpansion.tick()
 
             self.recomputeEntity()
+        
+        if self.model.wasModified():
+            self.recomputeEntity()
+            self.model.resetModified()
+
 
     # how much the widgets stretch the command by. return the largest one
     def getElementStretch(self) -> int:

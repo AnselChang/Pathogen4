@@ -18,6 +18,8 @@ class TurnAdapter(PathAdapter):
         super().set(attribute, value, string)
 
     def setTurnEnabled(self, turnEnabled: bool):
+        if self.turnEnabled == turnEnabled:
+            return
         self.turnEnabled = turnEnabled
         self.notify(NotifyType.TURN_ENABLE_TOGGLED)
         

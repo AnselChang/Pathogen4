@@ -77,7 +77,6 @@ class PathNodeModel(PathElementModel):
         direction = deltaInHeading(theta1, theta2)
         self.adapter.setIconStateID(TurnDirection.LEFT if direction >= 0 else TurnDirection.RIGHT)
 
-
         if oldTurnEnabled != self.TURN_ENABLED:
             self.recomputeUI()
 
