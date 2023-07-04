@@ -3,16 +3,18 @@ import math
 
 class Line:
     def __init__(self, point: tuple, theta = None, point2: tuple = None):
-        self.point = point
+        self.p1 = point
 
         if theta is None:
-            self.theta = math.atan2(self.point2[1] - self.point[1], self.point2[0] - self.point[0])
+            self.p2 = point2
+            self.theta = math.atan2(self.p2[1] - self.p1[1], self.p2[0] - self.p1[0])
         else:
+            self.p2 = (self.p1[0] + math.cos(theta), self.p1[1] + math.sin(theta))
             self.theta = theta
         
     def intersection(self, other: 'Line') -> tuple:
-        x1, y1 = self.point
-        x2, y2 = other.point
+        x1, y1 = self.p1
+        x2, y2 = other.p1
         theta1 = self.theta
         theta2 = other.theta
         
@@ -28,6 +30,6 @@ class Line:
     
     def closestPoint(self, point: tuple):
         x0, y0 = point
-        x1, y1 = self.point
+        x1, y1 = self.p1
         x2, y2 = x1 + math.cos(self.theta), y1 + math.sin(self.theta)
         return pointOnLineClosestToPoint(x0, y0, x1, y1, x2, y2)

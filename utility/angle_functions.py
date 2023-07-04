@@ -1,6 +1,11 @@
 # Bound angle to between -pi and pi, preferring the smaller magnitude
 import math
 
+class Direction:
+    EAST = 0
+    NORTH = math.pi / 2
+    WEST = math.pi
+    SOUTH = 3 * math.pi / 2
 
 def boundAngleRadians(angle: float) -> float:
     PI = 3.1415

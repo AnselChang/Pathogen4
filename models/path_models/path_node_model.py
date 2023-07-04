@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from adapter.path_adapter import PathAttributeID
 
 from models.path_models.segment_direction import SegmentDirection
+from services.constraint_solver_service import ConstraintSolver
 from utility.angle_functions import deltaInHeading, equalTheta
 from utility.format_functions import formatDegrees
 if TYPE_CHECKING:
@@ -52,6 +53,18 @@ class PathNodeModel(PathElementModel):
     UPDATE methods that update values based on model state
     """
 
+    # Called during onStartDrag for a path node. Generates a list of constraint lines
+    # which will be used to constrain the path node's position during dragging.
+    def initConstraints(self):
+
+        self.constraintSolver = ConstraintSolver(self.field)
+
+        # if previous/next node exists, snap to cardinal directions for it
+        if self.getPrevious() is not None:
+            self.constraintSolver.addCardinalConstraints(self.getPrevious().getPrevious())
+        if self.getNext() is not None:
+            self.constraintSolver.addCardinalConstraints(self.getNext().getNext())
+
     """
     CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED
     """
@@ -98,6 +111,14 @@ class PathNodeModel(PathElementModel):
     def setPosition(self, position: tuple):
         self.position = position
         self.onPositionChange()
+
+    # sets the position of the node, but applies constraints first
+    def setAndConstrainPosition(self, position: tuple):
+        constrainedPosition = self.constraintSolver.constrain(position)
+        constraints = self.constraintSolver.getActiveConstraints()
+        snapped = self.constraintSolver.snapped()
+
+        self.setPosition(constrainedPosition)
 
     def makePermanent(self):
         self.temporary = False

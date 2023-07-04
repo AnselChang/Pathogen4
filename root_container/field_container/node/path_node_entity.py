@@ -3,8 +3,8 @@ import math
 from typing import TYPE_CHECKING
 from root_container.field_container.field_entity import FieldEntity
 
-from root_container.field_container.node.node_line import NodeLine
 from models.path_models.segment_direction import SegmentDirection
+from services.constraint_solver_service import ConstraintSolver
 if TYPE_CHECKING:
     from models.path_models.path_node_model import PathNodeModel
 
@@ -27,7 +27,6 @@ from entity_handler.entity_manager import EntityManager
 from adapter.path_adapter import AdapterInterface, PathAttributeID
 from adapter.turn_adapter import TurnAdapter
 
-from root_container.field_container.node.constraints import Constraints
 from root_container.field_container.node.bezier_theta_node import BezierThetaNode
 
 from common.image_manager import ImageID
@@ -82,6 +81,8 @@ class PathNodeEntity(Entity):
         nodeInchesX, nodeInchesY = self.model.getPosition()
         self.dx, self.dy = mouseInchesX - nodeInchesX, mouseInchesY - nodeInchesY
 
+        self.model.initConstraints()
+
     def canDrag(self, mouse: tuple) -> bool:
         mouseInches = self.field.mouseToInches(mouse)
         newPos = addTuples(mouseInches, [-self.dx, -self.dy])
@@ -102,9 +103,9 @@ class PathNodeEntity(Entity):
         if not self.field.inBoundsInches(newPos):
             self.lastDragPositionValid = False
             return
-        
+                
         # update model with new position
-        self.model.setPosition(newPos)
+        self.model.setAndConstrainPosition(newPos)
         self.lastDragPositionValid = True
 
     def onStopDrag(self):
