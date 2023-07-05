@@ -31,8 +31,6 @@ class ConstraintModel:
         for node in constraint.nodes:
             node.ui.recomputeConstraintLines()
 
-        print(self.constraints)
-
     # useful when node has been moved and all constraints for node must be reset again (and re-added if it snaps again)
     def removeAllConstraintsWithNode(self, node: PathNodeModel):
         constraintsToBeRemoved = [constraint for constraint in self.constraints if node in constraint.nodes]
@@ -42,8 +40,6 @@ class ConstraintModel:
             for node in constraint.nodes:
                 node.ui.recomputeConstraintLines()
 
-        print(self.constraints)
-
     # get lines for all constraints that contain the given node, useful for display when hovering over node
-    def getConstraintLinesWithNode(self, node: PathNodeModel) -> list[Line]:
-        return [constraint.line for constraint in self.constraints if node in constraint.nodes]
+    def getConstraintsWithNode(self, node: PathNodeModel) -> list[Constraint]:
+        return [constraint for constraint in self.constraints if node in constraint.nodes]

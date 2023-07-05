@@ -44,5 +44,4 @@ def traverseEntities(manager: EntityManager, order: TraversalOrder) -> Iterator[
 
     if order == TraversalOrder.DRAW:
         for e in manager.outsideEntites:
-            print("outside", e)
             yield from _traverseEntities(e, order, ignoreOutside = False)

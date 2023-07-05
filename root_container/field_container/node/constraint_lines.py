@@ -1,6 +1,8 @@
 from __future__ import annotations
+import math
 from typing import TYPE_CHECKING
 from utility.line import Line
+from utility.math_functions import hypo
 
 from utility.pygame_functions import drawDottedLine
 from entity_base.entity import Entity
@@ -24,21 +26,28 @@ class ConstraintLines(Entity):
     def isTouching(self, mouse: tuple) -> float:
         return False
     
+    def _point(self, startPoint, distance, theta):
+        return startPoint[0] + distance * math.cos(theta), startPoint[1] + distance * math.sin(theta)
+    
     def defineAfter(self) -> None:
+
+        dist = hypo(self.field.WIDTH, self.field.HEIGHT)
         
         self.pixelLines: list[Line] = []
-        for line in self.model.getConstraints():
-            p1 = self.field.inchesToMouse(line.p1)
-            p2 = self.field.inchesToMouse(line.p2)
+        for constraint in self.model.getConstraints():
+            point = self.field.inchesToMouse(constraint.line.p1)
+            theta = constraint.line.theta
+
+            p1 = self._point(point, dist, theta)
+            p2 = self._point(point, dist, theta + math.pi)
+
             self.pixelLines.append(Line(point = p1, point2 = p2))
     
     # draw the constraint lines, if any
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        print("a")
         # only draw when mouse is hovering over node
         if not self.entity.hover.isHovering:
             return
         
         for line in self.pixelLines:
-            print(line)
             drawDottedLine(screen, (30,255,30), line.p1, line.p2, length = 12, fill = 0.5, width = 2)

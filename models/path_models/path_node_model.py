@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from adapter.path_adapter import PathAttributeID
 
 from models.path_models.segment_direction import SegmentDirection
-from services.constraint_solver_service import ConstraintSolver
+from services.constraint_solver_service import Constraint, ConstraintSolver
 from utility.angle_functions import deltaInHeading, equalTheta
 from utility.format_functions import formatDegrees
 if TYPE_CHECKING:
@@ -157,8 +157,8 @@ class PathNodeModel(PathElementModel):
         return self.TURN_ENABLED
     
     # get all the constraint lines to be displayed when node is hovered
-    def getConstraints(self) -> list[Line]:
-        return self.path.constraints.getConstraintLinesWithNode(self)
+    def getConstraints(self) -> list[Constraint]:
+        return self.path.constraints.getConstraintsWithNode(self)
     
     # gets the theta when robot approaches node before turning
     def getStartTheta(self):
