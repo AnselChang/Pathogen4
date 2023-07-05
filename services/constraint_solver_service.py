@@ -15,6 +15,15 @@ class Constraint:
         self.line = line
         self.nodes = nodes
 
+    # make a copy of constraint adding node to node list
+    def makeWithNode(self, node: PathNodeModel) -> Constraint:
+        nodes = self.nodes.copy()
+        nodes.append(node)
+        return Constraint(self.line, nodes)
+    
+    def __repr__(self) -> str:
+        return f"Constraint: ({self.line.p1}, {self.line.p2}) {self.nodes}"
+
 class ConstraintSolver:
 
     def __init__(self, fieldEntity: FieldEntity):
@@ -48,7 +57,7 @@ class ConstraintSolver:
 
     # runs the constraints algorithm on the given point
     # also return the position
-    def constrain(self, position: tuple) -> tuple:
+    def constrain(self, node: PathNodeModel, position: tuple) -> tuple:
 
         THRESHOLD_PIXELS = 3 # how close the node must be to the line to snap (in pixels)
 
@@ -79,6 +88,9 @@ class ConstraintSolver:
                 # Snap to single constraint
                 self._position = constraints[0].line.closestPoint(position)
                 self._activeConstraints = constraints[0:1]
+
+        # add node to each of active constraints
+        self._activeConstraints = [constraint.makeWithNode(node) for constraint in self._activeConstraints]
         
         return self._position
     

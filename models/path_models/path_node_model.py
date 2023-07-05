@@ -9,6 +9,7 @@ from utility.format_functions import formatDegrees
 if TYPE_CHECKING:
     from models.path_models.path_model import PathModel
     from models.path_models.path_segment_model import PathSegmentModel
+    from utility.line import Line
 
 from enum import Enum
 from adapter.turn_adapter import TurnAdapter
@@ -106,7 +107,6 @@ class PathNodeModel(PathElementModel):
     """
     SETTER METHODS THAT MODIFY MODEL AND THEN SEND NOTIF TO UPDATE UI
     """
-    
     # Set the position of the node, which will update neighbor segments and recompute node
     def setPosition(self, position: tuple):
         self.position = position
@@ -114,9 +114,15 @@ class PathNodeModel(PathElementModel):
 
     # sets the position of the node, but applies constraints first
     def setAndConstrainPosition(self, position: tuple):
-        constrainedPosition = self.constraintSolver.constrain(position)
-        constraints = self.constraintSolver.getActiveConstraints()
-        snapped = self.constraintSolver.snapped()
+
+        # first remove all existing constraints on current node
+        self.path.constraints.removeAllConstraintsWithNode(self)
+
+        constrainedPosition = self.constraintSolver.constrain(self, position)
+
+        # add any snapped constraints to global constraints model
+        for constraint in self.constraintSolver.getActiveConstraints():
+            self.path.constraints.addConstraint(constraint)
 
         self.setPosition(constrainedPosition)
 
@@ -149,7 +155,10 @@ class PathNodeModel(PathElementModel):
     
     def isTurnEnabled(self) -> bool:
         return self.TURN_ENABLED
-
+    
+    # get all the constraint lines to be displayed when node is hovered
+    def getConstraints(self) -> list[Line]:
+        return self.path.constraints.getConstraintLinesWithNode(self)
     
     # gets the theta when robot approaches node before turning
     def getStartTheta(self):

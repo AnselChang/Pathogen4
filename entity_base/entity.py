@@ -72,10 +72,13 @@ class Entity(ABC, Observable):
                  initiallyVisible: bool = True,
                  recomputeWhenInvisible: bool = False,
                  thisUpdatesParent: bool = False,
-                 verbose: bool = True
+                 verbose: bool = True,
+                 drawOrderRecursive: bool = True,
+
                  ) -> None:
                 
         self.drawOrder = drawOrder
+        self.drawOrderRecursive = drawOrderRecursive # if not recursive, draws in front of everything
         self.drag = drag
         self.select = select
         self.click = click

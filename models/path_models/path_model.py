@@ -7,6 +7,7 @@ In creating new nodes, it also creates the relevant command models and links the
 from data_structures.linked_list import LinkedList
 from models.command_models.command_model import CommandModel
 from models.command_models.full_model import FullModel
+from models.path_models.constraint_model import ConstraintModel
 from models.path_models.path_node_model import PathNodeModel
 from models.path_models.path_segment_model import PathSegmentModel
 from root_container.field_container.field_entity import FieldEntity
@@ -27,6 +28,9 @@ class PathModel(Serializable):
 
         # store a dict that maintains a mapping from PathNodeEntity | PathSegmentEntity to CommandBlockEntity
         self.linker = PathCommandLinker()
+
+        # Store path node positional constraints
+        self.constraints = ConstraintModel()
 
         self.commandsModel = None
         self.fieldEntity: FieldEntity = None
