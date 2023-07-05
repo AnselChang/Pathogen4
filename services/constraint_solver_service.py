@@ -35,8 +35,6 @@ class ConstraintSolver:
     def addCardinalConstraints(self, node: PathNodeModel):
         self.addConstraint(Line(node.position, theta = Direction.NORTH), [node])
         self.addConstraint(Line(node.position, theta = Direction.EAST), [node])
-        self.addConstraint(Line(node.position, theta = Direction.SOUTH), [node])
-        self.addConstraint(Line(node.position, theta = Direction.WEST), [node])
 
     # return a subset of self.constraints that is nearby the given point within some threshold
     def filterNearbyConstraints(self, position: tuple, distance: float) -> list[Constraint]:
