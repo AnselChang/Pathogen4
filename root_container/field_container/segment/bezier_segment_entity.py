@@ -29,8 +29,8 @@ class BezierSegmentEntity(AbstractSegmentEntity):
         super().__init__(field, model)
 
         # create bezier control points
-        BezierNodeEntity(self, True)
-        BezierNodeEntity(self, False)
+        self.control1 = BezierNodeEntity(self, True)
+        self.control2 = BezierNodeEntity(self, False)
 
     def defineCenter(self) -> tuple:
         return self.field.inchesToMouse(self.model.getCenterInches())
@@ -47,9 +47,36 @@ class BezierSegmentEntity(AbstractSegmentEntity):
 
     def defineAfter(self) -> None:
         super().defineAfter()
-        pass
+        
+        pointsInches = self.getBezierState().getBezierPoints()
+        self.points = [self.field.inchesToMouse(point) for point in pointsInches]
+
+    # return if self, nodes, or control points are hovered
+    def isBezierHovered(self) -> bool:
+
+        beforeNode = self.model.getPrevious().ui
+        afterNode = self.model.getNext().ui
+
+        if self.hover.isHovering or self.select.isSelected: # segment is hovering or selected
+            return True
+        elif beforeNode.hover.isHovering or afterNode.hover.isHovering: # nodes are hovering
+            return True
+        elif self.control1.hover.isHovering or self.control2.hover.isHovering: # control points are hovering
+            return True
+        
+        return False
 
     def draw(self, screen, isActive, isHovering):
         
         color = self.getColor()
+
+        for i in range(len(self.points) - 1):
+            x1, y1 = self.points[i]
+            x2, y2 = self.points[i+1]
+            drawLine(screen, color, x1, y1, x2, y2, self.THICKNESS, None)
+
+        # Draw every point if selected
+        if self.isBezierHovered():
+            for point in self.points:
+                pygame.draw.circle(screen, (0,0,0), point, 1)
 

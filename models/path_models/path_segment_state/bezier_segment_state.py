@@ -10,6 +10,7 @@ from entity_base.image.image_state import ImageState
 from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.segment_direction import SegmentDirection
+from utility.bezier_functions_2 import fast_points_cubic_bezier
 from utility.format_functions import formatInches
 from utility.math_functions import addTuples, arcFromThreePoints, distanceTuples, divideTuple, midpoint, pointPlusVector, scaleTuple, subtractTuples, thetaFromPoints
 
@@ -36,6 +37,12 @@ class BezierSegmentState(AbstractSegmentState):
         # stores the location of the two bezier control nodes as offsets from segment endpoints
         self.controlOffset1 = None
         self.controlOffset2 = None
+
+        self.FAST_POINTS: list[tuple] = None # cubic bezier
+        self.SLOW_POINTS: list[tuple] = None # cubic bezier with arc length parametrization
+
+        self.FAST_RESOLUTION_INCHES = 2
+        self.SLOW_RESOLUTION_INCHES = 0.3
 
     # get the location between nodes, with percent (0-1).
     # 0 means at first node, 1 means at second node
@@ -80,6 +87,33 @@ class BezierSegmentState(AbstractSegmentState):
         self.model.updateThetas()
         self.model.recomputeUI()
 
+    # return slow bezier points if it exists. Otherwise, return fast bezier points
+    def getBezierPoints(self) -> list[tuple]:
+        if self.SLOW_POINTS is not None:
+            return self.SLOW_POINTS
+        elif self.FAST_POINTS is not None:
+            return self.FAST_POINTS
+        else:
+            raise Exception("Bezier points not defined")
+
+    # reset slow bezier points when they are no longer valid (user is dragging control points)
+    def resetBezierSlow(self):
+        self.SLOW_POINTS = None
+
+    # generate a list of bezier points, for drawing while dragging
+    # uses fast cubic bezier generation without arc length parameterization
+    def updateBezierFast(self):
+
+        p0 = self.model.getBeforePos()
+        p1 = self.getControlPoint1()
+        p2 = self.getControlPoint2()
+        p3 = self.model.getAfterPos()
+
+        self.FAST_POINTS = fast_points_cubic_bezier(self.FAST_RESOLUTION_INCHES, p0, p1, p2, p3)
+
+    def updateBezierSlow(self):
+        self.updateBezierFast()
+
     def _update(self) -> tuple: # returns [startTheta, endTheta]
 
         before = self.model.getBeforePos()
@@ -88,6 +122,8 @@ class BezierSegmentState(AbstractSegmentState):
         # calculate thetas, based on angle to control points
         startTheta = thetaFromPoints(before, self.getControlPoint1())
         endTheta = thetaFromPoints(self.getControlPoint2(), after)
+
+        self.updateBezierSlow()
 
         return startTheta, endTheta
         

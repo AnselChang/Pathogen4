@@ -83,7 +83,11 @@ class AbstractSegmentEntity(Entity):
         pass
 
     def getColor(self) -> tuple:
-        if self.model.getDirection() == SegmentDirection.FORWARD:
-            return self.colorForwardH if self.hover.isHovering else self.colorForward
+        forward = self.model.getDirection() == SegmentDirection.FORWARD
+
+        if self.select.isSelected:
+            return self.colorForwardA if forward else self.colorReversedA
+        elif self.hover.isHovering:
+            return self.colorForwardH if forward else self.colorReversedH
         else:
-            return self.colorReversedH if self.hover.isHovering else self.colorReversed
+            return self.colorForward if forward else self.colorReversed

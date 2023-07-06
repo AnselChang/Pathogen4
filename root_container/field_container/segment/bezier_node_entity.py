@@ -48,7 +48,12 @@ class BezierNodeEntity(Entity):
     def onStartDrag(self, mouse: tuple):
         self.startOffset = self.getOffset()
 
+        # the old bezier curve is no longer valid after dragging
+        self.segment.getBezierState().resetBezierSlow()
+
     def onDrag(self, mouse: tuple):
+
+        # First, find the new offset after dragging
         state = self.segment.getBezierState()
 
         offsetPixels = [self.drag.totalOffsetX, self.drag.totalOffsetY]
@@ -56,6 +61,9 @@ class BezierNodeEntity(Entity):
 
         offset = addTuples(self.startOffset, offsetInches)
         state.setControlOffset1(offset) if self.isFirst else state.setControlOffset2(offset)
+
+        # Then, recompute the bezier curve (fast only for drawing)
+        self.segment.getBezierState().updateBezierFast()
 
     def onStopDrag(self):
         pass
