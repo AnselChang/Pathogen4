@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from root_container.field_container.field_entity import FieldEntity
 
 from models.path_models.segment_direction import SegmentDirection
+from root_container.field_container.node.i_path_node_entity import IPathNodeEntity
 from services.constraint_solver_service import ConstraintSolver
 if TYPE_CHECKING:
     from models.path_models.path_node_model import PathNodeModel
@@ -44,7 +45,7 @@ Neighbors PathSegmentEntities
 Referenced in PathSection
 """
 
-class PathNodeEntity(Entity):
+class PathNodeEntity(Entity, IPathNodeEntity):
 
     def __init__(self, fieldEntity: FieldEntity, model: PathNodeModel):
         self.field = fieldEntity
