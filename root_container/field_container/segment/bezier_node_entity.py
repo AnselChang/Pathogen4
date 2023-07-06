@@ -85,6 +85,10 @@ class BezierNodeEntity(Entity):
         return self.field.inchesToMouse(self.getPosition())
     
     def isTouching(self, position: tuple) -> bool:
+
+        if not self.segment.isBezierHovered():
+            return
+
         MARGIN = 4
         return self.distanceTo(position) <= self.RADIUS + MARGIN
     
@@ -92,6 +96,10 @@ class BezierNodeEntity(Entity):
         return self.COLOR_H if self.hover.isHovering else self.COLOR
     
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+        
+        if not self.segment.isBezierHovered():
+            return
+        
         RADIUS = self.RADIUS_H if self.hover.isHovering else self.RADIUS
         POSITION = [self.CENTER_X, self.CENTER_Y]
         pygame.draw.circle(screen, self.getColor(), POSITION, RADIUS)

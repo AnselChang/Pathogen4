@@ -30,7 +30,10 @@ class AbstractSegmentEntity(Entity):
         self.field = field
         super().__init__(parent = field,
                          hover = HoverLambda(self),
-                         select = SelectLambda(self, "segment", type = SelectorType.SOLO),
+                         select = SelectLambda(self, "segment", type = SelectorType.SOLO,
+                            FonSelect = lambda i: self.onSelect,
+                            FonDeselect = lambda i: self.onDeselect,
+                                               ),
                          drag = DragLambda(self,
                                            FonStartDrag = self.onStartDrag,
                                            FcanDrag = self.canDrag,
@@ -78,6 +81,11 @@ class AbstractSegmentEntity(Entity):
         for i, node in enumerate([self.model.getPrevious(), self.model.getNext()]):
             node.setPosition(self.nodeGoalPosition[i])
 
+    def onSelect(self):
+        pass
+
+    def onDeselect(self):
+        pass
 
     def onStopDrag(self):
         pass

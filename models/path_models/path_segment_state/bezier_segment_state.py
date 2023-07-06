@@ -40,11 +40,9 @@ class BezierSegmentState(AbstractSegmentState):
 
         self.FAST_POINTS: list[tuple] = None # cubic bezier
         self.SLOW_POINTS: list[tuple] = None # cubic bezier with arc length parametrization
-        self.MOUSE_POINTS: float = None
 
         # higher is more detailed
         self.FAST_RESOLUTION = 0.2
-        self.MOUSE_RESOLUTION = 0.1
 
         # lower is more detailed. each segment is that length in inches
         self.SLOW_RESOLUTION_INCHES = 0.75
@@ -105,8 +103,7 @@ class BezierSegmentState(AbstractSegmentState):
     
     # return mouse points for hovering over bezier if it exists
     def getBezierMousePoints(self) -> list[tuple]:
-        assert(self.MOUSE_POINTS is not None)
-        return self.MOUSE_POINTS
+        return self.FAST_POINTS
 
     # reset slow bezier points when they are no longer valid (user is dragging control points)
     def resetBezierSlow(self):
@@ -131,7 +128,6 @@ class BezierSegmentState(AbstractSegmentState):
         p3 = self.model.getAfterPos()
         
         self.SLOW_POINTS = normalized_points_cubic_bezier(self.SLOW_RESOLUTION_INCHES, p0, p1, p2, p3)
-        self.MOUSE_POINTS = fast_points_cubic_bezier(self.MOUSE_RESOLUTION, p0, p1, p2, p3)
 
     def _update(self) -> tuple: # returns [startTheta, endTheta]
 

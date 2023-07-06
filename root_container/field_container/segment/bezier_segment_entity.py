@@ -70,12 +70,24 @@ class BezierSegmentEntity(AbstractSegmentEntity):
 
         if self.hover.isHovering or self.select.isSelected: # segment is hovering or selected
             return True
-        elif beforeNode.hover.isHovering or afterNode.hover.isHovering: # nodes are hovering
+        elif beforeNode.hover.isHovering or beforeNode.select.isSelected:
+            return True
+        elif afterNode.hover.isHovering or afterNode.select.isSelected: # nodes are hovering
             return True
         elif self.control1.hover.isHovering or self.control2.hover.isHovering: # control points are hovering
             return True
         
         return False
+    
+    def onSelect(self):
+        print("Bezier selected")
+        self.control1.setVisible()
+        self.control2.setVisible()
+
+    def onDeselect(self):
+        print("Bezier deselected")
+        self.control1.setInvisible()
+        self.control2.setInvisible()
 
     def draw(self, screen, isActive, isHovering):
         

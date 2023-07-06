@@ -27,4 +27,8 @@ class BezierLineEntity(Entity):
         self.p2 = self.field.inchesToMouse(self.nodeModel.position)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+
+        if not self.controlPoint.segment.isBezierHovered():
+            return        
+        
         pygame.draw.line(screen, self.controlPoint.getColor(), self.p1, self.p2)
