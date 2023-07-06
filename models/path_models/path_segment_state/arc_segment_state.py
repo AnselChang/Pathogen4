@@ -18,8 +18,7 @@ if TYPE_CHECKING:
     from models.path_models.path_segment_model import PathSegmentModel
 
 """
-For straight segments. In this case, calculating thetas is just
-the angle between the start and end points
+For arc segments.
 """
 
 class ArcIconID(Enum):
@@ -136,7 +135,7 @@ class ArcSegmentState(AbstractSegmentState):
         return startTheta, endTheta
         
     def _defineCenterInches(self) -> tuple:
-        return midpoint(self.model.getBeforePos(), self.model.getAfterPos())
+        return self.arcMidpoint
     
     def _updateIcon(self):
 

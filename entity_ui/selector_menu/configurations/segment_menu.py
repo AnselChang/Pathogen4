@@ -52,7 +52,7 @@ class ToggleSegmentTypeAction(MenuClickAction[StraightSegmentEntity]):
         if current == SegmentType.STRAIGHT:
             segment.setState(SegmentType.ARC)
         elif current == SegmentType.ARC:
-            segment.setState(SegmentType.STRAIGHT) # TODO: change to bezier
+            segment.setState(SegmentType.BEZIER)
         elif current == SegmentType.BEZIER:
             segment.setState(SegmentType.STRAIGHT)
         else:
