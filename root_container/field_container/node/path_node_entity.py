@@ -9,7 +9,6 @@ if TYPE_CHECKING:
     from models.path_models.path_node_model import PathNodeModel
 
 from enum import Enum
-from entity_base.abstract_circle_entity import AbstractCircleEntity
 from entity_base.entity import Entity
 from common.reference_frame import PointRef, Ref, VectorRef
 from entity_base.image.image_state import ImageState
@@ -26,8 +25,6 @@ from entity_handler.entity_manager import EntityManager
 
 from adapter.path_adapter import AdapterInterface, PathAttributeID
 from adapter.turn_adapter import TurnAdapter
-
-from root_container.field_container.node.bezier_theta_node import BezierThetaNode
 
 from common.image_manager import ImageID
 from data_structures.linked_list import LinkedListNode
