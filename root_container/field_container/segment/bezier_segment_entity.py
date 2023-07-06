@@ -36,11 +36,19 @@ class BezierSegmentEntity(AbstractSegmentEntity):
         return self.field.inchesToMouse(self.model.getCenterInches())
 
     def isTouching(self, position: tuple) -> bool:
-        beforeUI = self.model.getPrevious().ui
-        x1, y1 = beforeUI.CENTER_X, beforeUI.CENTER_Y
-        afterUI = self.model.getNext().ui
-        x2, y2 = afterUI.CENTER_X, afterUI.CENTER_Y
-        return pointTouchingLine(*position, x1, y1, x2, y2, self.HOVER_THICKNESS)
+        
+        # sliding window for making lines across points
+        # Increases effective hitbox size
+        WINDOW_SIZE = 5
+
+        # loop through each segment
+        for i in range(len(self.mousePoints) - WINDOW_SIZE):
+            x1, y1 = self.mousePoints[i]
+            x2, y2 = self.mousePoints[i+WINDOW_SIZE]
+            if pointTouchingLine(*position, x1, y1, x2, y2, self.HOVER_THICKNESS):
+                return True
+
+        return False
 
     def getBezierState(self) -> BezierSegmentState:
         return self.model.getState()
@@ -50,6 +58,9 @@ class BezierSegmentEntity(AbstractSegmentEntity):
         
         pointsInches = self.getBezierState().getBezierPoints()
         self.points = [self.field.inchesToMouse(point) for point in pointsInches]
+
+        mousePointsInches = self.getBezierState().getBezierMousePoints()
+        self.mousePoints = [self.field.inchesToMouse(point) for point in mousePointsInches]
 
     # return if self, nodes, or control points are hovered
     def isBezierHovered(self) -> bool:
@@ -76,7 +87,7 @@ class BezierSegmentEntity(AbstractSegmentEntity):
             drawLine(screen, color, x1, y1, x2, y2, self.THICKNESS, None)
 
         # Draw every point if selected
-        if self.isBezierHovered():
+        if self.model.getBezierState().SLOW_POINTS is not None and self.isBezierHovered():
             for point in self.points:
                 pygame.draw.circle(screen, (0,0,0), point, 1)
 

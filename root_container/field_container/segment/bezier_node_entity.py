@@ -48,7 +48,7 @@ class BezierNodeEntity(Entity):
     def onStartDrag(self, mouse: tuple):
         self.startOffset = self.getOffset()
 
-        # the old bezier curve is no longer valid after dragging
+        # old slow bezier curve is now out-of-date
         self.segment.getBezierState().resetBezierSlow()
 
     def onDrag(self, mouse: tuple):
@@ -65,8 +65,10 @@ class BezierNodeEntity(Entity):
         # Then, recompute the bezier curve (fast only for drawing)
         self.segment.getBezierState().updateBezierFast()
 
+    # there's time to recompute the slow bezier curve once on mouse release
     def onStopDrag(self):
-        pass
+        self.segment.getBezierState().updateBezierSlow()
+        self.segment.recomputeEntity()
 
     def defineCenter(self) -> tuple:
         return self.field.inchesToMouse(self.getPosition())

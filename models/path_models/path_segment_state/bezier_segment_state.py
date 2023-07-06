@@ -10,7 +10,7 @@ from entity_base.image.image_state import ImageState
 from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.segment_direction import SegmentDirection
-from utility.bezier_functions_2 import fast_points_cubic_bezier
+from utility.bezier_functions_2 import fast_points_cubic_bezier, normalized_points_cubic_bezier
 from utility.format_functions import formatInches
 from utility.math_functions import addTuples, arcFromThreePoints, distanceTuples, divideTuple, midpoint, pointPlusVector, scaleTuple, subtractTuples, thetaFromPoints
 
@@ -40,9 +40,14 @@ class BezierSegmentState(AbstractSegmentState):
 
         self.FAST_POINTS: list[tuple] = None # cubic bezier
         self.SLOW_POINTS: list[tuple] = None # cubic bezier with arc length parametrization
+        self.MOUSE_POINTS: float = None
 
-        self.FAST_RESOLUTION_INCHES = 2
-        self.SLOW_RESOLUTION_INCHES = 0.3
+        # higher is more detailed
+        self.FAST_RESOLUTION = 0.2
+        self.MOUSE_RESOLUTION = 0.1
+
+        # lower is more detailed. each segment is that length in inches
+        self.SLOW_RESOLUTION_INCHES = 0.75
 
     # get the location between nodes, with percent (0-1).
     # 0 means at first node, 1 means at second node
@@ -62,6 +67,8 @@ class BezierSegmentState(AbstractSegmentState):
 
             pos2 = self.getLocationBetweenNodes(2/3)
             self.controlOffset2 = subtractTuples(pos2, self.model.getAfterPos())
+
+            self.updateBezierSlow()
 
     # first control point is defined relative to before node
     def getControlPoint1(self) -> tuple:
@@ -95,6 +102,11 @@ class BezierSegmentState(AbstractSegmentState):
             return self.FAST_POINTS
         else:
             raise Exception("Bezier points not defined")
+    
+    # return mouse points for hovering over bezier if it exists
+    def getBezierMousePoints(self) -> list[tuple]:
+        assert(self.MOUSE_POINTS is not None)
+        return self.MOUSE_POINTS
 
     # reset slow bezier points when they are no longer valid (user is dragging control points)
     def resetBezierSlow(self):
@@ -109,10 +121,17 @@ class BezierSegmentState(AbstractSegmentState):
         p2 = self.getControlPoint2()
         p3 = self.model.getAfterPos()
 
-        self.FAST_POINTS = fast_points_cubic_bezier(self.FAST_RESOLUTION_INCHES, p0, p1, p2, p3)
+        self.FAST_POINTS = fast_points_cubic_bezier(self.FAST_RESOLUTION, p0, p1, p2, p3)
 
     def updateBezierSlow(self):
-        self.updateBezierFast()
+
+        p0 = self.model.getBeforePos()
+        p1 = self.getControlPoint1()
+        p2 = self.getControlPoint2()
+        p3 = self.model.getAfterPos()
+        
+        self.SLOW_POINTS = normalized_points_cubic_bezier(self.SLOW_RESOLUTION_INCHES, p0, p1, p2, p3)
+        self.MOUSE_POINTS = fast_points_cubic_bezier(self.MOUSE_RESOLUTION, p0, p1, p2, p3)
 
     def _update(self) -> tuple: # returns [startTheta, endTheta]
 
@@ -123,7 +142,7 @@ class BezierSegmentState(AbstractSegmentState):
         startTheta = thetaFromPoints(before, self.getControlPoint1())
         endTheta = thetaFromPoints(self.getControlPoint2(), after)
 
-        self.updateBezierSlow()
+        self.updateBezierFast()
 
         return startTheta, endTheta
         

@@ -176,6 +176,15 @@ class PathSegmentModel(PathElementModel):
 
     def getState(self) -> AbstractSegmentState:
         return self.states[self.currentStateType]
+    
+    def getStraightState(self) -> StraightSegmentState:
+        return self.states[SegmentType.STRAIGHT]
+    
+    def getArcState(self) -> ArcSegmentState:
+        return self.states[SegmentType.ARC]
+    
+    def getBezierState(self) -> BezierSegmentState:
+        return self.states[SegmentType.BEZIER]
 
     def getAdapter(self) -> PathAdapter:
         return self.getState().getAdapter()

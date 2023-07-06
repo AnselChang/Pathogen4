@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from models.path_models.path_segment_state.segment_type import SegmentType
 from root_container.field_container.field_entity import FieldEntity
 
 from models.path_models.segment_direction import SegmentDirection
@@ -81,6 +82,14 @@ class PathNodeEntity(Entity, IPathNodeEntity):
 
         self.model.initConstraints()
 
+        # old bezier curve is now out-of-date
+        prevSegment = self.model.getPrevious()
+        if prevSegment is not None and prevSegment.getType() == SegmentType.BEZIER:
+            prevSegment.getBezierState().resetBezierSlow()
+        nextSegment = self.model.getNext()
+        if nextSegment is not None and nextSegment.getType() == SegmentType.BEZIER:
+            nextSegment.getBezierState().resetBezierSlow()
+
     def canDrag(self, mouse: tuple) -> bool:
         mouseInches = self.field.mouseToInches(mouse)
         newPos = addTuples(mouseInches, [-self.dx, -self.dy])
@@ -112,6 +121,17 @@ class PathNodeEntity(Entity, IPathNodeEntity):
                 self.model.makePermanent()
             else:
                 self.model.path.deleteNode(self.model)
+                return
+            
+        # if neighbor segment is bezier, update bezier slow
+        prevSegment = self.model.getPrevious()
+        if prevSegment is not None and prevSegment.getType() == SegmentType.BEZIER:
+            prevSegment.getBezierState().updateBezierSlow()
+            prevSegment.recomputeUI()
+        nextSegment = self.model.getNext()
+        if nextSegment is not None and nextSegment.getType() == SegmentType.BEZIER:
+            nextSegment.getBezierState().updateBezierSlow()
+            nextSegment.recomputeUI()
 
     def onKeyDown(self, key):
 
