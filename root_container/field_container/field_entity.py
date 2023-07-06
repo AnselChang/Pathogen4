@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from root_container.field_container.constraint_lines import ConstraintLinesEntity
+
 if TYPE_CHECKING:
     from models.path_models.path_model import PathModel
 
@@ -78,6 +80,9 @@ class FieldEntity(Entity, Observable):
         self._oldRect = None
         self._oldZoom = None
         self._oldPan = None
+
+        # Construct global field objects
+        ConstraintLinesEntity(self)
 
     def initPathModel(self, path: PathModel):
         self.model = path

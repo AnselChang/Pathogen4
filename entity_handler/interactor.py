@@ -55,6 +55,10 @@ class Interactor:
         # disable interaction until mouse up
         self.disableUntilMouseUp = False
 
+    # return the currently hovered entity, or none
+    def getHoveredEntity(self) -> Entity | None:
+        return self.hoveredEntity
+
     # objects in list A but not B
     def setDifference(self, listA, listB):
         return [obj for obj in listA if obj not in listB]

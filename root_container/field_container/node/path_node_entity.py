@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 from root_container.field_container.field_entity import FieldEntity
 
 from models.path_models.segment_direction import SegmentDirection
-from root_container.field_container.node.constraint_lines import ConstraintLines
 from services.constraint_solver_service import ConstraintSolver
 if TYPE_CHECKING:
     from models.path_models.path_node_model import PathNodeModel
@@ -74,10 +73,6 @@ class PathNodeEntity(Entity):
 
         self.lastDragPositionValid = True
 
-        self.constraintLines = ConstraintLines(self)
-
-    def recomputeConstraintLines(self):
-        self.constraintLines.recomputeEntity()
 
     def onStartDrag(self, mouse: tuple):
 
