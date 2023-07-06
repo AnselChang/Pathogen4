@@ -24,7 +24,7 @@ class Line:
 
         div = det(xdiff, ydiff)
         if div == 0:
-            raise Exception('lines do not intersect')
+            return None
 
         d = (det(*line1), det(*line2))
         x = det(d, xdiff) / div

@@ -62,9 +62,42 @@ class PathNodeModel(PathElementModel):
 
         # if previous/next node exists, snap to cardinal directions for it
         if self.getPrevious() is not None:
-            self.constraintSolver.addCardinalConstraints(self.getPrevious().getPrevious())
+            prevNode = self.getPrevious().getPrevious()
+            self.constraintSolver.addCardinalConstraints(prevNode)
+
+            # if prev prev node exists, snap to cardinal directions for it too
+            if prevNode.getPrevious() is not None:
+                self.constraintSolver.addCardinalConstraints(prevNode.getPrevious().getPrevious())
+
         if self.getNext() is not None:
-            self.constraintSolver.addCardinalConstraints(self.getNext().getNext())
+            nextNode = self.getNext().getNext()
+            self.constraintSolver.addCardinalConstraints(nextNode)
+
+            # if next next node exists, snap to cardinal directions for it too
+            if nextNode.getNext() is not None:
+                self.constraintSolver.addCardinalConstraints(nextNode.getNext().getNext())
+
+        # snap to previous segment
+        if self.getPrevious() is not None:
+            node = self.getPrevious().getPrevious()
+            segment = node.getPrevious()
+            if segment is not None:
+                self.constraintSolver.addSegmentConstraint(segment, node)
+
+        # snap to next segment
+        if self.getNext() is not None:
+            node = self.getNext().getNext()
+            segment = node.getNext()
+            if segment is not None:
+                self.constraintSolver.addSegmentConstraint(segment, node)
+
+        # snap to line defined by previous and next nodes
+        if self.getPrevious() is not None and self.getNext() is not None:
+            prevNode = self.getPrevious().getPrevious()
+            nextNode = self.getNext().getNext()
+            self.constraintSolver.addLineFromTwoNodesConstraint(prevNode, nextNode)
+
+        
 
     """
     CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED

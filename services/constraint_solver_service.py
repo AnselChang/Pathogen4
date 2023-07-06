@@ -1,8 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from models.path_models.path_segment_state.segment_type import SegmentType
 
 if TYPE_CHECKING:
     from models.path_models.path_node_model import PathNodeModel
+    from models.path_models.path_segment_model import PathSegmentModel
     from root_container.field_container.field_entity import FieldEntity
 
 from utility.angle_functions import Direction
@@ -44,6 +46,31 @@ class ConstraintSolver:
     def addCardinalConstraints(self, node: PathNodeModel):
         self.addConstraint(Line(node.position, theta = Direction.NORTH), [node])
         self.addConstraint(Line(node.position, theta = Direction.EAST), [node])
+
+    # snap to a given segment and a node on that segment, snap to the line tangent to the node there
+    def addSegmentConstraint(self, segment: PathSegmentModel, node: PathNodeModel):
+
+        assert(segment.getPrevious() is node or segment.getNext() is node)
+
+        if segment.getPrevious() is node:
+            angle = segment.getStartTheta()
+        else:
+            angle = segment.getEndTheta()
+
+        line = Line(point = node.position, theta = angle)
+
+        # for straight segments, both, not one, nodes are collinear
+        if segment.getType() == SegmentType.STRAIGHT:
+            nodes = [segment.getPrevious(), segment.getNext()]
+        else:
+            nodes = [node]
+
+        self.addConstraint(line, nodes)
+
+    # snap to the line determined by the two given nodes
+    def addLineFromTwoNodesConstraint(self, node1: PathNodeModel, node2: PathNodeModel):
+        line = Line(point = node1.position, point2 = node2.position)
+        self.addConstraint(line, [node1, node2])
 
     # return a subset of self.constraints that is nearby the given point within some threshold
     def filterNearbyConstraints(self, position: tuple, distance: float) -> list[Constraint]:
