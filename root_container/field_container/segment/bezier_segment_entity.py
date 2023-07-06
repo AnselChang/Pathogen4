@@ -78,16 +78,6 @@ class BezierSegmentEntity(AbstractSegmentEntity):
             return True
         
         return False
-    
-    def onSelect(self):
-        print("Bezier selected")
-        self.control1.setVisible()
-        self.control2.setVisible()
-
-    def onDeselect(self):
-        print("Bezier deselected")
-        self.control1.setInvisible()
-        self.control2.setInvisible()
 
     def draw(self, screen, isActive, isHovering):
         

@@ -157,7 +157,8 @@ class PathSegmentModel(PathElementModel):
 
         # absolutely atrocious code to dig through interactor shit to
         # sustain menu across changing segment entity
-        self.ui.interactor.selected.activeMenu = self.ui.interactor.selected.menuManager.createMenuForEntity(self.ui)
+        self.ui.interactor.removeAllEntities()
+        self.ui.interactor.addEntity(self.ui)
 
     def toggleDirection(self):
         if self.direction == SegmentDirection.FORWARD:
