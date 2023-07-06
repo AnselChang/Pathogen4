@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from entity_base.listeners.drag_listener import DragLambda
-from utility.math_functions import distancePointToLine
+from utility.math_functions import addTuples, distancePointToLine
 if TYPE_CHECKING:
     from root_container.field_container.segment.bezier_segment_entity import BezierSegmentEntity
 
@@ -37,18 +37,31 @@ class BezierNodeEntity(Entity):
 
         self.isFirst = isFirstControlPoint
 
+    def getPosition(self):
+        state = self.segment.getBezierState()
+        return state.getControlPoint1() if self.isFirst else state.getControlPoint2()
+
+    def getOffset(self):
+        state = self.segment.getBezierState()
+        return state.getControlOffset1() if self.isFirst else state.getControlOffset2()
+
     def onStartDrag(self, mouse: tuple):
-        pass
+        self.startOffset = self.getOffset()
 
     def onDrag(self, mouse: tuple):
-        pass
+        state = self.segment.getBezierState()
+
+        offsetPixels = [self.drag.totalOffsetX, self.drag.totalOffsetY]
+        offsetInches = self.field.mouseToInchesScaleOnly(offsetPixels)
+
+        offset = addTuples(self.startOffset, offsetInches)
+        state.setControlOffset1(offset) if self.isFirst else state.setControlOffset2(offset)
 
     def onStopDrag(self):
         pass
 
     def defineCenter(self) -> tuple:
-        pos = self.segment.getBezierState().getControlPoint1() if self.isFirst else self.segment.getBezierState().getControlPoint2()
-        return self.field.inchesToMouse(pos)
+        return self.field.inchesToMouse(self.getPosition())
     
     def isTouching(self, position: tuple) -> bool:
         MARGIN = 4

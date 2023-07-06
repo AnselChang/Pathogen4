@@ -64,6 +64,22 @@ class BezierSegmentState(AbstractSegmentState):
     def getControlPoint2(self) -> tuple:
         return addTuples(self.model.getAfterPos(), self.controlOffset2)
     
+    def getControlOffset1(self) -> tuple:
+        return self.controlOffset1
+    
+    def getControlOffset2(self) -> tuple:
+        return self.controlOffset2
+    
+    def setControlOffset1(self, offset: tuple):
+        self.controlOffset1 = offset
+        self.model.updateThetas()
+        self.model.recomputeUI()
+
+    def setControlOffset2(self, offset: tuple):
+        self.controlOffset2 = offset
+        self.model.updateThetas()
+        self.model.recomputeUI()
+
     def _update(self) -> tuple: # returns [startTheta, endTheta]
 
         before = self.model.getBeforePos()
