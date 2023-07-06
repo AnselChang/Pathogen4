@@ -11,7 +11,7 @@ from models.path_models.path_segment_state.abstract_segment_state import Abstrac
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.segment_direction import SegmentDirection
 from utility.format_functions import formatInches
-from utility.math_functions import addTuples, arcFromThreePoints, distanceTuples, divideTuple, midpoint, pointPlusVector, thetaFromPoints
+from utility.math_functions import addTuples, arcFromThreePoints, distanceTuples, divideTuple, midpoint, pointPlusVector, scaleTuple, subtractTuples, thetaFromPoints
 
 if TYPE_CHECKING:
     from models.path_models.path_segment_model import PathSegmentModel
@@ -34,12 +34,33 @@ class BezierSegmentState(AbstractSegmentState):
         super().__init__(model, adapter, SegmentType.BEZIER)
 
         # stores the location of the two bezier control nodes as offsets from segment endpoints
-        self.controlOffset1 = (0,0)
-        self.controlOffset2 = (0,0)
+        self.controlOffset1 = None
+        self.controlOffset2 = None
 
+    # get the location between nodes, with percent (0-1).
+    # 0 means at first node, 1 means at second node
+    def getLocationBetweenNodes(self, percent):
+        before = self.model.getBeforePos()
+        after = self.model.getAfterPos()
+        offset = subtractTuples(after, before)
+        scaledOffset = scaleTuple(offset, percent)
+        return addTuples(before, scaledOffset)
+    
+    def onSwitchToState(self):
+        
+        # If first time switching to bezier, set control points to 1/3 and 2/3 of the way between nodes
+        if self.controlOffset1 is None:
+            pos1 = self.getLocationBetweenNodes(1/3)
+            self.controlOffset1 = subtractTuples(pos1, self.model.getBeforePos())
+
+            pos2 = self.getLocationBetweenNodes(2/3)
+            self.controlOffset2 = subtractTuples(pos2, self.model.getAfterPos())
+
+    # first control point is defined relative to before node
     def getControlPoint1(self) -> tuple:
         return addTuples(self.model.getBeforePos(), self.controlOffset1)
     
+    # second control point is defined relative to after node
     def getControlPoint2(self) -> tuple:
         return addTuples(self.model.getAfterPos(), self.controlOffset2)
     

@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from entity_base.listeners.hover_listener import HoverLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
+from models.path_models.segment_direction import SegmentDirection
 if TYPE_CHECKING:
     from models.path_models.path_segment_model import PathSegmentModel
 
@@ -80,3 +81,9 @@ class AbstractSegmentEntity(Entity):
 
     def onStopDrag(self):
         pass
+
+    def getColor(self) -> tuple:
+        if self.model.getDirection() == SegmentDirection.FORWARD:
+            return self.colorForwardH if self.hover.isHovering else self.colorForward
+        else:
+            return self.colorReversedH if self.hover.isHovering else self.colorReversed

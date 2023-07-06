@@ -7,10 +7,12 @@ from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
 from models.path_models.path_segment_state.arc_segment_state import ArcSegmentState
+from models.path_models.path_segment_state.bezier_segment_state import BezierSegmentState
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.path_segment_state.straight_segment_state import StraightSegmentState
 from models.path_models.segment_direction import SegmentDirection
 from root_container.field_container.segment.arc_segment_entity import ArcSegmentEntity
+from root_container.field_container.segment.bezier_segment_entity import BezierSegmentEntity
 from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import distanceTuples, thetaFromPoints
@@ -34,6 +36,7 @@ class PathSegmentModel(PathElementModel):
         self.states: dict[SegmentType, AbstractSegmentState] = {
             SegmentType.STRAIGHT: StraightSegmentState(self),
             SegmentType.ARC: ArcSegmentState(self),
+            SegmentType.BEZIER: BezierSegmentState(self)
         }
 
         self.currentStateType = SegmentType.STRAIGHT
@@ -138,6 +141,9 @@ class PathSegmentModel(PathElementModel):
         assert(type in self.states)
         self.currentStateType = type
 
+        # callback for state change
+        self.getState().onSwitchToState()
+
         self.onInit()
 
         # regenerate ui with new state
@@ -216,9 +222,12 @@ class PathSegmentModel(PathElementModel):
     def _generateUI(self, fieldEntity: FieldEntity) -> Entity:
         if self.getType() == SegmentType.STRAIGHT:
             return StraightSegmentEntity(fieldEntity, self)
-        if self.getType() == SegmentType.ARC:
+        elif self.getType() == SegmentType.ARC:
             return ArcSegmentEntity(fieldEntity, self)
-        
+        elif self.getType() == SegmentType.BEZIER:
+            return BezierSegmentEntity(fieldEntity, self)
+        else:
+            raise Exception("Invalid segment type")
     
     def __str__(self) -> str:
         return f"PathSegmentModel"

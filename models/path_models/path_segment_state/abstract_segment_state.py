@@ -53,5 +53,6 @@ class AbstractSegmentState(Generic[T]):
     def _updateIcon(self):
         raise NotImplementedError()
 
-
-    
+    # can overwrite this to specify behavior when transition to this state
+    def onSwitchToState(self):
+        pass

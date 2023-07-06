@@ -60,11 +60,7 @@ class ArcSegmentEntity(AbstractSegmentEntity):
 
     def draw(self, screen, isActive, isHovering):
 
-        if self.model.getDirection() == SegmentDirection.FORWARD:
-            color = self.colorForwardH if self.hover.isHovering else self.colorForward
-        else:
-            color = self.colorReversedH if self.hover.isHovering else self.colorReversed
-        
+        color = self.getColor()
 
         # Draw arc based on ArcSegmentState
         RESOLUTION = 1 # how smooth the arc should be
