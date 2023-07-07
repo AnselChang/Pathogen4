@@ -61,11 +61,11 @@ class CommandModel(AbstractModel, Observer):
 
 
     def setNewAdapter(self, newAdapter: 'PathAdapter'):
+
         if self.adapter is not None:
             self.adapter.unsubscribeAll()
         
         self.adapter = newAdapter
-        self.adapter.subscribe(self, onNotify = self.onAdapterChange)
 
         # initialize default command definition to be the first one
         self._definitionID = self.database.getDefinitionByIndex(self.adapter.type).id
@@ -91,15 +91,16 @@ class CommandModel(AbstractModel, Observer):
         self.uiState.expanded = True
         self.getRootModel().ui.recomputeEntity()
 
-    def onAdapterChange(self):
-        if self.show:
-            self.ui.recomputeEntity()
+    def wasModified(self):
+        return self.show and self.adapter.wasModified()
+    
+    def resetModified(self):
+        self.adapter.resetModified()
 
     def onCommandDefinitionChange(self):
         print("CommandModel: onCommandDefinitionChange")
 
     def onTurnEnableToggled(self, recompute: bool = True):
-        print("CommandModel: onTurnEnableToggled")
         commandEntity: CommandBlockEntity = self.ui
 
         if self.adapter.turnEnabled:
@@ -108,7 +109,7 @@ class CommandModel(AbstractModel, Observer):
             self.hideUI()
 
         if recompute:
-            commandEntity.recomputeEntity()
+            self.parent.ui.recomputeEntity()
 
     def isHighlighted(self):
         return self.uiSharedState.highlightedModel is self

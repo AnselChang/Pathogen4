@@ -55,7 +55,9 @@ class SelectorMenuEntity(Entity, Observer):
 
         super().__init__(parent = selectedEntity,
                          drag = dragLambda,
-                         drawOrder = DrawOrder.SELECTOR_MENU_BACKGROUND)
+                         drawOrder = DrawOrder.SELECTOR_MENU_BACKGROUND,
+                         drawOrderRecursive = False
+                         )
         
         self.fieldContainer = fieldContainer
 

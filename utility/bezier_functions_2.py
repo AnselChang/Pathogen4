@@ -59,6 +59,9 @@ def fast_points_cubic_bezier(RESOLUTION, p0, p1, p2, p3):
     approximateDistance += distanceTuples(p2, p3)
     N = int(approximateDistance * RESOLUTION) # number of points
 
+    if N < 2:
+        return [p0, p3]
+
     p0, p1, p2, p3 = map(np.array, [p0, p1, p2, p3])
 
     points = []

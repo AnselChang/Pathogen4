@@ -63,4 +63,6 @@ class SelectorBox:
         width = abs(x1 - x2)
         height = abs(y1 - y2)
 
+        print("d")
+
         drawTransparentRect(screen, x, y, width, height, (173, 216, 230), 100)

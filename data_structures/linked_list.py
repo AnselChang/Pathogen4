@@ -109,9 +109,6 @@ class LinkedList(Generic[T]):
 
     def printList(self):
 
-        print("Head:", self.head)
-        print("Tail:", self.tail)
-
         current = self.head
         while current is not None:
             print(current)

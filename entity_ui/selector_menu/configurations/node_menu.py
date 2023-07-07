@@ -8,26 +8,28 @@ from root_container.field_container.node.path_node_entity import PathNodeEntity
 class AddNodeEndAction(MenuClickAction[PathNodeEntity]):
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
-        newNode = targetEntity.path.addNode(mouse, isTemporary = True)
-        return newNode
+        mouseInches = targetEntity.field.mouseToInches(mouse)
+        newNode = targetEntity.model.path.addNode(mouseInches, isTemporary = True)
+        return newNode.ui
     
 # When clicked, start adding a node to the end of the path
 class AddNodeBeginningAction(MenuClickAction[PathNodeEntity]):
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
-        newNode = targetEntity.path.addNodeToBeginning(PointRef(Ref.SCREEN, mouse), isTemporary = True)
-        return newNode
+        mouseInches = targetEntity.field.mouseToInches(mouse)
+        newNode = targetEntity.model.path.addNodeToBeginning(mouseInches, isTemporary = True)
+        return newNode.ui
     
 # When clicked, deletes node on path
 class DeleteNodeAction(MenuClickAction[PathNodeEntity]):
 
     # cannot delete if its the only node
     def isActionAvailable(self, targetEntity: PathNodeEntity | T) -> bool:
-        return not (targetEntity.isFirstNode() and targetEntity.isLastNode())
+        return not (targetEntity.model.isFirstNode() and targetEntity.model.isLastNode())
     
     # entity returned is the new entity to be dragged
     def onClick(self, targetEntity: PathNodeEntity, mouse: tuple):
-        targetEntity.path.removeNode(targetEntity)
+        targetEntity.model.path.deleteNode(targetEntity.model)
 
 """
 Menu for path nodes. Functionality for:
@@ -50,12 +52,12 @@ def configureNodeMenu() -> MenuDefinition:
     # Only for first node. Adds a node at the end of the path
     states = ImageStatesFactory()
     states.addState(0, ImageID.ADD_NODE, "Insert a node before the start of the path")
-    segmentDefinition.add(states.create(), AddNodeBeginningAction(), lambda entity: entity.isFirstNode())
+    segmentDefinition.add(states.create(), AddNodeBeginningAction(), lambda pathNodeEntity: pathNodeEntity.model.isFirstNode())
 
     # Only for last node. Adds a node at the end of the path
     states = ImageStatesFactory()
     states.addState(0, ImageID.ADD_NODE, "Add a node at the end of the path")
-    segmentDefinition.add(states.create(), AddNodeEndAction(), lambda entity: entity.isLastNode())
+    segmentDefinition.add(states.create(), AddNodeEndAction(), lambda pathNodeEntity: pathNodeEntity.model.isLastNode())
 
     # Trash can icon. Deletes the node
     states = ImageStatesFactory()

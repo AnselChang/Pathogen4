@@ -3,8 +3,7 @@ from entity_ui.selector_menu.selector_menu_entity import SelectorMenuEntity
 from entity_ui.selector_menu.selector_menu_factory import *
 from common.image_manager import ImageID
 
-from root_container.field_container.node.path_node_entity import PathNodeEntity
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 
 from entity_ui.selector_menu.configurations.segment_menu import configureSegmentMenu
 from entity_ui.selector_menu.configurations.node_menu import configureNodeMenu
@@ -36,7 +35,7 @@ class SelectorMenuManager:
 
     # If the entity type is supported, create and return a SelectorMenuEntity for the entity
     def createMenuForEntity(self, entity: Entity) -> SelectorMenuEntity:
-            
+        print("create menu for entity", entity)
         for menuDefinition in self.menuDefinitions:
             if isinstance(entity, menuDefinition.entityType):
                 return SelectorMenuEntity(self.fieldContainer, entity, menuDefinition)

@@ -68,14 +68,17 @@ class Entity(ABC, Observable):
                  hover: HoverListener = None,
                  key: KeyListener = None,
                  mousewheel: MousewheelListener = None,
-                 drawOrder: DrawOrder = 0,
+                 drawOrder: DrawOrder = DrawOrder.BACK,
                  initiallyVisible: bool = True,
                  recomputeWhenInvisible: bool = False,
                  thisUpdatesParent: bool = False,
-                 verbose: bool = True
+                 verbose: bool = True,
+                 drawOrderRecursive: bool = True,
+
                  ) -> None:
                 
         self.drawOrder = drawOrder
+        self.drawOrderRecursive = drawOrderRecursive # if not recursive, draws in front of everything
         self.drag = drag
         self.select = select
         self.click = click
@@ -338,6 +341,9 @@ class Entity(ABC, Observable):
             child.recomputeEntity(False)
 
     # THESE ARE UTILITY METHODS THAT CAN BE USED TO SPECIFY RELATIVE POSITIONS ABOVE
+
+    def scalePixels(self, pixels: float):
+        return pixels * self.dimensions.RESOLUTION_RATIO
 
     # get relative x as a percent of parent horizontal span
     def _px(self, px):

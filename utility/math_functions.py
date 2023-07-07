@@ -43,6 +43,12 @@ def distance(x1,y1,x2,y2):
 def distanceTuples(point1, point2):
     return distance(*point1, *point2)
 
+def midpoint(point1: tuple, point2: tuple):
+    return divideTuple(addTuples(point1, point2), 2)
+
+def vectorFromThetaAndMagnitude(theta: float, magnitude: float):
+    return [magnitude * math.cos(theta), magnitude * math.sin(theta)]
+
 # Distance between point (x, y) and line (x1, y1),(x2,y2)
 def distancePointToLine(x, y, x1, y1, x2, y2, signed: bool = False):
     ans = ((x2-x1)*(y1-y) - (x1-x)*(y2-y1)) / distance(x1, y1, x2, y2)
@@ -88,6 +94,10 @@ def deltaInHeadingParity(targetHeading: float, currentHeading: float, parity: bo
 
 def thetaFromPoints(p1, p2):
     return math.atan2(p2[1] - p1[1], p2[0] - p1[0])
+
+# return point given by point + vector (defined by magnitude and angle)
+def pointPlusVector(point: tuple, magnitude: float, angle: float) -> tuple:
+    return (point[0] + magnitude * math.cos(angle), point[1] + magnitude * math.sin(angle))
 
 # Vector projection algorithm
 def pointOnLineClosestToPoint(pointX: int, pointY: int, firstX: int, firstY: int, secondX: int, secondY: int) -> tuple:
@@ -181,3 +191,6 @@ def getArcMidpoint(x1, y1, x2, y2, r) -> tuple[tuple]:
 # if (0,0) and (x,y) were two points of an arc with the initial theta
 def thetaFromArc(theta1: float, dx: float, dy: float) -> float:
     return (2 * math.atan2(dy, dx) - theta1) % (3.1415*2)
+
+def thetaFromVector(vector: tuple):
+    return math.atan2(vector[1], vector[0])

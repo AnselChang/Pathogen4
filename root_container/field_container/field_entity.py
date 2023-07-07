@@ -1,7 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from entity_base.listeners.key_listener import KeyLambda
+
+from root_container.field_container.constraint_lines import ConstraintLinesEntity
+
 if TYPE_CHECKING:
-    from root_container.path import Path
+    from models.path_models.path_model import PathModel
 
 
 from enum import Enum
@@ -12,7 +16,7 @@ from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.drag_listener import DragLambda
 from entity_base.listeners.mousewheel_listener import MousewheelLambda
 from utility.coordinate_transform import CoordinateTransformBuilder
-from utility.math_functions import clamp
+from utility.math_functions import clamp, isInsideBox
 from utility.pygame_functions import scaleSurface
 from data_structures.observer import Observable
 import pygame
@@ -23,8 +27,14 @@ class Ref(Enum):
     FIELD_INCHES = 1
 
 """
-Draws the background field image and handles logic for panning and zooming
+Handles logic for the interactive field.
+This includes:
+- Drawing the background
+- Panning and zooming
+- Coordinate conversions between image pixels and field inches
+     - children inside field can access these methods
 """
+
 class FieldEntity(Entity, Observable):
 
     def __init__(self, parent: Entity):
@@ -36,7 +46,8 @@ class FieldEntity(Entity, Observable):
                 FonDrag = self.onDrag,
                 FonStopDrag = self.onStopDrag
             ),
-            click = ClickLambda(self, FonRightClick = self.onRightClick)
+            click = ClickLambda(self, FonRightClick = self.onRightClick),
+            key = KeyLambda(self, FonKeyDown = self.onKeyDown, FonKeyUp = self.onKeyUp)
         )
 
         # At zoom = 1, the image is completely fit to the parent rect,
@@ -72,8 +83,24 @@ class FieldEntity(Entity, Observable):
         self._oldZoom = None
         self._oldPan = None
 
-    def initPath(self, path: Path):
-        self.path = path
+        # Construct global field objects
+        ConstraintLinesEntity(self)
+
+        self.SHIFT_PRESSED = False
+
+    def initPathModel(self, path: PathModel):
+        self.model = path
+
+    def onKeyDown(self, key):
+        if key == pygame.K_LSHIFT:
+            self.SHIFT_PRESSED = True
+
+    def onKeyUp(self, key):
+        if key == pygame.K_LSHIFT:
+            self.SHIFT_PRESSED = False
+
+    def isShiftHeld(self) -> bool:
+        return self.SHIFT_PRESSED
 
     def onMousewheel(self, offset: int) -> bool:
         P_ZOOM = 0.05
@@ -140,7 +167,7 @@ class FieldEntity(Entity, Observable):
 
         size = self.WIDTH * self._zoom
         scaledSurface = pygame.transform.smoothscale(self.rawSurface, (size, size))
-        self.fieldSurface = pygame.Surface((self.WIDTH, self.HEIGHT))
+        self.fieldSurface = pygame.Surface((self.WIDTH, self.HEIGHT)).convert_alpha()
 
         offsetX = self._pwidth(self._panX)
         offsetY = self._pheight(self._panY)
@@ -203,9 +230,22 @@ class FieldEntity(Entity, Observable):
 
         return (self._pwidth(pwidth), self._pheight(pheight))
     
+    def scalarInchesToMouse(self, scalar: float) -> float:
+        return self.inchesToMouseScaleOnly((scalar, 0))[0]
+    
+    def scalarMouseToInches(self, scalar: float) -> float:
+        return self.mouseToInchesScaleOnly((scalar, 0))[0]
+    
+    def inBoundsInches(self, inches: tuple) -> bool:
+        return isInsideBox(*inches, 0, 0, 144, 144)
+    
+    def inBoundsPixels(self, pixels: tuple) -> bool:
+        return self.inBoundsInches(self.mouseToInches(pixels))
+    
     # Add a new node at location
     def onRightClick(self, mousePos: tuple):
-        self.path.addNode(mousePos)
+        fieldPos = self.mouseToInches(mousePos)
+        self.model.addNode(fieldPos)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         screen.blit(self.fieldSurface, (self.LEFT_X, self.TOP_Y))

@@ -9,15 +9,12 @@ from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 from models.command_models.full_model import FullModel
 from models.project_model import ProjectModel
 
-from root_container.field_container.node.path_node_entity import PathNodeEntity
-from root_container.field_container.segment.path_segment_entity import PathSegmentEntity
+from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from root_container.panel_container.command_block.command_inserter import CommandInserter
 
 from entity_handler.entity_manager import EntityManager
 from entity_handler.interactor import Interactor
-
-from root_container.path import Path
 
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from command_creation.test_commands import *
@@ -59,7 +56,7 @@ def instanceOfClasses(entity, *classes):
     return False
 
 # Define the I/O handling function
-def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: EntityManager):
+def io_handler(database: CommandDefinitionDatabase, model: ProjectModel, entities: EntityManager):
     while True:
         cmd = input("Enter some text: ")
         
@@ -67,11 +64,13 @@ def io_handler(database: CommandDefinitionDatabase, model: FullModel, entities: 
             commandJSON: dict = database.exportToJson()
             print(json.dumps(commandJSON, indent = 4))
         elif cmd == "model":
-            model.tree()
+            model.commandsModel.tree()
         elif cmd == "ui":
-            model.getExistingUI().tree(verbose=False)
+            model.commandsModel.getExistingUI().tree(verbose=False)
         elif cmd == "cmd":
             print([e for e in entities.entities if isinstance(e, CommandBlockEntity)])
+        elif cmd == "path":
+            model.pathModel.pathList.printList()
 
 def main():
 
@@ -101,16 +100,18 @@ def main():
     # Add permanent static entities
     panelContainer = PanelContainer()
     fieldContainer = FieldContainer()
-    initReferenceframe(dimensions, fieldContainer.fieldEntity)
     topBarContainer = TopBarContainer(model)
 
+    initReferenceframe(dimensions, fieldContainer.fieldEntity)
+    model.pathModel.initFieldEntity(fieldContainer.fieldEntity)
+    fieldContainer.fieldEntity.initPathModel(model.pathModel)
+
     # handles the creating of menus when an entity is selected
-    menuManager = SelectorMenuManager(fieldContainer)
+    menuManager = SelectorMenuManager(fieldContainer.fieldEntity)
     interactor.initInteractor(menuManager, fieldContainer.fieldEntity)
 
-    
 
-    StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.MOUSE_SELECT_BOX)
+    StaticEntity(lambda: interactor.drawSelectBox(screen), drawOrder = DrawOrder.FRONT)
 
     # initialize commands
     database = CommandDefinitionDatabase()
@@ -118,6 +119,7 @@ def main():
     # create command model
     scrollingContainer = ScrollingContainer(panelContainer)
     model.commandsModel.initParentUI(scrollingContainer.getContainer())
+
 
     # initialize pygame artifacts
     pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
@@ -127,11 +129,9 @@ def main():
     print("compute everything")
     rootContainer.recomputeEntity()
 
-    # Create path
-    path = Path(fieldContainer, panelContainer, model.commandsModel, database, PointRef(Ref.FIELD, (24,24)))
-    fieldContainer.fieldEntity.initPath(path)
-
-    rootContainer.recomputeEntity()
+    # create first path node
+    START_POSITION = (20,20)
+    model.pathModel.initFirstNode(START_POSITION)
 
     # Create a new thread for the I/O handling function
     io_thread = threading.Thread(target=io_handler, args = (database,model,entities,), daemon=True)

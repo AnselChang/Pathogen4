@@ -21,6 +21,9 @@ class EntityManager:
         self.keyEntities: list[Entity] = []        
         self.clickEntities: list[Entity] = []
 
+        # entities outside of normal draw order (drawOrderRecursive == False)
+        self.outsideEntites: list[Entity] = []
+
     def initRootContainer(self):
         self.rootContainer = RootContainer()
         return self.rootContainer
@@ -31,6 +34,9 @@ class EntityManager:
     def _addEntity(self, entity: Entity):
         
         self.entities.append(entity)
+
+        if not entity.drawOrderRecursive:
+            self.outsideEntites.append(entity)
 
         if entity.key is not None:
             self.keyEntities.append(entity)
@@ -54,6 +60,8 @@ class EntityManager:
         if entity in self.entities:
             self.entities.remove(entity)
 
+        if entity in self.outsideEntites:
+            self.outsideEntites.remove(entity)
         if entity in self.keyEntities:
             self.keyEntities.remove(entity)
         if entity in self.clickEntities:
@@ -70,7 +78,7 @@ class EntityManager:
         tiebreaker = None
 
         self.touching: list[Entity] = []
-        for entity in traverseEntities(TraversalOrder.POSTFIX):
+        for entity in traverseEntities(self, TraversalOrder.MOUSE):
             if entity.isVisible() and entity.isTouching(position):
 
                 currentTiebreaker = entity.drawOrderTiebreaker()
@@ -106,7 +114,7 @@ class EntityManager:
             return closest
     
     def drawEntities(self, interactor, screen: pygame.Surface, mousePosition: tuple, dimensions: Dimensions):
-        for entity in traverseEntities(TraversalOrder.PREFIX):
+        for entity in traverseEntities(self, TraversalOrder.DRAW):
             if entity.isVisible():
                 selected = entity in interactor.selected.entities
                 hovering = entity is interactor.hoveredEntity and (selected or not (interactor.leftDragging or interactor.rightDragging))

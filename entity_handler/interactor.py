@@ -20,8 +20,8 @@ entities based on mouse input
 
 class Interactor:
 
-    def initInteractor(self, menuManager: SelectorMenuManager, fieldContainer):
-        self.fieldContainer = fieldContainer
+    def initInteractor(self, menuManager: SelectorMenuManager, fieldEntity):
+        self.fieldEntity = fieldEntity
         self.selected.initMenuManager(menuManager)
 
     def __init__(self, dimensions: Dimensions):
@@ -54,6 +54,10 @@ class Interactor:
 
         # disable interaction until mouse up
         self.disableUntilMouseUp = False
+
+    # return the currently hovered entity, or none
+    def getHoveredEntity(self) -> Entity | None:
+        return self.hoveredEntity
 
     # objects in list A but not B
     def setDifference(self, listA, listB):
@@ -101,6 +105,9 @@ class Interactor:
                 return
             
         if len(self.draggingEntities) > 0:
+            return
+        
+        if self.box.active:
             return
 
         if self.hoveredEntity is not entity:
@@ -175,7 +182,7 @@ class Interactor:
 
         # if there's a group selected but the mouse is not clicking on the group, deselect
         elif self.hoveredEntity is None or self.hoveredEntity not in self.selected.entities:
-            if self.hoveredEntity is not self.fieldContainer and (self.hoveredEntity is not None and self.hoveredEntity.select is not None):
+            if self.hoveredEntity is not self.fieldEntity and (self.hoveredEntity is not None and self.hoveredEntity.select is not None):
 
                 doNotRemove = None
                 if self.hoveredEntity.drag is not None:
@@ -209,9 +216,9 @@ class Interactor:
         else:
             self.draggingEntities = []
 
-        if self.hoveredEntity is self.fieldContainer:
-            self.draggingEntities = [self.fieldContainer]
-            self.fieldContainer.drag.onStartDrag(mouse)
+        if self.hoveredEntity is self.fieldEntity:
+            self.draggingEntities = [self.fieldEntity]
+            self.fieldEntity.drag.onStartDrag(mouse)
 
 
     def onRightMouseDown(self, entities: EntityManager, mouse: tuple):
@@ -219,7 +226,7 @@ class Interactor:
 
         # start multiselect
         self.box.disable()
-        if self.hoveredEntity is self.fieldContainer:
+        if self.hoveredEntity is self.fieldEntity:
             self.box.enable(self.mouseStartDrag)
             self.box.update(mouse, entities)
 
@@ -284,8 +291,8 @@ class Interactor:
             for selected in self.draggingEntities:
                 if selected.drag is not None:
                     selected.drag.onDrag(mouse)
-        elif self.leftDragging and self.mouseDownEntity is self.fieldContainer:
-            self.fieldContainer.drag.onDrag(mouse)
+        elif self.leftDragging and self.mouseDownEntity is self.fieldEntity:
+            self.fieldEntity.drag.onDrag(mouse)
     
     # It is guaranteed that onMouseMove() was not called if this function is called
     def onMouseClick(self, mouse: tuple, isRight: bool):
@@ -294,7 +301,7 @@ class Interactor:
         if self.mouseDownEntity is not self.hoveredEntity:
             return
         
-        if self.hoveredEntity is self.fieldContainer:
+        if self.hoveredEntity is self.fieldEntity:
             self.removeAllEntities(False)
         
         if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
@@ -322,7 +329,6 @@ class Interactor:
 
 
     def drawSelectBox(self, screen: pygame.Surface):
-
         # Draw multiselect box
         self.box.draw(screen)
 

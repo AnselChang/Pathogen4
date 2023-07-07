@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from data_structures.observer import Observer
+from entity_base.container_entity import Container
 from entity_base.listeners.mousewheel_listener import MousewheelLambda
 if TYPE_CHECKING:
     from root_container.path import Path
@@ -22,10 +23,10 @@ import pygame
 
 """
 Defines the static boundaries of the field.
-Holds a FieldEntity that deals with transformations on zooming/panning, and the background image
+Holds FieldEntity but does not deal with the interactive field itself.
 """
 
-class FieldContainer(entity.Entity, Observer):
+class FieldContainer(Container, Observer):
 
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
     def __init__(self):
@@ -45,8 +46,3 @@ class FieldContainer(entity.Entity, Observer):
         return self.dimensions.FIELD_WIDTH
     def defineHeight(self) -> float:
         return self.dimensions.FIELD_HEIGHT
-    
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
-        # draw white background
-        #pygame.draw.rect(screen, (255, 255, 255), self.RECT)
-        pass # unnecessary for now

@@ -25,7 +25,8 @@ legalAttributesForType: dict[CommandType, list[PathAttributeID]] = {
         PathAttributeID.Y1,
         PathAttributeID.X2,
         PathAttributeID.Y2,
-        PathAttributeID.DISTANCE
+        PathAttributeID.DISTANCE,
+        PathAttributeID.THETA1
     ],
     CommandType.TURN: [
         PathAttributeID.THETA1,
@@ -65,6 +66,10 @@ class PathAdapter(ABC, Observable, Observer):
     def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState):
         self.type = type
 
+        # set to true when adapter changes.
+        # Every tick, command will poll, and if True, will recompute and set to False
+        self._queueModify = False
+
         self.iconImageStates = iconImageStates
         self.iconStateID: Enum = None
 
@@ -78,17 +83,26 @@ class PathAdapter(ABC, Observable, Observer):
     def getDict(self) -> dict:
         return self._dict
     
+    def modify(self):
+        self._queueModify = True
+
+    def wasModified(self) -> bool:
+        return self._queueModify
+    
+    def resetModified(self):
+        self._queueModify = False
+    
     # value: the raw numerical value to be used in generated code
     # string: to be displayed by readouts, etc.
     def set(self, attribute: Enum, value: float, string: str):
 
-        # make sure the attribute belongs to the corresponding type of adapter
-        assert(attribute in self._dictValue)
+        if attribute not in self._dictValue:
+            return
 
         self._dictValue[attribute] = round(value, 3)
         self._dictStr[attribute] = string
-        self.notify()
-    
+        self.modify()
+
     def getValue(self, attribute: Enum) -> float:
         if attribute in self._dictValue:
             return self._dictValue[attribute]
@@ -103,6 +117,7 @@ class PathAdapter(ABC, Observable, Observer):
         
     def setIconStateID(self, iconStateID: Enum):
         self.iconStateID = iconStateID
+        self.modify()
 
     def getIconStateID(self) -> ImageID:
         return self.iconStateID
