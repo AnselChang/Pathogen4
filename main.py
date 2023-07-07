@@ -77,8 +77,8 @@ def main():
 
     # Project model that stores all the state of the program
     # makes it easy to serialize and deserialize
-    projectModel = ProjectModel()
-    uiModel = UIModel()
+    projectModel = ProjectModel.getInstance()
+    uiModel = UIModel.getInstance()
 
     # Initialize field
     dimensions = Dimensions()
@@ -99,10 +99,15 @@ def main():
     rootContainer = entities.initRootContainer()
     setRootContainer(rootContainer)
 
-    # Add permanent static entities
-    panelContainer = PanelContainer()
-    fieldContainer = FieldContainer()
-    topBarContainer = TopBarContainer(projectModel)
+    uiModel.initRootContainer(rootContainer)
+
+
+    rootContainer.initComponents(projectModel)
+
+    # Initialize major components
+    panelContainer = rootContainer.PANEL_CONTAINER
+    fieldContainer = rootContainer.FIELD_CONTAINER
+    topBarContainer = rootContainer.TOP_BAR_CONTAINER
 
     initReferenceframe(dimensions, fieldContainer.fieldEntity)
     projectModel.pathModel.initFieldEntity(fieldContainer.fieldEntity)

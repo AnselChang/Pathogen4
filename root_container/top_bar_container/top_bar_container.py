@@ -2,9 +2,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from common.image_manager import ImageID
 from entity_base.image.image_entity import ImageEntity
+from entity_base.image.image_state import ImageState
+from root_container.top_bar_container.command_editor_button import CommandEditorButtonDefinition
 
 from root_container.top_bar_container.project_name import ProjectName
-from root_container.top_bar_container.top_bar_button_container import SimpleButtonDefinition, TopBarButtonContainer
+from root_container.top_bar_container.top_bar_button_container import ButtonDefinition, SimpleButtonDefinition, TopBarButtonContainer
 
 if TYPE_CHECKING:
     from models.project_model import ProjectModel
@@ -19,7 +21,7 @@ class TopBarContainer(Container):
     def __init__(self, model: ProjectModel):
         super().__init__(parent = entity.ROOT_CONTAINER)
 
-        self.BACKGROUND_COLOR = (220, 220, 220)
+        self.BACKGROUND_COLOR = entity.ROOT_CONTAINER.BACKGROUND_COLOR
         self.model = model
 
         self.projectName = ProjectName(self, model)
@@ -31,8 +33,8 @@ class TopBarContainer(Container):
         redo = SimpleButtonDefinition(ImageID.REDO, self.onRedo, "Redo")
         TopBarButtonContainer(self, 0.8, [undo, redo], 20)
 
-        state = SimpleButtonDefinition(ImageID.CHECKBOX_ON, lambda mouse: None, "asdf")
-        TopBarButtonContainer(self, 0.4, state, 20)
+        # button for toggling command editor
+        TopBarButtonContainer(self, 0.4, CommandEditorButtonDefinition(), 20)
 
 
     def onUndo(self, mouse):
@@ -51,4 +53,5 @@ class TopBarContainer(Container):
         return self.dimensions.TOP_HEIGHT
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        pygame.draw.rect(screen, self.BACKGROUND_COLOR, self.RECT)
+        pass
+        #pygame.draw.rect(screen, self.BACKGROUND_COLOR, self.RECT)

@@ -11,6 +11,14 @@ Should be easy to serialize, and UI should be synced with model.
 
 class ProjectModel(Serializable):
 
+    _INSTANCE = None
+
+    def getInstance() -> 'ProjectModel':
+        if ProjectModel._INSTANCE is None:
+            ProjectModel._INSTANCE = ProjectModel()
+
+        return ProjectModel._INSTANCE
+
     def __init__(self):
 
         self.projectName = "New Project"
