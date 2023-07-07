@@ -73,8 +73,12 @@ class ArcSegmentState(AbstractSegmentState):
         startTheta, endTheta = self._getThetasFromPerpDistance(perpDistance)
 
         newStartTheta = self.model.getConstrainedStartTheta(startTheta)
+        newEndTheta = self.model.getConstrainedEndTheta(endTheta)
         if newStartTheta is not None:
-            perpDistance = self._getPerpDistanceFromStartTheta(newStartTheta, perpDistance)
+            perpDistance = self._getPerpDistanceFromTheta(newStartTheta, perpDistance, isStartTheta = True)
+        elif newEndTheta is not None:
+            perpDistance = self._getPerpDistanceFromTheta(newEndTheta, perpDistance, isStartTheta = False)
+
 
         # prevent arc from ever being perfectly straight, which causes division issues
         #print(perpDistance)
@@ -94,13 +98,17 @@ class ArcSegmentState(AbstractSegmentState):
 
     # Given the two node positions and some HYPOTHETICAL theta for the first node,
     # determine the perp distance which would satisfy an arc with those constraints
-    def _getPerpDistanceFromStartTheta(self, startTheta: float, oldPerpDistance: float) -> float:
+    def _getPerpDistanceFromTheta(self, theta: float, oldPerpDistance: float, isStartTheta: bool) -> float:
 
         beforePos = self.model.getPrevious().getPosition()
         afterPos = self.model.getNext().getPosition()
 
+        if isStartTheta:
+            beforePos, afterPos = afterPos, beforePos
+            theta += math.pi
+
         # get center and radius of resultant arc
-        center = arcCenterFromTwoPointsAndTheta(*beforePos, *afterPos, startTheta)
+        center = arcCenterFromTwoPointsAndTheta(*beforePos, *afterPos, theta)
         radius = distanceTuples(beforePos, center)
 
         # calculate the angles from center to before/pos
