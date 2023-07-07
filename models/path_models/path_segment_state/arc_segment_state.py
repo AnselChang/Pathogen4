@@ -74,7 +74,7 @@ class ArcSegmentState(AbstractSegmentState):
 
         newStartTheta = self.model.getConstrainedStartTheta(startTheta)
         if newStartTheta is not None:
-            perpDistance = self._getPerpDistanceFromStartTheta(newStartTheta)
+            perpDistance = self._getPerpDistanceFromStartTheta(newStartTheta, perpDistance)
 
         # prevent arc from ever being perfectly straight, which causes division issues
         #print(perpDistance)
@@ -82,17 +82,19 @@ class ArcSegmentState(AbstractSegmentState):
         if abs(perpDistance) < MIN_MAGNITUDE:
             perpDistance = MIN_MAGNITUDE if perpDistance > 0 else -MIN_MAGNITUDE
 
+        # finally update perp distance in model after trying to snap
         self.perpDistance = perpDistance
-        self.model.updateThetas()
 
+        # recalculate this segment and adjacent nodes
+        self.model.updateThetas()
         self.model.getPrevious().onThetaChange()
         self.model.getNext().onThetaChange()
-        
+
         self.model.recomputeUI()
 
     # Given the two node positions and some HYPOTHETICAL theta for the first node,
     # determine the perp distance which would satisfy an arc with those constraints
-    def _getPerpDistanceFromStartTheta(self, startTheta: float) -> float:
+    def _getPerpDistanceFromStartTheta(self, startTheta: float, oldPerpDistance: float) -> float:
 
         beforePos = self.model.getPrevious().getPosition()
         afterPos = self.model.getNext().getPosition()
@@ -112,7 +114,11 @@ class ArcSegmentState(AbstractSegmentState):
        
         # determine perpDistance by distance between arc midpoint, and midpoint between two nodes
         nodeMidpoint = midpoint(beforePos, afterPos)
-        return distanceTuples(nodeMidpoint, arcMidpoint)
+        unsignedPerpDistance = distanceTuples(nodeMidpoint, arcMidpoint)
+
+        if oldPerpDistance > 0:
+            return unsignedPerpDistance
+        else: return -unsignedPerpDistance
     
     # given a HYPOTEHTICAL perp distance, return midpoint of arc
     def _getArcMidpointFromPerpDistance(self, perpDistance) -> float:
