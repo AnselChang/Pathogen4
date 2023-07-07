@@ -14,6 +14,7 @@ from models.path_models.segment_direction import SegmentDirection
 from root_container.field_container.segment.arc_segment_entity import ArcSegmentEntity
 from root_container.field_container.segment.bezier_segment_entity import BezierSegmentEntity
 from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
+from services.constraint_solver_service import ConstraintSolver
 from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import distanceTuples, thetaFromPoints
 if TYPE_CHECKING:
@@ -224,6 +225,42 @@ class PathSegmentModel(PathElementModel):
             return self.getPrevious()
         else:
             raise Exception("Node not attached to segment")
+    
+    # initialize constraint solver for snapping to before node with angle (arc/bezier)
+    def initBeforeThetaConstraints(self):
+        self.bConstraints = ConstraintSolver(self.field)
+
+        prevNode = self.getPrevious()
+
+        # snap to cardinal directions for itself
+        self.bConstraints.addCardinalConstraints(prevNode)
+
+        # if segment before prevNode exists, snap to segment end angle
+        prevSegment = prevNode.getPrevious()
+        if prevSegment is not None:
+            prevAngle = prevSegment.getEndTheta()
+            self.bConstraints.addAngleConstraint(prevNode, prevAngle)
+
+    # initialize constraint solver for snapping to after node with angle (arc/bezier)
+    def initAfterThetaConstraints(self):
+        self.aConstraints = ConstraintSolver(self.field)
+
+        prevNode = self.getPrevious()
+
+        # snap to cardinal directions for itself
+        self.aConstraints.addCardinalConstraints(prevNode)
+
+        # if segment before prevNode exists, snap to segment end angle
+        prevSegment = prevNode.getPrevious()
+        if prevSegment is not None:
+            prevAngle = prevSegment.getEndTheta()
+            self.aConstraints.addAngleConstraint(prevNode, prevAngle)
+
+
+    # given a hypothetical start theta, return the "snapped" version if close enough
+    # return None if no snapping
+    def getConstrainedStartTheta(self, startTheta: float) -> float | None:
+        
     
     """
     PRIVATE METHODS

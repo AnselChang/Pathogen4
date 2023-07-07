@@ -28,6 +28,7 @@ class ArcNodeEntity(Entity):
 
         self.field = segment.field
         self.segment = segment
+        self.model = self.segment.model
 
         self.COLOR = [255, 128, 0]
         self.COLOR_H = shade(self.COLOR, 0.9)
@@ -47,6 +48,10 @@ class ArcNodeEntity(Entity):
         currentPerp = self.segment.getArcState().getPerpDistance()
 
         self.perpOffset = currentPerp - startPerp
+
+        # initialize constraint solver for snapping arc node
+        self.model.initBeforeThetaConstraints()
+        self.model.initAfterThetaConstraints()
 
     def onDrag(self, mouse: tuple):
         rawPerp = self._findPerpDistance(mouse)

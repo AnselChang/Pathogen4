@@ -151,7 +151,7 @@ class PathNodeModel(PathElementModel):
         # first remove all existing constraints on current node
         self.path.constraints.removeAllConstraintsWithNode(self)
 
-        constrainedPosition = self.constraintSolver.constrain(self, position)
+        constrainedPosition = self.constraintSolver.constrainPosition(self, position)
 
         # add any snapped constraints to global constraints model
         for constraint in self.constraintSolver.getActiveConstraints():

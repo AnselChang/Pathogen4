@@ -12,7 +12,7 @@ from models.path_models.path_segment_state.abstract_segment_state import Abstrac
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.segment_direction import SegmentDirection
 from utility.format_functions import formatInches
-from utility.math_functions import arcFromThreePoints, distanceTuples, divideTuple, midpoint, pointPlusVector, thetaFromPoints
+from utility.math_functions import addTuples, arcCenterFromTwoPointsAndTheta, arcFromThreePoints, distanceTuples, divideTuple, midpoint, pointPlusVector, thetaFromPoints, vectorFromThetaAndMagnitude
 
 if TYPE_CHECKING:
     from models.path_models.path_segment_model import PathSegmentModel
@@ -67,7 +67,10 @@ class ArcSegmentState(AbstractSegmentState):
     def getArcLength(self) -> float:
         return self.ARC_LENGTH
 
+    # set perp distance for arc, attempt to snap if possible, and update model state
     def setPerpDistance(self, perpDistance: float):
+
+        startTheta, endTheta = self._getThetasFromPerpDistance(perpDistance)
 
         # prevent arc from ever being perfectly straight, which causes division issues
         #print(perpDistance)
@@ -79,13 +82,78 @@ class ArcSegmentState(AbstractSegmentState):
         self.model.updateThetas()
         self.model.recomputeUI()
 
-    # returns midpoint of arc given by start, end, and perpDistance
-    def _updateMidpoint(self):
+    # Given the two node positions and some HYPOTHETICAL theta for the first node,
+    # determine the perp distance which would satisfy an arc with those constraints
+    def _getPerpDistanceFromStartTheta(self, startTheta: float) -> float:
+
+        beforePos = self.model.getPrevious().getPosition()
+        afterPos = self.model.getNext().getPosition()
+
+        # get center and radius of resultant arc
+        center = arcCenterFromTwoPointsAndTheta(*beforePos, *afterPos, startTheta)
+        radius = distanceTuples(beforePos, center)
+
+        # calculate the angles from center to before/pos
+        angleToBefore = thetaFromPoints(center, beforePos)
+        angleToAfter = thetaFromPoints(center, afterPos)
+
+        # find what position the arc midpoint would be
+        angleToArcMidpoint = (angleToBefore + angleToAfter ) / 2
+        vector = vectorFromThetaAndMagnitude(angleToArcMidpoint, radius)
+        arcMidpoint = addTuples(center, vector)
+       
+        # determine perpDistance by distance between arc midpoint, and midpoint between two nodes
+        nodeMidpoint = midpoint(beforePos, afterPos)
+        return distanceTuples(nodeMidpoint, arcMidpoint)
+    
+    # given a HYPOTEHTICAL perp distance, return midpoint of arc
+    def _getArcMidpointFromPerpDistance(self, perpDistance) -> float:
         before = self.model.getBeforePos()
         after = self.model.getAfterPos()
         mid = midpoint(before, after)
         theta = thetaFromPoints(before, after) + math.pi/2
-        self.arcMidpoint = pointPlusVector(mid, self.perpDistance, theta)
+        return pointPlusVector(mid, perpDistance, theta)    
+    
+    # Given a HYPOTHETICAL perp distance, return start and end thetas
+    def _getThetasFromPerpDistance(self, perpDistance: float) -> tuple:
+
+        before = self.model.getBeforePos()
+        after = self.model.getAfterPos()
+
+        arcMidpoint = self._getArcMidpointFromPerpDistance(perpDistance)
+        center, radius = arcFromThreePoints(before, arcMidpoint, after)
+        
+         # (C)enter (T)heta for theta from center to point 1/2/3
+        ct1 = thetaFromPoints(center, before)
+        ct2 = thetaFromPoints(center, arcMidpoint)
+        ct3 = thetaFromPoints(center, after)
+
+        # need to figure out if clockwise or counterclockwise arc
+        # determine by checking if passing 2 between 1 and 3
+        # do this by shifting perspective to ct1 -> 0, and
+        # mod from 0 to 2pi. note % is always sign of denom
+        rct2 = (ct2 - ct1) % (math.pi*2)
+        rtc3 = (ct3 - ct1) % (math.pi*2)
+
+        positive = rct2 < rtc3
+
+        deltaAngle = rtc3
+        if not positive:
+            deltaAngle = (-deltaAngle) % (math.pi*2)
+
+        if positive:
+            startTheta = ct1 + math.pi/2
+            endTheta = ct3 + math.pi/2
+        else:
+            startTheta = ct1 - math.pi/2
+            endTheta = ct3 - math.pi/2
+
+        return startTheta, endTheta
+
+
+    # Update current arc midpoint
+    def _updateMidpoint(self):
+        self.arcMidpoint = self._getArcMidpointFromPerpDistance(self.perpDistance)
         
     def _update(self) -> tuple: # returns [startTheta, endTheta]
 

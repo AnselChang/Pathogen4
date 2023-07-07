@@ -46,6 +46,8 @@ def distanceTuples(point1, point2):
 def midpoint(point1: tuple, point2: tuple):
     return divideTuple(addTuples(point1, point2), 2)
 
+def vectorFromThetaAndMagnitude(theta: float, magnitude, float):
+    return [magnitude * math.cos(theta), magnitude * math.sin(theta)]
 
 # Distance between point (x, y) and line (x1, y1),(x2,y2)
 def distancePointToLine(x, y, x1, y1, x2, y2, signed: bool = False):

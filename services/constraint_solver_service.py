@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 from typing import TYPE_CHECKING
 from models.path_models.path_segment_state.segment_type import SegmentType
 
@@ -7,7 +8,7 @@ if TYPE_CHECKING:
     from models.path_models.path_segment_model import PathSegmentModel
     from root_container.field_container.field_entity import FieldEntity
 
-from utility.angle_functions import Direction
+from utility.angle_functions import Direction, equalTheta, headingDiff
 from utility.line import Line
 from utility.math_functions import distancePointToLine, distanceTuples
 
@@ -20,7 +21,10 @@ class Constraint:
     # make a copy of constraint adding node to node list
     def makeWithNode(self, node: PathNodeModel) -> Constraint:
         nodes = self.nodes.copy()
-        nodes.append(node)
+
+        if node not in nodes:
+            nodes.append(node)
+        
         return Constraint(self.line, nodes)
     
     def __repr__(self) -> str:
@@ -46,6 +50,10 @@ class ConstraintSolver:
     def addCardinalConstraints(self, node: PathNodeModel):
         self.addConstraint(Line(node.position, theta = Direction.NORTH), [node])
         self.addConstraint(Line(node.position, theta = Direction.EAST), [node])
+
+    # add angular constraint for constraining angles 
+    def addAngleConstraint(self, node: PathNodeModel, theta: float):
+        self.addConstraint(Line(node.position, theta = theta), [node])
 
     # snap to a given segment and a node on that segment, snap to the line tangent to the node there
     def addSegmentConstraint(self, segment: PathSegmentModel, node: PathNodeModel):
@@ -84,7 +92,7 @@ class ConstraintSolver:
 
     # runs the constraints algorithm on the given point
     # also return the position
-    def constrain(self, node: PathNodeModel, position: tuple) -> tuple:
+    def constrainPosition(self, node: PathNodeModel, position: tuple) -> tuple:
 
         THRESHOLD_PIXELS = 3 # how close the node must be to the line to snap (in pixels)
 
@@ -120,6 +128,27 @@ class ConstraintSolver:
         self._activeConstraints = [constraint.makeWithNode(node) for constraint in self._activeConstraints]
         
         return self._position
+    
+    # run the constraints algorithm on a given theta
+    # THIS ASSUMES THAT ALL CONSTRAINT LINES INTERSECT THE POSITION OF THE ANGLE TO BE CONSTRAINED
+    def constrainAngle(self, node: PathNodeModel, thetaToBeConstrained: float) -> float:
+        
+        # find closest theta
+        closestTheta = None
+        smallestThetaDiff = math.inf
+        for constraint in self.constraints:
+            possibleTheta = constraint.line.theta
+            diff = headingDiff(possibleTheta, thetaToBeConstrained)
+            if diff < smallestThetaDiff:
+                diff = smallestThetaDiff
+                closestTheta = possibleTheta
+
+        # if can snap to closest theta, do so
+        MAXIMUM_SNAPPING_THETA = 0.1
+        if equalTheta(thetaToBeConstrained, closestTheta, tolerance = MAXIMUM_SNAPPING_THETA):
+            return closestTheta
+        else:
+            return None # too far away to snap
     
     # get the position after applying constraints
     def get(self) -> tuple:
