@@ -72,6 +72,10 @@ class ArcSegmentState(AbstractSegmentState):
 
         startTheta, endTheta = self._getThetasFromPerpDistance(perpDistance)
 
+        newStartTheta = self.model.getConstrainedStartTheta(startTheta)
+        if newStartTheta is not None:
+            perpDistance = self._getPerpDistanceFromStartTheta(newStartTheta)
+
         # prevent arc from ever being perfectly straight, which causes division issues
         #print(perpDistance)
         MIN_MAGNITUDE = 0.005 * self.model.DISTANCE
@@ -80,6 +84,10 @@ class ArcSegmentState(AbstractSegmentState):
 
         self.perpDistance = perpDistance
         self.model.updateThetas()
+
+        self.model.getPrevious().onThetaChange()
+        self.model.getNext().onThetaChange()
+        
         self.model.recomputeUI()
 
     # Given the two node positions and some HYPOTHETICAL theta for the first node,

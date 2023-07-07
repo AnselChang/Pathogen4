@@ -41,6 +41,8 @@ class PathSegmentModel(PathElementModel):
         }
 
         self.currentStateType = SegmentType.STRAIGHT
+        self.bConstraints = None # before theta constraint solver
+        self.aConstraints = None # after theta constraint solver
 
         self.generateUI()
 
@@ -260,6 +262,26 @@ class PathSegmentModel(PathElementModel):
     # given a hypothetical start theta, return the "snapped" version if close enough
     # return None if no snapping
     def getConstrainedStartTheta(self, startTheta: float) -> float | None:
+        snappedTheta = self.bConstraints.constrainAngle(self.getPrevious(), startTheta)
+
+        if snappedTheta is None:
+            # nothing to snap
+            return None
+        else:
+            # can snap
+            return snappedTheta
+        
+    # given a hypothetical start theta, return the "snapped" version if close enough
+    # return None if no snapping
+    def getConstrainedEndTheta(self, endTheta: float) -> float | None:
+        snappedTheta = self.aConstraints.constrainAngle(self.getNext(), endTheta)
+
+        if snappedTheta is None:
+            # nothing to snap
+            return None
+        else:
+            # can snap
+            return snappedTheta
         
     
     """
