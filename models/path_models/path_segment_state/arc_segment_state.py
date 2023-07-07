@@ -116,6 +116,7 @@ class ArcSegmentState(AbstractSegmentState):
         nodeMidpoint = midpoint(beforePos, afterPos)
         unsignedPerpDistance = distanceTuples(nodeMidpoint, arcMidpoint)
 
+        # hacky solution to figure out sign. there's probably math to do this the proper way.
         if oldPerpDistance > 0:
             return unsignedPerpDistance
         else: return -unsignedPerpDistance
