@@ -14,11 +14,9 @@ class SelectorBox:
         self.active = True
         self.start = start
         self.x1, self.y1 = start
-        print("enable mu")
 
     def disable(self):
         self.active = False
-        print("disable ")
 
     def isEnabled(self):
         return self.active

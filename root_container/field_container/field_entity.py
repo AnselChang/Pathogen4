@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from entity_base.listeners.key_listener import KeyLambda
 
 from root_container.field_container.constraint_lines import ConstraintLinesEntity
 
@@ -45,7 +46,8 @@ class FieldEntity(Entity, Observable):
                 FonDrag = self.onDrag,
                 FonStopDrag = self.onStopDrag
             ),
-            click = ClickLambda(self, FonRightClick = self.onRightClick)
+            click = ClickLambda(self, FonRightClick = self.onRightClick),
+            key = KeyLambda(self, FonKeyDown = self.onKeyDown, FonKeyUp = self.onKeyUp)
         )
 
         # At zoom = 1, the image is completely fit to the parent rect,
@@ -84,8 +86,21 @@ class FieldEntity(Entity, Observable):
         # Construct global field objects
         ConstraintLinesEntity(self)
 
+        self.SHIFT_PRESSED = False
+
     def initPathModel(self, path: PathModel):
         self.model = path
+
+    def onKeyDown(self, key):
+        if key == pygame.K_LSHIFT:
+            self.SHIFT_PRESSED = True
+
+    def onKeyUp(self, key):
+        if key == pygame.K_LSHIFT:
+            self.SHIFT_PRESSED = False
+
+    def isShiftHeld(self) -> bool:
+        return self.SHIFT_PRESSED
 
     def onMousewheel(self, offset: int) -> bool:
         P_ZOOM = 0.05

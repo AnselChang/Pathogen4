@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from entity_base.listeners.drag_listener import DragLambda
 from root_container.field_container.segment.bezier_line_entity import BezierLineEntity
-from utility.math_functions import addTuples, distancePointToLine
+from utility.math_functions import addTuples, distancePointToLine, hypo, thetaFromVector, vectorFromThetaAndMagnitude
 if TYPE_CHECKING:
     from root_container.field_container.segment.bezier_segment_entity import BezierSegmentEntity
     from models.path_models.path_node_model import PathNodeModel
@@ -30,6 +30,7 @@ class BezierNodeEntity(Entity):
 
         self.field = segment.field
         self.segment = segment
+        self.model = segment.model
 
         self.COLOR = [255, 0, 255]
         self.COLOR_H = shade(self.COLOR, 0.9)
@@ -57,10 +58,18 @@ class BezierNodeEntity(Entity):
         return state.getControlOffset1() if self.isFirst else state.getControlOffset2()
 
     def onStartDrag(self, mouse: tuple):
+
+        # initialize start offset to calculate offset while dragging
         self.startOffset = self.getOffset()
 
         # old slow bezier curve is now out-of-date
         self.segment.getBezierState().resetBezierSlow()
+
+        # recalculate constraints for corresponding node
+        if self.isFirst:
+            self.model.initBeforeThetaConstraints()
+        else:
+            self.model.initAfterThetaConstraints()
 
     def onDrag(self, mouse: tuple):
 
@@ -71,6 +80,17 @@ class BezierNodeEntity(Entity):
         offsetInches = self.field.mouseToInchesScaleOnly(offsetPixels)
 
         offset = addTuples(self.startOffset, offsetInches)
+        
+        # constrain bezier control points to be parallel with snappable angles
+        offsetTheta = thetaFromVector(offset)
+        offsetMagnitude = hypo(*offset)
+        newOffsetTheta = state.getConstraintsSolver(self.isFirst).constrainAngle(offsetTheta)
+
+        # recalculate offset if snapping
+        if newOffsetTheta is not None:
+            offset = vectorFromThetaAndMagnitude(newOffsetTheta, offsetMagnitude)
+
+        # update model
         state.setControlOffset1(offset) if self.isFirst else state.setControlOffset2(offset)
 
         # Then, recompute the bezier curve (fast only for drawing)

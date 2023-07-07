@@ -262,7 +262,7 @@ class PathSegmentModel(PathElementModel):
     # given a hypothetical start theta, return the "snapped" version if close enough
     # return None if no snapping
     def getConstrainedStartTheta(self, startTheta: float) -> float | None:
-        snappedTheta = self.bConstraints.constrainAngle(self.getPrevious(), startTheta)
+        snappedTheta = self.bConstraints.constrainAngle(startTheta)
 
         if snappedTheta is None:
             # nothing to snap
@@ -274,7 +274,7 @@ class PathSegmentModel(PathElementModel):
     # given a hypothetical start theta, return the "snapped" version if close enough
     # return None if no snapping
     def getConstrainedEndTheta(self, endTheta: float) -> float | None:
-        snappedTheta = self.aConstraints.constrainAngle(self.getNext(), endTheta)
+        snappedTheta = self.aConstraints.constrainAngle( endTheta)
 
         if snappedTheta is None:
             # nothing to snap

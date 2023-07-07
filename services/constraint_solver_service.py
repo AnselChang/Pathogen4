@@ -94,7 +94,14 @@ class ConstraintSolver:
     # also return the position
     def constrainPosition(self, node: PathNodeModel, position: tuple) -> tuple:
 
-        THRESHOLD_PIXELS = 3 # how close the node must be to the line to snap (in pixels)
+        # constraint snapping is disabled when holding shift
+        if self.field.isShiftHeld():
+            self._snapped = False
+            self._position = position
+            self._activeConstraints = []
+            return self._position
+
+        THRESHOLD_PIXELS = 4 # how close the node must be to the line to snap (in pixels)
 
         # filter nearby constraints
         thresholdInches = self.field.scalarMouseToInches(THRESHOLD_PIXELS)
@@ -131,8 +138,12 @@ class ConstraintSolver:
     
     # run the constraints algorithm on a given theta
     # THIS ASSUMES THAT ALL CONSTRAINT LINES INTERSECT THE POSITION OF THE ANGLE TO BE CONSTRAINED
-    def constrainAngle(self, node: PathNodeModel, thetaToBeConstrained: float) -> float:
+    def constrainAngle(self, thetaToBeConstrained: float) -> float:
         
+        # constraint snapping is disabled when holding shift
+        if self.field.isShiftHeld():
+            return None
+
         # find closest theta
         closestTheta = None
         smallestThetaDiff = math.inf
@@ -147,9 +158,8 @@ class ConstraintSolver:
         print()
 
         # if can snap to closest theta, do so
-        MAXIMUM_SNAPPING_THETA = 0.15
+        MAXIMUM_SNAPPING_THETA = 0.1
         if equalTheta180(thetaToBeConstrained, closestTheta, tolerance = MAXIMUM_SNAPPING_THETA):
-            print("CONSTRAIN TO", closestTheta)
             return closestTheta
         else:
             return None # too far away to snap

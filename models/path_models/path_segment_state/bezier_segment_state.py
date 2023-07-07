@@ -42,10 +42,10 @@ class BezierSegmentState(AbstractSegmentState):
         self.SLOW_POINTS: list[tuple] = None # cubic bezier with arc length parametrization
 
         # higher is more detailed
-        self.FAST_RESOLUTION = 0.2
+        self.FAST_RESOLUTION = 0.3
 
         # lower is more detailed. each segment is that length in inches
-        self.SLOW_RESOLUTION_INCHES = 0.75
+        self.SLOW_RESOLUTION_INCHES = 0.5
 
     # get the location between nodes, with percent (0-1).
     # 0 means at first node, 1 means at second node
@@ -85,12 +85,20 @@ class BezierSegmentState(AbstractSegmentState):
     def setControlOffset1(self, offset: tuple):
         self.controlOffset1 = offset
         self.model.updateThetas()
+        self.model.getPrevious().onThetaChange()
         self.model.recomputeUI()
 
     def setControlOffset2(self, offset: tuple):
         self.controlOffset2 = offset
         self.model.updateThetas()
+        self.model.getNext().onThetaChange()
         self.model.recomputeUI()
+
+    def getConstraintsSolver(self, isFirst: bool):
+        if isFirst:
+            return self.model.bConstraints
+        else:
+            return self.model.aConstraints
 
     # return slow bezier points if it exists. Otherwise, return fast bezier points
     def getBezierPoints(self) -> list[tuple]:
