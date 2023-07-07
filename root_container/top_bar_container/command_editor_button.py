@@ -31,9 +31,9 @@ class CommandEditorButtonDefinition(ButtonDefinition):
     def __init__(self):
 
         # state when not showing command editor
-        normalState = ImageState(CommandEditorStatus.HIDDEN, ImageID.CHECKBOX_OFF, "Show Command Editor")
+        normalState = ImageState(CommandEditorStatus.HIDDEN, ImageID.CHECKBOX_OFF, "Show command editor")
 
         # state when showing command editor
-        editorState = ImageState(CommandEditorStatus.SHOWN, ImageID.CHECKBOX_ON)
+        editorState = ImageState(CommandEditorStatus.SHOWN, ImageID.CHECKBOX_ON, "Go back to path")
 
         super().__init__([normalState, editorState], CommandEditorButtonAction())
