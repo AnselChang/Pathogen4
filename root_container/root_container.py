@@ -7,6 +7,7 @@ from data_structures.observer import Observer
 
 from entity_base.container_entity import Container
 from common.draw_order import DrawOrder
+from root_container.command_editor_container.command_editor_container import CommandEditorContainer
 from root_container.field_container.field_container import FieldContainer
 from root_container.panel_container.panel_container import PanelContainer
 from root_container.top_bar_container.top_bar_container import TopBarContainer
@@ -23,7 +24,7 @@ class RootContainer(Container, Observer):
 
     def __init__(self):
 
-        self.BACKGROUND_COLOR = (220, 220, 220)
+        self.BACKGROUND_COLOR = (168, 168, 168)
 
         super().__init__(None, drawOrder = DrawOrder.BACKGROUND)
         self.dimensions.subscribe(self, onNotify = self.recomputeEntity)
@@ -34,6 +35,9 @@ class RootContainer(Container, Observer):
         self.PANEL_CONTAINER = PanelContainer()
         self.FIELD_CONTAINER = FieldContainer()
         self.TOP_BAR_CONTAINER = TopBarContainer(projectModel)
+
+        self.COMMAND_EDITOR_CONTAINER = CommandEditorContainer()
+        self.COMMAND_EDITOR_CONTAINER.setInvisible()
 
     def defineTopLeft(self) -> tuple:
         return 0, 0

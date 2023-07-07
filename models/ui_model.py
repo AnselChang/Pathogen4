@@ -40,6 +40,8 @@ class UIModel:
         self.root.FIELD_CONTAINER.setInvisible()
         self.root.PANEL_CONTAINER.setInvisible()
 
+        self.root.COMMAND_EDITOR_CONTAINER.setVisible()
+
         self.root.recomputeEntity()
 
     def hideCommandEditor(self):
@@ -48,6 +50,8 @@ class UIModel:
         # restore path/commands and hide command editor
         self.root.FIELD_CONTAINER.setVisible()
         self.root.PANEL_CONTAINER.setVisible()
+
+        self.root.COMMAND_EDITOR_CONTAINER.setInvisible()
 
         self.root.recomputeEntity()
 

@@ -21,7 +21,7 @@ class TopBarContainer(Container):
     def __init__(self, model: ProjectModel):
         super().__init__(parent = entity.ROOT_CONTAINER)
 
-        self.BACKGROUND_COLOR = entity.ROOT_CONTAINER.BACKGROUND_COLOR
+        self.BACKGROUND_COLOR = (220, 220, 220)
         self.model = model
 
         self.projectName = ProjectName(self, model)
@@ -53,5 +53,5 @@ class TopBarContainer(Container):
         return self.dimensions.TOP_HEIGHT
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        pass
-        #pygame.draw.rect(screen, self.BACKGROUND_COLOR, self.RECT)
+        r = 15
+        pygame.draw.rect(screen, self.BACKGROUND_COLOR, self.RECT, border_bottom_left_radius = r, border_bottom_right_radius = r)
