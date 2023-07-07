@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from models.path_models.path_segment_model import PathSegmentModel
     from root_container.field_container.field_entity import FieldEntity
 
-from utility.angle_functions import Direction, equalTheta, headingDiff
+from utility.angle_functions import Direction, equalTheta, equalTheta180, headingDiff, headingDiff180
 from utility.line import Line
 from utility.math_functions import distancePointToLine, distanceTuples
 
@@ -48,8 +48,8 @@ class ConstraintSolver:
 
     # add four cardinal constraints based on node
     def addCardinalConstraints(self, node: PathNodeModel):
+        self.addConstraint(Line(node.position, theta = Direction.WEST), [node])
         self.addConstraint(Line(node.position, theta = Direction.NORTH), [node])
-        self.addConstraint(Line(node.position, theta = Direction.EAST), [node])
 
     # add angular constraint for constraining angles 
     def addAngleConstraint(self, node: PathNodeModel, theta: float):
@@ -136,16 +136,20 @@ class ConstraintSolver:
         # find closest theta
         closestTheta = None
         smallestThetaDiff = math.inf
+        
         for constraint in self.constraints:
             possibleTheta = constraint.line.theta
-            diff = headingDiff(possibleTheta, thetaToBeConstrained)
-            if diff < smallestThetaDiff:
-                diff = smallestThetaDiff
-                closestTheta = possibleTheta
+            for possibleTheta180 in [possibleTheta, possibleTheta + math.pi]:
+                diff = headingDiff(possibleTheta180, thetaToBeConstrained)
+                if diff < smallestThetaDiff:
+                    smallestThetaDiff = diff
+                    closestTheta = possibleTheta180
+        print()
 
         # if can snap to closest theta, do so
-        MAXIMUM_SNAPPING_THETA = 0.1
-        if equalTheta(thetaToBeConstrained, closestTheta, tolerance = MAXIMUM_SNAPPING_THETA):
+        MAXIMUM_SNAPPING_THETA = 0.15
+        if equalTheta180(thetaToBeConstrained, closestTheta, tolerance = MAXIMUM_SNAPPING_THETA):
+            print("CONSTRAIN TO", closestTheta)
             return closestTheta
         else:
             return None # too far away to snap

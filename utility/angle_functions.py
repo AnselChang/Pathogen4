@@ -23,6 +23,11 @@ def deltaInHeading(targetHeading: float, currentHeading: float) -> float:
 def headingDiff(headingA: float, headingB: float):
     return abs(deltaInHeading(headingA, headingB))
 
+def headingDiff180(headingA: float, headingB: float):
+    diff1 = headingDiff(headingA, headingB)
+    diff2 = headingDiff(headingA, headingB + math.pi)
+    return diff1 if diff1 < diff2 else diff2
+
 def parallelTheta(theta1, theta2, tolerance = 1e-3) -> bool:
 
     if headingDiff(theta1, theta2) < tolerance:
@@ -33,3 +38,6 @@ def parallelTheta(theta1, theta2, tolerance = 1e-3) -> bool:
 
 def equalTheta(theta1, theta2, tolerance = 1e-3) -> bool:
     return headingDiff(theta1, theta2) < tolerance
+
+def equalTheta180(theta1, theta2, tolerance = 1e-3) -> bool:
+    return equalTheta(theta1, theta2, tolerance) or equalTheta(theta1, theta2 + math.pi, tolerance)

@@ -71,9 +71,10 @@ class ArcSegmentState(AbstractSegmentState):
     def setPerpDistance(self, perpDistance: float):
 
         startTheta, endTheta = self._getThetasFromPerpDistance(perpDistance)
-
         newStartTheta = self.model.getConstrainedStartTheta(startTheta)
         newEndTheta = self.model.getConstrainedEndTheta(endTheta)
+
+
         if newStartTheta is not None:
             perpDistance = self._getPerpDistanceFromTheta(newStartTheta, perpDistance, isStartTheta = True)
         elif newEndTheta is not None:
@@ -103,17 +104,20 @@ class ArcSegmentState(AbstractSegmentState):
         beforePos = self.model.getPrevious().getPosition()
         afterPos = self.model.getNext().getPosition()
 
-        if isStartTheta:
+        if not isStartTheta:
             beforePos, afterPos = afterPos, beforePos
             theta += math.pi
 
         # get center and radius of resultant arc
         center = arcCenterFromTwoPointsAndTheta(*beforePos, *afterPos, theta)
+        print(center)
         radius = distanceTuples(beforePos, center)
 
         # calculate the angles from center to before/pos
         angleToBefore = thetaFromPoints(center, beforePos)
         angleToAfter = thetaFromPoints(center, afterPos)
+
+        #print(angleToBefore * 180 / math.pi, angleToAfter * 180 / math.pi)
 
         # find what position the arc midpoint would be
         angleToArcMidpoint = (angleToBefore + angleToAfter ) / 2

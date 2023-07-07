@@ -63,7 +63,6 @@ class ArcNodeEntity(Entity):
 
     def defineCenter(self) -> tuple:
         centerInches = self.segment.getArcState().getArcMidpoint()
-        print("centerInches", centerInches)
         return self.field.inchesToMouse(centerInches)
     
     def isTouching(self, position: tuple) -> bool:
