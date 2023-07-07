@@ -2,6 +2,12 @@ from models.command_models.full_model import FullModel
 from models.path_models.path_model import PathModel
 from serialization.serializable import Serializable
 
+"""
+Stores all the state pertaining to a .pgpath file,
+which contains project meta-data, path, and commands.
+
+Should be easy to serialize, and UI should be synced with model.
+"""
 
 class ProjectModel(Serializable):
 

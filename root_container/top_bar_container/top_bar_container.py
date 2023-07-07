@@ -4,7 +4,7 @@ from common.image_manager import ImageID
 from entity_base.image.image_entity import ImageEntity
 
 from root_container.top_bar_container.project_name import ProjectName
-from root_container.top_bar_container.top_bar_button_container import TopBarButtonContainer, TopBarButtonState
+from root_container.top_bar_container.top_bar_button_container import SimpleButtonDefinition, TopBarButtonContainer
 
 if TYPE_CHECKING:
     from models.project_model import ProjectModel
@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 from entity_base.container_entity import Container
 import entity_base.entity as entity
 import pygame
+
 
 class TopBarContainer(Container):
 
@@ -23,14 +24,14 @@ class TopBarContainer(Container):
 
         self.projectName = ProjectName(self, model)
 
-        undo = TopBarButtonState(ImageID.UNDO, self.onUndo, "Undo")
-        redo = TopBarButtonState(ImageID.REDO, self.onRedo, "Redo")
+        undo = SimpleButtonDefinition(ImageID.UNDO, self.onUndo, "Undo")
+        redo = SimpleButtonDefinition(ImageID.REDO, self.onRedo, "Redo")
         TopBarButtonContainer(self, 0.3, [undo, redo], 10)
-        undo = TopBarButtonState(ImageID.UNDO, self.onUndo, "Undo")
-        redo = TopBarButtonState(ImageID.REDO, self.onRedo, "Redo")
+        undo = SimpleButtonDefinition(ImageID.UNDO, self.onUndo, "Undo")
+        redo = SimpleButtonDefinition(ImageID.REDO, self.onRedo, "Redo")
         TopBarButtonContainer(self, 0.8, [undo, redo], 20)
 
-        state = TopBarButtonState(ImageID.CHECKBOX_ON, lambda mouse: None, "asdf")
+        state = SimpleButtonDefinition(ImageID.CHECKBOX_ON, lambda mouse: None, "asdf")
         TopBarButtonContainer(self, 0.4, state, 20)
 
 

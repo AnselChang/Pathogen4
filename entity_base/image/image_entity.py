@@ -12,8 +12,19 @@ import pygame
 
 
 """
-A generic image entity, where you pass in images
-Is drawn to fit inside parent entity's rect
+Used whenever you want any sort of image drawn.
+
+states -> specifying image icon and tooltip. Can pass in multiple states
+for button-like images that can change (like toggling behavior)
+dimOnHover -> whether to dim image when mouse is hovering over it
+(center_px, center_py pwidth, pheight) -> additional constraints to image position and location.
+    it is already constrained inside parent rect.
+isOn -> can only click image and send onClick callback when this is true
+getStateID -> must implement for multiple states. To determine which state should be shown
+drag -> pass in a DragListener if dragging behavior desired
+disableTouching -> disable mouse interaction altogether. Voids flags such as dimOnHover
+drawOrderTiebreakFunction -> for z-axis layering
+
 """
 class ImageEntity(Entity, TooltipOwner):
 
