@@ -83,7 +83,6 @@ class EntityManager:
             entity.unsubscribeAll()
 
     def getEntityAtPosition(self, position: tuple) -> Entity:
-
         parent = None
         drawOrder: DrawOrder = None
         tiebreaker = None

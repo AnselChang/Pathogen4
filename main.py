@@ -149,16 +149,24 @@ def main():
     # Main game loop
     print("start loop")
     oldHoveredEntity = None
+    oldMouse = None
+    thisTickIsDifferent = True # whether this frame is different from previous
     while True:
 
         dimensions.RESIZED_THIS_FRAME = False
 
         mouse = pygame.mouse.get_pos()
+        if mouse != oldMouse:
+            thisTickIsDifferent = True
+            oldMouse = mouse
         
-        hoveredEntity = entities.getEntityAtPosition(mouse)
-        if oldHoveredEntity is not hoveredEntity:
-            entities.redrawScreenThisTick()
-        oldHoveredEntity = hoveredEntity
+        if thisTickIsDifferent: # only recompute hovered entity if mouse moved
+            hoveredEntity = entities.getEntityAtPosition(mouse)
+            if oldHoveredEntity is not hoveredEntity:
+                entities.redrawScreenThisTick()
+            oldHoveredEntity = hoveredEntity
+        else:
+            hoveredEntity = oldHoveredEntity
 
         if hoveredEntity is not None:
             parent = f", {str(hoveredEntity._parent)}"
@@ -204,10 +212,13 @@ def main():
             # Update display and maintain frame rate
             pygame.display.flip()
             entities.resetFlagAfterDrawingEverything()
+            thisTickIsDifferent = True
+        else:
+            thisTickIsDifferent = False
         
         clock.tick(60) # fps
         #print(clock.get_fps())
 
 if __name__ == "__main__":
-    cProfile.run('main()', sort='cumtime')
-    #main()
+    #cProfile.run('main()', sort='cumtime')
+    main()
