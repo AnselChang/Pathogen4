@@ -7,7 +7,7 @@ Holds the mutable dimensions information about the window. updates as window res
 
 class Dimensions(Observable):
 
-    def __init__(self):
+    def __init__(self, defaultWidthPercent, defaultHeightPercent):
 
         self.RESIZED_THIS_FRAME = False
 
@@ -22,8 +22,8 @@ class Dimensions(Observable):
         self.ANSEL_START_WIDTH = 900
         self.ANSEL_START_HEIGHT = 700
 
-        self.DEFAULT_SCREEN_WIDTH = display_info.current_w * 0.8
-        self.DEFAULT_SCREEN_HEIGHT = display_info.current_h * 0.8
+        self.DEFAULT_SCREEN_WIDTH = display_info.current_w * defaultWidthPercent
+        self.DEFAULT_SCREEN_HEIGHT = display_info.current_h * defaultHeightPercent
 
     def setFieldSizePixels(self, pixels: int):
         self.FIELD_SIZE_IN_PIXELS = pixels

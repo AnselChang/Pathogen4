@@ -20,25 +20,18 @@ The entity that holds all other entities. Set to dimensions size, and recomputes
 children when dimensions change
 """
 
-class RootContainer(Container, Observer):
+class MainWindowContainer(Container):
 
-    def __init__(self):
+    def __init__(self, parent, projectModel):
 
         self.BACKGROUND_COLOR = (168, 168, 168)
 
-        super().__init__(None, drawOrder = DrawOrder.BACKGROUND)
-        self.dimensions.subscribe(self, onNotify = self.recomputeEntity)
-        self.recomputeEntity()
+        super().__init__(parent)
 
-    def defineTopLeft(self) -> tuple:
-        return 0, 0
+        # Add permanent static entities
+        self.PANEL_CONTAINER = PanelContainer()
+        self.FIELD_CONTAINER = FieldContainer()
+        self.TOP_BAR_CONTAINER = TopBarContainer(projectModel)
 
-    # dimensions set to the full screen size
-    def defineWidth(self) -> float:
-        return self.dimensions.SCREEN_WIDTH
-    def defineHeight(self) -> float:
-        return self.dimensions.SCREEN_HEIGHT
-
-    # Draw screen background
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        screen.fill(self.BACKGROUND_COLOR)
+        self.COMMAND_EDITOR_CONTAINER = CommandEditorContainer()
+        self.COMMAND_EDITOR_CONTAINER.setInvisible()
