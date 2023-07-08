@@ -16,6 +16,8 @@ class EntityManager:
 
     def __init__(self):
 
+        self._redrawScreenThisTick = True
+
         self.entities: list[Entity] = []
 
         self.keyEntities: list[Entity] = []        
@@ -27,6 +29,15 @@ class EntityManager:
     def initRootContainer(self):
         self.rootContainer = RootContainer()
         return self.rootContainer
+    
+    def resetFlagAfterDrawingEverything(self):
+        self._redrawScreenThisTick = False
+
+    def redrawScreenThisTick(self):
+        self._redrawScreenThisTick = True
+
+    def isRedrawThisTick(self) -> bool:
+        return self._redrawScreenThisTick
     
 
     # by setting a parent, it will be removed when parent is removed

@@ -148,6 +148,7 @@ def main():
 
     # Main game loop
     print("start loop")
+    oldHoveredEntity = None
     while True:
 
         dimensions.RESIZED_THIS_FRAME = False
@@ -155,6 +156,9 @@ def main():
         mouse = pygame.mouse.get_pos()
         
         hoveredEntity = entities.getEntityAtPosition(mouse)
+        if oldHoveredEntity is not hoveredEntity:
+            entities.redrawScreenThisTick()
+        oldHoveredEntity = hoveredEntity
 
         if hoveredEntity is not None:
             parent = f", {str(hoveredEntity._parent)}"
@@ -195,13 +199,15 @@ def main():
         entities.tick()
 
         # Draw everything
-        entities.drawEntities(interactor, screen, mouse, dimensions)
-
-        # Update display and maintain frame rate
-        pygame.display.flip()
+        if entities.isRedrawThisTick():
+            entities.drawEntities(interactor, screen, mouse, dimensions)
+            # Update display and maintain frame rate
+            pygame.display.flip()
+            entities.resetFlagAfterDrawingEverything()
+        
         clock.tick(60) # fps
         #print(clock.get_fps())
 
 if __name__ == "__main__":
-    #cProfile.run('main()', sort='cumtime')
-    main()
+    cProfile.run('main()', sort='cumtime')
+    #main()
