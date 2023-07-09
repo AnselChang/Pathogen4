@@ -36,24 +36,10 @@ class UIModel:
     def showCommandEditor(self):
         self.commandEditorActive = CommandEditorStatus.SHOWN
 
-        # hide path/commands to show command editor
-        self.root.FIELD_CONTAINER.setInvisible()
-        self.root.PANEL_CONTAINER.setInvisible()
-
-        self.root.COMMAND_EDITOR_CONTAINER.setVisible()
-
-        self.root.recomputeEntity()
 
     def hideCommandEditor(self):
         self.commandEditorActive = CommandEditorStatus.HIDDEN
 
-        # restore path/commands and hide command editor
-        self.root.FIELD_CONTAINER.setVisible()
-        self.root.PANEL_CONTAINER.setVisible()
-
-        self.root.COMMAND_EDITOR_CONTAINER.setInvisible()
-
-        self.root.recomputeEntity()
 
     def getCommandEditorStatus(self) -> CommandEditorStatus:
         return self.commandEditorActive

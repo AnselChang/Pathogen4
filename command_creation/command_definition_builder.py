@@ -1,9 +1,9 @@
 from adapter.path_adapter import PathAttributeID, legalAttributesForType
 from command_creation.command_definition import CommandDefinition
 
-from root_container.panel_container.element.widget.widget_definition import WidgetDefinition
-from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
-from root_container.panel_container.element.row.element_definition import ElementDefinition
+from entities.root_container.panel_container.element.widget.widget_definition import WidgetDefinition
+from entities.root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
+from entities.root_container.panel_container.element.row.element_definition import ElementDefinition
 from command_creation.id_generation import generate_random_id
 
 

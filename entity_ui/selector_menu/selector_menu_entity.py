@@ -11,7 +11,7 @@ from common.image_manager import ImageID
 from entity_ui.group.linear_container import LinearContainer
 from entity_ui.selector_menu.menu_line_entity import MenuLineEntity
 from entity_ui.selector_menu.selector_menu_factory import MenuDefinition
-from root_container.field_container.field_container import FieldContainer
+from entities.root_container.field_container.field_container import FieldContainer
 import pygame
 
 """

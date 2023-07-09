@@ -6,14 +6,12 @@ from entity_ui.scrollbar.scrolling_container import ScrollingContainer
 from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
 from models.project_model import ProjectModel
 from models.ui_model import UIModel
-from root_container.command_editor_container.command_editor_panel import CommandEditorPanel
+from entities.command_editor_container.command_editor_panel import CommandEditorPanel
 
-from root_container.main_window_container import MainWindowContainer
+from entities.root_container.main_window_container import MainWindowContainer
 
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from command_creation.test_commands import *
-
-from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
 
 from common.reference_frame import initReferenceframe
 from common.draw_order import DrawOrder
@@ -41,7 +39,7 @@ def main():
     uiModel = UIModel.getInstance()
 
     window = Window(0.8, 0.8, 0, 0)
-    windowContainer = MainWindowContainer(window.getRootContainer(), projectModel)
+    windowContainer = MainWindowContainer(window.getRootContainer(), projectModel, runCommandsWindow)
 
     uiModel.initRootContainer(windowContainer)
 
@@ -75,16 +73,6 @@ def main():
     # create first path node
     START_POSITION = (20,20)
     projectModel.pathModel.initFirstNode(START_POSITION)
-
-    # create commands process and window
-    isProcessDone = mp.Value('i', 0)
-
-    # run callback when commands process is done
-    NotifyingVariable(lambda: isProcessDone.value, lambda value: print("change", value))
-
-    #mp.set_start_method('spawn')
-    commandsProcess = mp.Process(target = runCommandsWindow, args=(isProcessDone,))
-    commandsProcess.start()
 
     window.run()
 

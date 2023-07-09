@@ -17,8 +17,8 @@ from common.image_manager import ImageID
 from entity_base.entity import Entity
 from entity_base.image.image_state import ImageState
 from models.path_models.path_element_model import PathElementModel
-from root_container.field_container.field_entity import FieldEntity
-from root_container.field_container.node.path_node_entity import PathNodeEntity
+from entities.root_container.field_container.field_entity import FieldEntity
+from entities.root_container.field_container.node.path_node_entity import PathNodeEntity
 from serialization.serializable import SerializedState
 import math
 

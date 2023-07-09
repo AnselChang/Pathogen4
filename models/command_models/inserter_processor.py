@@ -4,14 +4,14 @@ from typing import TYPE_CHECKING
 from command_creation.command_type import CommandType
 
 from models.command_models.model_based_entity import ModelBasedEntity
-from root_container.panel_container.command_block.interfaces import ICommandInserter, ICommandBlock
+from entities.root_container.panel_container.command_block.interfaces import ICommandInserter, ICommandBlock
 
 if TYPE_CHECKING:
-    from root_container.panel_container.command_block.full_container import FullContainer
-    from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+    from entities.root_container.panel_container.command_block.full_container import FullContainer
+    from entities.root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
     from entity_ui.group.variable_group.variable_container import VariableContainer
-    from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
-    from root_container.panel_container.command_block.command_inserter import CommandInserter
+    from entities.root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
+    from entities.root_container.panel_container.command_block.command_inserter import CommandInserter
     from models.command_models.abstract_model import AbstractModel
 
 

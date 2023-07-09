@@ -1,9 +1,9 @@
 from command_creation.command_definition import CommandDefinition
 from command_creation.command_definition_builder import CommandDefinitionBuilder
 from command_creation.command_type import CommandType
-from root_container.panel_container.element.widget.checkbox_widget import CheckboxWidgetDefinition
-from root_container.panel_container.element.widget.dropdown_widget import DropdownWidgetDefinition
-from root_container.panel_container.element.widget.textbox_widget import CodeTextboxWidgetDefinition, ValueTextboxWidgetDefinition
+from entities.root_container.panel_container.element.widget.checkbox_widget import CheckboxWidgetDefinition
+from entities.root_container.panel_container.element.widget.dropdown_widget import DropdownWidgetDefinition
+from entities.root_container.panel_container.element.widget.textbox_widget import CodeTextboxWidgetDefinition, ValueTextboxWidgetDefinition
 from adapter.path_adapter import PathAttributeID
 
 def goToPoint() -> CommandDefinition:

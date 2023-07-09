@@ -2,7 +2,7 @@ from typing import Iterator
 from data_structures.observer import Observer
 from entity_base.entity import Entity
 from entity_handler.entity_traversal import traverseEntities, TraversalOrder
-from root_container.root_container import RootContainer
+from entities.root_container.root_container import RootContainer
 from entity_ui.tooltip import TooltipOwner
 from common.dimensions import Dimensions
 from common.draw_order import DrawOrder

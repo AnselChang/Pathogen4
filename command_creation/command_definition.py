@@ -1,5 +1,5 @@
-from root_container.panel_container.element.row.element_definition import ElementDefinition
-from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
+from entities.root_container.panel_container.element.row.element_definition import ElementDefinition
+from entities.root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
 from command_creation.command_type import CommandType
 
 """

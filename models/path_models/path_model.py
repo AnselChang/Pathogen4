@@ -10,8 +10,8 @@ from models.command_models.full_model import FullModel
 from models.path_models.constraint_model import ConstraintModel
 from models.path_models.path_node_model import PathNodeModel
 from models.path_models.path_segment_model import PathSegmentModel
-from root_container.field_container.field_entity import FieldEntity
-from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
+from entities.root_container.field_container.field_entity import FieldEntity
+from entities.root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from models.path_models.path_command_linker import PathCommandLinker
 from serialization.serializable import Serializable, SerializedState
 

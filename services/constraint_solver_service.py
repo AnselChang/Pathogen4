@@ -6,7 +6,7 @@ from models.path_models.path_segment_state.segment_type import SegmentType
 if TYPE_CHECKING:
     from models.path_models.path_node_model import PathNodeModel
     from models.path_models.path_segment_model import PathSegmentModel
-    from root_container.field_container.field_entity import FieldEntity
+    from entities.root_container.field_container.field_entity import FieldEntity
 
 from utility.angle_functions import Direction, equalTheta, equalTheta180, headingDiff, headingDiff180
 from utility.line import Line

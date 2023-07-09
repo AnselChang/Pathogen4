@@ -4,8 +4,8 @@ from entity_ui.selector_menu.configurations.common_actions import HighlightComma
 from entity_ui.selector_menu.selector_menu_factory import *
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.segment_direction import SegmentDirection
-from root_container.field_container.segment.abstract_segment_entity import AbstractSegmentEntity
-from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
+from entities.root_container.field_container.segment.abstract_segment_entity import AbstractSegmentEntity
+from entities.root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 
 # When clicked, segment toggles forward/reverse direction
 class DirectionButtonID(Enum):

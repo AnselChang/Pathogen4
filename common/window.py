@@ -6,8 +6,6 @@ from entity_handler.interactor import Interactor
 
 from command_creation.test_commands import *
 
-from root_container.panel_container.command_expansion.command_expansion_container import CommandExpansionContainer
-
 from entity_ui.tooltip import initTooltipFont
 
 from common.font_manager import FontManager, FontID

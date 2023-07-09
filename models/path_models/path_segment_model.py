@@ -11,14 +11,14 @@ from models.path_models.path_segment_state.bezier_segment_state import BezierSeg
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.path_segment_state.straight_segment_state import StraightSegmentState
 from models.path_models.segment_direction import SegmentDirection
-from root_container.field_container.segment.arc_segment_entity import ArcSegmentEntity
-from root_container.field_container.segment.bezier_segment_entity import BezierSegmentEntity
-from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
+from entities.root_container.field_container.segment.arc_segment_entity import ArcSegmentEntity
+from entities.root_container.field_container.segment.bezier_segment_entity import BezierSegmentEntity
+from entities.root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from services.constraint_solver_service import ConstraintSolver
 from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import distanceTuples, thetaFromPoints
 if TYPE_CHECKING:
-    from root_container.field_container.field_entity import FieldEntity
+    from entities.root_container.field_container.field_entity import FieldEntity
     from models.path_models.path_node_model import PathNodeModel
     from models.path_models.path_model import PathModel
     from entity_base.entity import Entity

@@ -1,7 +1,7 @@
 from enum import Enum
 from entity_ui.selector_menu.selector_menu_factory import MenuClickAction
-from root_container.field_container.node.path_node_entity import PathNodeEntity
-from root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
+from entities.root_container.field_container.node.path_node_entity import PathNodeEntity
+from entities.root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 
 class HighlightID(Enum):
     START_HIGHLIGHTING = 1

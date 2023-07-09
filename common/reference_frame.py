@@ -1,4 +1,4 @@
-from root_container.field_container.field_entity import FieldEntity
+from entities.root_container.field_container.field_entity import FieldEntity
 from common.dimensions import Dimensions
 import math, utility.math_functions as math_functions
 from enum import Enum

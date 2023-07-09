@@ -3,7 +3,7 @@ from adapter.path_adapter import NullPathAdapter
 from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
 from models.command_models.abstract_model import AbstractModel
-from root_container.panel_container.command_block_section.section_entity import SectionEntity
+from entities.root_container.panel_container.command_block_section.section_entity import SectionEntity
 from models.command_models.command_model import CommandModel
 
 """

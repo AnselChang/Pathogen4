@@ -8,8 +8,8 @@ from entity_handler.entity_manager import EntityManager
 from adapter.path_adapter import PathAdapter, NullPathAdapter, PathAttributeID
 from common.image_manager import ImageManager
 from common.dimensions import Dimensions
-from root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
-from root_container.panel_container.element.row.element_definition import ElementDefinition, ElementType
+from entities.root_container.panel_container.element.readout.readout_definition import ReadoutDefinition
+from entities.root_container.panel_container.element.row.element_definition import ElementDefinition, ElementType
 import json
 
 """

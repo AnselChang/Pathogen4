@@ -7,7 +7,7 @@ from typing import TypeVar, Generic
 
 from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
-from root_container.panel_container.command_block.command_inserter import CommandInserter
+from entities.root_container.panel_container.command_block.command_inserter import CommandInserter
 
 
 if TYPE_CHECKING:

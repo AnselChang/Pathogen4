@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from command_creation.command_type import CommandType
 from data_structures.observer import NotifyType, Observer
 from models.command_models.abstract_model import AbstractModel
-from root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from entities.root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from command_creation.command_definition_database import CommandDefinitionDatabase
 
     
@@ -10,10 +10,10 @@ from entity_base.entity import Entity
 from adapter.path_adapter import NullPathAdapter, PathAdapter
 from models.command_models.model_based_entity import ModelBasedEntity
 from command_creation.command_definition import CommandDefinition
-from root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
+from entities.root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity
 
 
-from root_container.panel_container.command_block.parameter_state import ParameterState
+from entities.root_container.panel_container.command_block.parameter_state import ParameterState
 
 # singleton for state shared by all commands, like highlight
 class SharedCommandUIState:

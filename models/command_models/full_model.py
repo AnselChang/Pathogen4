@@ -2,7 +2,7 @@ from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
 from models.command_models.abstract_model import AbstractModel
 from models.command_models.section_model import SectionModel
-from root_container.panel_container.command_block.full_container import FullContainer
+from entities.root_container.panel_container.command_block.full_container import FullContainer
 
 """
 Model of entire path command, through a list of path sections

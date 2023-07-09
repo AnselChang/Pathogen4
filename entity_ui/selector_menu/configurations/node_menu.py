@@ -2,7 +2,7 @@ from common.reference_frame import PointRef, Ref
 from entity_base.image.image_state import ImageStatesFactory
 from entity_ui.selector_menu.configurations.common_actions import HighlightCommandAction, HighlightID
 from entity_ui.selector_menu.selector_menu_factory import *
-from root_container.field_container.node.path_node_entity import PathNodeEntity
+from entities.root_container.field_container.node.path_node_entity import PathNodeEntity
 
 # When clicked, start adding a node to the end of the path
 class AddNodeEndAction(MenuClickAction[PathNodeEntity]):
