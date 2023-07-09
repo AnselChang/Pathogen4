@@ -26,6 +26,8 @@ class SelectHandler:
         
         self.activeMenu: SelectorMenuEntity = None
 
+        self.menuManager = None
+
     def initMenuManager(self, menuManager: SelectorMenuManager):
         self.menuManager = menuManager
 

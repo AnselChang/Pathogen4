@@ -14,15 +14,26 @@ from common.font_manager import FontManager, FontID
 from common.image_manager import ImageManager, ImageID
 from common.dimensions import Dimensions
 import pygame
-import sys
+import sys, os
 
 """
 A window object creates a pygame window with a context for entities, EntityManager, etc.
 """
 class Window:
 
-    def __init__(self, defaultWindowWidthPercent: float = 0.8, defaultWindowHeightPercent: float = 0.8):
-        
+    def __init__(self, defaultWindowWidthPercent: float = 0.8, defaultWindowHeightPercent: float = 0.8, xLeftPercent = 0, yTopPercent = 0):
+
+       
+        pygame.init()
+        pygame.key.set_repeat(400, 70)
+
+        display_info = pygame.display.Info()
+        COMPUTER_WIDTH = display_info.current_w
+        COMPUTER_HEIGHT = display_info.current_h
+
+        os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (xLeftPercent * COMPUTER_WIDTH, yTopPercent * COMPUTER_HEIGHT)
+
+
         # in charge of overarching dimensions of windows
         self.dimensions = Dimensions(defaultWindowWidthPercent, defaultWindowHeightPercent)
         self.fontManager = FontManager(self.dimensions)
@@ -49,7 +60,9 @@ class Window:
     def getRootContainer(self) -> Entity:
         return self.rootContainer
 
-    def run(self):
+    def run(self, isProcessDone = None):
+
+        self.rootContainer.recomputeEntity()
 
         oldHoveredEntity = None
         oldMouse = None
@@ -84,6 +97,11 @@ class Window:
             # handle events and call callbacks
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+
+                    # send signal to end process, if flag exists
+                    if isProcessDone is not None:
+                        isProcessDone.value = 1
+
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.VIDEORESIZE:

@@ -11,7 +11,7 @@ class TickEntity(entity.Entity):
     def __init__(self, onTickStart = lambda: None, onTickEnd = lambda: None, drawOrder: DrawOrder = DrawOrder.BACK):
 
         super().__init__(parent = entity.ROOT_CONTAINER,
-                         tick = TickLambda(self, FonTickStart = onTickEnd, FonTickEnd = onTickEnd),
+                         tick = TickLambda(self, FonTickStart = onTickStart, FonTickEnd = onTickEnd),
                          drawOrder = drawOrder, initiallyVisible = False,
                          recomputeWhenInvisible = True
                          )

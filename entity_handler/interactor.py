@@ -26,6 +26,8 @@ class Interactor:
 
     def __init__(self, dimensions: Dimensions):
 
+        self.fieldEntity = None
+
         self.dimensions = dimensions
 
         # the multiselect box
