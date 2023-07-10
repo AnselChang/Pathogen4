@@ -4,6 +4,8 @@ from entity_base.static_entity import StaticEntity
 from entity_base.tick_entity import TickEntity
 from entity_ui.scrollbar.scrolling_container import ScrollingContainer
 from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
+from models.project_history_interface import ProjectHistoryInterface
+from models.project_history_model import ProjectHistoryModel
 from models.project_model import ProjectModel
 from models.ui_model import UIModel
 from entities.command_editor_container.command_editor_panel import CommandEditorPanel
@@ -32,6 +34,9 @@ def runCommandsWindow(isProcessDone):
     commandsWindow.run(isProcessDone)
 
 def main():
+
+    # initialize project history model
+    ProjectHistoryInterface.initInstance(ProjectHistoryModel())
 
     # Project model that stores all the state of the program
     # makes it easy to serialize and deserialize

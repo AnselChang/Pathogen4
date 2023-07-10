@@ -10,14 +10,6 @@ the save history of the project. This can be used for undo/redo.
 """
 class ProjectHistoryModel:
 
-    _INSTANCE = None
-
-    def getInstance() -> 'ProjectHistoryModel':
-        if ProjectHistoryModel._INSTANCE is None:
-            ProjectHistoryModel._INSTANCE = ProjectHistoryModel()
-
-        return ProjectHistoryModel._INSTANCE
-
     def __init__(self):
         
         # list of serialized project states

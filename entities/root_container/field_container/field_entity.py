@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from entity_base.listeners.key_listener import KeyLambda
 
 from entities.root_container.field_container.constraint_lines import ConstraintLinesEntity
+from models.project_history_interface import ProjectHistoryInterface
 
 if TYPE_CHECKING:
     from models.path_models.path_model import PathModel
@@ -246,6 +247,9 @@ class FieldEntity(Entity, Observable):
     def onRightClick(self, mousePos: tuple):
         fieldPos = self.mouseToInches(mousePos)
         self.model.addNode(fieldPos)
+
+        # make a save
+        ProjectHistoryInterface.getInstance().save()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
         screen.blit(self.fieldSurface, (self.LEFT_X, self.TOP_Y))

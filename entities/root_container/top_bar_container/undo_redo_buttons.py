@@ -1,15 +1,15 @@
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
-from models.project_history_model import ProjectHistoryModel
+from models.project_history_interface import ProjectHistoryInterface
 from entities.root_container.top_bar_container.top_bar_button_container import ButtonClickAction, ButtonDefinition
 
 class UndoButtonAction(ButtonClickAction):
 
     def isActionAvailable(self) -> bool:
-        return ProjectHistoryModel.getInstance().canUndo()
+        return ProjectHistoryInterface.getInstance().canUndo()
 
     def onClick(self):
-        ProjectHistoryModel.getInstance().undo()
+        ProjectHistoryInterface.getInstance().undo()
 
 class UndoButtonDefinition(ButtonDefinition):
 
@@ -20,10 +20,10 @@ class UndoButtonDefinition(ButtonDefinition):
 class RedoButtonAction(ButtonClickAction):
     
     def isActionAvailable(self) -> bool:
-        return ProjectHistoryModel.getInstance().canRedo()
+        return ProjectHistoryInterface.getInstance().canRedo()
 
     def onClick(self):
-        ProjectHistoryModel.getInstance().redo()
+        ProjectHistoryInterface.getInstance().redo()
 
 class RedoButtonDefinition(ButtonDefinition):
      
