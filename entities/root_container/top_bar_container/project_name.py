@@ -13,7 +13,7 @@ from entity_ui.text.text_editor_entity import TextEditorEntity
 
 class ProjectName(Container, Observer):
 
-    def __init__(self, parent: TopBarContainer, model):
+    def __init__(self, parent: TopBarContainer, model: ProjectModel):
         super().__init__(parent)
 
         self.model = model
@@ -25,7 +25,7 @@ class ProjectName(Container, Observer):
             isNumOnly = False,
             isCentered = False,
             isFixedWidth = False,
-            defaultText = self.model.projectName,
+            defaultText = self.model.projectName.get(),
             hideTextbox = False,
             borderThicknessRead = 0,
             borderThicknessWrite = 2,
@@ -37,7 +37,7 @@ class ProjectName(Container, Observer):
         self.text.subscribe(self, onNotify = self.onProjectNameUpdate)
 
     def onProjectNameUpdate(self):
-        self.model.projectName = self.text.getText()
+        self.model.projectName.set(self.text.getText())
 
     def defineLeftX(self) -> float:
         return self._ax(30)
