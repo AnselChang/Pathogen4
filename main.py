@@ -49,8 +49,8 @@ def main():
     topBarContainer = windowContainer.TOP_BAR_CONTAINER
 
     initReferenceframe(window.dimensions, fieldContainer.fieldEntity)
-    projectModel.pathModel.initFieldEntity(fieldContainer.fieldEntity)
-    fieldContainer.fieldEntity.initPathModel(projectModel.pathModel)
+
+    projectModel.initFieldEntity(fieldContainer.fieldEntity)
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer.fieldEntity)

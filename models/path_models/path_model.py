@@ -6,7 +6,7 @@ In creating new nodes, it also creates the relevant command models and links the
 
 from data_structures.linked_list import LinkedList
 from models.command_models.command_model import CommandModel
-from models.command_models.full_model import FullModel
+from models.command_models.full_model import FullCommandsModel
 from models.path_models.constraint_model import ConstraintModel
 from models.path_models.path_node_model import PathNodeModel
 from models.path_models.path_segment_model import PathSegmentModel
@@ -15,10 +15,15 @@ from entities.root_container.field_container.segment.straight_segment_entity imp
 from models.path_models.path_command_linker import PathCommandLinker
 from serialization.serializable import Serializable, SerializedState
 
-class SerializedPathModel(SerializedState):
-    def __init__(self, pathList: LinkedList[PathNodeModel | StraightSegmentEntity], linker: PathCommandLinker):
+class SerializedPathState(SerializedState):
+    def __init__(self,
+                 pathList: LinkedList[PathNodeModel | StraightSegmentEntity],
+                 linker: PathCommandLinker,
+                 constraints: ConstraintModel,
+                 ):
         self.pathList = pathList
         self.linker = linker
+        self.constraints = constraints
 
 class PathModel(Serializable):
 
@@ -35,17 +40,18 @@ class PathModel(Serializable):
         self.commandsModel = None
         self.fieldEntity: FieldEntity = None
 
-
     def serialize(self) -> SerializedState:
-        return SerializedPathModel(self.pathList, self.linker)
+        return SerializedPathState(self.pathList, self.linker, self.constraints)
     
-    def deserialize(state: SerializedPathModel) -> 'PathModel':
+    @staticmethod
+    def deserialize(state: SerializedPathState) -> 'PathModel':
         model = PathModel()
         model.pathList = state.pathList
         model.linker = state.linker
+        model.constraints = state.constraints
         return model
 
-    def initCommandsModel(self, commandsModel: FullModel):
+    def initCommandsModel(self, commandsModel: FullCommandsModel):
         self.commandsModel = commandsModel
 
     def initFieldEntity(self, fieldEntity: FieldEntity):

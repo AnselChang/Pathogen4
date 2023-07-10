@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from utility.misc_functions import getEnumFromName
 if TYPE_CHECKING:
     from adapter.path_adapter import PathAdapter, PathAttributeID
-    from root_container.panel_container.command_block.parameter_state import ParameterState
+    from entities.root_container.panel_container.command_block.parameter_state import ParameterState
 
 
 class CodeGenerationService:

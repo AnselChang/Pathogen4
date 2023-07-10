@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from entity_ui.group.variable_group.variable_container import VariableContainer
     from entity_ui.group.variable_group.variable_group_container import VariableGroupContainer
-    from models.command_models.full_model import FullModel
+    from models.command_models.full_model import FullCommandsModel
     from entities.root_container.panel_container.command_block.full_container import FullContainer
 
 
@@ -37,7 +37,7 @@ A "plus" button that, when clicked, inserts a custom command there
 
 class CommandInserter(Entity, ICommandInserter):
 
-    def __init__(self, parent: VariableContainer, fullModel: FullModel, onInsert = lambda: None, isFirst: bool = False):
+    def __init__(self, parent: VariableContainer, fullModel: FullCommandsModel, onInsert = lambda: None, isFirst: bool = False):
         
 
         super().__init__(

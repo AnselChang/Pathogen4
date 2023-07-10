@@ -46,6 +46,11 @@ class AbstractModel(Generic[T1, T2]):
         if self.parent is not None:
             self.parent.rebuildChildren()
 
+    def resetUIToNone(self):
+        self.ui = None
+        for child in self.children:
+            child.resetUIToNone()
+
     def getName(self):
         return "AbstractModel"
     
@@ -273,7 +278,7 @@ class AbstractModel(Generic[T1, T2]):
     # Rebuild the children of this element. Do not recompute
     # the UI either for this element or the children,
     # just link existing reference to child UIs
-    def rebuildChildren(self):
+    def rebuildChildren(self, recompute: bool = False):
 
         if not self._canHaveChildren():
             return
@@ -289,6 +294,9 @@ class AbstractModel(Generic[T1, T2]):
             if not child.show:
                 continue
 
+            if recompute:
+                child.reassignSelfUI( child._generateUIForMyself() )
+
             assert(child.getExistingUI() is not None)
 
             # add the section/command UI
@@ -296,6 +304,11 @@ class AbstractModel(Generic[T1, T2]):
 
             # add the inserter UI
             self.ui.addChildUI(self.createInserterUI(child))
+
+    # rebuild this element and all children fully
+    def rebuildAll(self):
+        self.rebuild()
+        self.rebuildChildren(recompute=True)
 
     # print this element and all children as tree structure for debugging
     def tree(self, indent: int = 0):
