@@ -221,3 +221,4 @@ class TextEditorEntity(Entity, Observer, Observable):
 
     def setMode(self, mode: TextEditorMode):
         self.mode = mode
+        self.recomputeEntity()
