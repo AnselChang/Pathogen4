@@ -6,8 +6,9 @@ import copy
 
 if TYPE_CHECKING:
     from entities.root_container.field_container.field_entity import FieldEntity
-    from models.command_models.full_model import FullCommandsModel, SerializedCommandsState
+
 from models.path_models.path_model import PathModel, SerializedPathState
+from models.command_models.full_model import FullCommandsModel, SerializedCommandsState
 
 from data_structures.variable import Variable
 
