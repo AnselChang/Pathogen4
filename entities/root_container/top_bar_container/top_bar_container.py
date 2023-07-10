@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 from common.image_manager import ImageID
+from entities.root_container.top_bar_container.undo_redo_buttons import RedoButtonDefinition, UndoButtonDefinition
 from entity_base.image.image_entity import ImageEntity
 from entity_base.image.image_state import ImageState
 from entities.root_container.top_bar_container.command_editor_button import CommandEditorButtonDefinition
@@ -26,12 +27,7 @@ class TopBarContainer(Container):
 
         self.projectName = ProjectName(self, model)
 
-        undo = SimpleButtonDefinition(ImageID.UNDO, self.onUndo, "Undo")
-        redo = SimpleButtonDefinition(ImageID.REDO, self.onRedo, "Redo")
-        TopBarButtonContainer(self, 0.3, [undo, redo], 10)
-        undo = SimpleButtonDefinition(ImageID.UNDO, self.onUndo, "Undo")
-        redo = SimpleButtonDefinition(ImageID.REDO, self.onRedo, "Redo")
-        TopBarButtonContainer(self, 0.8, [undo, redo], 20)
+        TopBarButtonContainer(self, 0.3, [UndoButtonDefinition(), RedoButtonDefinition()], 10)
 
         # button for toggling command editor
         TopBarButtonContainer(self, 0.4, CommandEditorButtonDefinition(runCommandsWindowFunction), 20)
