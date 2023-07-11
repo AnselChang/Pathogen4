@@ -74,6 +74,8 @@ class ProjectModel:
         path = self.pathModel.serialize()
 
         state = SerializedProjectState(self.projectData, commands, path)
+        print(state)
+        raise Exception("stop")
         stateCopy = copy.deepcopy(state)
 
         return stateCopy

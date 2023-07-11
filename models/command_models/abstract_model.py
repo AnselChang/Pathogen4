@@ -8,7 +8,7 @@ from typing import TypeVar, Generic
 from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
 from entities.root_container.panel_container.command_block.command_inserter import CommandInserter
-from serialization.serializable import Serializable
+from serialization.serializable import Serializable, SerializedState
 
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ and has the option to regenerate the UI for itself without needing
 to regenerate the UI for its children through caching.
 """
 
-class SerializedRecursiveState(Serializable):
+class SerializedRecursiveState(SerializedState):
 
     def __init__(self):
         self.children: list[SerializedRecursiveState] = []

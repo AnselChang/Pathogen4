@@ -1,8 +1,10 @@
 # all classes that implement this must store only serializable data
 from typing import Generic, TypeVar
 
+from utility.pretty_printer import PrettyPrinter
 
-class SerializedState:
+
+class SerializedState(PrettyPrinter):
     pass
 
 T = TypeVar('T')
