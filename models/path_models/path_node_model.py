@@ -19,18 +19,30 @@ from entity_base.image.image_state import ImageState
 from models.path_models.path_element_model import PathElementModel
 from entities.root_container.field_container.field_entity import FieldEntity
 from entities.root_container.field_container.node.path_node_entity import PathNodeEntity
-from serialization.serializable import SerializedState
+from serialization.serializable import Serializable, SerializedState
 import math
 
-class SerializedPathNodeModel(SerializedState):
-    def __init__(self):
-        pass
+class SerializedPathNodeState(SerializedState):
+    def __init__(self, position: tuple, adapter: TurnAdapter, turnEnabled):
+        self.position = position
+        self.adapter = adapter
+        self.turnEnabled = turnEnabled
 
 class TurnDirection(Enum):
     RIGHT = 0
     LEFT = 1
 
-class PathNodeModel(PathElementModel):
+class PathNodeModel(PathElementModel, Serializable):
+
+    def serialize(self) -> SerializedPathNodeState:
+        return SerializedPathNodeState(self.position, self.adapter, self.TURN_ENABLED)
+
+    @staticmethod
+    def deserialize(state: SerializedPathNodeState, pathModel: PathModel) -> 'PathNodeModel':
+        node = PathNodeModel(pathModel, state.position)
+        node.adapter = state.adapter
+        node.TURN_ENABLED = state.turnEnabled
+        return node
         
     def __init__(self, pathModel: PathModel, initialPosition: tuple, temporary = False):
 
@@ -97,7 +109,6 @@ class PathNodeModel(PathElementModel):
             nextNode = self.getNext().getNext()
             self.constraintSolver.addLineFromTwoNodesConstraint(prevNode, nextNode)
 
-        
 
     """
     CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED

@@ -1,13 +1,49 @@
 from enum import Enum
+from serialization.serializable import Serializable
+from utility.pretty_printer import PrettyPrinter
 
 from utility.pygame_functions import brightenSurface, scaleImageToRect
 from entity_ui.tooltip import Tooltip
 from common.image_manager import ImageID, ImageManager
 import pygame
 
+class SerializedImageState(PrettyPrinter):
+
+    def __init__(self, id: Enum, imageOnID: ImageID, tooltipOn: str = None, imageOffID: ImageID = None, tooltipOff: str = None, imageOnHoveredID: ImageID = None, hoveredBrightenAmount = 40):
+        self.id = id
+        self.imageOffID = imageOffID
+        self.imageOnID = imageOnID
+        self.hoveredBrightenAmount = hoveredBrightenAmount
+        self.tooltipOn = tooltipOn
+        self.tooltipOff = tooltipOff
+        self.imageOnHoveredID = imageOnHoveredID
+
 # Images can be toggled between 1 or more states.
 # At each state, the image can be off, on, and on + hovered.
-class ImageState:
+class ImageState(Serializable):
+
+    def serialize(self) -> SerializedImageState:
+        return SerializedImageState(
+            self.id,
+            self.imageOnID,
+            self.tooltipOnStr,
+            self.imageOffID,
+            self.tooltipOffStr,
+            self.imageOnHoveredID,
+            self.hoveredBrightenAmount
+        )
+
+    @staticmethod
+    def deserialize(state: SerializedImageState) -> 'ImageState':
+        return ImageState(
+            state.id,
+            state.imageOnID,
+            state.tooltipOn,
+            state.imageOffID,
+            state.tooltipOff,
+            state.imageOnHoveredID,
+            state.hoveredBrightenAmount
+        )
 
     def __init__(self, id: Enum, imageOnID: ImageID, tooltipOn = None, imageOffID: ImageID = None, tooltipOff = None, imageOnHoveredID: ImageID = None, hoveredBrightenAmount = 40):
         self.id = id
@@ -16,6 +52,9 @@ class ImageState:
         self.imageOnHoveredID = imageOnHoveredID
 
         self.hoveredBrightenAmount = hoveredBrightenAmount
+
+        self.tooltipOnStr = tooltipOn
+        self.tooltipOffStr = tooltipOff
 
         self.tooltipOn = None if tooltipOn is None else Tooltip(tooltipOn)
         if tooltipOff is None:

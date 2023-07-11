@@ -21,11 +21,11 @@ class SerializedCommandState(SerializedRecursiveState):
     def __init__(self, uiState: 'SharedCommandUIState', adapter: PathAdapter, templateText: str):
         super().__init__()
         self.uiState = uiState
-        self.adapter = adapter
+        self.adapter = adapter.serialize()
         self.templateText = templateText
 
     def _deserialize(self) -> 'CommandModel':
-        model = CommandModel(self.adapter)
+        model = CommandModel(PathAdapter.deserialize(self.adapter))
         model.uiState = self.uiState
         model.templateText = self.templateText
         return model

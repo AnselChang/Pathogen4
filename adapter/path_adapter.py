@@ -4,6 +4,8 @@ from data_structures.observer import Observable, Observer
 from command_creation.command_type import CommandType
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
+from serialization.serializable import Serializable, SerializedState
+from utility.pretty_printer import PrettyPrinter
 
 class PathAttributeID(Enum):
     NONE = auto()
@@ -55,13 +57,25 @@ legalAttributesForType: dict[CommandType, list[PathAttributeID]] = {
     CommandType.CUSTOM: []
 }
 
-
+class AdapterState(SerializedState, PrettyPrinter):
+    def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState):
+        self.type = type
+        if not isinstance(iconImageStates, list):
+            iconImageStates = [iconImageStates]
+        self.iconImageStates = [image.serialize() for image in iconImageStates]
 
 """
 Abstract class that facilitates communication between Commands and Path entities
 """
 
-class PathAdapter(ABC, Observable, Observer):
+class PathAdapter(ABC, Observable, Observer, Serializable):
+
+    def serialize(self) -> AdapterState:
+        return AdapterState(self.type, self.iconImageStates)
+
+    @staticmethod
+    def deserialize(state: AdapterState) -> 'PathAdapter':
+        return PathAdapter(state.type, [ImageState.deserialize(state) for state in state.iconImageStates])
 
     def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState):
         self.type = type

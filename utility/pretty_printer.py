@@ -14,6 +14,17 @@ class PrettyPrinter(object):
                     except:
                         s = " (F) "
                     lines += '{}{}'.format(s, v).split('\n')
+
+            elif type(val) == dict:
+                for k in val:
+                    v = val[k]
+                    try:
+                        copy.deepcopy(v)
+                        s = " (T) "
+                    except:
+                        s = " (F) "
+                    lines += '{}{}: {}'.format(s, k, v).split('\n')
+            
             else:
 
                 try:
