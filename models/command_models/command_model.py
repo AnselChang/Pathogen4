@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from command_creation.command_type import CommandType
 from data_structures.observer import NotifyType, Observer
-from models.command_models.abstract_model import AbstractModel
+from models.command_models.abstract_model import AbstractModel, SerializedRecursiveState
 from entities.root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from command_creation.command_definition_database import CommandDefinitionDatabase
 
@@ -14,6 +14,21 @@ from entities.root_container.panel_container.command_block.custom_command_block_
 
 
 from entities.root_container.panel_container.command_block.parameter_state import ParameterState
+from serialization.serializable import SerializedState
+
+class SerializedCommandState(SerializedRecursiveState):
+
+    def __init__(self, uiState: 'SharedCommandUIState', adapter: PathAdapter, templateText: str):
+        super().__init__()
+        self.uiState = uiState
+        self.adapter = adapter
+        self.templateText = templateText
+
+    def _deserialize(self) -> 'CommandModel':
+        model = CommandModel(self.adapter)
+        model.uiState = self.uiState
+        model.templateText = self.templateText
+        return model
 
 # singleton for state shared by all commands, like highlight
 class SharedCommandUIState:
@@ -40,6 +55,9 @@ Stores the data of a single command block
 Model part of MVC design pattern for command block
 """
 class CommandModel(AbstractModel, Observer):
+
+    def _serialize(self) -> SerializedCommandState:
+        return SerializedCommandState(self.uiState, self.adapter, self.templateText)
 
     def __init__(self, pathAdapter: 'PathAdapter'):
 

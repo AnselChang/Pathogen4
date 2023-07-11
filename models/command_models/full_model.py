@@ -1,6 +1,6 @@
 from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
-from models.command_models.abstract_model import AbstractModel
+from models.command_models.abstract_model import AbstractModel, SerializedRecursiveState
 from models.command_models.section_model import SectionModel
 from entities.root_container.panel_container.command_block.full_container import FullContainer
 from serialization.serializable import Serializable, SerializedState
@@ -10,27 +10,18 @@ import copy
 Model of entire path command, through a list of path sections
 """
 
-class SerializedCommandsState(SerializedState):
-    
-    def __init__(self, fullModel: 'FullCommandsModel'):
-        self.fullModel = fullModel
+class SerializedFullState(SerializedRecursiveState):
 
-class FullCommandsModel(AbstractModel[None, SectionModel], Serializable[SerializedCommandsState]):
+    def __init__(self):
+        super().__init__()
 
-    """
-    Serialization works a bit differently with this model, since it's recursive.
-    The easiest way I could think of was to deep copy the entire model,
-    then go through the model and set all ui references to None.
-    """
-    def serialize(self) -> SerializedCommandsState:
-        fullModelCopy = copy.deepcopy(self)
-        fullModelCopy.resetUIToNone()
-        fullModelCopy.fullModelParentUI = None
-        return SerializedCommandsState(fullModelCopy)
+    def _deserialize(self) -> 'FullCommandsModel':
+        return FullCommandsModel()
 
-    @staticmethod
-    def deserialize(state: SerializedCommandsState) -> 'FullCommandsModel':
-        return state.fullModel
+class FullCommandsModel(AbstractModel[None, SectionModel]):
+
+    def _serialize(self) -> SerializedFullState:
+        return SerializedFullState()
     
     def __init__(self):
         super().__init__()

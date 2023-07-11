@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import typing
+from models.command_models.abstract_model import SerializedRecursiveState
 
 from models.project_data_model import ProjectDataModel
 import copy
@@ -8,7 +10,7 @@ if TYPE_CHECKING:
     from entities.root_container.field_container.field_entity import FieldEntity
 
 from models.path_models.path_model import PathModel, SerializedPathState
-from models.command_models.full_model import FullCommandsModel, SerializedCommandsState
+from models.command_models.full_model import FullCommandsModel
 
 from data_structures.variable import Variable
 
@@ -22,7 +24,7 @@ be exported or imported to save or load.
 class SerializedProjectState(SerializedState):
     def __init__(self,
                  data: ProjectDataModel,
-                 commands: SerializedCommandsState,
+                 commands: SerializedRecursiveState,
                  path: SerializedPathState,
                  ):
         self.data = data
@@ -87,7 +89,7 @@ class ProjectModel:
         self.initFieldEntity(self.fieldEntity)
 
         # load the commands and rebuild the command tree
-        self.commandsModel = FullCommandsModel.deserialize(state.commands)
+        self.commandsModel = typing.cast(FullCommandsModel, FullCommandsModel.deserialize(state.commands))
         self.commandsModel.rebuildAll()
 
         # update the UI

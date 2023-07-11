@@ -8,6 +8,7 @@ from typing import TypeVar, Generic
 from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
 from entities.root_container.panel_container.command_block.command_inserter import CommandInserter
+from serialization.serializable import Serializable
 
 
 if TYPE_CHECKING:
@@ -22,9 +23,37 @@ and has the option to regenerate the UI for itself without needing
 to regenerate the UI for its children through caching.
 """
 
+class SerializedRecursiveState(Serializable):
+
+    def __init__(self):
+        self.children: list[SerializedRecursiveState] = []
+
+    def addChild(self, child: SerializedRecursiveState):
+        self.children.append(child)
+
+    def _deserialize(self) -> 'AbstractModel':
+        raise NotImplementedError("Must implement this method")
+
 T1 = TypeVar('T1') # parent type
 T2 = TypeVar('T2') # children type
-class AbstractModel(Generic[T1, T2]):
+class AbstractModel(Serializable, Generic[T1, T2]):
+
+    def _serialize(self) -> SerializedRecursiveState:
+        raise NotImplementedError("Must implement this method")
+    
+    def serialize(self) -> SerializedRecursiveState:
+        state = self._serialize()
+        for child in self.children:
+            state.addChild(child.serialize())
+        return state
+
+    @staticmethod
+    def deserialize(state: SerializedRecursiveState) -> 'AbstractModel':
+        model = state._deserialize()
+        for childState in state.children:
+            childModel = AbstractModel.deserialize(childState)
+            model.children.append(childModel)
+            childModel.parent = model
 
     def __init__(self):
 
