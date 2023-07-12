@@ -64,7 +64,6 @@ class PathModel(Serializable):
         for element in state.pathList:
             element.makeDeserialized(model)
 
-
         # add each to linked list
         model.pathList = LinkedList[PathNodeModel | StraightSegmentEntity]()
         for element in state.pathList:
@@ -86,6 +85,13 @@ class PathModel(Serializable):
         # initialize first node
         node = self._addRawNode(startPosition) # add start node
         node.onThetaChange()
+
+    # recalculate all cached data for the nodes and segments
+    # useful after loading serialized data and need to recompute everything
+    def recalculateAll(self):
+        for element in self.pathList:
+            if isinstance(element, PathSegmentModel):
+                element.onInit()
 
     def _addRawNode(self, nodePosition: tuple, afterPath = None, afterCommand: CommandModel = None, isTemporary: bool = False):
 

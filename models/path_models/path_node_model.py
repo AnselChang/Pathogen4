@@ -30,7 +30,7 @@ class SerializedPathNodeState(SerializedPathElementState):
 
     def _deserialize(self, pathModel: PathModel) -> PathNodeModel:
         node = PathNodeModel(pathModel, self.position)
-        node.adapter = self.adapter
+        node.adapter = self.adapter.deserialize()
         node.TURN_ENABLED = self.turnEnabled
         return node
     

@@ -108,6 +108,9 @@ class ProjectModel:
         self.pathModel = PathModel.deserialize(state.path, self.fieldEntity)
         self.initFieldEntity(self.fieldEntity)
 
+        # recalculate path cached data
+        self.pathModel.recalculateAll()
+
         # load the commands and rebuild the command tree
         self.commandsModel = typing.cast(FullCommandsModel, FullCommandsModel.deserialize(state.commands))
         self.commandsModel.fullModelParentUI = self.parentCommandEntity
