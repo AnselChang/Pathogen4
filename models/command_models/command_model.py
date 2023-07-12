@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING, Any
+from adapter.null_adapter import NullAdapter
 from command_creation.command_type import CommandType
 from data_structures.observer import NotifyType, Observer
+from entities.root_container.panel_container.command_block.wait_id import WaitID
 from models.command_models.abstract_model import AbstractModel, SerializedRecursiveState
 from entities.root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 from command_creation.command_definition_database import CommandDefinitionDatabase
@@ -18,13 +20,21 @@ from serialization.serializable import SerializedState
 
 class SerializedCommandState(SerializedRecursiveState):
 
-    def __init__(self, uiState: 'SharedCommandUIState', adapter: PathAdapter, templateText: str, paramHashmap: dict[str, Any], definitionID):
+    def __init__(self,
+                 uiState: 'SharedCommandUIState',
+                 adapter: PathAdapter,
+                 templateText: str,
+                 paramHashmap: dict[str, Any],
+                 definitionID: str,
+                 waitState: WaitID
+    ):
         super().__init__()
         self.uiState = uiState
         self.adapter = adapter.serialize()
         self.templateText = templateText
         self.paramHashmap = paramHashmap
         self.definitionID = definitionID
+        self.waitState = waitState
 
     def _deserialize(self) -> 'CommandModel':
         model = CommandModel(self.adapter.deserialize())
@@ -32,6 +42,7 @@ class SerializedCommandState(SerializedRecursiveState):
         model.templateText = self.templateText
         model.parameters.hashmap = self.paramHashmap
         model._definitionID = self.definitionID
+        model.waitState = self.waitState
         return model
     
     def makeNullAdapterDeserialized(self):
@@ -71,7 +82,9 @@ class CommandModel(AbstractModel, Observer):
         super().makeNullAdapterSerialized()
 
     def _serialize(self) -> SerializedCommandState:
-        return SerializedCommandState(self.uiState, self.adapter, self.templateText, self.parameters.hashmap, self._definitionID)
+        return SerializedCommandState(
+            self.uiState, self.adapter, self.templateText, self.parameters.hashmap, self._definitionID, self.waitState
+        )
 
     def __init__(self, pathAdapter: 'PathAdapter'):
 
@@ -90,6 +103,9 @@ class CommandModel(AbstractModel, Observer):
         # if None, use template text in definition.
         # If not none, means there's a text editor in command and templateText is editable
         self.templateText = None
+
+        # default state is to wait for completion
+        self.waitState: WaitID = WaitID.WAIT
 
 
     def setNewAdapter(self, newAdapter: 'PathAdapter'):
@@ -150,7 +166,7 @@ class CommandModel(AbstractModel, Observer):
         return self.adapter.type
 
     def _createChild(self) -> 'CommandModel':
-        return CommandModel(NullPathAdapter())
+        return CommandModel(NullAdapter())
     
     # whether command can contain children. Ie tasks, loops, etc
     def _canHaveChildren(self) -> bool:

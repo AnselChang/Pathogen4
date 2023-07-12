@@ -14,6 +14,7 @@ from models.path_models.segment_direction import SegmentDirection
 from entities.root_container.field_container.segment.arc_segment_entity import ArcSegmentEntity
 from entities.root_container.field_container.segment.bezier_segment_entity import BezierSegmentEntity
 from entities.root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
+from models.project_history_interface import ProjectHistoryInterface
 from services.constraint_solver_service import ConstraintSolver
 from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import distanceTuples, thetaFromPoints

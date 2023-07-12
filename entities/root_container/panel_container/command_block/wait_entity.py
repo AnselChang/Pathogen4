@@ -1,9 +1,12 @@
 from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
+from entities.root_container.panel_container.command_block.wait_id import WaitID
 
 from entity_base.image.image_state import ImageState
+from models.project_history_interface import ProjectHistoryInterface
 if TYPE_CHECKING:
+    from entities.root_container.panel_container.command_block.command_block_header import CommandBlockHeader
     from entities.root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
 
 from entity_base.container_entity import Container
@@ -21,10 +24,6 @@ from utility.pygame_functions import drawSurface
 from utility.math_functions import distance
 import pygame
 
-class WaitID(Enum):
-    WAIT = 0
-    NO_WAIT = 1
-
 """
 Wait-for-complete entity for custom commands.
 If set to WAIT, command will wait for completion before executing next command.
@@ -32,7 +31,7 @@ If set to NO_WAIT, command will run this command and the next concurrently throu
 """
 class WaitEntity(Container):
 
-    def __init__(self, parentHeader):
+    def __init__(self, parentHeader: CommandBlockHeader):
         
         super().__init__(parent = parentHeader)
 
@@ -43,18 +42,20 @@ class WaitEntity(Container):
                     getStateID = self.getStateID
                     )
         
-        # default state is to wait for completion
-        self.state: WaitID = WaitID.WAIT
+        self.model = parentHeader.parentCommand.model
         
     # toggle wait and no wait
     def onClick(self, mouse: tuple):
-        if self.state == WaitID.WAIT:
-            self.state = WaitID.NO_WAIT
+        if self.model.waitState == WaitID.WAIT:
+            self.model.waitState = WaitID.NO_WAIT
         else:
-            self.state = WaitID.WAIT
+            self.model.waitState = WaitID.WAIT
+
+        # make a save state
+        ProjectHistoryInterface.getInstance().save()
 
     def getStateID(self) -> int:
-        return self.state
+        return self.model.waitState
 
     def defineCenter(self) -> tuple:
         return self._px(1) - self._awidth(43), self._py(0.5)
