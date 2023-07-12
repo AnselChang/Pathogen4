@@ -74,6 +74,7 @@ class ProjectModel:
     def serialize(self) -> SerializedProjectState:
 
         # convert all the adapters to serialized states first
+        self.commandsModel.makeNullAdapterSerialized()
         for element in self.pathModel.pathList:
             element.makeAdapterSerialized()
 
@@ -96,6 +97,7 @@ class ProjectModel:
         self.commandsModel.ui.deleteEntity()
 
         # convert all adapters back to deserialized states
+        state.commands.makeNullAdapterDeserialized()
         for element in state.path.pathList:
             element.makeAdapterDeserialized()
 

@@ -33,10 +33,25 @@ class SerializedRecursiveState(SerializedState):
 
     def _deserialize(self) -> 'AbstractModel':
         raise NotImplementedError("Must implement this method")
+    
+    def makeNullAdapterDeserialized(self):
+        self.makeChildrenAdapterDeserialized()
+    
+    def makeChildrenAdapterDeserialized(self):
+        for c in self.children:
+            c.makeNullAdapterDeserialized()
 
 T1 = TypeVar('T1') # parent type
 T2 = TypeVar('T2') # children type
 class AbstractModel(Serializable, Generic[T1, T2]):
+
+     # default behavior is to do nothing, except if command model
+    def makeNullAdapterSerialized(self):
+        self.makeChildrenAdapterSerialized()
+    
+    def makeChildrenAdapterSerialized(self):
+        for c in self.children:
+            c.makeNullAdapterSerialized()
 
     def _serialize(self) -> SerializedRecursiveState:
         raise NotImplementedError("Must implement this method")

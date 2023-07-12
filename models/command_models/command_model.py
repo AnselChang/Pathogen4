@@ -29,6 +29,11 @@ class SerializedCommandState(SerializedRecursiveState):
         model.uiState = self.uiState
         model.templateText = self.templateText
         return model
+    
+    def makeNullAdapterDeserialized(self):
+        if self.adapter.type == CommandType.CUSTOM:
+            self.adapter.makeDeserialized()
+        super().makeNullAdapterDeserialized()
 
 # singleton for state shared by all commands, like highlight
 class SharedCommandUIState:
@@ -55,6 +60,11 @@ Stores the data of a single command block
 Model part of MVC design pattern for command block
 """
 class CommandModel(AbstractModel, Observer):
+
+    def makeNullAdapterSerialized(self):
+        if self.adapter.type == CommandType.CUSTOM:
+            self.adapter.makeSerialized()
+        super().makeNullAdapterSerialized()
 
     def _serialize(self) -> SerializedCommandState:
         return SerializedCommandState(self.uiState, self.adapter, self.templateText)
