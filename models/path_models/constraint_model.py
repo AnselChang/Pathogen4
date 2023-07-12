@@ -2,10 +2,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from serialization.serializable import Serializable, SerializedState
-from services.constraint_solver_service import SerializedConstraintState
+from services.constraint_solver_service import SerializedConstraintState, Constraint
 
 if TYPE_CHECKING:
-    from services.constraint_solver_service import Constraint
     from models.path_models.path_node_model import PathNodeModel
     from utility.line import Line
 

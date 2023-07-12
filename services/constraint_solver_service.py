@@ -29,7 +29,7 @@ class Constraint(Serializable):
 
     @staticmethod
     def deserialize(state: SerializedConstraintState) -> 'Constraint':
-        nodes = [PathNodeModel.deserialize(node) for node in state.nodes]
+        nodes = [node.deserialize() for node in state.nodes]
         return Constraint(state.line, nodes)
 
     def __init__(self, line: Line, nodes: list[PathNodeModel]):
