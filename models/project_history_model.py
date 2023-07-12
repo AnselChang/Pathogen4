@@ -30,6 +30,8 @@ class ProjectHistoryModel:
         self.history.append(currentState)
         self.pointer = currentState # set pointer to this new save
 
+        print("save")
+
     # whether undo should be enabled
     def canUndo(self) -> bool:
 
@@ -58,7 +60,7 @@ class ProjectHistoryModel:
             else:
                 raise Exception("Cannot undo past beginning of history")
             
-        ProjectModel().getInstance().loadSerializedState(self.pointer)
+        ProjectModel.getInstance().loadSerializedState(self.pointer)
 
     # whether redo should be enabled
     def canRedo(self) -> bool:

@@ -34,6 +34,9 @@ class SerializedPathNodeState(SerializedPathElementState):
         node.adapter = self.adapter
         node.TURN_ENABLED = self.turnEnabled
         return node
+    
+    def makeAdapterDeserialized(self):
+        self.adapter.makeDeserialized()
 
 class TurnDirection(Enum):
     RIGHT = 0

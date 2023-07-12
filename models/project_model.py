@@ -62,7 +62,6 @@ class ProjectModel:
     # link the path model to the field entity
     def initFieldEntity(self, fieldEntity: FieldEntity):
         self.fieldEntity = fieldEntity
-
         self.pathModel.initFieldEntity(fieldEntity)
         fieldEntity.initPathModel(self.pathModel)
 
@@ -85,11 +84,15 @@ class ProjectModel:
     # given a serialized state, update the project model and ui
     def loadSerializedState(self, state: SerializedProjectState):
 
+        # convert all adapters back to deserialized states
+        for element in state.path.pathList:
+            element.makeAdapterDeserialized()
+
         # load the project data
         self.projectData = state.data
 
         # load the path and link with field entity
-        self.pathModel = PathModel.deserialize(state.path)
+        self.pathModel = PathModel.deserialize(state.path, self.fieldEntity)
         self.initFieldEntity(self.fieldEntity)
 
         # load the commands and rebuild the command tree

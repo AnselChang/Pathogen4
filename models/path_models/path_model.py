@@ -55,13 +55,15 @@ class PathModel(Serializable):
         return SerializedPathState(sList, self.linker.serialize(), self.constraints.serialize())
     
     @staticmethod
-    def deserialize(state: SerializedPathState) -> 'PathModel':
+    def deserialize(state: SerializedPathState, fieldEntity) -> 'PathModel':
 
         model = PathModel()
+        model.initFieldEntity(fieldEntity)
 
         # generate deserialized versions of the path segments and nodes
         for element in state.pathList:
-            element.makeDeserialized()
+            element.makeDeserialized(model)
+
 
         # add each to linked list
         model.pathList = LinkedList[PathNodeModel | StraightSegmentEntity]()

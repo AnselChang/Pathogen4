@@ -79,6 +79,9 @@ def main():
     START_POSITION = (20,20)
     projectModel.pathModel.initFirstNode(START_POSITION)
 
+    # make initial save
+    ProjectHistoryInterface.getInstance().save()
+
     window.run()
 
 if __name__ == "__main__":

@@ -18,11 +18,14 @@ A PathNodeEntity or PathSegment entity
 
 class SerializedPathElementState(SerializedState):
 
-    def _deserialize(self) -> PathElementModel:
+    def _deserialize(self, pathModel: PathModel) -> PathElementModel:
         raise NotImplementedError()
     
-    def makeDeserialized(self):
-        self.DESERIALIZED = self._deserialize()
+    def makeDeserialized(self, pathModel: PathModel):
+        self.DESERIALIZED = self._deserialize(pathModel)
+
+    def makeAdapterDeserialized(self):
+        raise NotImplementedError
 
     def deserialize(self) -> PathElementModel:
         return self.DESERIALIZED

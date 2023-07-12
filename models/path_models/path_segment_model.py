@@ -43,6 +43,10 @@ class SerializedPathSegmentState(SerializedPathElementState):
 
         segment.currentStateType = self.current
         return segment
+    
+    def makeAdapterDeserialized(self):
+        for state in self.states.values():
+            state.adapter.makeDeserialized()
 
 class PathSegmentModel(PathElementModel):
 
