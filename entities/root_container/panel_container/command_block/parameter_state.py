@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from entities.root_container.panel_container.element.widget.widget_definition import WidgetDefinition
+from models.project_history_interface import ProjectHistoryInterface
 if TYPE_CHECKING:
     from models.command_models.command_model import CommandModel
 
@@ -39,6 +40,9 @@ class ParameterState:
     
     def setValueByID(self, id: str, value: Any):
         self.hashmap[id] = value
+
+        # add save state to undo/redo stack
+        ProjectHistoryInterface.getInstance().save()
 
 
     # when the command definition updates, modify hashmap to fit new parameters

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from command_creation.command_type import CommandType
+from models.project_history_interface import ProjectHistoryInterface
 
 if TYPE_CHECKING:
     from models.command_models.command_model import CommandModel
@@ -38,3 +39,6 @@ class CustomCommandBlockEntity(CommandBlockEntity):
     def onDelete(self):
         self.model.delete()
         self.getRootEntity().recomputeEntity()
+
+        # add save state to undo/redo stack
+        ProjectHistoryInterface.getInstance().save()

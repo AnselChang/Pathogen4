@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from command_creation.command_type import CommandType
 from data_structures.observer import NotifyType, Observer
 from models.command_models.abstract_model import AbstractModel, SerializedRecursiveState
@@ -18,16 +18,18 @@ from serialization.serializable import SerializedState
 
 class SerializedCommandState(SerializedRecursiveState):
 
-    def __init__(self, uiState: 'SharedCommandUIState', adapter: PathAdapter, templateText: str):
+    def __init__(self, uiState: 'SharedCommandUIState', adapter: PathAdapter, templateText: str, paramHashmap: dict[str, Any]):
         super().__init__()
         self.uiState = uiState
         self.adapter = adapter.serialize()
         self.templateText = templateText
+        self.paramHashmap = paramHashmap
 
     def _deserialize(self) -> 'CommandModel':
         model = CommandModel(self.adapter.deserialize())
         model.uiState = self.uiState
         model.templateText = self.templateText
+        model.parameters.hashmap = self.paramHashmap
         return model
     
     def makeNullAdapterDeserialized(self):
@@ -67,7 +69,7 @@ class CommandModel(AbstractModel, Observer):
         super().makeNullAdapterSerialized()
 
     def _serialize(self) -> SerializedCommandState:
-        return SerializedCommandState(self.uiState, self.adapter, self.templateText)
+        return SerializedCommandState(self.uiState, self.adapter, self.templateText, self.parameters.hashmap)
 
     def __init__(self, pathAdapter: 'PathAdapter'):
 

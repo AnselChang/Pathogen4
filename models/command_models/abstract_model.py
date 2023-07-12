@@ -8,6 +8,7 @@ from typing import TypeVar, Generic
 from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
 from entities.root_container.panel_container.command_block.command_inserter import CommandInserter
+from models.project_history_interface import ProjectHistoryInterface
 from serialization.serializable import Serializable, SerializedState
 
 
@@ -238,6 +239,9 @@ class AbstractModel(Serializable, Generic[T1, T2]):
             self.insertChildAfter(sectionOrCommand, elementBeforeInserter)
 
         self.ui.recomputeEntity()
+
+        # add save state to undo/redo stack
+        ProjectHistoryInterface.getInstance().save()
 
 
     def getRootModel(self) -> AbstractModel:
