@@ -27,12 +27,14 @@ class SerializedRecursiveState(SerializedState):
 
     def __init__(self):
         self.children: list[SerializedRecursiveState] = []
+        self.DESERIALIZED = None
 
     def addChild(self, child: SerializedRecursiveState):
         self.children.append(child)
 
     def _deserialize(self) -> 'AbstractModel':
         raise NotImplementedError("Must implement this method")
+
     
     def makeNullAdapterDeserialized(self):
         self.makeChildrenAdapterDeserialized()
@@ -69,6 +71,7 @@ class AbstractModel(Serializable, Generic[T1, T2]):
             childModel = AbstractModel.deserialize(childState)
             model.children.append(childModel)
             childModel.parent = model
+        state.DESERIALIZED = model
         return model
 
     def __init__(self):

@@ -52,13 +52,13 @@ class PathCommandLinker(Serializable):
         linker = PathCommandLinker()
 
         for node, command in state.nodeToCommand.items():
-            linker.nodeToCommand[node.deserialize()] = CommandModel.deserialize(command)
+            linker.nodeToCommand[node.deserialize()] = command.DESERIALIZED
 
         for segment, command in state.segmentToCommand.items():
-            linker.segmentToCommand[segment.deserialize()] = CommandModel.deserialize(command)
+            linker.segmentToCommand[segment.deserialize()] = command.DESERIALIZED
 
         for command, path in state.commandToPath.items():
-            linker.commandToPath[CommandModel.deserialize(command)] = path.deserialize()
+            linker.commandToPath[command.DESERIALIZED] = path.deserialize()
 
         return linker
         
