@@ -146,7 +146,10 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         # update header entity. Need to show/hide wait entity
         self.headerEntity.onFunctionChange()
 
-        self.recomputeEntity()
+        self.model.expandUI()
+
+        # make a save state
+        ProjectHistoryInterface.getInstance().save()
 
     # Update animation every tick
     def onTick(self):

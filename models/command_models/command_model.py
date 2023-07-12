@@ -18,18 +18,20 @@ from serialization.serializable import SerializedState
 
 class SerializedCommandState(SerializedRecursiveState):
 
-    def __init__(self, uiState: 'SharedCommandUIState', adapter: PathAdapter, templateText: str, paramHashmap: dict[str, Any]):
+    def __init__(self, uiState: 'SharedCommandUIState', adapter: PathAdapter, templateText: str, paramHashmap: dict[str, Any], definitionID):
         super().__init__()
         self.uiState = uiState
         self.adapter = adapter.serialize()
         self.templateText = templateText
         self.paramHashmap = paramHashmap
+        self.definitionID = definitionID
 
     def _deserialize(self) -> 'CommandModel':
         model = CommandModel(self.adapter.deserialize())
         model.uiState = self.uiState
         model.templateText = self.templateText
         model.parameters.hashmap = self.paramHashmap
+        model._definitionID = self.definitionID
         return model
     
     def makeNullAdapterDeserialized(self):
@@ -69,7 +71,7 @@ class CommandModel(AbstractModel, Observer):
         super().makeNullAdapterSerialized()
 
     def _serialize(self) -> SerializedCommandState:
-        return SerializedCommandState(self.uiState, self.adapter, self.templateText, self.parameters.hashmap)
+        return SerializedCommandState(self.uiState, self.adapter, self.templateText, self.parameters.hashmap, self._definitionID)
 
     def __init__(self, pathAdapter: 'PathAdapter'):
 
