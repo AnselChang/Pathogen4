@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 from models.project_model import ProjectModel, SerializedProjectState
 
+import pickle
+
 """
 Stores an ordered list of SerializedProjectState objects to represent
 the save history of the project. This can be used for undo/redo.
@@ -29,6 +31,10 @@ class ProjectHistoryModel:
         currentState = ProjectModel.getInstance().serialize()
         self.history.append(currentState)
         self.pointer = currentState # set pointer to this new save
+
+        # pickle
+        file = open('saves/save.pgpath', 'wb')
+        pickle.dump(currentState, file)
 
         print("save")
 

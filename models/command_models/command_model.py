@@ -7,7 +7,7 @@ from command_creation.command_definition_database import CommandDefinitionDataba
 
     
 from entity_base.entity import Entity
-from adapter.path_adapter import NullPathAdapter, PathAdapter
+from adapter.path_adapter import PathAdapter
 from models.command_models.model_based_entity import ModelBasedEntity
 from command_creation.command_definition import CommandDefinition
 from entities.root_container.panel_container.command_block.custom_command_block_entity import CustomCommandBlockEntity

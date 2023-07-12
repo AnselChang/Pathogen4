@@ -146,11 +146,6 @@ class PathAdapter(ABC, Observable, Observer, Serializable):
 
     def getIconStateID(self) -> ImageID:
         return self.iconStateID
-        
-class NullPathAdapter(PathAdapter):
-    def __init__(self):
-        image = ImageState(0, ImageID.CUSTOM)
-        super().__init__(CommandType.CUSTOM, image)
 
 
 class AdapterInterface(ABC):

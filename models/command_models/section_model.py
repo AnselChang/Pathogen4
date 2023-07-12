@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from adapter.path_adapter import NullPathAdapter
+from adapter.null_adapter import NullAdapter
 from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
 from models.command_models.abstract_model import AbstractModel, SerializedRecursiveState
@@ -46,5 +46,5 @@ class SectionModel(AbstractModel):
         return True
     
     def _createChild(self) -> 'CommandModel':
-        return CommandModel(NullPathAdapter())
+        return CommandModel(NullAdapter())
     
