@@ -249,7 +249,6 @@ class FieldEntity(Entity, Observable):
         self.model.addNode(fieldPos)
 
         # make a save
-        print("before save")
         self.model.commandsModel.tree()
         ProjectHistoryInterface.getInstance().save()
 

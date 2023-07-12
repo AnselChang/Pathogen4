@@ -34,17 +34,15 @@ class PathCommandLinker(Serializable):
     def serialize(self) -> SerializedLinkerState:
         nodeToCommand: dict[SerializedPathNodeState, SerializedCommandState] = {}
         for node, command in self.nodeToCommand.items():
-            print("sn", node)
-            print("sc", command)
-            nodeToCommand[node.serialize()] = command.serialize()
+            nodeToCommand[node.serialize()] = command.SERIALIZED
 
         segmentToCommand: dict[SerializedPathSegmentState, SerializedCommandState] = {}
         for segment, command in self.segmentToCommand.items():
-            segmentToCommand[segment.serialize()] = command.serialize()
+            segmentToCommand[segment.serialize()] = command.SERIALIZED
 
         commandToPath: dict[SerializedCommandState, SerializedPathElementState] = {}
         for command, path in self.commandToPath.items():
-            commandToPath[command.serialize()] = path.serialize()
+            commandToPath[command.SERIALIZED] = path.serialize()
 
         return SerializedLinkerState(nodeToCommand, segmentToCommand, commandToPath)
 
@@ -55,7 +53,7 @@ class PathCommandLinker(Serializable):
 
         for node, command in state.nodeToCommand.items():
             print("dn", node)
-            print("dc", command)
+            print("dc", command, command.DESERIALIZED)
             linker.nodeToCommand[node.deserialize()] = command.DESERIALIZED
 
         for segment, command in state.segmentToCommand.items():

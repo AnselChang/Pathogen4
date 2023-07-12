@@ -45,7 +45,6 @@ class ScrollingContainer(Container):
     
     # called one time on initialiation
     def _onSetContent(self, content: Entity):
-        print("on set content")
         self.content = content
         # when content changes height, need to recompute things
         self.content.thisUpdatesParent = True

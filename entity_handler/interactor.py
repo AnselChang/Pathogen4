@@ -326,7 +326,6 @@ class Interactor:
                     self.mouseDownEntity = entityToStartDragging
                     entityToStartDragging.drag.onStartDrag(mouse)
                     self.disableUntilMouseUp = True
-                    print("a", self.selected.entities)
 
 
 

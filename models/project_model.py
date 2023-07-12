@@ -115,8 +115,6 @@ class ProjectModel:
 
         self.pathModel.initCommandsModel(self.commandsModel)
 
-        print("after")
-        self.commandsModel.tree()
 
         # recalculate path cached data
         self.pathModel.recalculateAll()

@@ -63,6 +63,7 @@ class AbstractModel(Serializable, Generic[T1, T2]):
         state = self._serialize()
         for child in self.children:
             state.addChild(child.serialize())
+        self.SERIALIZED = state
         return state
 
     @staticmethod

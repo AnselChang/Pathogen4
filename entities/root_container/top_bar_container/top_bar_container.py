@@ -32,12 +32,6 @@ class TopBarContainer(Container):
         # button for toggling command editor
         TopBarButtonContainer(self, 0.4, CommandEditorButtonDefinition(runCommandsWindowFunction), 20)
 
-
-    def onUndo(self, mouse):
-        print("undo")
-
-    def onRedo(self, mouse):
-        print("redo")
     
     def defineTopLeft(self) -> tuple:
         return 0,0

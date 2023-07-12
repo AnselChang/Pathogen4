@@ -132,7 +132,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         self.elementsContainer.recomputeEntity()
 
         self.model.rebuildChildren()
-        print("rebuild children model")
 
         self.onColorChange()
 
@@ -148,7 +147,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         self.headerEntity.onFunctionChange()
 
         self.recomputeEntity()
-        print("recompute tasks")
 
     # Update animation every tick
     def onTick(self):

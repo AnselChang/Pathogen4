@@ -139,7 +139,6 @@ class CommandModel(AbstractModel, Observer):
             self.hideUI()
 
         if recompute:
-            print(self, "recompute")
             self.parent.ui.recomputeEntity()
 
     def isHighlighted(self):
@@ -179,7 +178,6 @@ class CommandModel(AbstractModel, Observer):
     
     
     def setDefinitionID(self, id: str):
-        print("setDefinitionID", id)
         self._definitionID = id
     
     def getGeneratedCode(self) -> str:

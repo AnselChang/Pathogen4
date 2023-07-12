@@ -36,7 +36,6 @@ class SectionModel(AbstractModel):
         return self._sectionName
     
     def setName(self, name: str):
-        print("set name", name)
         self._sectionName = name
 
     def _generateUIForMyself(self) -> ModelBasedEntity | Entity:

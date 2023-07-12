@@ -70,7 +70,6 @@ class CodeGenerationService:
                 variableValue = self.getVariableValueDummy(variableName)
             else:
                 variableValue = self.getVariableValue(variableName)
-            print(variableName, variableValue)
             
             if variableValue is not None:
                 code = code[:start] + variableValue + code[end + 1:]
