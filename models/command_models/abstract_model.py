@@ -260,7 +260,6 @@ class AbstractModel(Serializable, Generic[T1, T2]):
     
     # return cached UI for this element
     def getExistingUI(self) -> ModelBasedEntity | Entity:
-        assert(self.ui is not None)
         return self.ui
     
     # Delete this model
@@ -344,7 +343,10 @@ class AbstractModel(Serializable, Generic[T1, T2]):
                 continue
 
             if recompute:
-                x = child.rebuild(recomputeChildren = True)
+                child.rebuild(recomputeChildren = True)
+
+            if child.getExistingUI() is None:
+                child.rebuild()
 
             assert(child.getExistingUI() is not None)
 

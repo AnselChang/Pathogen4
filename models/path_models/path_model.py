@@ -91,6 +91,9 @@ class PathModel(Serializable):
     def recalculateAll(self):
         for element in self.pathList:
             if isinstance(element, PathSegmentModel):
+                element.onInitSegmentOnly()
+        for element in self.pathList:
+            if isinstance(element, PathNodeModel):
                 element.onInit()
 
     def _addRawNode(self, nodePosition: tuple, afterPath = None, afterCommand: CommandModel = None, isTemporary: bool = False):

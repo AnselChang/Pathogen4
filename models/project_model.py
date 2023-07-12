@@ -113,6 +113,8 @@ class ProjectModel:
         self.pathModel = PathModel.deserialize(state.path, self.fieldEntity)
         self.initFieldEntity(self.fieldEntity)
 
+        self.pathModel.initCommandsModel(self.commandsModel)
+
         print("after")
         self.commandsModel.tree()
 

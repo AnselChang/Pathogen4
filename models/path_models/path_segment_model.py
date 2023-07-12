@@ -138,6 +138,12 @@ class PathSegmentModel(PathElementModel):
         self.getPrevious().onThetaChange()
         self.getNext().onThetaChange()
 
+    def onInitSegmentOnly(self):
+        self.updateThetas()
+        self.updateDistance()
+        self.updateEndpointPosition(self.getPrevious())
+        self.updateEndpointPosition(self.getNext())
+
     # called when a node attached to segment is moved
     def onNodePositionChange(self, node: PathNodeModel = None):
         # assert that node is attached to segment
