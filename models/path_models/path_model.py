@@ -41,7 +41,7 @@ class PathModel(Serializable):
         self.commandsModel = None
         self.fieldEntity: FieldEntity = None
 
-    def serialize(self) -> SerializedState:
+    def serialize(self) -> SerializedPathState:
 
         # generate serialized versions of the path segments and nodes
         for element in self.pathList:

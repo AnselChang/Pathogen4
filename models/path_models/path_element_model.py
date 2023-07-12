@@ -30,13 +30,16 @@ class SerializedPathElementState(SerializedState):
 T = TypeVar('T')
 class PathElementModel(Serializable, LinkedListNode[T], Generic[T]):
 
-    def _serialize(self) -> SerializedState:
+    def _serialize(self) -> SerializedPathElementState:
         raise NotImplementedError()
 
     def makeSerialized(self):
         self.SERIALIZED = self._serialize()
 
-    def serialize(self) -> SerializedState:
+    def makeAdapterSerialized(self):
+        raise NotImplementedError()
+
+    def serialize(self) -> SerializedPathElementState:
         return self.SERIALIZED
 
     def __init__(self, pathModel: PathModel):

@@ -1,15 +1,16 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from adapter.path_adapter import PathAttributeID
+from adapter.path_adapter import AdapterState, PathAttributeID
 
 from models.path_models.segment_direction import SegmentDirection
-from services.constraint_solver_service import Constraint, ConstraintSolver
 from utility.angle_functions import deltaInHeading, equalTheta
 from utility.format_functions import formatDegrees
 if TYPE_CHECKING:
     from models.path_models.path_model import PathModel
     from models.path_models.path_segment_model import PathSegmentModel
     from utility.line import Line
+    from services.constraint_solver_service import Constraint, ConstraintSolver
+
 
 from enum import Enum
 from adapter.turn_adapter import TurnAdapter
@@ -23,7 +24,7 @@ from serialization.serializable import Serializable, SerializedState
 import math
 
 class SerializedPathNodeState(SerializedPathElementState):
-    def __init__(self, position: tuple, adapter: TurnAdapter, turnEnabled):
+    def __init__(self, position: tuple, adapter: AdapterState, turnEnabled):
         self.position = position
         self.adapter = adapter
         self.turnEnabled = turnEnabled
@@ -40,8 +41,11 @@ class TurnDirection(Enum):
 
 class PathNodeModel(PathElementModel, Serializable):
 
+    def makeAdapterSerialized(self):
+        self.adapter.makeSerialized()
+
     def _serialize(self) -> SerializedPathNodeState:
-        return SerializedPathNodeState(self.position, self.adapter, self.TURN_ENABLED)
+        return SerializedPathNodeState(self.position, self.adapter.serialize(), self.TURN_ENABLED)
         
     def __init__(self, pathModel: PathModel, initialPosition: tuple, temporary = False):
 

@@ -70,12 +70,14 @@ class ProjectModel:
     # Make a deepcopy, so that the original model is not modified.
     def serialize(self) -> SerializedProjectState:
 
+        # convert all the adapters to serialized states first
+        for element in self.pathModel.pathList:
+            element.makeAdapterSerialized()
+
         commands = self.commandsModel.serialize()
         path = self.pathModel.serialize()
 
         state = SerializedProjectState(self.projectData, commands, path)
-        print(state)
-        raise Exception("stop")
         stateCopy = copy.deepcopy(state)
 
         return stateCopy

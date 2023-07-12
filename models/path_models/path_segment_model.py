@@ -5,7 +5,7 @@ from adapter.path_adapter import PathAdapter, PathAttributeID
 from adapter.straight_adapter import StraightAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
-from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
+from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState, SerializedSegmentStateState
 from models.path_models.path_segment_state.arc_segment_state import ArcSegmentState
 from models.path_models.path_segment_state.bezier_segment_state import BezierSegmentState
 from models.path_models.path_segment_state.segment_type import SegmentType
@@ -28,7 +28,7 @@ from models.path_models.path_element_model import PathElementModel, SerializedPa
 
 class SerializedPathSegmentState(SerializedPathElementState):
 
-    def __init__(self, direction: SegmentDirection, states: dict[SegmentType, AbstractSegmentState], current: SegmentType):
+    def __init__(self, direction: SegmentDirection, states: dict[SegmentType, SerializedSegmentStateState], current: SegmentType):
         self.direction = direction
         self.states = states
         self.current = current
@@ -36,14 +36,26 @@ class SerializedPathSegmentState(SerializedPathElementState):
     def _deserialize(self, pathModel: PathModel) -> 'PathNodeModel':
         segment = PathSegmentModel(pathModel)
         segment.direction = self.direction
-        segment.states = self.states
+
+        segment.states = {}
+        for key, value in self.states.items():
+            segment.states[key] = value.deserialize(segment)
+
         segment.currentStateType = self.current
         return segment
 
 class PathSegmentModel(PathElementModel):
 
+    def makeAdapterSerialized(self):
+        for state in self.states.values():
+            state.adapter.makeSerialized()
+
     def _serialize(self) -> SerializedPathSegmentState:
-        return SerializedPathSegmentState(self.direction, self.states, self.currentStateType)
+        sStates: dict[SegmentType, SerializedSegmentStateState] = {}
+        for key, value in self.states.items():
+            sStates[key] = value.serialize()
+
+        return SerializedPathSegmentState(self.direction, sStates, self.currentStateType)
     
     def __init__(self, pathModel: PathModel):
         super().__init__(pathModel)

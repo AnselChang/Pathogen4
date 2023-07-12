@@ -25,7 +25,7 @@ class SerializedCommandState(SerializedRecursiveState):
         self.templateText = templateText
 
     def _deserialize(self) -> 'CommandModel':
-        model = CommandModel(PathAdapter.deserialize(self.adapter))
+        model = CommandModel(self.adapter.deserialize())
         model.uiState = self.uiState
         model.templateText = self.templateText
         return model

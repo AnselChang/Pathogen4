@@ -64,19 +64,30 @@ class AdapterState(SerializedState, PrettyPrinter):
             iconImageStates = [iconImageStates]
         self.iconImageStates = [image.serialize() for image in iconImageStates]
 
+    def _deserialize(self) -> 'PathAdapter':
+        return PathAdapter(self.type, [ImageState.deserialize(state) for state in self.iconImageStates])
+
+    def makeDeserialized(self):
+        self.DESERIALIZED = self._deserialize()
+
+    def deserialize(self) -> 'PathAdapter':
+        return self.DESERIALIZED
+
 """
 Abstract class that facilitates communication between Commands and Path entities
 """
 
 class PathAdapter(ABC, Observable, Observer, Serializable):
 
-    def serialize(self) -> AdapterState:
+    def _serialize(self) -> AdapterState:
         return AdapterState(self.type, self.iconImageStates)
+    
+    def makeSerialized(self):
+        self.SERIALIZED = self._serialize()
 
-    @staticmethod
-    def deserialize(state: AdapterState) -> 'PathAdapter':
-        return PathAdapter(state.type, [ImageState.deserialize(state) for state in state.iconImageStates])
-
+    def serialize(self) -> AdapterState:
+        return self.SERIALIZED
+    
     def __init__(self, type: CommandType, iconImageStates: list[ImageState] | ImageState):
         self.type = type
 

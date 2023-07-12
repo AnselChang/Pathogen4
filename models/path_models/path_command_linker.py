@@ -31,7 +31,7 @@ class SerializedLinkerState(SerializedState):
 
 class PathCommandLinker(Serializable):
 
-    def serialize(self) -> SerializedState | T:
+    def serialize(self) -> SerializedLinkerState:
         nodeToCommand: dict[SerializedPathNodeState, SerializedCommandState] = {}
         for node, command in self.nodeToCommand.items():
             nodeToCommand[node.serialize()] = command.serialize()
@@ -47,7 +47,7 @@ class PathCommandLinker(Serializable):
         return SerializedLinkerState(nodeToCommand, segmentToCommand, commandToPath)
 
     @staticmethod
-    def deserialize(state: SerializedState | T) -> 'Serializable':
+    def deserialize(state: SerializedLinkerState) -> 'PathCommandLinker':
         raise NotImplementedError("Must implement this method")
 
     def __init__(self):

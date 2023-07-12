@@ -3,14 +3,15 @@ from enum import Enum, auto
 import math
 from typing import TYPE_CHECKING
 from adapter.arc_adapter import ArcAdapter
-from adapter.path_adapter import PathAttributeID
+from adapter.path_adapter import AdapterState, PathAttributeID
 from adapter.straight_adapter import StraightAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 
-from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
+from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState, SerializedSegmentStateState
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.segment_direction import SegmentDirection
+from serialization.serializable import Serializable
 from utility.format_functions import formatInches
 from utility.math_functions import addTuples, arcCenterFromTwoPointsAndTheta, arcFromThreePoints, distanceTuples, divideTuple, midpoint, pointPlusVector, thetaFromPoints, vectorFromThetaAndMagnitude
 
@@ -27,7 +28,23 @@ class ArcIconID(Enum):
     REVERSE_LEFT = auto()
     REVERSE_RIGHT = auto()
 
+class SerializedArcState(SerializedSegmentStateState):
+
+    def __init__(self, adapterState: AdapterState, perpDistance: float):
+        super().__init__(adapterState)
+        self.perpDistance = perpDistance
+
+    def deserialize(self, model: PathSegmentModel) -> 'ArcSegmentState':
+        arc = ArcSegmentState(model)
+        arc.adapter = self.adapter.deserialize()
+        arc.perpDistance = self.perpDistance
+        return arc
+
+
 class ArcSegmentState(AbstractSegmentState):
+
+    def serialize(self) -> SerializedArcState:
+        return SerializedArcState(self.adapter.serialize(), self.perpDistance)
 
     def __init__(self, model: PathSegmentModel):
 
