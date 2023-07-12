@@ -65,8 +65,8 @@ class AdapterState(SerializedState, PrettyPrinter):
         self.iconImageStates = [image.serialize() for image in iconImageStates]
 
     def _deserialize(self) -> 'PathAdapter':
-        return PathAdapter(self.type, [ImageState.deserialize(state) for state in self.iconImageStates])
-
+        raise NotImplementedError
+    
     def makeDeserialized(self):
         self.DESERIALIZED = self._deserialize()
 
@@ -80,7 +80,7 @@ Abstract class that facilitates communication between Commands and Path entities
 class PathAdapter(ABC, Observable, Observer, Serializable):
 
     def _serialize(self) -> AdapterState:
-        return AdapterState(self.type, self.iconImageStates)
+        raise NotImplementedError()
     
     def makeSerialized(self):
         self.SERIALIZED = self._serialize()

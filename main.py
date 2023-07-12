@@ -69,6 +69,7 @@ def main():
 
     # create command model
     scrollingContainer = ScrollingContainer(panelContainer)
+    projectModel.initCommandParentEntity(scrollingContainer.getContainer())
     projectModel.commandsModel.initParentUI(scrollingContainer.getContainer())
 
     # initialize everything

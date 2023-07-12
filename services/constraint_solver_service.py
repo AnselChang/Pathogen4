@@ -1,12 +1,13 @@
 from __future__ import annotations
 import math
 from typing import TYPE_CHECKING
-from models.path_models.path_node_model import SerializedPathNodeState
+
 from models.path_models.path_segment_state.segment_type import SegmentType
 from serialization.serializable import Serializable, SerializedState
 
 if TYPE_CHECKING:
     from models.path_models.path_node_model import PathNodeModel
+    from models.path_models.path_node_model import SerializedPathNodeState
     from models.path_models.path_segment_model import PathSegmentModel
     from entities.root_container.field_container.field_entity import FieldEntity
 

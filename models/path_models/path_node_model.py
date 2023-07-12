@@ -9,8 +9,8 @@ if TYPE_CHECKING:
     from models.path_models.path_model import PathModel
     from models.path_models.path_segment_model import PathSegmentModel
     from utility.line import Line
-    from services.constraint_solver_service import Constraint, ConstraintSolver
 
+from services.constraint_solver_service import ConstraintSolver, Constraint
 
 from enum import Enum
 from adapter.turn_adapter import TurnAdapter

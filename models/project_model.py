@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import typing
+from entity_base.entity import Entity
 from models.command_models.abstract_model import SerializedRecursiveState
 
 from models.project_data_model import ProjectDataModel
@@ -65,6 +66,9 @@ class ProjectModel:
         self.pathModel.initFieldEntity(fieldEntity)
         fieldEntity.initPathModel(self.pathModel)
 
+    def initCommandParentEntity(self, parentCommandEntity: Entity):
+        self.parentCommandEntity = parentCommandEntity
+
     # Serialize and return the entire project model.
     # Make a deepcopy, so that the original model is not modified.
     def serialize(self) -> SerializedProjectState:
@@ -97,6 +101,7 @@ class ProjectModel:
 
         # load the commands and rebuild the command tree
         self.commandsModel = typing.cast(FullCommandsModel, FullCommandsModel.deserialize(state.commands))
+        self.commandsModel.fullModelParentUI = self.parentCommandEntity
         self.commandsModel.rebuildAll()
 
         # update the UI
