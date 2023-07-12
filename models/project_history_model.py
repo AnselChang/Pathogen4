@@ -82,4 +82,4 @@ class ProjectHistoryModel:
         else:
             raise Exception("Cannot redo past end of history")
 
-        ProjectModel().getInstance().loadSerializedState(self.pointer)
+        ProjectModel.getInstance().loadSerializedState(self.pointer)

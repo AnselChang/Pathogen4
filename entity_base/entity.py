@@ -113,6 +113,9 @@ class Entity(ABC, Observable):
 
         self.entities._addEntity(self)
 
+    def deleteEntity(self):
+        self.entities.removeEntity(self)
+
     def removeChild(self, child: Entity):
         if child in self._children:
             child._parent = None

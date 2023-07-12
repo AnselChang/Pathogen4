@@ -297,7 +297,7 @@ class AbstractModel(Serializable, Generic[T1, T2]):
     
     # rebuild the UI for this element
     # Calls rebuildChildren() to link the UIs of the children to this
-    def rebuild(self, isRoot: bool = True, recomputeChildren: bool = False) -> None:
+    def rebuild(self, recomputeChildren: bool = False) -> None:
 
         self.reassignSelfUI( self._generateUIForMyself() )
         
@@ -326,7 +326,7 @@ class AbstractModel(Serializable, Generic[T1, T2]):
                 continue
 
             if recompute:
-                child.rebuild(recomputeChildren = True)
+                x = child.rebuild(recomputeChildren = True)
 
             assert(child.getExistingUI() is not None)
 

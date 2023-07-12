@@ -88,6 +88,13 @@ class ProjectModel:
     # given a serialized state, update the project model and ui
     def loadSerializedState(self, state: SerializedProjectState):
 
+        # delete all the path ui
+        for element in self.pathModel.pathList:
+            element.ui.deleteEntity()
+
+        # delete all the commands ui
+        self.commandsModel.ui.deleteEntity()
+
         # convert all adapters back to deserialized states
         for element in state.path.pathList:
             element.makeAdapterDeserialized()
@@ -107,3 +114,6 @@ class ProjectModel:
         # update the UI
         self.fieldEntity.recomputeEntity()
         self.commandsModel.recomputeUI()
+
+        #self.commandsModel.tree()
+        #print(self.pathModel.pathList)
