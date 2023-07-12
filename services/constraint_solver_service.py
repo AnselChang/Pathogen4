@@ -1,7 +1,9 @@
 from __future__ import annotations
 import math
 from typing import TYPE_CHECKING
+from models.path_models.path_node_model import SerializedPathNodeState
 from models.path_models.path_segment_state.segment_type import SegmentType
+from serialization.serializable import Serializable, SerializedState
 
 if TYPE_CHECKING:
     from models.path_models.path_node_model import PathNodeModel
@@ -12,7 +14,22 @@ from utility.angle_functions import Direction, equalTheta, equalTheta180, headin
 from utility.line import Line
 from utility.math_functions import distancePointToLine, distanceTuples
 
-class Constraint:
+class SerializedConstraintState(SerializedState):
+
+    def __init__(self, line: Line, nodes: list[SerializedPathNodeState]):
+        self.line = line
+        self.nodes = nodes
+
+class Constraint(Serializable):
+
+    def serialize(self) -> SerializedConstraintState:
+        sNodes = [node.serialize() for node in self.nodes]
+        return SerializedConstraintState(self.line, sNodes)
+
+    @staticmethod
+    def deserialize(state: SerializedConstraintState) -> 'Constraint':
+        nodes = [PathNodeModel.deserialize(node) for node in state.nodes]
+        return Constraint(state.line, nodes)
 
     def __init__(self, line: Line, nodes: list[PathNodeModel]):
         self.line = line

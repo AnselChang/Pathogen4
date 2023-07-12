@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from serialization.serializable import Serializable, SerializedState
+
 if TYPE_CHECKING:
     from root_container.field_container.field_entity import FieldEntity
     from entity_base.entity import Entity
@@ -14,8 +16,29 @@ from data_structures.linked_list import LinkedListNode
 A PathNodeEntity or PathSegment entity
 """
 
+class SerializedPathElementState(SerializedState):
+
+    def _deserialize(self) -> PathElementModel:
+        raise NotImplementedError()
+    
+    def makeDeserialized(self):
+        self.DESERIALIZED = self._deserialize()
+
+    def deserialize(self) -> PathElementModel:
+        return self.DESERIALIZED
+
 T = TypeVar('T')
-class PathElementModel(LinkedListNode[T], Generic[T]):
+class PathElementModel(Serializable, LinkedListNode[T], Generic[T]):
+
+    def _serialize(self) -> SerializedState:
+        raise NotImplementedError()
+
+    def makeSerialized(self):
+        self.SERIALIZED = self._serialize()
+
+    def serialize(self) -> SerializedState:
+        return self.SERIALIZED
+
     def __init__(self, pathModel: PathModel):
 
         super().__init__()

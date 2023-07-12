@@ -24,10 +24,26 @@ if TYPE_CHECKING:
     from entity_base.entity import Entity
 
 
-from models.path_models.path_element_model import PathElementModel
+from models.path_models.path_element_model import PathElementModel, SerializedPathElementState
 
+class SerializedPathSegmentState(SerializedPathElementState):
+
+    def __init__(self, direction: SegmentDirection, states: dict[SegmentType, AbstractSegmentState], current: SegmentType):
+        self.direction = direction
+        self.states = states
+        self.current = current
+
+    def _deserialize(self, pathModel: PathModel) -> 'PathNodeModel':
+        segment = PathSegmentModel(pathModel)
+        segment.direction = self.direction
+        segment.states = self.states
+        segment.currentStateType = self.current
+        return segment
 
 class PathSegmentModel(PathElementModel):
+
+    def _serialize(self) -> SerializedPathSegmentState:
+        return SerializedPathSegmentState(self.direction, self.states, self.currentStateType)
     
     def __init__(self, pathModel: PathModel):
         super().__init__(pathModel)
