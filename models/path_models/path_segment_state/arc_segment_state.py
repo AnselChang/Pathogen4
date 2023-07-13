@@ -127,7 +127,6 @@ class ArcSegmentState(AbstractSegmentState):
 
         # get center and radius of resultant arc
         center = arcCenterFromTwoPointsAndTheta(*beforePos, *afterPos, theta)
-        print(center)
         radius = distanceTuples(beforePos, center)
 
         # calculate the angles from center to before/pos

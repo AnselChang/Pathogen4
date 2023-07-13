@@ -16,15 +16,15 @@ class BezierLineEntity(Entity):
         super().__init__(parent)
 
         self.controlPoint = parent
-        self.nodeModel = parent.getNeighborNode()
         self.field = parent.field
+        self.parent = parent
 
     def isTouching(self, mouse: tuple) -> float:
         return False
     
     def defineAfter(self) -> None:
         self.p1 = [self.CENTER_X, self.CENTER_Y]
-        self.p2 = self.field.inchesToMouse(self.nodeModel.position)
+        self.p2 = self.field.inchesToMouse(self.parent.getNeighborNode().position)
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
 

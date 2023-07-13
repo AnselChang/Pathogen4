@@ -52,8 +52,6 @@ class PathCommandLinker(Serializable):
         linker = PathCommandLinker()
 
         for node, command in state.nodeToCommand.items():
-            print("dn", node)
-            print("dc", command, command.DESERIALIZED)
             linker.nodeToCommand[node.deserialize()] = command.DESERIALIZED
 
         for segment, command in state.segmentToCommand.items():

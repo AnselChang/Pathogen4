@@ -249,7 +249,6 @@ class FieldEntity(Entity, Observable):
         self.model.addNode(fieldPos)
 
         # make a save
-        self.model.commandsModel.tree()
         ProjectHistoryInterface.getInstance().save()
 
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool):
