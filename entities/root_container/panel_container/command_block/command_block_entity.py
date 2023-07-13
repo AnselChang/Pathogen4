@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from entities.root_container.panel_container.command_block.interfaces import ICommandBlock
+from models.project_history_interface import ProjectHistoryInterface
 
 if TYPE_CHECKING:
     from command_creation.command_definition_database import CommandDefinitionDatabase
@@ -131,7 +132,6 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         self.elementsContainer.recomputeEntity()
 
         self.model.rebuildChildren()
-        print("rebuild children model")
 
         self.onColorChange()
 
@@ -146,8 +146,10 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
         # update header entity. Need to show/hide wait entity
         self.headerEntity.onFunctionChange()
 
-        self.recomputeEntity()
-        print("recompute tasks")
+        self.model.expandUI()
+
+        # make a save state
+        ProjectHistoryInterface.getInstance().save()
 
     # Update animation every tick
     def onTick(self):
@@ -316,6 +318,11 @@ class CommandBlockEntity(Entity, Observer, ModelBasedEntity, ICommandBlock):
 
         self.getRootEntity().ip.reset()
         self.recomputeEntity()
+
+        # if there was a change in the command block order, save state
+        if draggedToInserter is not None:
+            # add save state to undo/redo stack
+            ProjectHistoryInterface.getInstance().save()
 
     # If dragging, put dragged command on top
     def drawOrderTiebreaker(self) -> float:

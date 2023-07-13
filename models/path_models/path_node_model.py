@@ -1,36 +1,53 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from adapter.path_adapter import PathAttributeID
+from adapter.path_adapter import AdapterState, PathAttributeID
 
 from models.path_models.segment_direction import SegmentDirection
-from services.constraint_solver_service import Constraint, ConstraintSolver
 from utility.angle_functions import deltaInHeading, equalTheta
 from utility.format_functions import formatDegrees
 if TYPE_CHECKING:
     from models.path_models.path_model import PathModel
     from models.path_models.path_segment_model import PathSegmentModel
     from utility.line import Line
+from services.constraint_solver_service import ConstraintSolver, Constraint
 
 from enum import Enum
 from adapter.turn_adapter import TurnAdapter
 from common.image_manager import ImageID
 from entity_base.entity import Entity
 from entity_base.image.image_state import ImageState
-from models.path_models.path_element_model import PathElementModel
+from models.path_models.path_element_model import PathElementModel, SerializedPathElementState
 from entities.root_container.field_container.field_entity import FieldEntity
 from entities.root_container.field_container.node.path_node_entity import PathNodeEntity
-from serialization.serializable import SerializedState
+from serialization.serializable import Serializable, SerializedState
 import math
 
-class SerializedPathNodeModel(SerializedState):
-    def __init__(self):
-        pass
+class SerializedPathNodeState(SerializedPathElementState):
+    def __init__(self, position: tuple, adapter: AdapterState, turnEnabled):
+        self.position = position
+        self.adapter = adapter
+        self.turnEnabled = turnEnabled
+
+    def _deserialize(self, pathModel: PathModel) -> PathNodeModel:
+        node = PathNodeModel(pathModel, self.position)
+        node.adapter = self.adapter.deserialize()
+        node.TURN_ENABLED = self.turnEnabled
+        return node
+    
+    def makeAdapterDeserialized(self):
+        self.adapter.makeDeserialized()
 
 class TurnDirection(Enum):
     RIGHT = 0
     LEFT = 1
 
-class PathNodeModel(PathElementModel):
+class PathNodeModel(PathElementModel, Serializable):
+
+    def makeAdapterSerialized(self):
+        self.adapter.makeSerialized()
+
+    def _serialize(self) -> SerializedPathNodeState:
+        return SerializedPathNodeState(self.position, self.adapter.serialize(), self.TURN_ENABLED)
         
     def __init__(self, pathModel: PathModel, initialPosition: tuple, temporary = False):
 
@@ -97,7 +114,6 @@ class PathNodeModel(PathElementModel):
             nextNode = self.getNext().getNext()
             self.constraintSolver.addLineFromTwoNodesConstraint(prevNode, nextNode)
 
-        
 
     """
     CALLBACK METHODS FOR WHEN THINGS NEED TO BE UPDATED

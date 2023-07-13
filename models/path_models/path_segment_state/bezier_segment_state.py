@@ -3,11 +3,11 @@ from enum import Enum, auto
 import math
 from typing import TYPE_CHECKING
 from adapter.bezier_adapter import BezierAdapter
-from adapter.path_adapter import PathAttributeID
+from adapter.path_adapter import AdapterState, PathAttributeID
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
 
-from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
+from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState, SerializedSegmentStateState
 from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.segment_direction import SegmentDirection
 from utility.bezier_functions_2 import fast_points_cubic_bezier, normalized_points_cubic_bezier
@@ -20,11 +20,27 @@ if TYPE_CHECKING:
 """
 For bezier segments.
 """
+class SerializedBezierState(SerializedSegmentStateState):
+
+    def __init__(self, adapterState: AdapterState, controlOffset1, controlOffset2):
+        super().__init__(adapterState)
+        self.controlOffset1 = controlOffset1
+        self.controlOffset2 = controlOffset2
+
+    def deserialize(self, model: PathSegmentModel) -> 'BezierSegmentState':
+        bez = BezierSegmentState(model)
+        bez.adapter = self.adapter.deserialize()
+        bez.controlOffset1 = self.controlOffset1
+        bez.controlOffset2 = self.controlOffset2
+        return bez
 
 class BezierIconID(Enum):
     BEZIER = auto()
 
 class BezierSegmentState(AbstractSegmentState):
+
+    def serialize(self) -> SerializedBezierState:
+        return SerializedBezierState(self.adapter.serialize(), self.controlOffset1, self.controlOffset2)
 
     def __init__(self, model: PathSegmentModel):
 

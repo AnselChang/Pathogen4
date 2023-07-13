@@ -8,6 +8,8 @@ from typing import TypeVar, Generic
 from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
 from entities.root_container.panel_container.command_block.command_inserter import CommandInserter
+from models.project_history_interface import ProjectHistoryInterface
+from serialization.serializable import Serializable, SerializedState
 
 
 if TYPE_CHECKING:
@@ -22,9 +24,57 @@ and has the option to regenerate the UI for itself without needing
 to regenerate the UI for its children through caching.
 """
 
+class SerializedRecursiveState(SerializedState):
+
+    def __init__(self):
+        self.children: list[SerializedRecursiveState] = []
+        self.DESERIALIZED = None
+
+    def addChild(self, child: SerializedRecursiveState):
+        self.children.append(child)
+
+    def _deserialize(self) -> 'AbstractModel':
+        raise NotImplementedError("Must implement this method")
+
+    
+    def makeNullAdapterDeserialized(self):
+        self.makeChildrenAdapterDeserialized()
+    
+    def makeChildrenAdapterDeserialized(self):
+        for c in self.children:
+            c.makeNullAdapterDeserialized()
+
 T1 = TypeVar('T1') # parent type
 T2 = TypeVar('T2') # children type
-class AbstractModel(Generic[T1, T2]):
+class AbstractModel(Serializable, Generic[T1, T2]):
+
+     # default behavior is to do nothing, except if command model
+    def makeNullAdapterSerialized(self):
+        self.makeChildrenAdapterSerialized()
+    
+    def makeChildrenAdapterSerialized(self):
+        for c in self.children:
+            c.makeNullAdapterSerialized()
+
+    def _serialize(self) -> SerializedRecursiveState:
+        raise NotImplementedError("Must implement this method")
+    
+    def serialize(self) -> SerializedRecursiveState:
+        state = self._serialize()
+        for child in self.children:
+            state.addChild(child.serialize())
+        self.SERIALIZED = state
+        return state
+
+    @staticmethod
+    def deserialize(state: SerializedRecursiveState) -> 'AbstractModel':
+        model = state._deserialize()
+        for childState in state.children:
+            childModel = AbstractModel.deserialize(childState)
+            model.children.append(childModel)
+            childModel.parent = model
+        state.DESERIALIZED = model
+        return model
 
     def __init__(self):
 
@@ -45,6 +95,11 @@ class AbstractModel(Generic[T1, T2]):
         self.show = False
         if self.parent is not None:
             self.parent.rebuildChildren()
+
+    def resetUIToNone(self):
+        self.ui = None
+        for child in self.children:
+            child.resetUIToNone()
 
     def getName(self):
         return "AbstractModel"
@@ -186,6 +241,9 @@ class AbstractModel(Generic[T1, T2]):
 
         self.ui.recomputeEntity()
 
+        # add save state to undo/redo stack
+        ProjectHistoryInterface.getInstance().save()
+
 
     def getRootModel(self) -> AbstractModel:
         if self.parent is None:
@@ -207,7 +265,6 @@ class AbstractModel(Generic[T1, T2]):
     
     # return cached UI for this element
     def getExistingUI(self) -> ModelBasedEntity | Entity:
-        assert(self.ui is not None)
         return self.ui
     
     # Delete this model
@@ -238,7 +295,7 @@ class AbstractModel(Generic[T1, T2]):
             if self.ui is not None:
                 self.ui.entities.removeEntity(self.ui)
             self.ui = newUI
-            return
+            return False
         
         # search for the child reference in the parent
         if self.parent.ui is None:
@@ -258,22 +315,23 @@ class AbstractModel(Generic[T1, T2]):
             self.ui.entities.removeEntity(self.ui)
         
         self.ui = newUI
+        return True
     
     # rebuild the UI for this element
     # Calls rebuildChildren() to link the UIs of the children to this
-    def rebuild(self, isRoot: bool = True) -> None:
+    def rebuild(self, recomputeChildren: bool = False) -> None:
 
         self.reassignSelfUI( self._generateUIForMyself() )
         
         if not isinstance(self.ui, ModelBasedEntity) and isinstance(self.ui, Entity):
             raise Exception("Model must generate ModelBasedEntity", self.ui)
 
-        self.rebuildChildren()
+        self.rebuildChildren(recomputeChildren)
         
     # Rebuild the children of this element. Do not recompute
     # the UI either for this element or the children,
     # just link existing reference to child UIs
-    def rebuildChildren(self):
+    def rebuildChildren(self, recompute: bool = False):
 
         if not self._canHaveChildren():
             return
@@ -289,6 +347,12 @@ class AbstractModel(Generic[T1, T2]):
             if not child.show:
                 continue
 
+            if recompute:
+                child.rebuild(recomputeChildren = True)
+
+            if child.getExistingUI() is None:
+                child.rebuild()
+
             assert(child.getExistingUI() is not None)
 
             # add the section/command UI
@@ -296,6 +360,10 @@ class AbstractModel(Generic[T1, T2]):
 
             # add the inserter UI
             self.ui.addChildUI(self.createInserterUI(child))
+
+    # rebuild this element and all children fully
+    def rebuildAll(self):
+        self.rebuild(True)
 
     # print this element and all children as tree structure for debugging
     def tree(self, indent: int = 0):

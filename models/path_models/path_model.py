@@ -5,20 +5,30 @@ In creating new nodes, it also creates the relevant command models and links the
 """
 
 from data_structures.linked_list import LinkedList
+from entities.root_container.field_container.node.path_node_entity import PathNodeEntity
+from entities.root_container.field_container.segment.abstract_segment_entity import AbstractSegmentEntity
 from models.command_models.command_model import CommandModel
-from models.command_models.full_model import FullModel
-from models.path_models.constraint_model import ConstraintModel
+from models.command_models.full_model import FullCommandsModel
+from models.path_models.constraint_model import ConstraintModel, SerializedConstraintsState
+from models.path_models.path_element_model import SerializedPathElementState
 from models.path_models.path_node_model import PathNodeModel
 from models.path_models.path_segment_model import PathSegmentModel
 from entities.root_container.field_container.field_entity import FieldEntity
 from entities.root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
-from models.path_models.path_command_linker import PathCommandLinker
+from models.path_models.path_command_linker import PathCommandLinker, SerializedLinkerState
 from serialization.serializable import Serializable, SerializedState
 
-class SerializedPathModel(SerializedState):
-    def __init__(self, pathList: LinkedList[PathNodeModel | StraightSegmentEntity], linker: PathCommandLinker):
+class SerializedPathState(SerializedState):
+    def __init__(self,
+                 pathList: list[SerializedPathElementState],
+                 linker: SerializedLinkerState,
+                 constraints: SerializedConstraintsState,
+                 selected: list[SerializedPathElementState]
+                 ):
         self.pathList = pathList
         self.linker = linker
+        self.constraints = constraints
+        self.selected = selected
 
 class PathModel(Serializable):
 
@@ -35,17 +45,46 @@ class PathModel(Serializable):
         self.commandsModel = None
         self.fieldEntity: FieldEntity = None
 
+    def serialize(self) -> SerializedPathState:
 
-    def serialize(self) -> SerializedState:
-        return SerializedPathModel(self.pathList, self.linker)
+        # generate serialized versions of the path segments and nodes
+        for element in self.pathList:
+            element.makeSerialized()
+
+        # store the serialized path segments and nodes
+        sList = []
+        for node in self.pathList:
+            sList.append(node.serialize())
+
+        # get currently selected nodes/segments
+        selectedPathElements = []
+        for e in self.fieldEntity.interactor.selected.entities:
+            if isinstance(e, PathNodeEntity) or isinstance(e, AbstractSegmentEntity):
+                selectedPathElements.append(e.model.serialize())
+
+        return SerializedPathState(sList, self.linker.serialize(), self.constraints.serialize(), selectedPathElements)
     
-    def deserialize(state: SerializedPathModel) -> 'PathModel':
+    @staticmethod
+    def deserialize(state: SerializedPathState, fieldEntity) -> 'PathModel':
+
         model = PathModel()
-        model.pathList = state.pathList
-        model.linker = state.linker
+        model.initFieldEntity(fieldEntity)
+
+        # generate deserialized versions of the path segments and nodes
+        for element in state.pathList:
+            element.makeDeserialized(model)
+
+        # add each to linked list
+        model.pathList = LinkedList[PathNodeModel | StraightSegmentEntity]()
+        for element in state.pathList:
+            model.pathList.addToEnd(element.deserialize())
+
+        # deserialize other objects
+        model.linker = PathCommandLinker.deserialize(state.linker)
+        model.constraints = ConstraintModel.deserialize(state.constraints)
         return model
 
-    def initCommandsModel(self, commandsModel: FullModel):
+    def initCommandsModel(self, commandsModel: FullCommandsModel):
         self.commandsModel = commandsModel
 
     def initFieldEntity(self, fieldEntity: FieldEntity):
@@ -56,6 +95,16 @@ class PathModel(Serializable):
         # initialize first node
         node = self._addRawNode(startPosition) # add start node
         node.onThetaChange()
+
+    # recalculate all cached data for the nodes and segments
+    # useful after loading serialized data and need to recompute everything
+    def recalculateAll(self):
+        for element in self.pathList:
+            if isinstance(element, PathSegmentModel):
+                element.onInitSegmentOnly()
+        for element in self.pathList:
+            if isinstance(element, PathNodeModel):
+                element.onInit()
 
     def _addRawNode(self, nodePosition: tuple, afterPath = None, afterCommand: CommandModel = None, isTemporary: bool = False):
 

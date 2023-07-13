@@ -1,8 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from serialization.serializable import Serializable, SerializedState
+from services.constraint_solver_service import SerializedConstraintState, Constraint
+
 if TYPE_CHECKING:
-    from services.constraint_solver_service import Constraint
     from models.path_models.path_node_model import PathNodeModel
     from utility.line import Line
 
@@ -19,7 +21,22 @@ Main purpose is for displaying constraint lines when hovering over relevant node
 Fully serializable
 """
 
-class ConstraintModel:
+class SerializedConstraintsState(SerializedState):
+    def __init__(self, sConstraints: list[SerializedConstraintState]):
+        self.sConstraints = sConstraints
+
+class ConstraintModel(Serializable):
+
+    def serialize(self) -> SerializedConstraintsState:
+        sConstraints = [constraint.serialize() for constraint in self.constraints]
+        return SerializedConstraintsState(sConstraints)
+
+    @staticmethod
+    def deserialize(state: SerializedConstraintsState) -> 'ConstraintModel':
+        constraints = [Constraint.deserialize(sConstraint) for sConstraint in state.sConstraints]
+        constraintModel = ConstraintModel()
+        constraintModel.constraints = constraints
+        return constraintModel
 
     def __init__(self):
         self.constraints: list[Constraint] = []

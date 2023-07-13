@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from entity_base.listeners.drag_listener import DragLambda
+from models.project_history_interface import ProjectHistoryInterface
 from utility.math_functions import distancePointToLine
 if TYPE_CHECKING:
     from root_container.field_container.segment.arc_segment_entity import ArcSegmentEntity
@@ -59,7 +60,8 @@ class ArcNodeEntity(Entity):
         self.segment.getArcState().setPerpDistance(adjustedPerp)
 
     def onStopDrag(self):
-        pass
+        # make a save state
+        ProjectHistoryInterface.getInstance().save()
 
     def defineCenter(self) -> tuple:
         centerInches = self.segment.getArcState().getArcMidpoint()

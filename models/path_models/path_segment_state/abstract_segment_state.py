@@ -1,11 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from adapter.path_adapter import PathAdapter
+from adapter.path_adapter import AdapterState, PathAdapter
 
 from typing import TypeVar, Generic
 
 from models.path_models.path_segment_state.segment_type import SegmentType
+from serialization.serializable import Serializable, SerializedState
 
 if TYPE_CHECKING:
     from models.path_models.path_segment_model import PathSegmentModel
@@ -14,8 +15,16 @@ if TYPE_CHECKING:
 An interface for some segment shape, ie Straight, Arc, Bezier.
 """
 
+class SerializedSegmentStateState(SerializedState):
+
+    def __init__(self, adapterState: AdapterState):
+        self.adapter = adapterState
+
+    def deserialize(self, model: PathSegmentModel) -> 'AbstractSegmentState':
+        raise NotImplementedError()
+
 T = TypeVar('T')
-class AbstractSegmentState(Generic[T]):
+class AbstractSegmentState(Serializable, Generic[T]):
 
     def __init__(self, model: PathSegmentModel, adapter: PathAdapter, type: SegmentType):
         self.model = model

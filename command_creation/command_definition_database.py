@@ -5,7 +5,7 @@ from data_structures.observer import Observable
 from entity_handler.interactor import Interactor
 from entity_handler.entity_manager import EntityManager
 
-from adapter.path_adapter import PathAdapter, NullPathAdapter, PathAttributeID
+from adapter.path_adapter import PathAdapter, PathAttributeID
 from common.image_manager import ImageManager
 from common.dimensions import Dimensions
 from entities.root_container.panel_container.element.readout.readout_definition import ReadoutDefinition

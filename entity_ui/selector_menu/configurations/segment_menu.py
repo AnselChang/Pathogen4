@@ -6,6 +6,7 @@ from models.path_models.path_segment_state.segment_type import SegmentType
 from models.path_models.segment_direction import SegmentDirection
 from entities.root_container.field_container.segment.abstract_segment_entity import AbstractSegmentEntity
 from entities.root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
+from models.project_history_interface import ProjectHistoryInterface
 
 # When clicked, segment toggles forward/reverse direction
 class DirectionButtonID(Enum):
@@ -26,6 +27,9 @@ class InvertDirectionAction(MenuClickAction[StraightSegmentEntity]):
     # Toggle the forward/reverse direction
     def onClick(self, targetEntity: StraightSegmentEntity, mouse: tuple):
         targetEntity.model.toggleDirection()
+
+        # make a save state
+        ProjectHistoryInterface.getInstance().save()
 
 # When clicked, splits segment and creates temporary node that follows mouse
 class InsertNodeAction(MenuClickAction[StraightSegmentEntity]):
@@ -56,7 +60,10 @@ class ToggleSegmentTypeAction(MenuClickAction[StraightSegmentEntity]):
         elif current == SegmentType.BEZIER:
             segment.setState(SegmentType.STRAIGHT)
         else:
-            raise Exception("Invalid segment type")      
+            raise Exception("Invalid segment type") 
+
+        # make a save state
+        ProjectHistoryInterface.getInstance().save()     
 
 """
 Menu for segments. Functionality for:

@@ -4,6 +4,8 @@ from entity_base.static_entity import StaticEntity
 from entity_base.tick_entity import TickEntity
 from entity_ui.scrollbar.scrolling_container import ScrollingContainer
 from entity_ui.selector_menu.selector_menu_manager import SelectorMenuManager
+from models.project_history_interface import ProjectHistoryInterface
+from models.project_history_model import ProjectHistoryModel
 from models.project_model import ProjectModel
 from models.ui_model import UIModel
 from entities.command_editor_container.command_editor_panel import CommandEditorPanel
@@ -33,6 +35,9 @@ def runCommandsWindow(isProcessDone):
 
 def main():
 
+    # initialize project history model
+    ProjectHistoryInterface.initInstance(ProjectHistoryModel())
+
     # Project model that stores all the state of the program
     # makes it easy to serialize and deserialize
     projectModel = ProjectModel.getInstance()
@@ -49,8 +54,8 @@ def main():
     topBarContainer = windowContainer.TOP_BAR_CONTAINER
 
     initReferenceframe(window.dimensions, fieldContainer.fieldEntity)
-    projectModel.pathModel.initFieldEntity(fieldContainer.fieldEntity)
-    fieldContainer.fieldEntity.initPathModel(projectModel.pathModel)
+
+    projectModel.initFieldEntity(fieldContainer.fieldEntity)
 
     # handles the creating of menus when an entity is selected
     menuManager = SelectorMenuManager(fieldContainer.fieldEntity)
@@ -64,6 +69,7 @@ def main():
 
     # create command model
     scrollingContainer = ScrollingContainer(panelContainer)
+    projectModel.initCommandParentEntity(scrollingContainer.getContainer())
     projectModel.commandsModel.initParentUI(scrollingContainer.getContainer())
 
     # initialize everything
@@ -73,6 +79,9 @@ def main():
     # create first path node
     START_POSITION = (20,20)
     projectModel.pathModel.initFirstNode(START_POSITION)
+
+    # make initial save
+    ProjectHistoryInterface.getInstance().save()
 
     window.run()
 

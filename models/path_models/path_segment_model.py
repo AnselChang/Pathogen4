@@ -5,7 +5,7 @@ from adapter.path_adapter import PathAdapter, PathAttributeID
 from adapter.straight_adapter import StraightAdapter
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
-from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState
+from models.path_models.path_segment_state.abstract_segment_state import AbstractSegmentState, SerializedSegmentStateState
 from models.path_models.path_segment_state.arc_segment_state import ArcSegmentState
 from models.path_models.path_segment_state.bezier_segment_state import BezierSegmentState
 from models.path_models.path_segment_state.segment_type import SegmentType
@@ -14,6 +14,7 @@ from models.path_models.segment_direction import SegmentDirection
 from entities.root_container.field_container.segment.arc_segment_entity import ArcSegmentEntity
 from entities.root_container.field_container.segment.bezier_segment_entity import BezierSegmentEntity
 from entities.root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
+from models.project_history_interface import ProjectHistoryInterface
 from services.constraint_solver_service import ConstraintSolver
 from utility.format_functions import formatDegrees, formatInches
 from utility.math_functions import distanceTuples, thetaFromPoints
@@ -24,10 +25,44 @@ if TYPE_CHECKING:
     from entity_base.entity import Entity
 
 
-from models.path_models.path_element_model import PathElementModel
+from models.path_models.path_element_model import PathElementModel, SerializedPathElementState
 
+class SerializedPathSegmentState(SerializedPathElementState):
+
+    def __init__(self, direction: SegmentDirection, states: dict[SegmentType, SerializedSegmentStateState], current: SegmentType):
+        self.direction = direction
+        self.states = states
+        self.current = current
+
+    def _deserialize(self, pathModel: PathModel) -> 'PathNodeModel':
+        segment = PathSegmentModel(pathModel)
+        segment.direction = self.direction
+
+        segment.states = {}
+        for key, value in self.states.items():
+            segment.states[key] = value.deserialize(segment)
+
+        segment.currentStateType = self.current
+
+        segment.generateUI()
+        return segment
+    
+    def makeAdapterDeserialized(self):
+        for state in self.states.values():
+            state.adapter.makeDeserialized()
 
 class PathSegmentModel(PathElementModel):
+
+    def makeAdapterSerialized(self):
+        for state in self.states.values():
+            state.adapter.makeSerialized()
+
+    def _serialize(self) -> SerializedPathSegmentState:
+        sStates: dict[SegmentType, SerializedSegmentStateState] = {}
+        for key, value in self.states.items():
+            sStates[key] = value.serialize()
+
+        return SerializedPathSegmentState(self.direction, sStates, self.currentStateType)
     
     def __init__(self, pathModel: PathModel):
         super().__init__(pathModel)
@@ -105,6 +140,12 @@ class PathSegmentModel(PathElementModel):
 
         self.getPrevious().onThetaChange()
         self.getNext().onThetaChange()
+
+    def onInitSegmentOnly(self):
+        self.updateThetas()
+        self.updateDistance()
+        self.updateEndpointPosition(self.getPrevious())
+        self.updateEndpointPosition(self.getNext())
 
     # called when a node attached to segment is moved
     def onNodePositionChange(self, node: PathNodeModel = None):

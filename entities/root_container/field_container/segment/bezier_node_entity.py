@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from entity_base.listeners.drag_listener import DragLambda
 from entities.root_container.field_container.segment.bezier_line_entity import BezierLineEntity
+from models.project_history_interface import ProjectHistoryInterface
 from utility.math_functions import addTuples, distancePointToLine, hypo, thetaFromVector, vectorFromThetaAndMagnitude
 if TYPE_CHECKING:
     from root_container.field_container.segment.bezier_segment_entity import BezierSegmentEntity
@@ -100,6 +101,9 @@ class BezierNodeEntity(Entity):
     def onStopDrag(self):
         self.segment.getBezierState().updateBezierSlow()
         self.segment.recomputeEntity()
+
+        # make a save state
+        ProjectHistoryInterface.getInstance().save()
 
     def defineCenter(self) -> tuple:
         return self.field.inchesToMouse(self.getPosition())

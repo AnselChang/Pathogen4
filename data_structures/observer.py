@@ -1,6 +1,8 @@
 from typing import Callable
 from enum import Enum, auto
 
+from utility.pretty_printer import PrettyPrinter
+
 # observer design pattern
 class NotifyType(Enum):
     DEFAULT = auto()
@@ -29,7 +31,7 @@ class Observer:
         for observable in self.observablesIAmSubscribedTo:
             observable.unsubscribe(self)
 
-class _ObserverState:
+class _ObserverState(PrettyPrinter):
 
     def __init__(self, observer: Observer, id = NotifyType.DEFAULT, onNotify: Callable = lambda : None):
         self.observer = observer

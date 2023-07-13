@@ -1,14 +1,27 @@
 from entity_base.entity import Entity
 from models.command_models.model_based_entity import ModelBasedEntity
-from models.command_models.abstract_model import AbstractModel
+from models.command_models.abstract_model import AbstractModel, SerializedRecursiveState
 from models.command_models.section_model import SectionModel
 from entities.root_container.panel_container.command_block.full_container import FullContainer
+from serialization.serializable import Serializable, SerializedState
+import copy
 
 """
 Model of entire path command, through a list of path sections
 """
 
-class FullModel(AbstractModel[None, SectionModel]):
+class SerializedFullState(SerializedRecursiveState):
+
+    def __init__(self):
+        super().__init__()
+
+    def _deserialize(self) -> 'FullCommandsModel':
+        return FullCommandsModel()
+
+class FullCommandsModel(AbstractModel[None, SectionModel]):
+
+    def _serialize(self) -> SerializedFullState:
+        return SerializedFullState()
     
     def __init__(self):
         super().__init__()

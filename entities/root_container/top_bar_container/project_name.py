@@ -25,7 +25,7 @@ class ProjectName(Container, Observer):
             isNumOnly = False,
             isCentered = False,
             isFixedWidth = False,
-            defaultText = self.model.projectName.get(),
+            defaultText = self.model.projectData.projectName.get(),
             hideTextbox = False,
             borderThicknessRead = 0,
             borderThicknessWrite = 2,
@@ -37,7 +37,7 @@ class ProjectName(Container, Observer):
         self.text.subscribe(self, onNotify = self.onProjectNameUpdate)
 
     def onProjectNameUpdate(self):
-        self.model.projectName.set(self.text.getText())
+        self.model.projectData.projectName.set(self.text.getText())
 
     def defineLeftX(self) -> float:
         return self._ax(30)

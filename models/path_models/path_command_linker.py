@@ -1,10 +1,12 @@
 from command_creation.command_type import CommandType
-from models.command_models.command_model import CommandModel
-from models.path_models.path_node_model import PathNodeModel
-from models.path_models.path_segment_model import PathSegmentModel
-from models.path_models.path_element_model import PathElementModel
+from models.command_models.command_model import CommandModel, SerializedCommandState
+from models.path_models.path_node_model import PathNodeModel, SerializedPathNodeState
+from models.path_models.path_segment_model import PathSegmentModel, SerializedPathSegmentState
+from models.path_models.path_element_model import PathElementModel, SerializedPathElementState
 from entities.root_container.field_container.segment.straight_segment_entity import StraightSegmentEntity
 from entities.root_container.panel_container.command_block.command_block_entity import CommandBlockEntity
+from serialization.serializable import Serializable, SerializedState
+from utility.pretty_printer import PrettyPrinter
 
 """
 In charge of linking the path entity (node or segment) from and to the command.
@@ -16,7 +18,51 @@ i.e. Straight, Arc, Bezier.
 Fully serializable, as PathNodeModel, PathSegmentModel, and CommandModel all are.
 """
 
-class PathCommandLinker:
+class SerializedLinkerState(SerializedState):
+    
+    def __init__(self,
+                nodeToCommand: dict[SerializedPathNodeState, SerializedCommandState],
+                segmentToCommand: dict[SerializedPathSegmentState, SerializedCommandState],
+                commandToPath: dict[SerializedCommandState, SerializedPathElementState],
+                 ):
+        self.nodeToCommand = nodeToCommand
+        self.segmentToCommand = segmentToCommand
+        self.commandToPath = commandToPath
+
+class PathCommandLinker(Serializable):
+
+    def serialize(self) -> SerializedLinkerState:
+        nodeToCommand: dict[SerializedPathNodeState, SerializedCommandState] = {}
+        for node, command in self.nodeToCommand.items():
+            nodeToCommand[node.serialize()] = command.SERIALIZED
+
+        segmentToCommand: dict[SerializedPathSegmentState, SerializedCommandState] = {}
+        for segment, command in self.segmentToCommand.items():
+            segmentToCommand[segment.serialize()] = command.SERIALIZED
+
+        commandToPath: dict[SerializedCommandState, SerializedPathElementState] = {}
+        for command, path in self.commandToPath.items():
+            commandToPath[command.SERIALIZED] = path.serialize()
+
+        return SerializedLinkerState(nodeToCommand, segmentToCommand, commandToPath)
+
+    @staticmethod
+    def deserialize(state: SerializedLinkerState) -> 'PathCommandLinker':
+        
+        linker = PathCommandLinker()
+
+        for node, command in state.nodeToCommand.items():
+            linker.nodeToCommand[node.deserialize()] = command.DESERIALIZED
+
+        for segment, command in state.segmentToCommand.items():
+            linker.segmentToCommand[segment.deserialize()] = command.DESERIALIZED
+
+        for command, path in state.commandToPath.items():
+            linker.commandToPath[command.DESERIALIZED] = path.deserialize()
+
+        return linker
+        
+
 
     def __init__(self):
         self.nodeToCommand: dict[PathNodeModel, CommandModel] = {}

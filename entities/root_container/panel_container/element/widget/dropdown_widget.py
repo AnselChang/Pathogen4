@@ -35,7 +35,7 @@ class DropdownWidgetContainer(WidgetContainer['DropdownWidgetDefinition'], Obser
         colorOff = [196, 219, 250]
         self.dropdown = DropdownContainer(self, definition.options, FontID.FONT_NORMAL, 11,
                                           colorSelectedHovered, colorSelected, colorHovered, colorOff,
-                                          dynamicWidth = False, verticalTextPadding = 1)
+                                          dynamicWidth = False, verticalTextPadding = 1, defaultOption = self.getValue())
         
         self.dropdown.subscribe(self, onNotify = self.onDropdownChange)
 
