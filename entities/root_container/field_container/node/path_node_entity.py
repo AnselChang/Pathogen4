@@ -123,18 +123,20 @@ class PathNodeEntity(Entity, IPathNodeEntity):
                 self.model.path.deleteNode(self.model)
                 return
             
-        # if neighbor segment is bezier, update bezier slow
-        prevSegment = self.model.getPrevious()
-        if prevSegment is not None and prevSegment.getType() == SegmentType.BEZIER:
-            prevSegment.getBezierState().updateBezierSlow()
-            prevSegment.recomputeUI()
-        nextSegment = self.model.getNext()
-        if nextSegment is not None and nextSegment.getType() == SegmentType.BEZIER:
-            nextSegment.getBezierState().updateBezierSlow()
-            nextSegment.recomputeUI()
+        if self.drag.totalOffsetX != 0 or self.drag.totalOffsetY != 0:
+            
+            # if neighbor segment is bezier, update bezier slow
+            prevSegment = self.model.getPrevious()
+            if prevSegment is not None and prevSegment.getType() == SegmentType.BEZIER:
+                prevSegment.getBezierState().updateBezierSlow()
+                prevSegment.recomputeUI()
+            nextSegment = self.model.getNext()
+            if nextSegment is not None and nextSegment.getType() == SegmentType.BEZIER:
+                nextSegment.getBezierState().updateBezierSlow()
+                nextSegment.recomputeUI()
 
-        # make a save state
-        ProjectHistoryInterface.getInstance().save()
+            # make a save state
+            ProjectHistoryInterface.getInstance().save()
 
     def onKeyDown(self, key):
 

@@ -5,6 +5,8 @@ In creating new nodes, it also creates the relevant command models and links the
 """
 
 from data_structures.linked_list import LinkedList
+from entities.root_container.field_container.node.path_node_entity import PathNodeEntity
+from entities.root_container.field_container.segment.abstract_segment_entity import AbstractSegmentEntity
 from models.command_models.command_model import CommandModel
 from models.command_models.full_model import FullCommandsModel
 from models.path_models.constraint_model import ConstraintModel, SerializedConstraintsState
@@ -21,10 +23,12 @@ class SerializedPathState(SerializedState):
                  pathList: list[SerializedPathElementState],
                  linker: SerializedLinkerState,
                  constraints: SerializedConstraintsState,
+                 selected: list[SerializedPathElementState]
                  ):
         self.pathList = pathList
         self.linker = linker
         self.constraints = constraints
+        self.selected = selected
 
 class PathModel(Serializable):
 
@@ -52,7 +56,13 @@ class PathModel(Serializable):
         for node in self.pathList:
             sList.append(node.serialize())
 
-        return SerializedPathState(sList, self.linker.serialize(), self.constraints.serialize())
+        # get currently selected nodes/segments
+        selectedPathElements = []
+        for e in self.fieldEntity.interactor.selected.entities:
+            if isinstance(e, PathNodeEntity) or isinstance(e, AbstractSegmentEntity):
+                selectedPathElements.append(e.model.serialize())
+
+        return SerializedPathState(sList, self.linker.serialize(), self.constraints.serialize(), selectedPathElements)
     
     @staticmethod
     def deserialize(state: SerializedPathState, fieldEntity) -> 'PathModel':

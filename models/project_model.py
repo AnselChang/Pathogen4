@@ -115,13 +115,20 @@ class ProjectModel:
 
         self.pathModel.initCommandsModel(self.commandsModel)
 
-
         # recalculate path cached data
         self.pathModel.recalculateAll()
 
         # update the UI
         self.fieldEntity.recomputeEntity()
         self.commandsModel.recomputeUI()
+
+        # select the selected entities at this state
+        self.fieldEntity.interactor.removeAllEntities()
+        for selectedNodeOrSegmentSerialized in state.path.selected:
+            selectedNodeOrSegment = selectedNodeOrSegmentSerialized.deserialize()
+            self.fieldEntity.interactor.addEntity(selectedNodeOrSegment.ui)
+
+        
 
         #self.commandsModel.tree()
         #print(self.pathModel.pathList)
