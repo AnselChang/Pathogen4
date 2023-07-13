@@ -61,6 +61,11 @@ class ProjectHistoryModel:
             self.pointer = self.history[-1]
         else: # otherwise, step back one save
             i = self.history.index(self.pointer)
+
+            # first replace the present save with NOW
+            self.history[i] = ProjectModel.getInstance().serialize()
+
+            # step back one save
             if i > 0:
                 self.pointer = self.history[i-1]
             else:
