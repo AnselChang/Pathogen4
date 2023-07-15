@@ -39,7 +39,7 @@ class ParameterState:
         return self.hashmap[id]
     
     def setValueByID(self, id: str, value: Any):
-        print("setting value of " + str(value) + " to " + str(id))
+        print("setting value of " + str(id) + " to " + str(value))
         self.hashmap[id] = value
 
         # add save state to undo/redo stack

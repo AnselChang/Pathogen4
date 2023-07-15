@@ -32,7 +32,7 @@ class SerializedCommandState(SerializedRecursiveState):
         self.uiState = uiState
         self.adapter = adapter.serialize()
         self.templateText = templateText
-        self.paramHashmap = paramHashmap
+        self.paramHashmap = paramHashmap.copy()
         self.definitionID = definitionID
         self.waitState = waitState
 

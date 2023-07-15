@@ -30,7 +30,7 @@ class ProjectHistoryModel:
 
         currentState = ProjectModel.getInstance().serialize()
         self.history.append(currentState)
-        self.pointer = currentState # set pointer to this new save
+        self.pointer = None # set pointer to new
 
         # pickle
         file = open('saves/save.pgpath', 'wb')
@@ -56,20 +56,16 @@ class ProjectHistoryModel:
 
         # if pointer is None, go to most recent save
         if self.pointer is None:
-            if len(self.history) == 0:
-                raise Exception("There is no history to undo")
             self.pointer = self.history[-1]
-        else: # otherwise, step back one save
-            i = self.history.index(self.pointer)
+        
+        # step back one save
+        i = self.history.index(self.pointer)
 
-            # first replace the present save with NOW
-            self.history[i] = ProjectModel.getInstance().serialize()
-
-            # step back one save
-            if i > 0:
-                self.pointer = self.history[i-1]
-            else:
-                raise Exception("Cannot undo past beginning of history")
+        # step back one save
+        if i > 0:
+            self.pointer = self.history[i-1]
+        else:
+            raise Exception("Cannot undo past beginning of history")
             
         ProjectModel.getInstance().loadSerializedState(self.pointer)
 
