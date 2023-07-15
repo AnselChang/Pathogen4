@@ -262,7 +262,8 @@ class Interactor:
         if not self.didMove:
             self.onMouseClick(mouse, isRight)
 
-        self.box.disable()
+        if self.box.isEnabled():
+            self.box.disable()
 
         # release the mouse elsewhere from the greedy entity, so release greedy entity
         if self.greedyEntity is not None and self.rawHoveredEntity is not self.greedyEntity:
@@ -287,6 +288,7 @@ class Interactor:
         # Update multiselect
         if self.box.isEnabled():
             self.setSelectedEntities(self.box.update(mouse, entities))
+            entities.redrawScreenThisTick()
 
         # Drag selection
         if self.leftDragging and not self.box.isEnabled() and self.canDragSelection(mouse):

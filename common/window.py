@@ -111,9 +111,11 @@ class Window:
                     shiftKey = pygame.key.get_pressed()[pygame.K_LSHIFT]
                     right = (event.button == 1 and ctrlKey) or event.button == 3
                     self.interactor.onMouseDown(self.entities, mouse, right, shiftKey)
+                    self.entities.redrawScreenThisTick()
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     self.interactor.onMouseUp(self.entities, mouse)
+                    self.entities.redrawScreenThisTick()
 
                 elif event.type == pygame.MOUSEMOTION:
                     self.interactor.onMouseMove(self.entities, mouse)
