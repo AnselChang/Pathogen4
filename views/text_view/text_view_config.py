@@ -60,10 +60,10 @@ class TextConfig:
         # the width of the text.
         # if false, charWidth represents the static
         # width of the textbox, and the textbox is always set to this width
-        self.expandWidth = expandWidth,
+        self.expandWidth = expandWidth
 
         # same logic as charWidth and expandWidth
-        self.charHeight = charHeight,
+        self.charHeight = charHeight
         self.expandHeight = expandHeight 
 
 
@@ -105,7 +105,7 @@ class VisualConfig:
         
         self.inactiveState = inactiveState
         self.hoveredState = hoveredState
-        self.activeValidState = activeValidState,
+        self.activeValidState = activeValidState
         self.activeInvalidState = activeInvalidState
 
         self.fontID = fontID

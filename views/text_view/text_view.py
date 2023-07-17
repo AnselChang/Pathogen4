@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
+
 if TYPE_CHECKING:
     from common.font_manager import DynamicFont
 
@@ -39,6 +41,10 @@ class TextView(Entity, View):
 
         super().__init__(parent,
             hover = HoverLambda(self),
+            select = SelectLambda(self, "text editor", type = SelectorType.SOLO, greedy = True,
+                FonSelect = self.onSelect,
+                FonDeselect = self.onDeselect
+            ),
             key = KeyLambda(self,
                 FonKeyDown = lambda key: self.content.onKeystroke(key)
             )
@@ -51,8 +57,15 @@ class TextView(Entity, View):
     def onExternalValueChange(self):
         pass
 
+    def onSelect(self, interactor):
+        print("selected text editor")
+
+    def onDeselect(self, interactor):
+        print("deselected text editor")
+
     # first, calculate the size of the text box based on text content
     # need to define this before to calculate width and height first
+    # cache all these computations for defining and drawing
     def defineBefore(self) -> None:
 
         # font for this current screen resolution 
@@ -114,6 +127,7 @@ class TextView(Entity, View):
         else:
             return None
         
+    # draw the text editor
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
         
         # determine which visual state to draw
@@ -137,7 +151,7 @@ class TextView(Entity, View):
 
         # draw text
         x = self.LEFT_X + self.visualConfig.hOuterMargin
-        y = self.TOP_Y + self.visualConfig.vOuterMargin + self.charHeight
+        y = self.TOP_Y + self.visualConfig.vOuterMargin
         for line in self.content.getDisplayableContent():
             textSurface = self.currentFont.render(line, True, state.textColor)
             screen.blit(textSurface, (x,y))
@@ -147,5 +161,5 @@ class TextView(Entity, View):
         if isActive:
             cursorX = self.LEFT_X + self.visualConfig.hOuterMargin + self.charWidth * self.content.cursorX
             cursorY = self.TOP_Y + self.visualConfig.vOuterMargin - self.visualConfig.vInnerMargin
-            cursorY += self.charHeight * self.content.cursorY + self.visualConfig.vInnerMargin * (self.content.cursorY - 1)
+            cursorY +=  self.content.cursorY * (self.charHeight + self.visualConfig.vInnerMargin)
             pygame.draw.line(screen, (0,0,0), (cursorX, cursorY), (cursorX, cursorY + self.charHeight), width = 1)

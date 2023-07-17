@@ -191,6 +191,9 @@ class TextContent(Observable): # send a notif when content is updated
 
             # if the key is a character, insert it into the content
             if char is not None:
-                before = self.content[:self.cursorX]
-                after = self.content[self.cursorX:]
+                before = self.content[self.cursorY][:self.cursorX]
+                after = self.content[self.cursorY][self.cursorX:]
                 self.content[self.cursorY] = before + char + self._getMirror(char) + after
+                
+                # update cursor position to be after the inserted character
+                self.cursorX += 1
