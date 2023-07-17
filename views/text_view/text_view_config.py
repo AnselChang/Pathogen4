@@ -4,10 +4,6 @@ from common.font_manager import FontID
 from data_structures.variable import Variable
 from views.view import View
 
-class Submit(Enum):
-    VALID = auto()
-    INVALID = auto()
-
 # how text is aligned within text editor box
 class TextAlignment(Enum):
     LEFT = auto()
@@ -18,6 +14,12 @@ class TextAlignment(Enum):
 Data struct that represents the configuration/constraints of the text
 """
 class TextConfig:
+
+    # regular expressions for common text types
+    RE_INTEGER = "^[-+]?[0-9]+$"
+    RE_DECIMAL = "^[+-]?((\d+(\.\d+)?)|(\.\d+))$"
+    RE_ALPHANUMERIC = "^[a-zA-Z0-9]*$"
+    RE_ALPHANUMERIC_SPACE = "^[a-zA-Z0-9 ]*$"
 
     def __init__(self,
             align: TextAlignment,

@@ -21,5 +21,5 @@ class TextSurface(Observer):
     # based on the content, update the surface
     def updateSurface(self):
         
-        content = self.content.getContentAsList()
+        content = self.content.getDisplayableContent()
         cursorX, cursorY = self.content.getCursorPosition()

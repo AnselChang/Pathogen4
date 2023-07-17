@@ -1,6 +1,7 @@
 from data_structures.observer import Observable
-from views.text_view.text_view_config import Submit, TextConfig
-import re
+from views.text_view.text_utility import SHIFT_CHARS
+from views.text_view.text_view_config import TextConfig
+import re, pygame
 
 """
 Handles the text content logic itself, such as
@@ -22,7 +23,7 @@ class TextContent(Observable): # send a notif when content is updated
         self.reDisplay = re.compile(config.validDisplay)
         self.reSubmit = re.compile(config.validSubmit)
 
-        self.submitValid: Submit = Submit.VALID
+        self.submitValid: bool = True
 
         self.content: list[str] = None
         self.cursorX: int = None
@@ -51,12 +52,18 @@ class TextContent(Observable): # send a notif when content is updated
     def getContentAsString(self) -> str:
         return "\n".join(self.content)
     
-    def getContentAsList(self) -> list[str]:
-        return self.content
+    # return the content as a list of strings, replacing tabs with 4 spaces
+    def getDisplayableContent(self) -> list[str]:
+        return [line.replace("\t", " " * 4) for line in self.content]
     
     # get the number of lines in the content
     def getCharHeight(self) -> int:
         return len(self.content)
+    
+    def getCharWidthAtLine(self, lineNumber: int) -> int:
+        line = self.content[lineNumber]
+        line = line.replace("\t", " " * 4) # replace tabs with 4 spaces
+        return len(line)
     
     # get the char length of the longest line in the content
     def getMaxCharWidth(self) -> int:
@@ -67,21 +74,123 @@ class TextContent(Observable): # send a notif when content is updated
     
     # update cache of whether the content is valid to submit
     def _updateSubmitValid(self):
-        self.submitValid = Submit.VALID
+        self.submitValid = True
         for line in self.content:
-            if not self.reSubmit.fullmatch(line):
-                self.submitValid = Submit.INVALID
+            if self.reSubmit.fullmatch(line) is None:
+                self.submitValid = False
                 break
     
     # Whether the content is valid to submit
-    def isSubmitValid(self) -> Submit:
+    # calculations are cached so this is O(1)
+    def isSubmitValid(self) -> bool:
         return self.submitValid
+    
+    # Whether the content is valid to display
+    # do not need to cache as this is called once right after content is updated
+    def isDisplayValid(self) -> bool:
+        for line in self.content:
+            if self.reDisplay.fullmatch(line) is None:
+                return False
+        return True
+    
+    # given a hypothetical content, return whether it is within the bounds
+    # and whether it is valid to display
+    def isContentLegal(self) -> bool:
+
+        # If horizontal bounds are static and exceeded, content is out of bounds
+        if not self.config.expandWidth:
+            if self.getMaxCharWidth() > self.config.charWidth:
+                return False
+        
+        # If vertical bounds are static and exceeded, content is out of bounds
+        if not self.config.expandHeight:
+            if self.getCharHeight() > self.config.charHeight:
+                return False
+            
+        return self.isDisplayValid()
+
+
     
     # possibly update content based on keypress, which
     # could be a character, backspace, enter key, arrows, etc.
     # return whether the content was updated
-    def handleKeyPress(self, key) -> bool:
-        pass
+    def onKeystroke(self, key) -> bool:
 
-        self._updateSubmitValid()
-        self.notify()
+        # cache old content to revert if modifications make content illegal
+        oldContent = self.content.copy()
+        
+        # update content
+        self.handleKeystroke(key)
+
+        if not self.isContentLegal():
+            # if content is illegal, revert
+            self.content = oldContent
+            return False
+        else:
+            # Otherwise, update submitValid and notify observers of content change
+            self._updateSubmitValid()
+            self.notify()
+            return True
+        
+    def _getMirror(self, char) -> str:
+        if char == "(":
+            return ")"
+        elif char == "[":
+            return "]"
+        else:
+            return ""
+        
+    def handleKeystroke(self, key: pygame.Key) -> list[str]:
+
+        # insert new line if there is room
+        if key == pygame.K_RETURN:
+            pass
+        # Delete the current char, or delete the line if it is empty
+        elif key == pygame.K_BACKSPACE:
+            pass
+        elif key == pygame.K_LEFT:
+            if self.cursorX > 0:
+                self.cursorX -= 1
+            elif self.cursorY > 0:
+                self.cursorY -= 1
+                self.cursorX = self.getCharWidthAtLine(self.cursorY)
+        elif key == pygame.K_RIGHT:
+            if self.cursorX < self.getCharWidthAtLine(self.cursorY):
+                self.cursorX += 1
+            elif self.cursorY < self.getCharHeight() - 1:
+                self.cursorY += 1
+                self.cursorX = 0
+        elif key == pygame.K_UP:
+            if self.cursorY > 0:
+                self.cursorY -= 1
+                self.cursorX = min(self.cursorX, self.getCharWidthAtLine(self.cursorY))
+        elif key == pygame.K_DOWN:
+            if self.cursorY < self.getCharHeight() - 1:
+                self.cursorY += 1
+                self.cursorX = min(self.cursorX, self.getCharWidthAtLine(self.cursorY))
+        else:
+
+            # if the key is a character, insert it into the content
+            name = pygame.key.name(key)
+            
+            allKeys = pygame.key.get_pressed()
+            isShift = allKeys[pygame.K_LSHIFT] or allKeys[pygame.K_RSHIFT]
+
+            # convert into a single-character string to be inserted
+            if key == pygame.K_TAB:
+                char = "\t"
+            elif len(name) == 1:
+                if isShift and name in SHIFT_CHARS: # convert special character to shifted
+                    char = SHIFT_CHARS[name]
+                elif isShift and name.isalpha(): # convert letter to uppercase
+                    char = name.upper()
+                else:
+                    char = name # leave as is for normal characters
+            else:
+                char = None
+
+            # if the key is a character, insert it into the content
+            if char is not None:
+                before = self.content[:self.cursorX]
+                after = self.content[self.cursorX:]
+                self.content[self.cursorY] = before + char + self._getMirror(char) + after
