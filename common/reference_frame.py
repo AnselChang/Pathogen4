@@ -5,12 +5,14 @@ from enum import Enum
 
 transform: FieldEntity = None
 dimensions: Dimensions = None
-def initReferenceframe(dims: Dimensions, fieldTransform: FieldEntity):
+def initReferenceFrame(dims: Dimensions, fieldTransform: FieldEntity):
     global transform, dimensions
     dimensions = dims
     transform = fieldTransform
 
 """
+THIS IS DEPRECATED IN FAVOR OF self.FieldEntity
+
 A class that stores the location of a single point, which can be interpreted from both field and screen reference frames.
 The field reference frame is 144x144 inches while the screen has dimensions (SCREEN_SIZE + PANEL_WIDTH, SCREEN_SIZE) in pixels
 

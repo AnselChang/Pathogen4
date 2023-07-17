@@ -120,7 +120,7 @@ class TextContent(Observable): # send a notif when content is updated
         oldContent = self.content.copy()
         
         # update content
-        self.handleKeystroke(key)
+        self._handleKeystroke(key)
 
         if not self.isContentLegal():
             # if content is illegal, revert
@@ -140,7 +140,7 @@ class TextContent(Observable): # send a notif when content is updated
         else:
             return ""
         
-    def handleKeystroke(self, key: pygame.Key) -> list[str]:
+    def _handleKeystroke(self, key: pygame.Key) -> list[str]:
 
         # insert new line if there is room
         if key == pygame.K_RETURN:

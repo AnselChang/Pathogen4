@@ -15,7 +15,7 @@ from entities.root_container.main_window_container import MainWindowContainer
 from command_creation.command_definition_database import CommandDefinitionDatabase
 from command_creation.test_commands import *
 
-from common.reference_frame import initReferenceframe
+from common.reference_frame import initReferenceFrame
 from common.draw_order import DrawOrder
 import multiprocessing as mp
 
@@ -53,7 +53,7 @@ def main():
     fieldContainer = windowContainer.FIELD_CONTAINER
     topBarContainer = windowContainer.TOP_BAR_CONTAINER
 
-    initReferenceframe(window.dimensions, fieldContainer.fieldEntity)
+    initReferenceFrame(window.dimensions, fieldContainer.fieldEntity)
 
     projectModel.initFieldEntity(fieldContainer.fieldEntity)
 

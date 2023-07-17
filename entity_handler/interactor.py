@@ -16,6 +16,14 @@ import pygame, time
 """
 Deals with the mouse interaction of the software. Invokes callbacks for relevant
 entities based on mouse input
+
+NOTE: Probably the worst-written class in the entire project.
+This class not only handles entity interaction, but is super
+coupled with self.fieldEntity and node/segment selection.
+Ideally, that stuff should not be handled in a global singleton like
+this one, and should be handled in the field entity itself.
+Refactoring this is a low priority though, until there are direct
+issues being faced by these design decisions.
 """
 
 class Interactor:

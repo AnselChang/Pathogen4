@@ -4,11 +4,17 @@ from common.font_manager import FontID
 from data_structures.variable import Variable
 from views.view import View
 
-# how text is aligned within text editor box
-class TextAlignment(Enum):
+# how text is aligned horizontally within text editor box
+class HorizontalAlign(Enum):
     LEFT = auto()
     CENTER = auto()
     RIGHT = auto()
+
+# how text is aligned vertically within text editor box
+class VerticalAlign(Enum):
+    TOP = auto()
+    CENTER = auto()
+    BOTTOM = auto()
 
 """
 Data struct that represents the configuration/constraints of the text
@@ -22,7 +28,8 @@ class TextConfig:
     RE_ALPHANUMERIC_SPACE = "^[a-zA-Z0-9 ]*$"
 
     def __init__(self,
-            align: TextAlignment,
+            horizontalAlign: HorizontalAlign,
+            verticalAlign: VerticalAlign,
             validDisplay: str = ".",
             validSubmit: str = ".",
             charWidth: int = 0,
@@ -32,7 +39,8 @@ class TextConfig:
         ):
         
         # how text is aligned within text editor box
-        self.align: TextAlignment = align
+        self.hAlign: HorizontalAlign = horizontalAlign
+        self.vAlign: VerticalAlign = verticalAlign
 
         # regular expression specifying valid text content while editing.
         # every keystroke is validated with this, so invalid keystrokes are discarded
@@ -64,11 +72,13 @@ Visual characteristics of the text editor for one specific mode"""
 class VisualConfigState:
 
     def __init__(self,
+            textColor: tuple,
             backgroundColor: tuple,
             borderThickness: int = 0, # 0 if no border
             borderColor: tuple = (0,0,0)
         ):
         
+        self.textColor = textColor
         self.backgroundColor = backgroundColor
         self.borderThickness = borderThickness
         self.borderColor = borderColor
@@ -88,7 +98,6 @@ class VisualConfig:
             fontID: FontID,
             fontSize: int,
             radius: int = 0, # border radius of text editor
-            hInnerMargin: int = 1,
             hOuterMargin: int = 2,
             vInnerMargin: int = 1,
             vOuterMargin: int = 2
@@ -102,7 +111,6 @@ class VisualConfig:
         self.fontID = fontID
         self.fontSize = fontSize
         self.radius = radius
-        self.hInnerMargin = hInnerMargin
         self.hOuterMargin = hOuterMargin
         self.vInnerMargin = vInnerMargin
         self.vOuterMargin = vOuterMargin

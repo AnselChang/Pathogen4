@@ -16,11 +16,15 @@ import sys, os
 
 """
 A window object creates a pygame window with a context for entities, EntityManager, etc.
+Only one window object can be created per process.
 """
 class Window:
 
+    # defaultWindowWidthPercent: the default width of the window as a percentage of the monitor width
+    # defaultWindowHeightPercent: the default height of the window as a percentage of the monitor height
+    # xLeftPercent: the default left x position of the window as a percentage of the monitor width
+    # yTopPercent: the default top y position of the window as a percentage of the monitor height
     def __init__(self, defaultWindowWidthPercent: float = 0.8, defaultWindowHeightPercent: float = 0.8, xLeftPercent = 0, yTopPercent = 0):
-
        
         pygame.init()
         pygame.key.set_repeat(400, 70)
@@ -55,9 +59,11 @@ class Window:
         pygame.display.set_caption("Pathogen 4.0 (Ansel Chang)")
         self.clock = pygame.time.Clock()
 
+    # this returned entity can be used to add children to display to this window
     def getRootContainer(self) -> Entity:
         return self.rootContainer
 
+    # the main blocking event loop
     def run(self, isProcessDone = None):
 
         self.rootContainer.recomputeEntity()
@@ -74,24 +80,29 @@ class Window:
                 thisTickIsDifferent = True
                 oldMouse = mouse
             
-            if thisTickIsDifferent: # only recompute hovered entity if mouse moved
+             # only recompute hovered entity if mouse moved
+            if thisTickIsDifferent:
                 hoveredEntity = self.entities.getEntityAtPosition(mouse)
+
+                # only redraw screen if hovered entity changed
                 if oldHoveredEntity is not hoveredEntity:
                     self.entities.redrawScreenThisTick()
+                
                 oldHoveredEntity = hoveredEntity
             else:
                 hoveredEntity = oldHoveredEntity
 
+            # set debug caption to display hovered entity
             if hoveredEntity is not None:
                 parent = f", {str(hoveredEntity._parent)}"
             else:
                 parent = ""
             msg = f"({mouse[0]}, {mouse[1]}), {str(hoveredEntity)}" + parent
-            #inches = fieldContainer.fieldEntity.mouseToInches(mouse)
-            #mouse2 = fieldContainer.fieldEntity.inchesToMouse(inches)
             pygame.display.set_caption(msg)
 
+            # handle hovered entity changes
             self.interactor.setHoveredEntity(hoveredEntity, mouse)
+
             # handle events and call callbacks
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -102,10 +113,13 @@ class Window:
 
                     pygame.quit()
                     sys.exit()
+                
                 elif event.type == pygame.VIDEORESIZE:
                     screen = self.dimensions.resizeScreen(*event.size)
+                
                 elif event.type == pygame.MOUSEWHEEL:
                     self.interactor.onMouseWheel(event.y, mouse)
+                
                 elif event.type == pygame.MOUSEBUTTONDOWN and (event.button == 1 or event.button == 3):
                     ctrlKey = pygame.key.get_pressed()[pygame.K_LCTRL]
                     shiftKey = pygame.key.get_pressed()[pygame.K_LSHIFT]
@@ -119,15 +133,17 @@ class Window:
 
                 elif event.type == pygame.MOUSEMOTION:
                     self.interactor.onMouseMove(self.entities, mouse)
+                
                 elif event.type == pygame.KEYDOWN:
                     self.entities.onKeyDown(event.key)
+                
                 elif event.type == pygame.KEYUP:
                     self.entities.onKeyUp(event.key)
 
             # Perform calculations
             self.entities.tick()
 
-            # Draw everything
+            # Draw everything if there is a change
             if self.entities.isRedrawThisTick():
                 self.entities.drawEntities(self.interactor, self.screen, mouse, self.dimensions)
                 # Update display and maintain frame rate
@@ -137,4 +153,5 @@ class Window:
             else:
                 thisTickIsDifferent = False
             
+            # maintain frame rate by waiting until 60fps timing is reached
             self.clock.tick(60) # fps
