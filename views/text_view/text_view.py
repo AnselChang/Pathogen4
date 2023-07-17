@@ -84,7 +84,7 @@ class TextView(Entity, View):
         heightTestSurface = self.currentFont.render(heightTestText, True, (0,0,0))
         self.charHeight = heightTestSurface.get_height()
 
-        numLines = self.content.getCharHeight()
+        numLines = self.content.getDisplayCharHeight()
         self.fullHeight = self.visualConfig.vOuterMargin * 2
         self.fullHeight += numLines * self.charHeight
         self.fullHeight += (numLines - 1) * self.visualConfig.vInnerMargin
@@ -159,7 +159,7 @@ class TextView(Entity, View):
 
         # draw cursor if active
         if isActive:
-            cursorX = self.LEFT_X + self.visualConfig.hOuterMargin + self.charWidth * self.content.cursorX
+            cursorX = self.LEFT_X + self.visualConfig.hOuterMargin + self.charWidth * self.content.getDisplayCursorX()
             cursorY = self.TOP_Y + self.visualConfig.vOuterMargin - self.visualConfig.vInnerMargin
-            cursorY +=  self.content.cursorY * (self.charHeight + self.visualConfig.vInnerMargin)
+            cursorY +=  self.content.getDisplayCursorY() * (self.charHeight + self.visualConfig.vInnerMargin)
             pygame.draw.line(screen, (0,0,0), (cursorX, cursorY), (cursorX, cursorY + self.charHeight), width = 1)

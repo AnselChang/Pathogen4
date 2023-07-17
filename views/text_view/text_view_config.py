@@ -22,6 +22,7 @@ Data struct that represents the configuration/constraints of the text
 class TextConfig:
 
     # regular expressions for common text types
+    RE_ANY = "^.*$"
     RE_INTEGER = "^[-+]?[0-9]+$"
     RE_DECIMAL = "^[+-]?((\d+(\.\d+)?)|(\.\d+))$"
     RE_ALPHANUMERIC = "^[a-zA-Z0-9]*$"

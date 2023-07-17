@@ -22,16 +22,16 @@ class TextTest(Container):
 
         textConfig = TextConfig(HorizontalAlign.CENTER,
                                 VerticalAlign.CENTER,
-                                TextConfig.RE_ALPHANUMERIC,
+                                TextConfig.RE_ANY,
                                 TextConfig.RE_INTEGER,
                                 0, True, # flexible width
                                 3, False # static height of 3
                                 )
         
-        stateI = VisualConfigState((0,0,0), (255,255,255))
-        stateH = VisualConfigState((0,0,0), (230,230,230))
-        stateAV = VisualConfigState((0,0,0), (230,230,230), 1, (0,0,0))
-        stateAI = VisualConfigState((0,0,0), (230,230,230), 1, (255,0,0))
+        stateI = VisualConfigState((0,0,0), (235,235,235))
+        stateH = VisualConfigState((0,0,0), (245,245,245))
+        stateAV = VisualConfigState((0,0,0), (245,245,255), 1, (0,0,0))
+        stateAI = VisualConfigState((0,0,0), (245,245,255), 1, (255,0,0))
         visualConfig = VisualConfig(stateI, stateH, stateAV, stateAI,
                                     FontID.FONT_CODE, 14,
                                     radius = 3)
