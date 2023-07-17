@@ -12,7 +12,7 @@ from entity_base.listeners.hover_listener import HoverLambda
 from entity_base.listeners.key_listener import KeyLambda
 from views.text_view.text_content import TextContent
 from views.text_view.text_view_config import HorizontalAlign, TextConfig, VerticalAlign, VisualConfig
-from views.view import View
+from views.single_variable_view import SingleVariableView
 import pygame
 
 """
@@ -21,7 +21,7 @@ Describes a view that draws and interacts with arbitrary text. Can be constraine
 This also handles the logic for the position of the keyboard input cursor.
 """
 
-class TextView(Entity, View):
+class TextView(Entity, SingleVariableView):
 
     def __init__(self,
             parent: Entity,
@@ -30,7 +30,7 @@ class TextView(Entity, View):
             visualConfig: VisualConfig, # describes how text editor looks
         ):
 
-        View.__init__(self, variable)
+        SingleVariableView.__init__(self, variable)
         self.textConfig = textConfig
         self.visualConfig = visualConfig
         
@@ -46,7 +46,7 @@ class TextView(Entity, View):
                 FonDeselect = self.onDeselect
             ),
             key = KeyLambda(self,
-                FonKeyDown = lambda key: self.content.onKeystroke(key)
+                FonKeyDown = lambda key: self.onKeyDown(key)
             )
         )
 
@@ -62,6 +62,11 @@ class TextView(Entity, View):
 
     def onDeselect(self, interactor):
         print("deselected text editor")
+
+    # if editing text view, process keystroke
+    def onKeyDown(self, key):
+        if self.select.isSelected:
+            self.content.onKeystroke(key)
 
     # first, calculate the size of the text box based on text content
     # need to define this before to calculate width and height first

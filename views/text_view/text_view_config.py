@@ -1,8 +1,6 @@
 from enum import Enum, auto
 
 from common.font_manager import FontID
-from data_structures.variable import Variable
-from views.view import View
 
 # how text is aligned horizontally within text editor box
 class HorizontalAlign(Enum):
@@ -78,7 +76,8 @@ class TextConfig:
 
 
 """
-Visual characteristics of the text editor for one specific mode"""
+Visual characteristics of the text editor for one specific mode
+"""
 class VisualConfigState:
 
     def __init__(self,
