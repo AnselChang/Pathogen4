@@ -39,7 +39,7 @@ class TextContent(Observable): # send a notif when content is updated
 
         lines = string.split("\n")
         for line in lines:
-            if not (self.reDisplay.fullmatch(line) and self.reSubmit.fullmatch(line))
+            if not (self.reDisplay.fullmatch(line) and self.reSubmit.fullmatch(line)):
                 raise Exception("Invalid string")
             self.content.append(line)
 
@@ -140,7 +140,7 @@ class TextContent(Observable): # send a notif when content is updated
         else:
             return ""
         
-    def _handleKeystroke(self, key: pygame.Key) -> list[str]:
+    def _handleKeystroke(self, key: pygame.key) -> list[str]:
 
         # insert new line if there is room
         if key == pygame.K_RETURN:

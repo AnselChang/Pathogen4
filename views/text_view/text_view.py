@@ -33,17 +33,19 @@ class TextView(Entity, View):
         self.visualConfig = visualConfig
         
         self.content = TextContent(textConfig, variable.get())
-        self.font: DynamicFont = self.fonts.getDynamicFont(self.visualConfig.fontID)
 
         # on changes to content, recompute
         self.content.subscribe(self, onNotify = self.recomputeEntity)
 
-        super.__init__(parent,
+        super().__init__(parent,
             hover = HoverLambda(self),
             key = KeyLambda(self,
-                FonKeyDown = self.content.onKeystroke(lambda key: self.content.onKeystroke(key))
+                FonKeyDown = lambda key: self.content.onKeystroke(key)
             )
         )
+
+        self.font: DynamicFont = self.fonts.getDynamicFont(self.visualConfig.fontID, self.visualConfig.fontSize)
+
     
     # called when the variable is changed externally
     def onExternalValueChange(self):

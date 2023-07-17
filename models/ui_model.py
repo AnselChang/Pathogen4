@@ -2,6 +2,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 
+from data_structures.variable import Variable
+
 if TYPE_CHECKING:
     from root_container.root_container import RootContainer
 
@@ -28,6 +30,8 @@ class UIModel:
         
         # whether to show command editor instead of path/commands
         self.commandEditorActive: CommandEditorStatus = CommandEditorStatus.HIDDEN
+
+        self.testVar = Variable("1234")
 
     # reference to ui needed to send update callbacks
     def initRootContainer(self, root: RootContainer):
