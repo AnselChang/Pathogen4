@@ -72,7 +72,7 @@ class TextView(Entity, View):
         self.currentFont = self.font.get()
 
         # get width of text
-        widthTestText = "-" * self.content.getMaxCharWidth()
+        widthTestText = "-" * self.content.getDisplayMaxCharWidth()
         widthTestSurface = self.currentFont.render(widthTestText, True, (0,0,0))
         textWidth = widthTestSurface.get_width()
         self.fullWidth = textWidth + self.visualConfig.hOuterMargin * 2

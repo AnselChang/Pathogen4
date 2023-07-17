@@ -6,7 +6,7 @@ from data_structures.observer import Observer
 from entity_base.container_entity import Container
 from models.ui_model import UIModel
 from views.text_view.text_view import TextView
-from views.text_view.text_view_config import HorizontalAlign, TextConfig, VerticalAlign, VisualConfig, VisualConfigState
+from views.text_view.text_view_config import HorizontalAlign, TextConfig, TextReplacement, VerticalAlign, VisualConfig, VisualConfigState
 
 if TYPE_CHECKING:
     from models.project_model import ProjectModel
@@ -20,7 +20,8 @@ class TextTest(Container):
 
         self.model = UIModel.getInstance()
 
-        textConfig = TextConfig(HorizontalAlign.CENTER,
+        textConfig = TextConfig(TextReplacement.CPP,
+                                HorizontalAlign.CENTER,
                                 VerticalAlign.CENTER,
                                 TextConfig.RE_ANY,
                                 TextConfig.RE_INTEGER,

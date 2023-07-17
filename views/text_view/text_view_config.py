@@ -16,6 +16,10 @@ class VerticalAlign(Enum):
     CENTER = auto()
     BOTTOM = auto()
 
+class TextReplacement(Enum):
+    NONE = auto()
+    CPP = auto()
+
 """
 Data struct that represents the configuration/constraints of the text
 """
@@ -29,6 +33,7 @@ class TextConfig:
     RE_ALPHANUMERIC_SPACE = "^[a-zA-Z0-9 ]*$"
 
     def __init__(self,
+            textReplacement: TextReplacement,
             horizontalAlign: HorizontalAlign,
             verticalAlign: VerticalAlign,
             validDisplay: str = ".",
@@ -38,6 +43,10 @@ class TextConfig:
             charHeight: int = 1,
             expandHeight: int = 1,
         ):
+
+        # how the text is manipulated when the user types
+        # ie. for C++ code, close ( and { when typing
+        self.textReplacement: TextReplacement = textReplacement
         
         # how text is aligned within text editor box
         self.hAlign: HorizontalAlign = horizontalAlign
@@ -99,9 +108,9 @@ class VisualConfig:
             fontID: FontID,
             fontSize: int,
             radius: int = 0, # border radius of text editor
-            hOuterMargin: int = 2,
+            hOuterMargin: int = 3,
             vInnerMargin: int = 1,
-            vOuterMargin: int = 2
+            vOuterMargin: int = 3,
         ):
         
         self.inactiveState = inactiveState

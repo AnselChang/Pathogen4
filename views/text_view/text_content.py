@@ -1,6 +1,6 @@
 from data_structures.observer import Observable
 from views.text_view.text_utility import SHIFT_CHARS
-from views.text_view.text_view_config import TextConfig
+from views.text_view.text_view_config import TextConfig, TextReplacement
 import re, pygame
 
 """
@@ -79,6 +79,10 @@ class TextContent(Observable): # send a notif when content is updated
     def getMaxCharWidth(self) -> int:
         return max([len(line) for line in self.content])
     
+    # get the char length of the longest line in the displayed content
+    def getDisplayMaxCharWidth(self) -> int:
+        return max([len(line) for line in self.getDisplayableContent()])
+    
     def getDisplayCursorX(self) -> int:
         before = self.content[self.cursorY][:self.cursorX]
         numTabs = before.count("\t")
@@ -147,7 +151,6 @@ class TextContent(Observable): # send a notif when content is updated
             return False
         else:
             # Otherwise, update submitValid and notify observers of content change
-            print(self.getDisplayableContent())
             self._updateSubmitValid()
             self.notify()
             return True
@@ -157,6 +160,8 @@ class TextContent(Observable): # send a notif when content is updated
             return ")"
         elif char == "[":
             return "]"
+        elif char == "{":
+            return "}"
         else:
             return ""
         
@@ -174,13 +179,35 @@ class TextContent(Observable): # send a notif when content is updated
 
         # insert new line, and maintain indentation
         if key == pygame.K_RETURN:
+
+            # carry over the rest of the line to the next line, so need to delete from cursorX to end of line
+            carryover = self.content[self.cursorY][self.cursorX:]
+            self.content[self.cursorY] = self.content[self.cursorY][:self.cursorX]
+
             newLine = "\t" * self._getNumIndents(self.content[self.cursorY])
+            newLine += carryover
+
             self.content.insert(self.cursorY + 1, newLine)
             self.cursorY += 1
-            self.cursorX = len(self.content[self.cursorY])
+            self.cursorX = len(self.content[self.cursorY]) - len(carryover)
         # Delete the current char, or delete the line if it is empty
         elif key == pygame.K_BACKSPACE:
-            pass
+
+            if self.cursorX == 0:
+                # at the start of the line, so merge this line with previous
+                if self.cursorY > 0:
+                    numCarryoverChars = len(self.content[self.cursorY])
+                    self.content[self.cursorY - 1] += self.content[self.cursorY]
+                    del self.content[self.cursorY]
+                    self.cursorY -= 1
+                    self.cursorX = len(self.content[self.cursorY]) - numCarryoverChars
+            else:
+                # otherwise, delete single character
+                before = self.content[self.cursorY][:self.cursorX - 1]
+                after = self.content[self.cursorY][self.cursorX:]
+                self.content[self.cursorY] = before + after
+                self.cursorX -= 1
+
         elif key == pygame.K_LEFT:
             if self.cursorX > 0:
                 self.cursorX -= 1
@@ -212,6 +239,8 @@ class TextContent(Observable): # send a notif when content is updated
             # convert into a single-character string to be inserted
             if key == pygame.K_TAB:
                 char = "\t"
+            elif key == pygame.K_SPACE:
+                char = " "
             elif len(name) == 1:
                 if isShift and name in SHIFT_CHARS: # convert special character to shifted
                     char = SHIFT_CHARS[name]
