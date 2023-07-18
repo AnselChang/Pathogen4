@@ -30,3 +30,6 @@ class DropdownTest(Container):
                                  self.model.testAllOptions,
                                  config
                                  )
+        
+    def defineCenterX(self) -> float:
+        return self._px(0.7)

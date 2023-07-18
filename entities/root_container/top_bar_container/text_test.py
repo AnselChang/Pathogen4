@@ -41,5 +41,5 @@ class TextTest(Container):
         self.view = TextView(self, self.model.testVar, textConfig, visualConfig)
 
 
-    def defineCenter(self) -> float:
-        return self._px(0.5), self._py(0.5)
+    def defineCenterX(self) -> float:
+        return self._px(0.5)

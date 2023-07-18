@@ -35,7 +35,7 @@ class TopBarContainer(Container):
         # button for toggling command editor
         TopBarButtonContainer(self, 0.4, CommandEditorButtonDefinition(runCommandsWindowFunction), 20)
 
-        #TextTest(self)
+        TextTest(self)
         DropdownTest(self)
 
     def defineTopLeft(self) -> tuple:

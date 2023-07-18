@@ -319,7 +319,7 @@ class Interactor:
         if self.hoveredEntity is self.fieldEntity:
             self.removeAllEntities(False)
         
-        if self.greedyEntity is None and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
+        if (self.greedyEntity is None or self.greedyEntity is self.hoveredEntity) and self.hoveredEntity is not None and self.hoveredEntity.click is not None:
             if isRight:
                 self.hoveredEntity.click.onRightClick(mouse)
             else:
@@ -330,6 +330,7 @@ class Interactor:
                 new nodes with the "add new node" menu button
                 """
                 entityToStartDragging: Entity = self.hoveredEntity.click.onLeftClick(mouse)
+
                 if entityToStartDragging is not None and entityToStartDragging.drag is not None:
                     self.leftDragging = True
                     self.removeAllEntities(forceRemove = True)

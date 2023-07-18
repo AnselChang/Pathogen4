@@ -5,7 +5,6 @@ from common.reference_frame import PointRef, Ref
 import entity_base.entity as entity
 from common.draw_order import DrawOrder
 
-from utility.math_functions import distance
 import pygame
 
 """
@@ -17,7 +16,7 @@ class PanelContainer(entity.Entity):
     # drawOrder is a number, in which the lowest number is drawn in the front (highest number is drawn first)
     def __init__(self) -> None:
         
-        super().__init__(parent = entity.ROOT_CONTAINER, drawOrder = DrawOrder.PANEL_BACKGROUND)
+        super().__init__(parent = entity.ROOT_CONTAINER, drawOrder = DrawOrder.PANEL)
         
         self.color = (100,100,100)
         self.recomputeEntity()

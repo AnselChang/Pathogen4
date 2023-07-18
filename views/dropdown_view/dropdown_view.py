@@ -6,6 +6,8 @@ from entity_base.aligned_entity_mixin import AlignedEntityMixin, VerticalAlign
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.hover_listener import HoverLambda
+from entity_base.listeners.select_listener import SelectLambda, SelectorType
+from utility.math_functions import isInsideBox2
 from views.dropdown_view.dropdown_view_config import DropdownConfig
 import pygame
 
@@ -53,7 +55,11 @@ class DropdownView(AlignedEntityMixin, Entity):
                 FonHoverMouseMove = self.onHover,
                 FonHoverOff = self.onHoverOff
             ),
-            click = ClickLambda(self, FonLeftClick = self.onClick)
+            click = ClickLambda(self, FonLeftClick = self.onClick),
+            select = SelectLambda(self, "dropdown", type = SelectorType.SOLO, greedy = True,
+                #FonSelect = self.onClick,
+                FonDeselect = lambda interactor: self.collapseDropdown(),
+            )
         )
         super().__init__(config.horizontalAlign, VerticalAlign.NONE)
         self.font: DynamicFont = self.fonts.getDynamicFont(config.fontID, config.fontSize)
@@ -86,26 +92,31 @@ class DropdownView(AlignedEntityMixin, Entity):
     # find which option is the closest to the mouse
     def onHover(self, mouse: tuple):
 
+        # if mouse is not inside dropdown,it is not hovering over any option
+        if not isInsideBox2(*mouse, *self.RECT):
+            self.hoveredOption = None
+
         # if collapsed, then the only thing that can be hovered is the active option
-        if self.mode == DropdownMode.COLLAPSED:
-            return self.getActiveOption()
+        elif self.mode == DropdownMode.COLLAPSED:
+            self.hoveredOption = self.getActiveOption()
         
-        # need to find closest option when expanded
-        closestOption = None
-        closestDistance = math.inf
+        else:
+            # need to find closest option when expanded
+            closestOption = None
+            closestDistance = math.inf
 
-        mx, my = mouse
-        optionY = self.TOP_Y + self.optionHeight / 2
-        for option in self.getDisplayOptionOrder():
-            distance = abs(optionY - my)
-            if distance < closestDistance:
-                closestDistance = distance
-                closestOption = option
-            optionY += self.optionHeight
+            mx, my = mouse
+            optionY = self.TOP_Y + self.optionHeight / 2
+            for option in self.getDisplayOptionOrder():
+                distance = abs(optionY - my)
+                if distance < closestDistance:
+                    closestDistance = distance
+                    closestOption = option
+                optionY += self.optionHeight
 
-        # update hovered option and redraw
-        self.hoveredOption = closestOption
-        print(self.hoveredOption)
+            # update hovered option and redraw
+            self.hoveredOption = closestOption
+
         self.recomputeEntity()
 
     # no more hovered option, redraw
@@ -116,19 +127,32 @@ class DropdownView(AlignedEntityMixin, Entity):
     # If collapsed, expand
     # If expanded, update active option to clicked option and collapse
     def onClick(self, mouse: tuple):
+        print("on click")
         if self.mode == DropdownMode.COLLAPSED:
             self.mode = DropdownMode.EXPANDED
         else:
-            self.setOption(self.hoveredOption)
+            if self.hoveredOption is not None:
+                self.setOption(self.hoveredOption)
+                # release greedy focus
+                self.interactor.releaseGreedyEntity()
             self.mode = DropdownMode.COLLAPSED
 
         # recalculate view
+        self.recomputeEntity()
+
+    # collapse the dropdown and redraw
+    def collapseDropdown(self):
+        self.mode = DropdownMode.COLLAPSED
         self.recomputeEntity()
 
     # first, calculate the size of the dropdown based on text content
     # need to define this before to calculate width and height first
     # cache all these computations for defining and drawing
     def defineBefore(self) -> None:
+
+        self.VERTICAL_MARGIN = self._aheight(self.config.verticalMargin)
+        self.LEFT_MARGIN = self._awidth(self.config.leftMargin)
+        self.RIGHT_MARGIN = self._aheight(self.config.rightMargin)
 
         # font for this current screen resolution 
         self.currentFont = self.font.get()
@@ -137,7 +161,7 @@ class DropdownView(AlignedEntityMixin, Entity):
         heightTestText = "gP"
         heightTestSurface = self.currentFont.render(heightTestText, True, (0,0,0))
         charHeight = heightTestSurface.get_height()
-        self.optionHeight = charHeight + self.config.verticalMargin * 2
+        self.optionHeight = charHeight + self.VERTICAL_MARGIN * 2
 
         # find longest option and determine option width
         longestOption = ""
@@ -146,7 +170,7 @@ class DropdownView(AlignedEntityMixin, Entity):
                 longestOption = option
         textWidthSurface = self.currentFont.render(longestOption, True, (0,0,0))
         textWidth = textWidthSurface.get_width()
-        self.optionWidth = self.config.leftMargin + textWidth + self.config.rightMargin
+        self.optionWidth = self.LEFT_MARGIN + textWidth + self.RIGHT_MARGIN
 
     def defineWidth(self) -> float:
         return self.optionWidth
@@ -186,9 +210,9 @@ class DropdownView(AlignedEntityMixin, Entity):
             pygame.draw.rect(screen, color, optionRect)
 
             # draw the text centered in the option rect
-            textY = y + self.optionHeight / 2
+            textY = y + self.VERTICAL_MARGIN
             textSurface = self.currentFont.render(option, True, self.config.textColor)
-            screen.blit(textSurface, (self.LEFT_X + self.config.leftMargin, y))
+            screen.blit(textSurface, (self.LEFT_X + self.LEFT_MARGIN, textY))
 
             # increment y to next option position
             y += self.optionHeight

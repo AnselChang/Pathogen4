@@ -12,7 +12,7 @@ If allowNoSelect is True, then no option being selected is allowed
 T = TypeVar('T')
 class RadioGroupContainer(Generic[T], LinearGroupContainer[RadioContainer | T], Observable):
 
-    def __init__(self, parent: Entity, isHorizontal: bool, allowNoSelect: bool = False, drawOrder: DrawOrder = DrawOrder.PANEL_BACKGROUND):
+    def __init__(self, parent: Entity, isHorizontal: bool, allowNoSelect: bool = False):
         
         super().__init__(parent, isHorizontal, drawOrder)
 

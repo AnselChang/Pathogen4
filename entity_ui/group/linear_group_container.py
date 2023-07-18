@@ -12,9 +12,9 @@ The size of each LC is determined by LGC size / N, where N is the number of LCs
 T = TypeVar('T')
 class LinearGroupContainer(Container, Generic[T]):
 
-    def __init__(self, parent: Entity, isHorizontal: bool, drawOrder: DrawOrder = DrawOrder.PANEL_BACKGROUND):
+    def __init__(self, parent: Entity, isHorizontal: bool):
         
-        super().__init__(parent, drawOrder = drawOrder)
+        super().__init__(parent)
 
         self.groupEntities: list[LinearContainer | T] = []
         self.isHorizontal = isHorizontal
