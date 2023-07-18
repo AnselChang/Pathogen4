@@ -21,6 +21,7 @@ class DropdownConfig:
                 colorOff: tuple = (255,255,255),
                 colorHovered: tuple = (200,200,200),
                 colorOn: tuple = (180,180,180),
+                colorOnHovered: tuple = (160, 160, 160)
             ):
         
         # alignment to parent rect
@@ -57,5 +58,6 @@ class DropdownConfig:
         # color of the a dropdown option if active
         self.colorOn = colorOn
 
-
+        # color of a dropdown if both hovered and active
+        self.colorOnHovered = colorOnHovered
 

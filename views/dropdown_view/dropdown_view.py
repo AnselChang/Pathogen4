@@ -7,7 +7,9 @@ from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
 from entity_base.listeners.hover_listener import HoverLambda
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
+from entity_base.listeners.tick_listener import TickLambda
 from utility.math_functions import isInsideBox2
+from utility.motion_profile import MotionProfile
 from views.dropdown_view.dropdown_view_config import DropdownConfig
 import pygame
 
@@ -49,6 +51,9 @@ class DropdownView(AlignedEntityMixin, Entity):
         self.mode: DropdownMode = DropdownMode.COLLAPSED
         self.hoveredOption = None
 
+        # in charge of collapse/expand height animation
+        self.mp = MotionProfile(0, 0.5)
+
         Entity.__init__(self, parent,
             hover = HoverLambda(self,
                 FonHoverOn = self.onHover,
@@ -59,7 +64,8 @@ class DropdownView(AlignedEntityMixin, Entity):
             select = SelectLambda(self, "dropdown", type = SelectorType.SOLO, greedy = True,
                 #FonSelect = self.onClick,
                 FonDeselect = lambda interactor: self.collapseDropdown(),
-            )
+            ),
+            tick = TickLambda(self, FonTickStart = self.onTick),
         )
         super().__init__(config.horizontalAlign, VerticalAlign.NONE)
         self.font: DynamicFont = self.fonts.getDynamicFont(config.fontID, config.fontSize)
@@ -87,6 +93,13 @@ class DropdownView(AlignedEntityMixin, Entity):
 
         return order
 
+    # update height animation, and redraw if change
+    def onTick(self):
+
+        self.mp.tick()
+
+        if self.mp.wasChange():
+            self.recomputeEntity()
 
     # update visually which is being hovered
     # find which option is the closest to the mouse
@@ -128,19 +141,23 @@ class DropdownView(AlignedEntityMixin, Entity):
     # If expanded, update active option to clicked option and collapse
     def onClick(self, mouse: tuple):
         if self.mode == DropdownMode.COLLAPSED:
-            self.mode = DropdownMode.EXPANDED
+            self.expandDropdown()
         else:
             if self.hoveredOption is not None:
                 self.setOption(self.hoveredOption)
                 # release greedy focus
                 self.interactor.releaseGreedyEntity()
-            self.mode = DropdownMode.COLLAPSED
+            self.collapseDropdown()
 
-        # recalculate view
+    # Set the motion profile to expand dropdown, and redraw
+    def expandDropdown(self):
+        self.mp.setEndValue(1)
+        self.mode = DropdownMode.EXPANDED
         self.recomputeEntity()
 
-    # collapse the dropdown and redraw
+    # Set the motion profile to collapse dropdown, and redraw
     def collapseDropdown(self):
+        self.mp.setEndValue(0)
         self.mode = DropdownMode.COLLAPSED
         self.recomputeEntity()
 
@@ -186,8 +203,16 @@ class DropdownView(AlignedEntityMixin, Entity):
     # defined to be centered on the active option
     def defineTopY(self) -> float:
         return self._py(0.5) - self.optionHeight / 2
-        
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+    
+    def defineAfter(self) -> None:
+        self.defineSurface()
+    
+    # cache the dropdown surface to be blit onto the screen
+    def defineSurface(self):
+
+        # height is somewhere between collapsed and expanded height, based on animation
+        surfaceHeight = self.optionHeight + self.optionHeight * (len(self.getAllOptions())-1) * self.mp.get()
+        self.surface = pygame.Surface([self.WIDTH, surfaceHeight]).convert_alpha()
 
         activeOption = self.getActiveOption()
 
@@ -195,38 +220,44 @@ class DropdownView(AlignedEntityMixin, Entity):
         r = self.config.radius
 
         # draw the options in that order
-        y = self.TOP_Y
+        y = 0
         order = self.getDisplayOptionOrder()
         for option in order:
 
             # determine rect for this option
-            optionRect = [self.LEFT_X, y, self.optionWidth, self.optionHeight]
+            optionRect = [0, y, self.optionWidth, self.optionHeight]
 
             # determine color for this option based on config state
+            isHovered = option == self.hoveredOption
             if option == activeOption:
-                color = self.config.colorOn
-            elif option == self.hoveredOption:
+                color = self.config.colorOnHovered if isHovered else self.config.colorOn
+            elif isHovered:
                 color = self.config.colorHovered
             else:
                 color = self.config.colorOff
 
             # draw the background rect for the option, with corresponding border radius if top or bottom
             if len(order) == 1:
-                pygame.draw.rect(screen, color, optionRect, border_radius = r)
+                pygame.draw.rect(self.surface, color, optionRect, border_radius = r)
             elif option == order[0]:
-               pygame.draw.rect(screen, color, optionRect, border_top_left_radius = r, border_top_right_radius = r)
+               pygame.draw.rect(self.surface, color, optionRect, border_top_left_radius = r, border_top_right_radius = r)
             elif option == order[-1]:
-                pygame.draw.rect(screen, color, optionRect, border_bottom_left_radius = r, border_bottom_right_radius = r)
+                pygame.draw.rect(self.surface, color, optionRect, border_bottom_left_radius = r, border_bottom_right_radius = r)
             else:
-                pygame.draw.rect(screen, color, optionRect)
+                pygame.draw.rect(self.surface, color, optionRect)
 
             # draw the text centered in the option rect
             textY = y + self.VERTICAL_MARGIN
             textSurface = self.currentFont.render(option, True, self.config.textColor)
-            screen.blit(textSurface, (self.LEFT_X + self.LEFT_MARGIN, textY))
+            self.surface.blit(textSurface, (self.LEFT_MARGIN, textY))
 
             # increment y to next option position
             y += self.optionHeight
 
         # draw overall dropdown border
-        pygame.draw.rect(screen, (0,0,0), self.RECT, self.config.border, border_radius = r)
+        pygame.draw.rect(self.surface, (0,0,0), [0, 0, self.WIDTH, surfaceHeight], self.config.border, border_radius = r)
+
+        
+    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
+
+        screen.blit(self.surface, [self.LEFT_X, self.TOP_Y])
