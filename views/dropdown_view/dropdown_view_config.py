@@ -12,9 +12,9 @@ class DropdownConfig:
                 horizontalAlign: HorizontalAlign,
                 fontID: FontID,
                 fontSize: int,
-                leftMargin: float = 4,
-                rightMargin: float = 2,
-                verticalMargin: float = 2,
+                leftMargin: float = 1.0,
+                rightMargin: float = .3,
+                verticalMargin: float = .2,
                 border: float = 1,
                 radius = 5,
                 textColor: tuple = (0, 0, 0),
@@ -32,13 +32,13 @@ class DropdownConfig:
         self.fontSize = fontSize
 
         # distance from left edge to left edge of text. dropdown icon will be centered in this margin
-        self.leftMargin = leftMargin
+        self.leftMargin = leftMargin * fontSize
 
         # distance from right edge to right edge of text
-        self.rightMargin = rightMargin
+        self.rightMargin = rightMargin * fontSize
 
         # vertical padding below and above the text for each option
-        self.verticalMargin = verticalMargin
+        self.verticalMargin = verticalMargin * fontSize
 
         # border thickness. will be hidden if wrap == FIT and collapsed
         self.border = border

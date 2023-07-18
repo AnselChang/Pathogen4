@@ -22,7 +22,7 @@ class DropdownTest(Container):
         self.model = UIModel.getInstance()
 
         config = DropdownConfig(HorizontalAlign.CENTER,
-                                FontID.FONT_CODE, 10,
+                                FontID.FONT_CODE, 12,
                                 )
         
         self.view = DropdownView(self,

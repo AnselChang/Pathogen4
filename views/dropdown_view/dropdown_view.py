@@ -1,6 +1,7 @@
 from enum import Enum
 import math
 from common.font_manager import DynamicFont
+from common.image_manager import ImageID
 from data_structures.variable import Variable
 from entity_base.aligned_entity_mixin import AlignedEntityMixin, VerticalAlign
 from entity_base.entity import Entity
@@ -10,6 +11,7 @@ from entity_base.listeners.select_listener import SelectLambda, SelectorType
 from entity_base.listeners.tick_listener import TickLambda
 from utility.math_functions import isInsideBox2
 from utility.motion_profile import MotionProfile
+from utility.pygame_functions import scaleImageToRect
 from views.dropdown_view.dropdown_view_config import DropdownConfig
 import pygame
 from views.view import View
@@ -238,7 +240,7 @@ class DropdownView(AlignedEntityMixin, Entity, View):
         for option in order:
 
             # determine rect for this option
-            optionRect = [0, y, self.optionWidth, self.optionHeight]
+            optionRect = [0, y, self.optionWidth, self.optionHeight+1]
 
             # determine color for this option based on config state
             isHovered = option == self.hoveredOption
@@ -266,6 +268,14 @@ class DropdownView(AlignedEntityMixin, Entity, View):
 
             # increment y to next option position
             y += self.optionHeight
+
+        # draw dropdown ui icon
+        PERCENT = 1
+        size = self.LEFT_MARGIN * PERCENT
+        icon = scaleImageToRect(self.images.get(ImageID.DROPDOWN_ICON), size, size)
+        x = (self.LEFT_MARGIN - size) / 2 + 1
+        y = (self.optionHeight - size) / 2
+        self.surface.blit(icon, [x,y])
 
         # draw overall dropdown border
         pygame.draw.rect(self.surface, (0,0,0), [0, 0, self.WIDTH, surfaceHeight], self.config.border, border_radius = r)
