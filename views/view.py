@@ -21,13 +21,4 @@ This callback will be setup through subscribing to the Variable's changes.
 """
 
 class View(Observer):
-
-    def getValue(self, *args):
-        raise NotImplementedError()
-    
-    def setValue(self, arg1, *args):
-        raise NotImplementedError()
-    
-    # called when the variable is changed externally
-    def onExternalValueChange(self):
-        pass
+    pass

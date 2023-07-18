@@ -12,6 +12,7 @@ from utility.math_functions import isInsideBox2
 from utility.motion_profile import MotionProfile
 from views.dropdown_view.dropdown_view_config import DropdownConfig
 import pygame
+from views.view import View
 
 """
 A view for a dropdown, where one active option out of many
@@ -31,7 +32,7 @@ class DropdownMode(Enum):
     EXPANDED = 0
     COLLAPSED = 1
 
-class DropdownView(AlignedEntityMixin, Entity):
+class DropdownView(AlignedEntityMixin, Entity, View):
 
     def __init__(self, parent: Entity,
                  activeOption: Variable[str],
@@ -42,8 +43,12 @@ class DropdownView(AlignedEntityMixin, Entity):
         # make sure active option is in list of all options
         assert(activeOption.get() in allOptions.get())
 
+        # on external variable changes, recompute
         self.activeOption = activeOption
+        self.activeOption.subscribe(self, onNotify = self.recomputeEntity)
+
         self.allOptions = allOptions
+        self.allOptions.subscribe(self, onNotify = self.onOptionListChange)
 
         self.config = config
 
@@ -92,6 +97,14 @@ class DropdownView(AlignedEntityMixin, Entity):
             order.extend([o for o in self.getAllOptions() if o != activeOption])
 
         return order
+    
+    # when the variable for all the options changes
+    # if active option is not valid anymore, set to first option
+    def onOptionListChange(self):
+        if self.getActiveOption() not in self.getAllOptions():
+            self.activeOption.set(self.getAllOptions()[0])
+        
+        self.recomputeEntity()
 
     # update height animation, and redraw if change
     def onTick(self):

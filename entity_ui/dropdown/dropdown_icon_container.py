@@ -10,6 +10,8 @@ from entity_base.image.image_entity import ImageEntity
 from entity_base.image.image_state import ImageState
 
 """
+DEPRACATED. USE DropdownView in favor of this for MVC support and advanced configuration.
+
 Defines the location of the dropdown icon
 Left side of the top option
 """

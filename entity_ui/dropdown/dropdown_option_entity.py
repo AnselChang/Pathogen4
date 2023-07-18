@@ -14,6 +14,10 @@ if TYPE_CHECKING:
 
 import pygame
 
+"""
+DEPRACATED. USE DropdownView in favor of this for MVC support and advanced configuration.
+"""
+
 class DropdownOptionEntity(Entity):
 
     def setColor(self, colorSelectedHovered, colorSelected, colorHovered, colorOff):

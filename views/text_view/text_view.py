@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from entity_base.aligned_entity_mixin import AlignedEntityMixin
 
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
+from views.view import View
 
 if TYPE_CHECKING:
     from common.font_manager import DynamicFont
@@ -13,7 +14,6 @@ from entity_base.listeners.hover_listener import HoverLambda
 from entity_base.listeners.key_listener import KeyLambda
 from views.text_view.text_content import TextContent
 from views.text_view.text_view_config import HorizontalAlign, TextConfig, VerticalAlign, VisualConfig
-from views.single_variable_view import SingleVariableView
 import pygame
 
 """
@@ -22,7 +22,7 @@ Describes a view that draws and interacts with arbitrary text. Can be constraine
 This also handles the logic for the position of the keyboard input cursor.
 """
 
-class TextView(AlignedEntityMixin, Entity, SingleVariableView):
+class TextView(AlignedEntityMixin, Entity, View):
 
     def __init__(self,
             parent: Entity,
@@ -33,7 +33,9 @@ class TextView(AlignedEntityMixin, Entity, SingleVariableView):
 
         super().__init__(textConfig.hAlign, textConfig.vAlign)
 
-        SingleVariableView.__init__(self, variable)
+        self.textVariable = variable
+        self.textVariable.subscribe(self, onNotify = self.onExternalVariableChange)
+
         self.textConfig = textConfig
         self.visualConfig = visualConfig
         
@@ -57,9 +59,17 @@ class TextView(AlignedEntityMixin, Entity, SingleVariableView):
         self.font: DynamicFont = self.fonts.getDynamicFont(self.visualConfig.fontID, self.visualConfig.fontSize)
 
     
-    # called when the variable is changed externally
-    def onExternalValueChange(self):
-        pass
+    # get the value the text editor is derived from
+    def getValue(self) -> str:
+        return self.textVariable.get()
+    
+    # set a new value for the variable
+    def setValue(self, value: str):
+        self.textVariable.set(value)
+
+    # when something else changes the variable, update content
+    def onExternalVariableChange(self):
+        self.content.setContentFromString(self.getValue())
 
     def onSelect(self, interactor):
         print("selected text editor")

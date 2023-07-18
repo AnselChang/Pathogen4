@@ -18,6 +18,8 @@ from enum import Enum, auto
 import pygame
 
 """
+DEPRACATED. USE TextView in favor of this for MVC support and advanced configuration.
+
 Functionality for a text editor. Not an entity
 """
 

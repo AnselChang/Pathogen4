@@ -19,6 +19,8 @@ import pygame
 from utility.pygame_functions import drawTransparentRect
 
 """
+DEPRACATED. USE DropdownView in favor of this for MVC support and advanced configuration.
+
 A dropdown is a dynamic group that stores
 each option, as well as a ImageEntity that displays
 the dropdown arrow icon.

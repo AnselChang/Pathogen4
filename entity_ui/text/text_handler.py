@@ -9,6 +9,9 @@ if TYPE_CHECKING:
 
 
 """
+DEPRACATED. USE TextView in favor of this for MVC support and advanced configuration.
+
+
 Handles cursor and inputting text
 """
 
