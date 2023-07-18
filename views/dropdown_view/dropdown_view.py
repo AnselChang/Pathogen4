@@ -149,6 +149,7 @@ class DropdownView(AlignedEntityMixin, Entity):
     # cache all these computations for defining and drawing
     def defineBefore(self) -> None:
 
+        # convert to current resolution
         self.VERTICAL_MARGIN = self._aheight(self.config.verticalMargin)
         self.LEFT_MARGIN = self._awidth(self.config.leftMargin)
         self.RIGHT_MARGIN = self._aheight(self.config.rightMargin)

@@ -77,6 +77,11 @@ class TextView(AlignedEntityMixin, Entity, SingleVariableView):
     # cache all these computations for defining and drawing
     def defineBefore(self) -> None:
 
+        # convert to current resolution
+        self.H_OUTER = self._awidth(self.visualConfig.hOuterMargin)
+        self.V_INNER = self._aheight(self.visualConfig.vInnerMargin)
+        self.V_OUTER = self._aheight(self.visualConfig.vOuterMargin)
+
         # font for this current screen resolution 
         self.currentFont = self.font.get()
 
@@ -84,7 +89,7 @@ class TextView(AlignedEntityMixin, Entity, SingleVariableView):
         widthTestText = "-" * self.content.getDisplayMaxCharWidth()
         widthTestSurface = self.currentFont.render(widthTestText, True, (0,0,0))
         textWidth = widthTestSurface.get_width()
-        self.fullWidth = textWidth + self.visualConfig.hOuterMargin * 2
+        self.fullWidth = textWidth + self.H_OUTER * 2
 
         self.charWidth = self.currentFont.render("g", True, (0,0,0)).get_width()
 
@@ -94,9 +99,9 @@ class TextView(AlignedEntityMixin, Entity, SingleVariableView):
         self.charHeight = heightTestSurface.get_height()
 
         numLines = self.content.getDisplayCharHeight()
-        self.fullHeight = self.visualConfig.vOuterMargin * 2
+        self.fullHeight = self.V_OUTER * 2
         self.fullHeight += numLines * self.charHeight
-        self.fullHeight += (numLines - 1) * self.visualConfig.vInnerMargin
+        self.fullHeight += (numLines - 1) * self.V_INNER
 
     # return cached width computed in defineBefore
     def defineWidth(self) -> float:
@@ -129,16 +134,16 @@ class TextView(AlignedEntityMixin, Entity, SingleVariableView):
             pygame.draw.rect(screen, state.borderColor, self.RECT, width = state.borderThickness, border_radius = r)
 
         # draw text
-        x = self.LEFT_X + self.visualConfig.hOuterMargin
-        y = self.TOP_Y + self.visualConfig.vOuterMargin
+        x = self.LEFT_X + self.H_OUTER
+        y = self.TOP_Y + self.V_OUTER
         for line in self.content.getDisplayableContent():
             textSurface = self.currentFont.render(line, True, state.textColor)
             screen.blit(textSurface, (x,y))
-            y += self.charHeight + self.visualConfig.vInnerMargin
+            y += self.charHeight + self.V_INNER
 
         # draw cursor if active
         if isActive:
-            cursorX = self.LEFT_X + self.visualConfig.hOuterMargin + self.charWidth * self.content.getDisplayCursorX()
-            cursorY = self.TOP_Y + self.visualConfig.vOuterMargin - self.visualConfig.vInnerMargin
-            cursorY +=  self.content.getDisplayCursorY() * (self.charHeight + self.visualConfig.vInnerMargin)
+            cursorX = self.LEFT_X + self.H_OUTER + self.charWidth * self.content.getDisplayCursorX()
+            cursorY = self.TOP_Y + self.V_OUTER - self.V_INNER
+            cursorY += self.content.getDisplayCursorY() * (self.charHeight + self.V_INNER)
             pygame.draw.line(screen, (0,0,0), (cursorX, cursorY), (cursorX, cursorY + self.charHeight), width = 1)
