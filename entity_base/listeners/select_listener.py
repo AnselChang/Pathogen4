@@ -43,6 +43,11 @@ class SelectListener(ABC):
     @abstractmethod
     def onDeselect(self, interactor) -> None:
         pass
+
+    # Only applicable to greedy objects. Prevent selection if return true
+    @abstractmethod
+    def disableGreedyDeselect(self) -> bool:
+        return False
     
     
 class SelectLambda(SelectListener):
@@ -50,11 +55,14 @@ class SelectLambda(SelectListener):
     def __init__(self, entity, id: str, enableToggle: bool = False, greedy: bool = False,
                  type: SelectorType = SelectorType.FREE, deselectOnMouseUp = False,
                  FgetHitbox = lambda : None, FonSelect = lambda interactor: None,
-                   FonDeselect = lambda interactor: None, rootSelectEntity = None):
+                   FonDeselect = lambda interactor: None, rootSelectEntity = None,
+                   FdisableGreedySelect = lambda: False
+                   ):
         super().__init__(entity, id, enableToggle, greedy, type, deselectOnMouseUp, rootSelectEntity)
         self.FgetHitbox = FgetHitbox
         self.FonSelect = FonSelect
         self.FonDeselect = FonDeselect
+        self.FdisableGreedySelect = FdisableGreedySelect
 
     def getHitbox(self) -> pygame.Rect:
         return self.FgetHitbox()
@@ -66,3 +74,7 @@ class SelectLambda(SelectListener):
     def onDeselect(self, interactor) -> None:
         self.isSelected = False
         self.FonDeselect(interactor)
+
+    # Only applicable to greedy objects. Prevent selection if return true
+    def disableGreedyDeselect(self) -> bool:
+        return self.FdisableGreedySelect()

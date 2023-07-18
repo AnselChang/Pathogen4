@@ -43,7 +43,8 @@ class TextView(Entity, SingleVariableView):
             hover = HoverLambda(self),
             select = SelectLambda(self, "text editor", type = SelectorType.SOLO, greedy = True,
                 FonSelect = self.onSelect,
-                FonDeselect = self.onDeselect
+                FonDeselect = self.onDeselect,
+                FdisableGreedySelect = lambda: not self.content.isSubmitValid() # do not release focus if not valid value
             ),
             key = KeyLambda(self,
                 FonKeyDown = lambda key: self.onKeyDown(key)

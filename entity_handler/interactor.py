@@ -275,7 +275,8 @@ class Interactor:
 
         # release the mouse elsewhere from the greedy entity, so release greedy entity
         if self.greedyEntity is not None and self.rawHoveredEntity is not self.greedyEntity:
-            self.releaseGreedyEntity()
+            if not self.greedyEntity.select.disableGreedyDeselect():
+                self.releaseGreedyEntity()
 
 
     def canDragSelection(self, offset):
