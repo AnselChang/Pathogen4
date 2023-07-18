@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from entity_base.aligned_entity_mixin import AlignedEntityMixin
 
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
 
@@ -21,7 +22,7 @@ Describes a view that draws and interacts with arbitrary text. Can be constraine
 This also handles the logic for the position of the keyboard input cursor.
 """
 
-class TextView(Entity, SingleVariableView):
+class TextView(AlignedEntityMixin, Entity, SingleVariableView):
 
     def __init__(self,
             parent: Entity,
@@ -29,6 +30,8 @@ class TextView(Entity, SingleVariableView):
             textConfig: TextConfig, # describes text formatting configuration
             visualConfig: VisualConfig, # describes how text editor looks
         ):
+
+        super().__init__(textConfig.hAlign, textConfig.vAlign)
 
         SingleVariableView.__init__(self, variable)
         self.textConfig = textConfig
@@ -39,7 +42,7 @@ class TextView(Entity, SingleVariableView):
         # on changes to content, recompute
         self.content.subscribe(self, onNotify = self.recomputeEntity)
 
-        super().__init__(parent,
+        Entity.__init__(self, parent,
             hover = HoverLambda(self),
             select = SelectLambda(self, "text editor", type = SelectorType.SOLO, greedy = True,
                 FonSelect = self.onSelect,
@@ -102,36 +105,6 @@ class TextView(Entity, SingleVariableView):
     # return cached height computed in defineBefore
     def defineHeight(self) -> float:
         return self.fullHeight
-    
-    # align text editor horizontally based on config
-    def defineLeftX(self) -> float:
-        if self.textConfig.hAlign == HorizontalAlign.LEFT:
-            return self._px(0)
-        else:
-            return None
-    def defineCenterX(self) -> float:
-        if self.textConfig.hAlign == HorizontalAlign.CENTER:
-            return self._px(0.5)   
-    def defineRightX(self) -> float:
-        if self.textConfig.hAlign == HorizontalAlign.RIGHT:
-            return self._px(1)
-        
-    # align text editor vertically based on config
-    def defineTopY(self) -> float:
-        if self.textConfig.vAlign == VerticalAlign.TOP:
-            return self._py(0)
-        else:
-            return None
-    def defineCenterY(self) -> float:
-        if self.textConfig.vAlign == VerticalAlign.CENTER:
-            return self._py(0.5)
-        else:
-            return None    
-    def defineBottomY(self) -> float:
-        if self.textConfig.vAlign == VerticalAlign.BOTTOM:
-            return self._py(1)
-        else:
-            return None
         
     # draw the text editor
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:

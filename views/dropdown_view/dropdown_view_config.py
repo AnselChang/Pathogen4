@@ -1,6 +1,7 @@
 from enum import Enum
 
 from common.font_manager import FontID
+from entity_base.aligned_entity_mixin import HorizontalAlign, VerticalAlign
 
 """
 Specify the configuration for the dropdown view here, like colors.
@@ -8,16 +9,20 @@ Specify the configuration for the dropdown view here, like colors.
 class DropdownConfig:
 
     def __init__(self,
+                horizontalAlign: HorizontalAlign,
                 fontID: FontID,
                 fontSize: int,
-                leftMargin: float = 0,
-                rightMargin: float = 0,
-                verticalMargin: float = 0,
+                leftMargin: float = 4,
+                rightMargin: float = 2,
+                verticalMargin: float = 2,
                 border: float = 1,
                 colorOff: tuple = (255,255,255),
                 colorHovered: tuple = (245,245,245),
                 colorOn: tuple = (180,180,180),
             ):
+        
+        # alignment to parent rect
+        self.horizontalAlign = horizontalAlign
 
         # font used for option text
         self.fontID = fontID

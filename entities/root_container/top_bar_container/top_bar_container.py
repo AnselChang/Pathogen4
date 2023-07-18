@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 from common.image_manager import ImageID
+from entities.root_container.top_bar_container.dropdown_test import DropdownTest
 from entities.root_container.top_bar_container.text_test import TextTest
 from entities.root_container.top_bar_container.undo_redo_buttons import RedoButtonDefinition, UndoButtonDefinition
 from entity_base.image.image_entity import ImageEntity
@@ -33,7 +34,8 @@ class TopBarContainer(Container):
         # button for toggling command editor
         TopBarButtonContainer(self, 0.4, CommandEditorButtonDefinition(runCommandsWindowFunction), 20)
 
-        TextTest(self)
+        #TextTest(self)
+        DropdownTest(self)
 
     def defineTopLeft(self) -> tuple:
         return 0,0

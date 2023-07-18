@@ -33,6 +33,9 @@ class UIModel:
 
         self.testVar = Variable("1234")
 
+        self.testAllOptions = Variable(["A", "AB", "ABC", "ABCD"])
+        self.testActiveOption = Variable("AB")
+
     # reference to ui needed to send update callbacks
     def initRootContainer(self, root: RootContainer):
         self.root = root

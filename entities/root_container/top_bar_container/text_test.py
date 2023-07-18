@@ -3,10 +3,11 @@ from typing import TYPE_CHECKING
 from common.font_manager import FontID
 
 from data_structures.observer import Observer
+from entity_base.aligned_entity_mixin import HorizontalAlign, VerticalAlign
 from entity_base.container_entity import Container
 from models.ui_model import UIModel
 from views.text_view.text_view import TextView
-from views.text_view.text_view_config import HorizontalAlign, TextConfig, TextReplacement, VerticalAlign, VisualConfig, VisualConfigState
+from views.text_view.text_view_config import TextConfig, TextReplacement, VisualConfig, VisualConfigState
 
 if TYPE_CHECKING:
     from models.project_model import ProjectModel
@@ -41,13 +42,4 @@ class TextTest(Container):
 
 
     def defineCenter(self) -> float:
-        return self._px(0.7), self._py(0.5)
-    
-    def defineHeight(self) -> float:
-        return self._pheight(0.7)
-    
-    def defineWidth(self) -> float:
-        return self._pwidth(0.2)
-    
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        self.drawRect(screen)
+        return self._px(0.5), self._py(0.5)

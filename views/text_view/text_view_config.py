@@ -1,18 +1,7 @@
 from enum import Enum, auto
 
 from common.font_manager import FontID
-
-# how text is aligned horizontally within text editor box
-class HorizontalAlign(Enum):
-    LEFT = auto()
-    CENTER = auto()
-    RIGHT = auto()
-
-# how text is aligned vertically within text editor box
-class VerticalAlign(Enum):
-    TOP = auto()
-    CENTER = auto()
-    BOTTOM = auto()
+from entity_base.aligned_entity_mixin import HorizontalAlign, VerticalAlign
 
 class TextReplacement(Enum):
     NONE = auto()
