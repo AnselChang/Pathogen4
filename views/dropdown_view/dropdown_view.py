@@ -127,7 +127,6 @@ class DropdownView(AlignedEntityMixin, Entity):
     # If collapsed, expand
     # If expanded, update active option to clicked option and collapse
     def onClick(self, mouse: tuple):
-        print("on click")
         if self.mode == DropdownMode.COLLAPSED:
             self.mode = DropdownMode.EXPANDED
         else:
@@ -191,9 +190,13 @@ class DropdownView(AlignedEntityMixin, Entity):
 
         activeOption = self.getActiveOption()
 
+        # border radius
+        r = self.config.radius
+
         # draw the options in that order
         y = self.TOP_Y
-        for option in self.getDisplayOptionOrder():
+        order = self.getDisplayOptionOrder()
+        for option in order:
 
             # determine rect for this option
             optionRect = [self.LEFT_X, y, self.optionWidth, self.optionHeight]
@@ -206,8 +209,15 @@ class DropdownView(AlignedEntityMixin, Entity):
             else:
                 color = self.config.colorOff
 
-            # draw the background rect for the option
-            pygame.draw.rect(screen, color, optionRect)
+            # draw the background rect for the option, with corresponding border radius if top or bottom
+            if len(order) == 1:
+                pygame.draw.rect(screen, color, optionRect, border_radius = r)
+            elif option == order[0]:
+               pygame.draw.rect(screen, color, optionRect, border_top_left_radius = r, border_top_right_radius = r)
+            elif option == order[-1]:
+                pygame.draw.rect(screen, color, optionRect, border_bottom_left_radius = r, border_bottom_right_radius = r)
+            else:
+                pygame.draw.rect(screen, color, optionRect)
 
             # draw the text centered in the option rect
             textY = y + self.VERTICAL_MARGIN
@@ -218,4 +228,4 @@ class DropdownView(AlignedEntityMixin, Entity):
             y += self.optionHeight
 
         # draw overall dropdown border
-        pygame.draw.rect(screen, (0,0,0), self.RECT, self.config.border)
+        pygame.draw.rect(screen, (0,0,0), self.RECT, self.config.border, border_radius = r)
