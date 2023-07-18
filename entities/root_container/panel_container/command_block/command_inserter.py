@@ -83,7 +83,7 @@ class CommandInserter(Entity, ICommandInserter):
 
         return self._aheight(self.HEIGHT_MAX if self.hover.isHovering else self.HEIGHT_MIN)
 
-    def onHoverOn(self):
+    def onHoverOn(self, mouse):
         self.recomputeEntity()
 
     def onHoverOff(self):

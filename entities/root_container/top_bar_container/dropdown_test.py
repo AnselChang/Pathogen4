@@ -30,7 +30,3 @@ class DropdownTest(Container):
                                  self.model.testAllOptions,
                                  config
                                  )
-
-    
-    def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        self.drawRect(screen)

@@ -27,6 +27,7 @@ class DrawOrder(IntEnum):
     SEGMENT = auto()
     BEFORE_NODE_SEGMENT = auto()
     MENU_LINE = auto()
+    TOP_BAR = auto()
     FIELD_BACKGROUND = auto()
     BACKGROUND = auto()
     BACK = auto()

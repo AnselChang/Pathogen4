@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
+from common.draw_order import DrawOrder
 from common.image_manager import ImageID
 from entities.root_container.top_bar_container.dropdown_test import DropdownTest
 from entities.root_container.top_bar_container.text_test import TextTest
@@ -22,7 +23,7 @@ import pygame
 class TopBarContainer(Container):
 
     def __init__(self, model: ProjectModel, runCommandsWindowFunction: Callable):
-        super().__init__(parent = entity.ROOT_CONTAINER)
+        super().__init__(parent = entity.ROOT_CONTAINER, drawOrder = DrawOrder.TOP_BAR)
 
         self.BACKGROUND_COLOR = (220, 220, 220)
         self.model = model

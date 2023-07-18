@@ -1,9 +1,11 @@
 from enum import Enum
+import math
 from common.font_manager import DynamicFont
 from data_structures.variable import Variable
 from entity_base.aligned_entity_mixin import AlignedEntityMixin, VerticalAlign
 from entity_base.entity import Entity
 from entity_base.listeners.click_listener import ClickLambda
+from entity_base.listeners.hover_listener import HoverLambda
 from views.dropdown_view.dropdown_view_config import DropdownConfig
 import pygame
 
@@ -40,9 +42,17 @@ class DropdownView(AlignedEntityMixin, Entity):
         self.allOptions = allOptions
 
         self.config = config
+
+        
         self.mode: DropdownMode = DropdownMode.COLLAPSED
+        self.hoveredOption = None
 
         Entity.__init__(self, parent,
+            hover = HoverLambda(self,
+                FonHoverOn = self.onHover,
+                FonHoverMouseMove = self.onHover,
+                FonHoverOff = self.onHoverOff
+            ),
             click = ClickLambda(self, FonLeftClick = self.onClick)
         )
         super().__init__(config.horizontalAlign, VerticalAlign.NONE)
@@ -58,12 +68,58 @@ class DropdownView(AlignedEntityMixin, Entity):
         assert optionStr in self.getAllOptions()
         self.activeOption.set(optionStr)
 
+    # determine the draw order of options to be displayed
+    # active option always goes first, rest follow sequentially
+    # no duplicate of active option
+    def getDisplayOptionOrder(self) -> list[str]:
+        activeOption = self.getActiveOption()
+
+        order = [activeOption]
+        if self.mode == DropdownMode.EXPANDED:
+            # if expanded, the rest of the options follow
+            order.extend([o for o in self.getAllOptions() if o != activeOption])
+
+        return order
+
+
+    # update visually which is being hovered
+    # find which option is the closest to the mouse
+    def onHover(self, mouse: tuple):
+
+        # if collapsed, then the only thing that can be hovered is the active option
+        if self.mode == DropdownMode.COLLAPSED:
+            return self.getActiveOption()
+        
+        # need to find closest option when expanded
+        closestOption = None
+        closestDistance = math.inf
+
+        mx, my = mouse
+        optionY = self.TOP_Y + self.optionHeight / 2
+        for option in self.getDisplayOptionOrder():
+            distance = abs(optionY - my)
+            if distance < closestDistance:
+                closestDistance = distance
+                closestOption = option
+            optionY += self.optionHeight
+
+        # update hovered option and redraw
+        self.hoveredOption = closestOption
+        print(self.hoveredOption)
+        self.recomputeEntity()
+
+    # no more hovered option, redraw
+    def onHoverOff(self):
+        self.hoveredOption = None
+        self.recomputeEntity()
+
     # If collapsed, expand
     # If expanded, update active option to clicked option and collapse
     def onClick(self, mouse: tuple):
         if self.mode == DropdownMode.COLLAPSED:
             self.mode = DropdownMode.EXPANDED
         else:
+            self.setOption(self.hoveredOption)
             self.mode = DropdownMode.COLLAPSED
 
         # recalculate view
@@ -108,4 +164,34 @@ class DropdownView(AlignedEntityMixin, Entity):
         return self._py(0.5) - self.optionHeight / 2
         
     def draw(self, screen: pygame.Surface, isActive: bool, isHovered: bool) -> bool:
-        self.drawRect(screen)
+
+        activeOption = self.getActiveOption()
+
+        # draw the options in that order
+        y = self.TOP_Y
+        for option in self.getDisplayOptionOrder():
+
+            # determine rect for this option
+            optionRect = [self.LEFT_X, y, self.optionWidth, self.optionHeight]
+
+            # determine color for this option based on config state
+            if option == activeOption:
+                color = self.config.colorOn
+            elif option == self.hoveredOption:
+                color = self.config.colorHovered
+            else:
+                color = self.config.colorOff
+
+            # draw the background rect for the option
+            pygame.draw.rect(screen, color, optionRect)
+
+            # draw the text centered in the option rect
+            textY = y + self.optionHeight / 2
+            textSurface = self.currentFont.render(option, True, self.config.textColor)
+            screen.blit(textSurface, (self.LEFT_X + self.config.leftMargin, y))
+
+            # increment y to next option position
+            y += self.optionHeight
+
+        # draw overall dropdown border
+        pygame.draw.rect(screen, (0,0,0), self.RECT, self.config.border)

@@ -16,8 +16,9 @@ class DropdownConfig:
                 rightMargin: float = 2,
                 verticalMargin: float = 2,
                 border: float = 1,
+                textColor: tuple = (0, 0, 0),
                 colorOff: tuple = (255,255,255),
-                colorHovered: tuple = (245,245,245),
+                colorHovered: tuple = (200,200,200),
                 colorOn: tuple = (180,180,180),
             ):
         
@@ -39,6 +40,9 @@ class DropdownConfig:
 
         # border thickness. will be hidden if wrap == FIT and collapsed
         self.border = border
+
+        # color of text
+        self.textColor = textColor
 
         # color of the a dropdown option if not active and not hovered
         self.colorOff = colorOff

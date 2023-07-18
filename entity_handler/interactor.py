@@ -128,11 +128,8 @@ class Interactor:
 
             # new entity hovered, so onHoverOn callback
             if entity is not None and entity.hover is not None:
-                entity.hover.onHoverOn()
+                entity.hover.onHoverOn(mouse)
 
-        
-        if entity is not None and entity.hover is not None:
-            entity.hover.whileHovering(mouse)
 
         # update hovered entity
         self.hoveredEntity = entity
@@ -289,6 +286,11 @@ class Interactor:
 
     def onMouseMove(self, entities: EntityManager, mouse: tuple):
         self.didMove = True
+
+        # if hover callback for mouse move enabled, call callback
+        if self.hoveredEntity is not None and self.hoveredEntity.hover is not None:
+            if self.hoveredEntity.hover.hoverMouseMoveCallbackEnabled:
+                self.hoveredEntity.hover.onHoverMouseMove(mouse)
 
         # after this point, mouse movement was dragging and not just moving around
         if not self.rightDragging and not self.leftDragging:

@@ -2,36 +2,47 @@ from abc import ABC, abstractmethod
 
 class HoverListener(ABC):
 
-    def __init__(self, entity):
+    def __init__(self, entity, hoverMouseMoveCallbackEnabled):
         self.entity = entity
         self.isHovering = False
 
-    def onHoverOn(self):
+        self.hoverMouseMoveCallbackEnabled = hoverMouseMoveCallbackEnabled
+
+    def onHoverOn(self, mouse: tuple):
         self.isHovering = True
 
     def onHoverOff(self):
         self.isHovering = False
 
-    def whileHovering(self, mouse: tuple):
+    # callback for mouse moving while hovering on entity
+    def onHoverMouseMove(self, mouse: tuple):
         pass
 
 class HoverLambda(HoverListener):
 
-    def __init__(self, entity, FonHoverOn = lambda: None, FonHoverOff = lambda: None, FWhileHovering = lambda mouse: None):
-        super().__init__(entity)
+    def __init__(self, entity,
+                 FonHoverOn = lambda mouse: None,
+                 FonHoverOff = lambda: None,
+                 FonHoverMouseMove = None
+                 ):
+        super().__init__(entity, FonHoverMouseMove is not None)
 
         self.FonHoverOn = FonHoverOn
         self.FonHoverOff = FonHoverOff
-        self.FWhileHovering = FWhileHovering
 
-    def onHoverOn(self):
-        super().onHoverOn()
-        self.FonHoverOn()
+        if FonHoverMouseMove is None:
+            self.FonHoverMouseMove = lambda: None
+        else:
+            self.FonHoverMouseMove = FonHoverMouseMove
+
+    def onHoverOn(self, mouse: tuple):
+        super().onHoverOn(mouse)
+        self.FonHoverOn(mouse)
 
     def onHoverOff(self):
         super().onHoverOff()
         self.FonHoverOff()
 
-    def whileHovering(self, mouse: tuple):
-        super().whileHovering(mouse)
-        self.FWhileHovering(mouse)
+    def onHoverMouseMove(self, mouse: tuple):
+        super().onHoverMouseMove(mouse)
+        self.FonHoverMouseMove(mouse)
