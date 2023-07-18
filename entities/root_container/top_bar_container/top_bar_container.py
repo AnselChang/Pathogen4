@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 from common.draw_order import DrawOrder
 from common.image_manager import ImageID
+from entities.root_container.top_bar_container.checkbox_test import CheckboxTest
 from entities.root_container.top_bar_container.dropdown_test import DropdownTest
 from entities.root_container.top_bar_container.text_test import TextTest
 from entities.root_container.top_bar_container.undo_redo_buttons import RedoButtonDefinition, UndoButtonDefinition
@@ -37,6 +38,7 @@ class TopBarContainer(Container):
 
         TextTest(self)
         DropdownTest(self)
+        CheckboxTest(self)
 
     def defineTopLeft(self) -> tuple:
         return 0,0
