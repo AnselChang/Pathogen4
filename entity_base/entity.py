@@ -315,6 +315,12 @@ class Entity(ABC, Observable):
             return self._parent.findAncestorEntityIndependentFromParent()
         else:
             return self
+        
+    # call this function to redraw the screen this tick, like when something changes
+    # this function does not need to be called if recomputeEntity() is called
+    # only useful for when something changes that doesn't affect entity positioning calculations at all
+    def redrawScreenThisTick(self):
+        self.entities.redrawScreenThisTick()
 
     # Must call recomputePosition every time the entity changes its position or dimensions
     def recomputeEntity(self, isRoot: bool = True):

@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from entity_base.aligned_entity_mixin import AlignedEntityMixin
 
 from entity_base.listeners.select_listener import SelectLambda, SelectorType
+from entity_base.listeners.tick_listener import TickLambda
 from views.view import View
 
 if TYPE_CHECKING:
@@ -53,11 +54,17 @@ class TextView(AlignedEntityMixin, Entity, View):
             ),
             key = KeyLambda(self,
                 FonKeyDown = lambda key: self.onKeyDown(key)
-            )
+            ),
+            tick = TickLambda(self, FonTickStart = self.onTick)
         )
 
         self.font: DynamicFont = self.fonts.getDynamicFont(self.visualConfig.fontID, self.visualConfig.fontSize)
 
+        # for toggling cursor in onTick()
+        self.ON_TICKS = 40
+        self.OFF_TICKS = 40
+        self.tickCount = 0
+        self.showCursor = False
     
     # get the value the text editor is derived from
     def getValue(self) -> str:
@@ -81,6 +88,25 @@ class TextView(AlignedEntityMixin, Entity, View):
     def onKeyDown(self, key):
         if self.select.isSelected:
             self.content.onKeystroke(key)
+
+    # toggle showing cursor every so often
+    def onTick(self):
+
+        # only show cursor if selected
+        if not self.select.isSelected:
+            return
+
+        self.tickCount += 1
+
+        if self.showCursor and self.tickCount >= self.ON_TICKS:
+            self.showCursor = False
+            self.tickCount = 0
+            self.redrawScreenThisTick()
+        elif not self.showCursor and self.tickCount >= self.OFF_TICKS:
+            self.showCursor = True
+            self.tickCount = 0
+            self.redrawScreenThisTick()
+
 
     # first, calculate the size of the text box based on text content
     # need to define this before to calculate width and height first
@@ -152,7 +178,7 @@ class TextView(AlignedEntityMixin, Entity, View):
             y += self.charHeight + self.V_INNER
 
         # draw cursor if active
-        if isActive:
+        if isActive and self.showCursor:
             cursorX = self.LEFT_X + self.H_OUTER + self.charWidth * self.content.getDisplayCursorX()
             cursorY = self.TOP_Y + self.V_OUTER - self.V_INNER
             cursorY += self.content.getDisplayCursorY() * (self.charHeight + self.V_INNER)
