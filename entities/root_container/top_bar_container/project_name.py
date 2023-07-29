@@ -38,7 +38,7 @@ class ProjectName(Container):
                                     FontID.FONT_TITLE, 18,
                                     radius = 3)
 
-        self.view = TextView(self, self.model.projectData.projectName, textConfig, visualConfig)
+        self.view = TextView(self, self.model.getData().projectName, textConfig, visualConfig)
 
 
     def defineLeftX(self) -> float:

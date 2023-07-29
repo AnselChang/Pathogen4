@@ -4,7 +4,7 @@ import typing
 from entity_base.entity import Entity
 from models.command_models.abstract_model import SerializedRecursiveState
 
-from models.project_data_model import ProjectDataModel
+from models.project_data_model import ProjectDataModel, SerializedProjectDataState
 import copy
 
 if TYPE_CHECKING:
@@ -24,7 +24,7 @@ be exported or imported to save or load.
 """
 class SerializedProjectState(SerializedState):
     def __init__(self,
-                 data: ProjectDataModel,
+                 data: SerializedProjectDataState,
                  commands: SerializedRecursiveState,
                  path: SerializedPathState,
                  ):
@@ -51,20 +51,29 @@ class ProjectModel:
     def __init__(self):
 
         # stores all the project attributes
-        self.projectData = ProjectDataModel()
+        self._projectData = ProjectDataModel()
 
         # stores model for all the commands
-        self.commandsModel = FullCommandsModel()
+        self._commandsModel = FullCommandsModel()
 
         # stores model for the path
-        self.pathModel = PathModel()
-        self.pathModel.initCommandsModel(self.commandsModel)
+        self._pathModel = PathModel()
+        self._pathModel.initCommandsModel(self._commandsModel)
+
+    def getData(self) -> ProjectDataModel:
+        return self._projectData
+    
+    def getCommands(self) -> FullCommandsModel:
+        return self._commandsModel
+    
+    def getPath(self) -> PathModel:
+        return self._pathModel
 
     # link the path model to the field entity
     def initFieldEntity(self, fieldEntity: FieldEntity):
         self.fieldEntity = fieldEntity
-        self.pathModel.initFieldEntity(fieldEntity)
-        fieldEntity.initPathModel(self.pathModel)
+        self._pathModel.initFieldEntity(fieldEntity)
+        fieldEntity.initPathModel(self._pathModel)
 
     def initCommandParentEntity(self, parentCommandEntity: Entity):
         self.parentCommandEntity = parentCommandEntity
@@ -74,14 +83,15 @@ class ProjectModel:
     def serialize(self) -> SerializedProjectState:
 
         # convert all the adapters to serialized states first
-        self.commandsModel.makeNullAdapterSerialized()
-        for element in self.pathModel.pathList:
+        self._commandsModel.makeNullAdapterSerialized()
+        for element in self._pathModel.pathList:
             element.makeAdapterSerialized()
 
-        commands = self.commandsModel.serialize()
-        path = self.pathModel.serialize()
+        commands = self._commandsModel.serialize()
+        path = self._pathModel.serialize()
 
-        state = SerializedProjectState(self.projectData, commands, path)
+        state = SerializedProjectState(self._projectData.serialize(), commands, path)
+        print(state)
         stateCopy = copy.deepcopy(state)
 
         return stateCopy
@@ -90,11 +100,11 @@ class ProjectModel:
     def loadSerializedState(self, state: SerializedProjectState):
 
         # delete all the path ui
-        for element in self.pathModel.pathList:
+        for element in self._pathModel.pathList:
             element.ui.deleteEntity()
 
         # delete all the commands ui
-        self.commandsModel.ui.deleteEntity()
+        self._commandsModel.ui.deleteEntity()
 
         # convert all adapters back to deserialized states
         state.commands.makeNullAdapterDeserialized()
@@ -102,25 +112,25 @@ class ProjectModel:
             element.makeAdapterDeserialized()
 
         # load the project data
-        self.projectData = state.data
+        self._projectData.deserialize(state.data)
 
         # load the commands and rebuild the command tree
-        self.commandsModel = typing.cast(FullCommandsModel, FullCommandsModel.deserialize(state.commands))
-        self.commandsModel.fullModelParentUI = self.parentCommandEntity
-        self.commandsModel.rebuildAll()
+        self._commandsModel = typing.cast(FullCommandsModel, FullCommandsModel.deserialize(state.commands))
+        self._commandsModel.fullModelParentUI = self.parentCommandEntity
+        self._commandsModel.rebuildAll()
 
         # load the path and link with field entity
-        self.pathModel = PathModel.deserialize(state.path, self.fieldEntity)
+        self._pathModel = PathModel.deserialize(state.path, self.fieldEntity)
         self.initFieldEntity(self.fieldEntity)
 
-        self.pathModel.initCommandsModel(self.commandsModel)
+        self._pathModel.initCommandsModel(self._commandsModel)
 
         # recalculate path cached data
-        self.pathModel.recalculateAll()
+        self._pathModel.recalculateAll()
 
         # update the UI
         self.fieldEntity.recomputeEntity()
-        self.commandsModel.recomputeUI()
+        self._commandsModel.recomputeUI()
 
         # select the selected entities at this state
         self.fieldEntity.interactor.removeAllEntities()

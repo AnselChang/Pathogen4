@@ -69,7 +69,7 @@ def main():
     # create command model
     scrollingContainer = ScrollingContainer(panelContainer)
     projectModel.initCommandParentEntity(scrollingContainer.getContainer())
-    projectModel.commandsModel.initParentUI(scrollingContainer.getContainer())
+    projectModel._commandsModel.initParentUI(scrollingContainer.getContainer())
 
     # initialize everything
     print("compute everything")
@@ -77,7 +77,7 @@ def main():
 
     # create first path node
     START_POSITION = (20,20)
-    projectModel.pathModel.initFirstNode(START_POSITION)
+    projectModel._pathModel.initFirstNode(START_POSITION)
 
     # make initial save
     ProjectHistoryInterface.getInstance().save()

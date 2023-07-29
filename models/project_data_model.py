@@ -2,15 +2,17 @@
 from data_structures.variable import Variable
 from serialization.serializable import Serializable
 
+class SerializedProjectDataState(Serializable):
+    def __init__(self, projectName: str):
+        self.projectName = projectName
 
 class ProjectDataModel(Serializable):
 
     def __init__(self):
         self.projectName = Variable("New Project")
 
-    def serialize(self) -> 'ProjectDataModel':
-        return self
+    def serialize(self) -> 'SerializedProjectDataState':
+        return SerializedProjectDataState(self.projectName.get())
 
-    @staticmethod
-    def deserialize(state: 'ProjectDataModel') -> 'Serializable':
-        return state
+    def deserialize(self, state: 'SerializedProjectDataState'):
+        self.projectName.set(state.projectName)
