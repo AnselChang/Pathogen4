@@ -4,7 +4,6 @@ from common.draw_order import DrawOrder
 from common.image_manager import ImageID
 from entities.root_container.top_bar_container.checkbox_test import CheckboxTest
 from entities.root_container.top_bar_container.dropdown_test import DropdownTest
-from entities.root_container.top_bar_container.text_test import TextTest
 from entities.root_container.top_bar_container.undo_redo_buttons import RedoButtonDefinition, UndoButtonDefinition
 from entity_base.image.image_entity import ImageEntity
 from entity_base.image.image_state import ImageState
@@ -29,14 +28,13 @@ class TopBarContainer(Container):
         self.BACKGROUND_COLOR = (220, 220, 220)
         self.model = model
 
-        self.projectName = ProjectName(self, model)
+        self.projectName = ProjectName(self)
 
         TopBarButtonContainer(self, 0.3, [UndoButtonDefinition(), RedoButtonDefinition()], 10)
 
         # button for toggling command editor
         TopBarButtonContainer(self, 0.4, CommandEditorButtonDefinition(runCommandsWindowFunction), 20)
 
-        TextTest(self)
         DropdownTest(self)
         CheckboxTest(self)
 

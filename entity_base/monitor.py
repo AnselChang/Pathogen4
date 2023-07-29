@@ -3,11 +3,11 @@ from entity_base.tick_entity import TickEntity
 
 
 """
-Stores a "variable", rather a callback to a function that returns a value.
-Calls the function every tick, and runs a callback on function change.
+Check if the result of some function has changed, and if so,
+run a callback on change.
 """
 
-class NotifyingVariable(TickEntity):
+class Monitor(TickEntity):
 
     def __init__(self, getValue: Callable, onChange: Callable = lambda value: None):
 

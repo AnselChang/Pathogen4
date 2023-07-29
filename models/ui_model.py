@@ -31,8 +31,6 @@ class UIModel:
         # whether to show command editor instead of path/commands
         self.commandEditorActive: CommandEditorStatus = CommandEditorStatus.HIDDEN
 
-        self.testVar = Variable("1234")
-
         self.testAllOptions = Variable(["A", "AB", "ABC", "ABCD"])
         self.testActiveOption = Variable("AB")
         self.testBool = Variable(True)

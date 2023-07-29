@@ -1,6 +1,6 @@
 from common.image_manager import ImageID
 from entity_base.image.image_state import ImageState
-from entity_base.notifying_variable import NotifyingVariable
+from entity_base.monitor import Monitor
 from models.ui_model import CommandEditorStatus, UIModel
 from entities.root_container.top_bar_container.top_bar_button_container import ButtonClickAction, ButtonDefinition
 import multiprocessing as mp
@@ -27,7 +27,7 @@ class CommandEditorButtonAction(ButtonClickAction):
         isProcessDone = mp.Value('i', 0)
 
         # run callback when commands process is done
-        NotifyingVariable(lambda: isProcessDone.value, lambda value: UIModel.getInstance().hideCommandEditor())
+        Monitor(lambda: isProcessDone.value, lambda value: UIModel.getInstance().hideCommandEditor())
 
         #mp.set_start_method('spawn')
         commandsProcess = mp.Process(target = self.runCommandsWindow, args=(isProcessDone,))

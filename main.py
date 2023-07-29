@@ -1,5 +1,4 @@
 from common.window import Window
-from entity_base.notifying_variable import NotifyingVariable
 from entity_base.static_entity import StaticEntity
 from entity_base.tick_entity import TickEntity
 from entity_ui.scrollbar.scrolling_container import ScrollingContainer
