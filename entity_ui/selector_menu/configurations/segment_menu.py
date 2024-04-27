@@ -65,6 +65,7 @@ class ToggleSegmentTypeAction(MenuClickAction[StraightSegmentEntity]):
         # make a save state
         ProjectHistoryInterface.getInstance().save()     
 
+
 """
 Menu for segments. Functionality for:
     - revealing command associated with node
